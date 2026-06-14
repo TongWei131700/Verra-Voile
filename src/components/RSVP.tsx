@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { useRevealOnScroll } from '../hooks/useScrollAnimations'
 import SectionTitle from './SectionTitle'
 import CustomSelect from './CustomSelect'
 import DatePicker from './DatePicker'
+
+const API_URL = '/api/reservation' // TODO: 替换为实际接口地址
 
 const destinationOptions = [
   'Paris · 巴黎',
@@ -31,9 +34,35 @@ export default function RSVP() {
   const featuresRef = useRevealOnScroll<HTMLDivElement>()
   const formRef = useRevealOnScroll<HTMLFormElement>()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    destination: '',
+    date: '',
+  })
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    alert('感谢您的预约！我们的首席策划顾问将于 24 小时内与您联系 ♥')
+    setSubmitting(true)
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      if (res.ok) {
+        alert('感谢您的预约！我们的首席策划顾问将于 24 小时内与您联系 ♥')
+        setFormData({ name: '', phone: '', email: '', destination: '', date: '' })
+      } else {
+        alert('提交失败，请稍后重试')
+      }
+    } catch {
+      alert('网络异常，请检查网络后重试')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -53,15 +82,32 @@ export default function RSVP() {
       <form className="rsvp-form reveal-zoom" ref={formRef} onSubmit={handleSubmit}>
         <div className="field">
           <label>您的尊姓</label>
-          <input type="text" placeholder="请填写真实姓名" required />
+          <input
+            type="text"
+            placeholder="请填写真实姓名"
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
         </div>
         <div className="field">
           <label>联系方式（手机）</label>
-          <input type="text" placeholder="+86" required />
+          <input
+            type="text"
+            placeholder="+86"
+            required
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          />
         </div>
         <div className="field">
           <label>电子邮箱 <span style={{ opacity: 0.5, fontSize: '10px', letterSpacing: '1px' }}>（选填）</span></label>
-          <input type="email" placeholder="email@example.com" />
+          <input
+            type="email"
+            placeholder="email@example.com"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          />
         </div>
         <div className="field">
           <label>期望婚礼目的地</label>
@@ -69,13 +115,21 @@ export default function RSVP() {
             options={destinationOptions}
             placeholder="— 请选择心仪之城 —"
             required
+            value={formData.destination}
+            onChange={(val) => setFormData({ ...formData, destination: val })}
           />
         </div>
         <div className="field">
           <label>计划举办时间</label>
-          <DatePicker placeholder="— 请选择举办月份 —" />
+          <DatePicker
+            placeholder="— 请选择举办月份 —"
+            value={formData.date}
+            onChange={(val) => setFormData({ ...formData, date: val })}
+          />
         </div>
-        <button type="submit">预约一对一咨询</button>
+        <button type="submit" disabled={submitting}>
+          {submitting ? '提交中...' : '预约一对一咨询'}
+        </button>
 
         <div className="contact-band">
           <div><span>☎</span> 15536500878</div>

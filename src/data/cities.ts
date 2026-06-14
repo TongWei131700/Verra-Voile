@@ -1,0 +1,133 @@
+export interface City {
+  id: number
+  number: string
+  country: string
+  name: string
+  style: string
+  desc: string
+  crest: string
+  img: string
+}
+
+export const cities: City[] = [
+  {
+    id: 1,
+    number: '01',
+    country: 'France',
+    name: 'Paris',
+    style: 'Romantic Classic',
+    desc: '塞纳河畔的烛光晚宴，埃菲尔铁塔下的永恒誓言。',
+    crest: '♔',
+    img: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=900&q=80',
+  },
+  {
+    id: 2,
+    number: '02',
+    country: 'Italy',
+    name: 'Roma',
+    style: 'Ancient Grandeur',
+    desc: '在千年古城许下誓言，让爱与永恒之城共鸣。',
+    crest: '♕',
+    img: 'https://img.alicdn.com/imgextra/i2/O1CN01uXnKAT28H0RWfWyCv_!!6000000007906-0-tps-900-596.jpg',
+  },
+  {
+    id: 3,
+    number: '03',
+    country: 'Austria',
+    name: 'Wien',
+    style: 'Imperial Waltz',
+    desc: '美泉宫的金色大厅，约翰·施特劳斯的圆舞曲为您而奏。',
+    crest: '♚',
+    img: 'https://img.alicdn.com/imgextra/i4/O1CN01EkPfr01FHBjWA9RAN_!!6000000000461-0-tps-900-599.jpg',
+  },
+  {
+    id: 4,
+    number: '04',
+    country: 'Greece',
+    name: 'Santorini',
+    style: 'Aegean Dream',
+    desc: '爱琴海上的蓝白童话，悬崖之上见证日落与誓约。',
+    crest: '❋',
+    img: 'https://img.alicdn.com/imgextra/i2/O1CN01uQxD8g29GpuapJzv5_!!6000000008041-0-tps-900-624.jpg',
+  },
+  {
+    id: 5,
+    number: '05',
+    country: 'Czech',
+    name: 'Praha',
+    style: 'Bohemian Fairy Tale',
+    desc: '百塔之城的哥特尖顶，查理大桥承载千年情书。',
+    crest: '♛',
+    img: 'https://img.alicdn.com/imgextra/i2/O1CN010pgNIE1gVNdELN5m3_!!6000000004147-0-tps-900-600.jpg',
+  },
+  {
+    id: 6,
+    number: '06',
+    country: 'Spain',
+    name: 'Barcelona',
+    style: 'Gaudí Splendor',
+    desc: '高迪的奇幻建筑，加泰罗尼亚阳光下的盛大庆典。',
+    crest: '✦',
+    img: 'https://img.alicdn.com/imgextra/i2/O1CN01MHxPKs1TRAzWM3GBJ_!!6000000002378-0-tps-900-600.jpg',
+  },
+  {
+    id: 7,
+    number: '07',
+    country: 'Italy',
+    name: 'Venezia',
+    style: 'Floating Romance',
+    desc: '贡多拉小舟划过运河，叹息桥下许下不渝之约。',
+    crest: '⚜',
+    img: 'https://img.alicdn.com/imgextra/i4/O1CN01kdGtZd1U8gcLr1uc4_!!6000000002473-0-tps-900-600.jpg',
+  },
+  {
+    id: 8,
+    number: '08',
+    country: 'Netherlands',
+    name: 'Amsterdam',
+    style: 'Tulip Garden',
+    desc: '运河之畔的郁金香花田，北方威尼斯的恬淡浪漫。',
+    crest: '❀',
+    img: 'https://img.alicdn.com/imgextra/i2/O1CN01QR4cUl1NxnVUhCFIF_!!6000000001637-0-tps-1200-1804.jpg',
+  },
+  {
+    id: 9,
+    number: '09',
+    country: 'England',
+    name: 'London',
+    style: 'British Elegance',
+    desc: '威斯敏斯特的钟声与贵族庄园，英伦风范的世纪婚典。',
+    crest: '♖',
+    img: 'https://img.alicdn.com/imgextra/i1/O1CN01NAMxZg1jhh824mW28_!!6000000004580-0-tps-900-600.jpg',
+  },
+  {
+    id: 10,
+    number: '10',
+    country: 'Italy',
+    name: 'Firenze',
+    style: 'Renaissance Art',
+    desc: '文艺复兴的发源之地，托斯卡纳山丘上的诗意田园。',
+    crest: '✿',
+    img: 'https://img.alicdn.com/imgextra/i2/O1CN01slMADr24u9pwva17e_!!6000000007450-0-tps-900-600.jpg',
+  },
+  {
+    id: 11,
+    number: '11',
+    country: 'Portugal',
+    name: 'Lisboa',
+    style: 'Atlantic Sunset',
+    desc: '大西洋畔的彩色瓷砖，法朵歌声里的温柔誓言。',
+    crest: '☼',
+    img: 'https://img.alicdn.com/imgextra/i1/O1CN01BdH73o1Hg2SF8qTcQ_!!6000000000786-0-tps-900-600.jpg',
+  },
+  {
+    id: 12,
+    number: '12',
+    country: 'Scotland',
+    name: 'Edinburgh',
+    style: 'Highland Legend',
+    desc: '古堡之上的风笛悠扬，苏格兰高地见证传奇之恋。',
+    crest: '♜',
+    img: 'https://img.alicdn.com/imgextra/i2/O1CN01sKDYgp29oGpBoojxY_!!6000000008114-0-tps-900-600.jpg',
+  },
+]

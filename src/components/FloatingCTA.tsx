@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function FloatingCTA() {
   const [visible, setVisible] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const onScroll = () => {
@@ -12,10 +14,14 @@ export default function FloatingCTA() {
   }, [])
 
   return (
-    <a href="#rsvp" className={`floating-cta-btn ${visible ? 'show' : ''}`}>
+    <button
+      type="button"
+      className={`floating-cta-btn ${visible ? 'show' : ''}`}
+      onClick={() => navigate('/listing')}
+    >
       <span className="floating-cta-btn__icon">✦</span>
       <span className="floating-cta-btn__text">开始定制你的专属婚礼</span>
       <span className="floating-cta-btn__arrow">→</span>
-    </a>
+    </button>
   )
 }

@@ -938,6 +938,253 @@ section { padding: 120px 60px; }
   }
 }
 
+/* ========== 定制页面 Customize Page ========== */
+.customize-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at top, rgba(114, 47, 55, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(212, 184, 150, 0.12) 0%, transparent 60%),
+    #1f1a18;
+  color: var(--ivory);
+  padding-bottom: 80px;
+}
+.cust-header {
+  position: relative;
+  padding: 80px 60px 60px;
+  text-align: center;
+}
+.cust-back {
+  position: absolute; top: 40px; left: 60px;
+  color: var(--champagne); text-decoration: none;
+  font-size: 14px; letter-spacing: 3px;
+  padding: 8px 18px;
+  border: 1px solid rgba(212, 184, 150, 0.4);
+  transition: all 0.3s ease;
+}
+.cust-back:hover {
+  background: rgba(212, 184, 150, 0.15);
+  border-color: var(--champagne);
+  color: var(--ivory);
+}
+.cust-header__title { max-width: 720px; margin: 0 auto; }
+.cust-header__script {
+  font-family: 'Great Vibes', cursive;
+  font-size: 52px; color: var(--rose-gold);
+  line-height: 1; margin-bottom: 10px;
+}
+.cust-header h1 {
+  font-size: 44px; letter-spacing: 8px;
+  font-weight: 400; color: var(--ivory);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.cust-header .divider { background: var(--champagne); margin: 24px auto; }
+.cust-header .divider::before { background: #1f1a18; }
+.cust-header__sub {
+  font-size: 17px; color: rgba(212, 184, 150, 0.85);
+  font-style: italic; margin-top: 16px;
+}
+
+.cust-section {
+  max-width: 1400px; margin: 0 auto;
+  padding: 70px 60px;
+  position: relative;
+}
+.cust-step {
+  display: flex; align-items: center; gap: 18px;
+  margin-bottom: 40px;
+}
+.cust-step__num {
+  font-family: 'Great Vibes', cursive;
+  font-size: 60px; line-height: 1;
+  color: var(--champagne);
+}
+.cust-step__line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--champagne), transparent);
+}
+.cust-section__head { text-align: center; margin-bottom: 50px; }
+.cust-section__script {
+  font-family: 'Great Vibes', cursive;
+  font-size: 36px; color: var(--rose-gold);
+  line-height: 1;
+}
+.cust-section__head h2 {
+  font-size: 28px; letter-spacing: 6px;
+  font-weight: 400; color: var(--ivory);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.cust-grid {
+  display: grid;
+  gap: 22px;
+}
+.cust-grid--city { grid-template-columns: repeat(4, 1fr); }
+.cust-grid--flower { grid-template-columns: repeat(3, 1fr); }
+.cust-grid--wine { grid-template-columns: repeat(3, 1fr); }
+
+.cust-card {
+  position: relative;
+  height: 340px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #2a2520;
+  border: 1px solid rgba(212, 184, 150, 0.2);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s ease,
+              box-shadow 0.4s ease;
+}
+.cust-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212, 184, 150, 0.5);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+.cust-card.selected {
+  border-color: var(--champagne);
+  box-shadow:
+    0 0 0 2px var(--champagne),
+    0 20px 60px rgba(212, 184, 150, 0.35);
+  transform: translateY(-6px);
+}
+.cust-card__img {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.4s ease;
+  filter: brightness(0.75) saturate(0.95);
+}
+.cust-card:hover .cust-card__img,
+.cust-card.selected .cust-card__img {
+  transform: scale(1.08);
+  filter: brightness(0.95) saturate(1.1);
+}
+.cust-card__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(40, 28, 30, 0) 30%, rgba(40, 28, 30, 0.75) 70%, rgba(40, 28, 30, 0.95) 100%);
+}
+.cust-card__check {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--champagne);
+  color: var(--charcoal);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 600;
+  z-index: 3;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  animation: checkPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes checkPop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.cust-card__info {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 20px 22px 24px;
+  color: var(--ivory);
+  z-index: 2;
+}
+.cust-card__country,
+.cust-card__icon {
+  font-family: 'Great Vibes', cursive;
+  font-size: 24px; color: var(--champagne);
+  line-height: 1; margin-bottom: 4px;
+  display: block;
+}
+.cust-card__icon { font-family: inherit; font-size: 28px; }
+.cust-card__name {
+  font-size: 22px; letter-spacing: 3px;
+  font-weight: 400; margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.cust-card__style {
+  font-size: 12px; letter-spacing: 2px;
+  color: var(--champagne);
+  text-transform: uppercase;
+  border-top: 1px solid rgba(212, 184, 150, 0.4);
+  padding-top: 8px; display: inline-block;
+}
+.cust-card__desc {
+  margin-top: 10px; font-size: 13px; line-height: 1.6;
+  color: rgba(250, 247, 242, 0.75);
+  font-style: italic;
+  max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.4s ease, margin-top 0.4s ease;
+}
+.cust-card:hover .cust-card__desc,
+.cust-card.selected .cust-card__desc {
+  max-height: 80px; opacity: 1;
+}
+
+/* Submit */
+.cust-submit {
+  max-width: 720px; margin: 60px auto 0;
+  text-align: center;
+  padding: 50px 40px;
+  background: rgba(250, 247, 242, 0.05);
+  border: 1px solid rgba(212, 184, 150, 0.3);
+  backdrop-filter: blur(10px);
+}
+.cust-submit__summary {
+  font-size: 16px; color: var(--champagne);
+  letter-spacing: 2px; margin-bottom: 28px;
+  font-style: italic;
+}
+.cust-submit__btn {
+  background: transparent; color: var(--ivory);
+  border: 1px solid var(--champagne);
+  padding: 16px 60px;
+  font-family: inherit;
+  font-size: 14px; letter-spacing: 5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+.cust-submit__btn:hover:not(:disabled) {
+  background: var(--champagne);
+  color: var(--charcoal);
+  letter-spacing: 7px;
+}
+.cust-submit__btn:disabled {
+  opacity: 0.4; cursor: not-allowed;
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .cust-grid--city { grid-template-columns: repeat(3, 1fr); }
+  .cust-grid--flower,
+  .cust-grid--wine { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .cust-header { padding: 60px 20px 40px; }
+  .cust-back { top: 20px; left: 20px; font-size: 12px; padding: 6px 14px; letter-spacing: 2px; }
+  .cust-header__title { padding-top: 36px; }
+  .cust-header__script { font-size: 40px; }
+  .cust-header h1 { font-size: 26px; letter-spacing: 4px; }
+  .cust-header__sub { font-size: 15px; }
+  .cust-section { padding: 50px 20px; }
+  .cust-step__num { font-size: 44px; }
+  .cust-section__script { font-size: 28px; }
+  .cust-section__head h2 { font-size: 20px; letter-spacing: 3px; }
+  .cust-grid--city,
+  .cust-grid--flower,
+  .cust-grid--wine { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .cust-card { height: 260px; }
+  .cust-card__name { font-size: 16px; letter-spacing: 2px; }
+  .cust-card__desc { display: none; }
+  .cust-card__info { padding: 14px 16px 18px; }
+  .cust-submit { margin: 40px 20px 0; padding: 30px 20px; }
+  .cust-submit__summary { font-size: 14px; }
+  .cust-submit__btn { padding: 14px 36px; font-size: 13px; letter-spacing: 3px; }
+}
+@media (max-width: 380px) {
+  .cust-grid--city,
+  .cust-grid--flower,
+  .cust-grid--wine { grid-template-columns: 1fr; }
+  .cust-card { height: 240px; }
+}
+
 /* Footer */
 footer {
   background: var(--charcoal); color: var(--ivory);

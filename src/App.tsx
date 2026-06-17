@@ -10,6 +10,7 @@ import Schedule from './components/Schedule'
 import Gallery from './components/Gallery'
 import RSVP from './components/RSVP'
 import Footer from './components/Footer'
+import FloatingCTA from './components/FloatingCTA'
 
 export default function App() {
   useParallax()
@@ -27,6 +28,7 @@ export default function App() {
       <Gallery />
       <RSVP />
       <Footer />
+      <FloatingCTA />
     </>
   )
 }

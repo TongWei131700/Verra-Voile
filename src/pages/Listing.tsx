@@ -1,134 +1,73 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { cities } from '../data/cities'
-import { flowers } from '../data/flowers'
-import { wines } from '../data/wines'
+
+type Phase = 'bars-enter' | 'expand' | 'content'
 
 export default function Listing() {
-  const [selectedCity, setSelectedCity] = useState<number | null>(null)
-  const [selectedFlower, setSelectedFlower] = useState<number | null>(null)
-  const [selectedWine, setSelectedWine] = useState<number | null>(null)
+  const navigate = useNavigate()
+  const [phase, setPhase] = useState<Phase>('bars-enter')
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase('expand'), 900)
+    const t2 = setTimeout(() => setPhase('content'), 2000)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [])
 
   return (
     <div className="customize-page">
-      {/* Header */}
       <header className="cust-header">
         <Link to="/" className="cust-back">← 返回首页</Link>
         <div className="cust-header__title">
-          <p className="cust-header__script">Design Your Wedding</p>
-          <h1>定制你的专属婚礼</h1>
+          <p className="cust-header__script">Destination</p>
+          <h1>选择婚礼目的地</h1>
           <div className="divider"></div>
-          <p className="cust-header__sub">选择目的地、花艺与美酒，描绘属于你们的浪漫蓝图</p>
+          <p className="cust-header__sub">每一座城市都有属于你们的浪漫故事，选择梦想中的仪式之地</p>
         </div>
       </header>
 
-      {/* Step 1: Destination */}
       <section className="cust-section">
-        <div className="cust-step">
-          <span className="cust-step__num">01</span>
-          <span className="cust-step__line" />
-        </div>
-        <div className="cust-section__head">
-          <p className="cust-section__script">Destination</p>
-          <h2>选择婚礼目的地</h2>
-        </div>
-        <div className="cust-grid cust-grid--city">
-          {cities.map(city => (
-            <div
-              key={city.id}
-              className={`cust-card cust-card--city ${selectedCity === city.id ? 'selected' : ''}`}
-              onClick={() => setSelectedCity(city.id)}
-            >
-              <div className="cust-card__img" style={{ backgroundImage: `url(${city.img})` }} />
-              <div className="cust-card__overlay" />
-              {selectedCity === city.id && <span className="cust-card__check">✓</span>}
-              <div className="cust-card__info">
-                <span className="cust-card__country">{city.country}</span>
-                <h3 className="cust-card__name">{city.name}</h3>
-                <span className="cust-card__style">{city.style}</span>
+        <div className="city-list">
+          {cities.map((city, i) => {
+            const barIndex = i < 5 ? i : null
+            const hasBar = barIndex !== null
+
+            return (
+              <div
+                key={city.id}
+                className={[
+                  'city-row',
+                  hasBar && phase === 'bars-enter' ? `city-row--bar city-row--slide ${barIndex % 2 === 0 ? 'city-row--from-left' : 'city-row--from-right'}` : '',
+                  hasBar && phase === 'expand' ? 'city-row--grow' : '',
+                  phase === 'content' ? 'city-row--show' : '',
+                  !hasBar && phase !== 'content' ? 'city-row--hidden' : '',
+                ].join(' ')}
+                style={{
+                  animationDelay: hasBar && phase === 'bars-enter' ? `${barIndex * 120}ms` : undefined,
+                  transitionDelay: phase === 'expand' && hasBar ? `${barIndex * 100}ms`
+                    : phase === 'content' ? `${i * 80}ms` : undefined,
+                }}
+                onClick={() => navigate(`/listing/${city.id}`)}
+              >
+                <div className="city-row__img">
+                  <img src={city.img} alt={city.name} />
+                  <span className="city-row__number">{city.number}</span>
+                </div>
+                <div className="city-row__body">
+                  <div className="city-row__meta">
+                    <span className="city-row__crest">{city.crest}</span>
+                    <span className="city-row__country">{city.country}</span>
+                  </div>
+                  <h3 className="city-row__name">{city.name}</h3>
+                  <span className="city-row__style">{city.style}</span>
+                  <p className="city-row__intro">{city.intro}</p>
+                  <span className="city-row__cta">定制这座城市婚礼 →</span>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
-
-      {/* Step 2: Flowers */}
-      <section className="cust-section">
-        <div className="cust-step">
-          <span className="cust-step__num">02</span>
-          <span className="cust-step__line" />
-        </div>
-        <div className="cust-section__head">
-          <p className="cust-section__script">Flowers</p>
-          <h2>选择花艺风格</h2>
-        </div>
-        <div className="cust-grid cust-grid--flower">
-          {flowers.map(flower => (
-            <div
-              key={flower.id}
-              className={`cust-card cust-card--flower ${selectedFlower === flower.id ? 'selected' : ''}`}
-              onClick={() => setSelectedFlower(flower.id)}
-            >
-              <div className="cust-card__img" style={{ backgroundImage: `url(${flower.img})` }} />
-              <div className="cust-card__overlay" />
-              {selectedFlower === flower.id && <span className="cust-card__check">✓</span>}
-              <div className="cust-card__info">
-                <span className="cust-card__country">{flower.nameEn}</span>
-                <h3 className="cust-card__name">{flower.name}</h3>
-                <span className="cust-card__style">{flower.style}</span>
-                <p className="cust-card__desc">{flower.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Step 3: Wine */}
-      <section className="cust-section">
-        <div className="cust-step">
-          <span className="cust-step__num">03</span>
-          <span className="cust-step__line" />
-        </div>
-        <div className="cust-section__head">
-          <p className="cust-section__script">Wine & Drinks</p>
-          <h2>选择宴会酒饮</h2>
-        </div>
-        <div className="cust-grid cust-grid--wine">
-          {wines.map(wine => (
-            <div
-              key={wine.id}
-              className={`cust-card cust-card--wine ${selectedWine === wine.id ? 'selected' : ''}`}
-              onClick={() => setSelectedWine(wine.id)}
-            >
-              <div className="cust-card__img" style={{ backgroundImage: `url(${wine.img})` }} />
-              <div className="cust-card__overlay" />
-              {selectedWine === wine.id && <span className="cust-card__check">✓</span>}
-              <div className="cust-card__info">
-                <span className="cust-card__icon">{wine.icon}</span>
-                <h3 className="cust-card__name">{wine.name}</h3>
-                <span className="cust-card__style">{wine.category}</span>
-                <p className="cust-card__desc">{wine.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Submit */}
-      <div className="cust-submit">
-        <p className="cust-submit__summary">
-          {selectedCity && selectedFlower && selectedWine
-            ? `已选择：${cities.find(c => c.id === selectedCity)?.name} · ${flowers.find(f => f.id === selectedFlower)?.name} · ${wines.find(w => w.id === selectedWine)?.name}`
-            : '请完成以上三项选择'}
-        </p>
-        <button
-          type="button"
-          className="cust-submit__btn"
-          disabled={!selectedCity || !selectedFlower || !selectedWine}
-        >
-          提交定制方案
-        </button>
-      </div>
     </div>
   )
 }

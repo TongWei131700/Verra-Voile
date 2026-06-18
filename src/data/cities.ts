@@ -5,6 +5,7 @@ export interface City {
   name: string
   style: string
   desc: string
+  intro: string
   crest: string
   img: string
 }
@@ -17,6 +18,7 @@ export const cities: City[] = [
     name: 'Paris',
     style: 'Romantic Classic',
     desc: '塞纳河畔的烛光晚宴，埃菲尔铁塔下的永恒誓言。',
+    intro: '从塞纳河游船上的烛光晚宴，到蒙马特高地俯瞰全城的落日仪式；从凡尔赛花园的香槟草坪派对，到卢浮宫穹顶下的古典弦乐四重奏——巴黎赋予每一场婚礼以文学般的叙事感。我们与巴黎最顶尖的城堡庄园、米其林主厨及法式花艺工作室深度合作，让浪漫不止于想象。',
     crest: '♔',
     img: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=900&q=80',
   },
@@ -27,6 +29,7 @@ export const cities: City[] = [
     name: 'Roma',
     style: 'Ancient Grandeur',
     desc: '在千年古城许下誓言，让爱与永恒之城共鸣。',
+    intro: '两千年的石柱与穹顶见证过帝国的兴衰，如今为你们的爱情加冕。在阿庇亚古道旁的私人别墅举办黄昏酒会，于特拉斯提弗列的中世纪庭院交换誓言，佐以罗马最地道的手工意面与坎帕尼亚葡萄酒。罗马婚礼不仅是一场仪式，更是一次穿越时空的壮丽旅程。',
     crest: '♕',
     img: 'https://img.alicdn.com/imgextra/i2/O1CN01uXnKAT28H0RWfWyCv_!!6000000007906-0-tps-900-596.jpg',
   },
@@ -37,6 +40,7 @@ export const cities: City[] = [
     name: 'Wien',
     style: 'Imperial Waltz',
     desc: '美泉宫的金色大厅，约翰·施特劳斯的圆舞曲为您而奏。',
+    intro: '在哈布斯堡皇室的宫殿大厅里举杯，维也纳爱乐的乐手为你们奏响圆舞曲。美泉宫的橘园、美景宫的巴洛克花园、或是环城大道旁的新古典主义酒店——维也纳的每一处场地都散发着帝国时代的华贵气息。搭配萨赫蛋糕与奥地利顶级雷司令，让婚礼成为一场金色的交响盛宴。',
     crest: '♚',
     img: 'https://img.alicdn.com/imgextra/i4/O1CN01EkPfr01FHBjWA9RAN_!!6000000000461-0-tps-900-599.jpg',
   },
@@ -47,6 +51,7 @@ export const cities: City[] = [
     name: 'Santorini',
     style: 'Aegean Dream',
     desc: '爱琴海上的蓝白童话，悬崖之上见证日落与誓约。',
+    intro: '伊亚小镇的蓝顶白墙悬于火山口之上，世界最美的日落为你们的誓言镀上金色光芒。在悬崖露台上举办仅属于你们的私密仪式，爱琴海微风拂面，远处的火山岛屿若隐若现。晚宴搭配圣托里尼本地的阿西尔提科白葡萄酒与新鲜海产，每一口都是地中海的味道。',
     crest: '❋',
     img: 'https://img.alicdn.com/imgextra/i2/O1CN01uQxD8g29GpuapJzv5_!!6000000008041-0-tps-900-624.jpg',
   },
@@ -57,6 +62,7 @@ export const cities: City[] = [
     name: 'Praha',
     style: 'Bohemian Fairy Tale',
     desc: '百塔之城的哥特尖顶，查理大桥承载千年情书。',
+    intro: '伏尔塔瓦河倒映着百塔之城的轮廓，查理大桥上的圣像守护着每一段爱情。选择布拉格城堡内的哥特教堂宣誓，或在老城广场旁的巴洛克宫殿举办晚宴——当天文钟敲响整点，仿佛整座城市都在为你们祝福。波西米亚水晶杯中盛满的摩拉维亚美酒，让童话婚礼可触可感。',
     crest: '♛',
     img: 'https://img.alicdn.com/imgextra/i2/O1CN010pgNIE1gVNdELN5m3_!!6000000004147-0-tps-900-600.jpg',
   },
@@ -67,6 +73,7 @@ export const cities: City[] = [
     name: 'Barcelona',
     style: 'Gaudí Splendor',
     desc: '高迪的奇幻建筑，加泰罗尼亚阳光下的盛大庆典。',
+    intro: '高迪用石头与光影编织的梦境，成为你们爱情故事最超现实的布景。在巴特略之家的露台举办鸡尾酒会，于蒙锥克山的古堡俯瞰地中海海岸线。加泰罗尼亚的阳光热烈而慷慨，弗拉门戈吉他的旋律为晚宴增添激情。搭配里奥哈陈年红酒与伊比利亚火腿，每一个细节都是西班牙式的奔放与优雅。',
     crest: '✦',
     img: 'https://img.alicdn.com/imgextra/i2/O1CN01MHxPKs1TRAzWM3GBJ_!!6000000002378-0-tps-900-600.jpg',
   },
@@ -77,6 +84,7 @@ export const cities: City[] = [
     name: 'Venezia',
     style: 'Floating Romance',
     desc: '贡多拉小舟划过运河，叹息桥下许下不渝之约。',
+    intro: '贡多拉穿行于蜿蜒水道之间，威尼斯用千年的浮华与沉寂编织出世间最独特的婚礼舞台。在大运河畔的文艺复兴宫殿内交换戒指，于圣马可广场的露台上举杯——身后是拜占庭金色马赛克的辉煌穹顶。普罗赛克气泡酒与威尼斯手工玻璃的碰撞，让仪式感与艺术感融为一体。',
     crest: '⚜',
     img: 'https://img.alicdn.com/imgextra/i4/O1CN01kdGtZd1U8gcLr1uc4_!!6000000002473-0-tps-900-600.jpg',
   },
@@ -87,6 +95,7 @@ export const cities: City[] = [
     name: 'Amsterdam',
     style: 'Tulip Garden',
     desc: '运河之畔的郁金香花田，北方威尼斯的恬淡浪漫。',
+    intro: '春日的库肯霍夫花田铺展出七百万株郁金香的斑斓画卷，成为全球最梦幻的婚礼花境。在运河旁十七世纪的联排别墅内举办温馨仪式，于阿姆斯特丹国家博物馆的回廊举杯。荷兰人骨子里的自由与包容，让每一场婚礼都可以不拘一格——骑单车抵达婚礼现场，也是一种浪漫。',
     crest: '❀',
     img: 'https://img.alicdn.com/imgextra/i2/O1CN01QR4cUl1NxnVUhCFIF_!!6000000001637-0-tps-1200-1804.jpg',
   },
@@ -97,6 +106,7 @@ export const cities: City[] = [
     name: 'London',
     style: 'British Elegance',
     desc: '威斯敏斯特的钟声与贵族庄园，英伦风范的世纪婚典。',
+    intro: '大本钟的悠远钟声穿过泰晤士河的薄雾，为你们的婚礼揭开英伦序幕。在科茨沃尔德的蜜色石头庄园举办户外仪式，或选择伦敦西区的私人会所享用下午茶式婚宴。萨维尔街的定制礼服、皇家认证的花艺师、以及一杯来自苏格兰高地的单一麦芽威士忌——每个细节都是不列颠的绅士美学。',
     crest: '♖',
     img: 'https://img.alicdn.com/imgextra/i1/O1CN01NAMxZg1jhh824mW28_!!6000000004580-0-tps-900-600.jpg',
   },
@@ -107,6 +117,7 @@ export const cities: City[] = [
     name: 'Firenze',
     style: 'Renaissance Art',
     desc: '文艺复兴的发源之地，托斯卡纳山丘上的诗意田园。',
+    intro: '站在米开朗基罗广场远眺翡冷翠的天际线，圣母百花大教堂的穹顶在托斯卡纳的金色阳光下熠熠生辉。在基安蒂山丘的百年酒庄举办露天晚宴，橄榄园与葡萄藤构成最自然的婚礼装饰。佛罗伦萨的手工皮具、文艺复兴的油画、以及一瓶布鲁内洛红酒——这里的婚礼是艺术与生活的完美交融。',
     crest: '✿',
     img: 'https://img.alicdn.com/imgextra/i2/O1CN01slMADr24u9pwva17e_!!6000000007450-0-tps-900-600.jpg',
   },
@@ -117,6 +128,7 @@ export const cities: City[] = [
     name: 'Lisboa',
     style: 'Atlantic Sunset',
     desc: '大西洋畔的彩色瓷砖，法朵歌声里的温柔誓言。',
+    intro: '里斯本七座山丘上的彩色房屋层层叠叠，阿尔法玛老城的鹅卵石小巷回荡着法朵的忧伤与深情。在贝伦塔畔的大航海纪念碑前许下誓言，于辛特拉的彩色宫殿举办童话般的宴会。搭配葡萄牙蛋挞、波特酒与大西洋的海风，里斯本的婚礼温暖而不张扬，如同这座城市本身——低调却令人一见钟情。',
     crest: '☼',
     img: 'https://img.alicdn.com/imgextra/i1/O1CN01BdH73o1Hg2SF8qTcQ_!!6000000000786-0-tps-900-600.jpg',
   },
@@ -127,6 +139,7 @@ export const cities: City[] = [
     name: 'Edinburgh',
     style: 'Highland Legend',
     desc: '古堡之上的风笛悠扬，苏格兰高地见证传奇之恋。',
+    intro: '爱丁堡城堡矗立于死火山之上，风笛的旋律穿越苏格兰高地的石楠花海。在皇家英里大道尽头的荷里路德宫举办仪式，或选择高地深处的中世纪城堡作为你们的私密庆典场地。新郎身着苏格兰格纹呢裙、来宾举杯品尝单一麦芽威士忌——这是一场属于勇敢者的传奇婚礼，如同苏格兰的座右铭：无人能挡。',
     crest: '♜',
     img: 'https://img.alicdn.com/imgextra/i2/O1CN01sKDYgp29oGpBoojxY_!!6000000008114-0-tps-900-600.jpg',
   },

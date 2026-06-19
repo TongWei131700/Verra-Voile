@@ -4,7 +4,7 @@ import SectionTitle from './SectionTitle'
 import CustomSelect from './CustomSelect'
 import DatePicker from './DatePicker'
 
-const API_URL = '/api/reservation' // TODO: 替换为实际接口地址
+const API_URL = '/api/reservation'
 
 const destinationOptions = [
   'Paris · 巴黎',

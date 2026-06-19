@@ -1370,6 +1370,7 @@ section { padding: 120px 60px; }
   .city-row { flex-direction: column; }
   .city-row:nth-child(even) { flex-direction: column; }
   .city-row__img { flex: none; height: 220px; min-height: auto; }
+  .city-row--grow .city-row__img { flex: none; min-height: auto; height: 220px; }
   .city-row__body { padding: 24px 20px; }
   .city-row__name { font-size: 24px; letter-spacing: 5px; }
   .city-row__intro { font-size: 14px; line-height: 1.7; }

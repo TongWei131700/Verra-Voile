@@ -1,71 +1,51 @@
-import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { cities } from '../data/cities'
 
-type Phase = 'bars-enter' | 'expand' | 'content'
+const products = [
+  { id: 'destination', name: '地点', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=800&fit=crop', desc: '全球浪漫目的地' },
+  { id: 'wine', name: '酒水', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&h=800&fit=crop', desc: '精选婚宴佳酿' },
+  { id: 'photography', name: '摄影', img: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600&h=800&fit=crop', desc: '记录永恒瞬间' },
+  { id: 'floral', name: '花卉', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=600&h=800&fit=crop', desc: '浪漫花艺设计' },
+  { id: 'dress', name: '礼服', img: 'https://images.unsplash.com/photo-1594552072238-b8a33785b261?w=600&h=800&fit=crop', desc: '梦想中的嫁衣' },
+  { id: 'catering', name: '宴席', img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=800&fit=crop', desc: '米其林级飨宴' },
+]
 
 export default function Listing() {
   const navigate = useNavigate()
-  const [phase, setPhase] = useState<Phase>('bars-enter')
-
-  useEffect(() => {
-    const t1 = setTimeout(() => setPhase('expand'), 900)
-    const t2 = setTimeout(() => setPhase('content'), 2000)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [])
 
   return (
     <div className="customize-page">
       <header className="cust-header">
         <Link to="/" className="cust-back">← 返回首页</Link>
         <div className="cust-header__title">
-          <p className="cust-header__script">Destination</p>
-          <h1>选择婚礼目的地</h1>
+          <p className="cust-header__script">Wedding Customization</p>
+          <h1>定制你的婚礼</h1>
           <div className="divider"></div>
-          <p className="cust-header__sub">每一座城市都有属于你们的浪漫故事，选择梦想中的仪式之地</p>
+          <p className="cust-header__sub">每一个细节，都值得被认真对待</p>
         </div>
       </header>
 
       <section className="cust-section">
-        <div className="city-list">
-          {cities.map((city, i) => {
-            const barIndex = i < 5 ? i : null
-            const hasBar = barIndex !== null
-
-            return (
-              <div
-                key={city.id}
-                className={[
-                  'city-row',
-                  hasBar && phase === 'bars-enter' ? `city-row--bar city-row--slide ${barIndex % 2 === 0 ? 'city-row--from-left' : 'city-row--from-right'}` : '',
-                  hasBar && phase === 'expand' ? 'city-row--grow' : '',
-                  phase === 'content' ? 'city-row--show' : '',
-                  !hasBar && phase !== 'content' ? 'city-row--hidden' : '',
-                ].join(' ')}
-                style={{
-                  animationDelay: hasBar && phase === 'bars-enter' ? `${barIndex * 120}ms` : undefined,
-                  transitionDelay: phase === 'expand' && hasBar ? `${barIndex * 100}ms`
-                    : phase === 'content' ? `${i * 80}ms` : undefined,
-                }}
-                onClick={() => navigate(`/listing/${city.id}`)}
-              >
-                <div className="city-row__img">
-                  <img src={city.img} alt={city.name} />
-                  <span className="city-row__number">{city.number}</span>
-                </div>
-                <div className="city-row__body">
-                  <div className="city-row__meta">
-                    <span className="city-row__crest">{city.crest}</span>
-                    <span className="city-row__country">{city.country}</span>
-                  </div>
-                  <h3 className="city-row__name">{city.name}</h3>
-                  <span className="city-row__style">{city.style}</span>
-                  <p className="city-row__intro">{city.intro}</p>
-                  <span className="city-row__cta">定制这座城市婚礼 →</span>
-                </div>
+        <div className="product-grid">
+          {products.map((item) => (
+            <div
+              key={item.id}
+              className="product-card"
+              onClick={() => {
+                if (item.id === 'destination') {
+                  navigate('/listing/destination')
+                }
+              }}
+            >
+              <div className="product-card__img">
+                <img src={item.img} alt={item.name} />
+                <span className="product-card__explore">探索</span>
               </div>
-            )
-          })}
+              <div className="product-card__info">
+                <h3 className="product-card__name">{item.name}</h3>
+                <p className="product-card__desc">{item.desc}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>

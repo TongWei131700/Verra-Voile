@@ -1,17 +1,22 @@
 import { useState } from 'react'
-import { useParams, Link, Navigate } from 'react-router-dom'
+import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
 import { cities } from '../data/cities'
-import { parisVenues } from '../data/venues'
+import { parisVenues, croatiaVenues } from '../data/venues'
+import type { Venue } from '../data/venues'
 import QuoteCard from '../components/QuoteCard'
+import VenuePanel from '../components/VenuePanel'
 
 export default function ListingDetail() {
+  const navigate = useNavigate()
   const { cityId } = useParams<{ cityId: string }>()
   const city = cities.find(c => c.id === Number(cityId))
   const [checkedCategories, setCheckedCategories] = useState<Set<string>>(new Set())
+  const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null)
+  const [bookedVenueIds, setBookedVenueIds] = useState<Set<string>>(new Set())
 
   if (!city) return <Navigate to="/listing/destination" replace />
 
-  const venues = city.id === 1 ? parisVenues : []
+  const venues = city.id === 1 ? parisVenues : city.id === 13 ? croatiaVenues : []
 
   const toggleCategory = (id: string) => {
     setCheckedCategories(prev => {
@@ -20,6 +25,23 @@ export default function ListingDetail() {
       else next.add(id)
       return next
     })
+  }
+
+  const handleBook = (venue: Venue) => {
+    setBookedVenueIds(prev => new Set(prev).add(venue.id))
+    setSelectedVenue(null)
+  }
+
+  // 确认选择：将所有已选场地存入 localStorage 并跳回
+  const handleConfirm = () => {
+    const allVenues = venues.flatMap(cat => cat.venues)
+    const booked = allVenues
+      .filter(v => bookedVenueIds.has(v.id))
+      .map(v => ({ venueId: v.id, venueName: v.name, price: v.price, unit: v.unit, cityName: city!.name }))
+    if (booked.length > 0) {
+      localStorage.setItem('booked_destination', JSON.stringify(booked))
+    }
+    navigate('/listing')
   }
 
   // 没有勾选则显示全部
@@ -83,7 +105,9 @@ export default function ListingDetail() {
                   </div>
                   <div className="cust-grid cust-grid--venue">
                     {cat.venues.map(venue => (
-                      <QuoteCard key={venue.id} venue={venue} />
+                      <div key={venue.id} onClick={() => setSelectedVenue(venue)}>
+                        <QuoteCard venue={venue} booked={bookedVenueIds.has(venue.id)} />
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -102,6 +126,16 @@ export default function ListingDetail() {
             <p className="cust-section__sub">我们正在为这座城市精选最佳婚礼场地</p>
           </div>
         </section>
+      )}
+      {/* Venue Detail Panel */}
+      <VenuePanel venue={selectedVenue} onClose={() => setSelectedVenue(null)} onBook={handleBook} />
+
+      {/* 底部确认栏 */}
+      {venues.length > 0 && (
+        <div className="confirm-bar">
+          <span className="confirm-bar__info">已选 {bookedVenueIds.size} 项</span>
+          <button type="button" className="confirm-bar__btn" onClick={handleConfirm}>确认选择</button>
+        </div>
       )}
     </div>
   )

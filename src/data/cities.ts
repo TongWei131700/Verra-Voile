@@ -143,4 +143,15 @@ export const cities: City[] = [
     crest: '♜',
     img: 'https://img.alicdn.com/imgextra/i2/O1CN01sKDYgp29oGpBoojxY_!!6000000008114-0-tps-900-600.jpg',
   },
+  {
+    id: 13,
+    number: '13',
+    country: 'Croatia',
+    name: 'Hvar',
+    style: 'Adriatic Paradise',
+    desc: '亚得里亚海上的薰衣草岛屿，地中海阳光下的私密婚礼。',
+    intro: 'Hvar岛是克罗地亚最迷人的度假圣地，薰衣草田与清澈海水交织出地中海最纯粹的浪漫。在6人超小型婚礼中，你可以在海嶖上的私人别墅举办仪式，于古城小巷的石板广场拍摄婚纱照，晚上在海边精品酒店享用私密晚宴。“仪式+婚纱照+mini晚宴”一次搞定，5万元实现欧洲目的地婚礼梦想。',
+    crest: '☄',
+    img: 'https://images.unsplash.com/photo-1555990538-1e15d9b8730d?w=900&q=80',
+  },
 ]

@@ -2,11 +2,12 @@ import type { Venue } from '../data/venues'
 
 interface QuoteCardProps {
   venue: Venue
+  booked?: boolean
 }
 
-export default function QuoteCard({ venue }: QuoteCardProps) {
+export default function QuoteCard({ venue, booked }: QuoteCardProps) {
   return (
-    <div className="quote-card">
+    <div className={`quote-card${booked ? ' quote-card--booked' : ''}`}>
       {/* 图片区 */}
       <div className="quote-card__img">
         <img src={venue.img} alt={venue.name} loading="lazy" />

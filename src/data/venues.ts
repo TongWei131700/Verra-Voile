@@ -66,3 +66,24 @@ export const parisVenues: VenueCategory[] = [
     ],
   },
 ]
+
+export const croatiaVenues: VenueCategory[] = [
+  {
+    id: 'island',
+    label: '海岛',
+    labelEn: 'Island',
+    icon: '🏝️',
+    venues: [
+      { id: 'hvar-island', name: 'Hvar岛', nameEn: 'Hvar Island', desc: '薰衣草田与亚得里亚海的梦幻岛屿，超小型私密婚礼圣地', img: 'https://images.unsplash.com/photo-1555990538-1e15d9b8730d?w=600&h=400&fit=crop', price: 5900, unit: '€', capacity: '2-20人', highlight: '热门' },
+    ],
+  },
+  {
+    id: 'museum',
+    label: '博物馆',
+    labelEn: 'Museum',
+    icon: '🏛️',
+    venues: [
+      { id: 'hvar-museum', name: 'Hvar博物馆', nameEn: 'Hvar Museum', desc: '古城历史博物馆，独特的婚纱拍照场地', img: 'https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?w=600&h=400&fit=crop', price: 50, unit: '€', capacity: '2-10人', highlight: '小众' },
+    ],
+  },
+]

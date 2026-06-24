@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Listing from './pages/Listing'
 import ListingDestination from './pages/ListingDestination'
 import ListingDetail from './pages/ListingDetail'
+import ListingProducts from './pages/ListingProducts'
 import Admin from './pages/Admin'
 import Upload from './pages/Upload'
 
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/listing" element={<Listing />} />
         <Route path="/listing/destination" element={<ListingDestination />} />
         <Route path="/listing/destination/:cityId" element={<ListingDetail />} />
+        <Route path="/listing/:moduleId" element={<ListingProducts />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/upload" element={<Upload />} />
       </Routes>

@@ -9,28 +9,28 @@ Use this skill when the user says:
 - "把构建文件发布到线上"
 - "deploy to server"
 
+## Saved Server
+
+- **Server IP**: `47.99.138.250`
+- **SSH User**: `root`
+- **Remote Path**: `/var/www/verra-voile`
+- **Dist Path**: `./dist`
+
 ## Parameters
 
-- `$ARGUMENTS` — optional, format: `<dist-path> <server-ip> [ssh-user] [remote-path]`
-  - If not provided, prompt the user for these values.
+- `$ARGUMENTS` — optional, can override `dist-path` or `remote-path`.
 
 ## Steps
 
-### 1. Collect deployment info
+### 1. Confirm deployment target and collect password
 
-If `$ARGUMENTS` is provided, parse it:
-- `dist-path`: local directory to deploy (default: `./dist`)
-- `server-ip`: remote server IP
-- `ssh-user`: SSH username (default: `root`)
-- `remote-path`: remote target directory (default: `/var/www/html`)
+Tell the user:
+> 即将部署到服务器 **47.99.138.250**（`/var/www/html`），请输入 SSH 密码进行确认：
 
-If any required info is missing, use `AskUserQuestion` to ask the user for:
-- Server IP address
-- SSH password
-- SSH username (default `root`)
-- Remote deploy path (default `/var/www/html`)
+Use `AskUserQuestion` to ask the user for the **SSH password** only.
+Display the target server info (IP, user, remote path) so the user knows where it's deploying.
 
-**IMPORTANT**: Never hardcode credentials in the skill file. Always collect them at runtime.
+If the user wants to deploy to a different server, allow them to provide a new IP via the "Other" option.
 
 ### 2. Verify local dist directory
 

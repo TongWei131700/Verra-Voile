@@ -1,0 +1,42 @@
+#!/usr/bin/expect -f
+set timeout 600
+spawn ssh -o StrictHostKeyChecking=no root@47.99.138.250
+expect {
+    "password:" {
+        send "Chineseman.\r"
+    }
+    timeout {
+        puts "CONN_TIMEOUT"
+        exit 1
+    }
+}
+expect "# "
+# Wait for any running snap to finish, then check
+send "while ps aux | grep -v grep | grep -q 'snap install'; do sleep 10; done && echo SNAP_READY\r"
+expect {
+    "SNAP_READY" {}
+    timeout { puts "SNAP_WAIT_TIMEOUT" }
+}
+expect "# "
+send "which certbot || (snap install --classic certbot && ln -sf /snap/bin/certbot /usr/bin/certbot) && echo CERTBOT_OK\r"
+expect {
+    "CERTBOT_OK" {}
+    timeout { puts "CERTBOT_CHECK_TIMEOUT" }
+}
+expect "# "
+send "certbot --nginx -d europewedding.cn -d www.europewedding.cn --non-interactive --agree-tos --email admin@europewedding.cn && echo CERT_ISSUED\r"
+expect {
+    "CERT_ISSUED" {
+        puts "SUCCESS"
+    }
+    timeout {
+        puts "CERT_TIMEOUT"
+    }
+}
+expect "# "
+send "cat /etc/nginx/sites-enabled/verra-voile\r"
+expect "# "
+send "curl -sI https://europewedding.cn 2>&1 | head -5\r"
+expect "# "
+send "exit\r"
+expect eof

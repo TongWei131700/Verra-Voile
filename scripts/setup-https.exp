@@ -1,0 +1,30 @@
+#!/usr/bin/expect -f
+set timeout 60
+spawn ssh -o StrictHostKeyChecking=no root@47.99.138.250
+expect {
+    "password:" {
+        send "Chineseman.\r"
+    }
+    timeout {
+        puts "CONN_TIMEOUT"
+        exit 1
+    }
+}
+expect "# "
+send "sed -i 's/server_name 47.99.138.250;/server_name europewedding.cn www.europewedding.cn 47.99.138.250;/' /etc/nginx/sites-enabled/verra-voile\r"
+expect "# "
+send "nginx -t && systemctl reload nginx && echo NGINX_DONE\r"
+expect "# "
+send "certbot --nginx -d europewedding.cn -d www.europewedding.cn --non-interactive --agree-tos --email admin@europewedding.cn\r"
+expect {
+    "# " {
+        puts "CERTBOT_DONE"
+    }
+    timeout {
+        puts "CERTBOT_TIMEOUT"
+    }
+}
+send "cat /etc/nginx/sites-enabled/verra-voile\r"
+expect "# "
+send "exit\r"
+expect eof

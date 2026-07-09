@@ -1,0 +1,14 @@
+#!/usr/bin/expect -f
+set timeout 30
+spawn ssh -o StrictHostKeyChecking=no root@47.99.138.250
+expect {
+    "password:" { send "Chineseman.\r" }
+    timeout { puts "TIMEOUT"; exit 1 }
+}
+expect "# "
+send "ps aux | grep snap | grep -v grep; echo CHECK_DONE\r"
+expect "# "
+send "which certbot 2>/dev/null && echo CERTBOT_EXISTS || echo CERTBOT_MISSING\r"
+expect "# "
+send "exit\r"
+expect eof

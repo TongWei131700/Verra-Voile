@@ -87,3 +87,43 @@ export const croatiaVenues: VenueCategory[] = [
     ],
   },
 ]
+
+export const swissVenues: VenueCategory[] = [
+  {
+    id: 'lakeside',
+    label: '湖畔',
+    labelEn: 'Lakeside',
+    icon: '🏞️',
+    venues: [
+      { id: 'zurich-lake', name: '苏黎世湖畔花园', nameEn: 'Lake Zürich Garden', desc: '阿尔卑斯雪山倒映湖面，湖畔草坪上的纯净仪式', img: 'https://images.unsplash.com/photo-1530841377372-592672784221?w=600&h=400&fit=crop', price: 32, unit: '万起/场', capacity: '50-150人', highlight: '热门' },
+      { id: 'geneva-lake', name: '日内瓦湖庄园', nameEn: 'Lake Geneva Manor', desc: '日内瓦湖畔百年庄园，喷泉与雪山为背景', img: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=600&h=400&fit=crop', price: 58, unit: '万起/场', capacity: '80-200人', highlight: '限定' },
+    ],
+  },
+  {
+    id: 'alpine',
+    label: '雪山',
+    labelEn: 'Alpine',
+    icon: '🏔️',
+    venues: [
+      { id: 'jungfrau', name: '少女峰山麓教堂', nameEn: 'Jungfrau Alpine Chapel', desc: '少女峰脚下的百年教堂，雪山草甸环绕的童话婚礼', img: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=600&h=400&fit=crop', price: 25, unit: '万起/场', capacity: '30-100人', highlight: '推荐' },
+      { id: 'matterhorn', name: '马特洪峰观景台', nameEn: 'Matterhorn View Terrace', desc: '三角峰顶的震撼全景，云端之上的极致仪式体验', img: 'https://images.unsplash.com/photo-1609948543765-5c4b8d5d5f8a?w=600&h=400&fit=crop', price: 45, unit: '万起/场', capacity: '20-60人', highlight: '限定' },
+    ],
+  },
+  {
+    id: 'swiss-hotel',
+    label: '酒店',
+    labelEn: 'Hotel & Resort',
+    icon: '🏨',
+    venues: [
+      { id: 'burgenstock', name: '布尔根施托克度假村', nameEn: 'Bürgenstock Resort', desc: '卢塞恩湖畔悬崖上的百年奢华酒店，俯瞰四森林州湖', img: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&h=400&fit=crop', price: 68, unit: '万起/场', capacity: '60-250人', highlight: '热门' },
+      { id: 'giessbach', name: '吉斯巴赫大酒店', nameEn: 'Hotel Giessbach', desc: '瀑布旁的湖畔宫殿，乘船方可抵达的隐秘婚礼圣地', img: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=600&h=400&fit=crop', price: 42, unit: '万起/场', capacity: '40-120人', highlight: '' },
+    ],
+  },
+]
+
+/** cityId → VenueCategory[] 映射 */
+export const cityVenuesMap: Record<number, VenueCategory[]> = {
+  1: parisVenues,
+  13: croatiaVenues,
+  14: swissVenues,
+}

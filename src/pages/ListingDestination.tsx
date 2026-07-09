@@ -1,18 +1,65 @@
-import { useState, useEffect } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { cities } from '../data/cities'
-
-type Phase = 'bars-enter' | 'expand' | 'content'
+import { cityVenuesMap } from '../data/venues'
+import type { Venue, VenueCategory } from '../data/venues'
+import QuoteCard from '../components/QuoteCard'
+import VenuePanel from '../components/VenuePanel'
+import CustomSelect from '../components/CustomSelect'
 
 export default function ListingDestination() {
   const navigate = useNavigate()
-  const [phase, setPhase] = useState<Phase>('bars-enter')
+  const [activeCityId, setActiveCityId] = useState<number | null>(null)
+  const [checkedCategories, setCheckedCategories] = useState<Set<string>>(new Set())
+  const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null)
+  const sectionRefs = useRef<Record<number, HTMLElement | null>>({})
 
-  useEffect(() => {
-    const t1 = setTimeout(() => setPhase('expand'), 900)
-    const t2 = setTimeout(() => setPhase('content'), 2000)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
+  // 汇总所有城市的场地分类（去重）
+  const allCategories = useMemo(() => {
+    const map = new Map<string, { label: string; labelEn: string; icon: string }>()
+    for (const cats of Object.values(cityVenuesMap)) {
+      for (const cat of cats) {
+        if (!map.has(cat.id)) {
+          map.set(cat.id, { label: cat.label, labelEn: cat.labelEn, icon: cat.icon })
+        }
+      }
+    }
+    return Array.from(map.entries()).map(([id, info]) => ({ id, ...info }))
   }, [])
+
+  const handleCityClick = useCallback((cityId: number) => {
+    setActiveCityId(cityId)
+    const el = sectionRefs.current[cityId]
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [])
+
+  const toggleCategory = useCallback((catId: string) => {
+    setCheckedCategories(prev => {
+      const next = new Set(prev)
+      if (next.has(catId)) next.delete(catId)
+      else next.add(catId)
+      return next
+    })
+  }, [])
+
+  // 统计每个城市的场地总数
+  const getCityVenueCount = (cityId: number) => {
+    const cats = cityVenuesMap[cityId]
+    if (!cats) return 0
+    return cats.reduce((sum, cat) => sum + cat.venues.length, 0)
+  }
+
+  // 筛选后的场地列表：按城市分组，按分类过滤
+  const getFilteredVenues = (venueCategories: VenueCategory[]): Venue[] => {
+    if (checkedCategories.size === 0) {
+      return venueCategories.flatMap(cat => cat.venues)
+    }
+    return venueCategories
+      .filter(cat => checkedCategories.has(cat.id))
+      .flatMap(cat => cat.venues)
+  }
 
   return (
     <div className="customize-page">
@@ -24,50 +71,140 @@ export default function ListingDestination() {
           <div className="divider"></div>
           <p className="cust-header__sub">每一座城市都有属于你们的浪漫故事，选择梦想中的仪式之地</p>
         </div>
+        <div className="dest-module-select">
+          <p className="dest-module-select__label">类别</p>
+          <CustomSelect
+            options={['目的地婚礼', '婚礼团队', '花卉', '酒水', '其他']}
+            placeholder="目的地婚礼"
+            value="目的地婚礼"
+            onChange={(val) => {
+              const map: Record<string, string> = {
+                '目的地婚礼': 'destination',
+                '婚礼团队': 'team',
+                '花卉': 'floral',
+                '酒水': 'wine',
+                '其他': 'other',
+              }
+              const route = map[val]
+              if (route && route !== 'destination') {
+                navigate(`/listing/${route}`)
+              }
+            }}
+          />
+        </div>
       </header>
 
       <section className="cust-section">
-        <div className="city-list">
-          {cities.map((city, i) => {
-            const barIndex = i < 5 ? i : null
-            const hasBar = barIndex !== null
+        <div className="dest-layout">
+          {/* 左侧筛选栏 */}
+          <aside className="dest-filter">
+            {/* 目的地筛选 */}
+            <h4 className="dest-filter__title">目的地</h4>
+            <p className="dest-filter__en">Destinations</p>
+            <ul className="dest-filter__list">
+              {cities.map(city => {
+                const count = getCityVenueCount(city.id)
+                return (
+                  <li
+                    key={city.id}
+                    className={`dest-filter__item${activeCityId === city.id ? ' dest-filter__item--active' : ''}`}
+                    onClick={() => handleCityClick(city.id)}
+                  >
+                    <span className="dest-filter__crest">{city.crest}</span>
+                    <span className="dest-filter__name">{city.name}</span>
+                    <span className="dest-filter__country">{city.country}</span>
+                    {count > 0 && <span className="dest-filter__count">{count}</span>}
+                  </li>
+                )
+              })}
+            </ul>
 
-            return (
-              <div
-                key={city.id}
-                className={[
-                  'city-row',
-                  hasBar && phase === 'bars-enter' ? `city-row--bar city-row--slide ${barIndex % 2 === 0 ? 'city-row--from-left' : 'city-row--from-right'}` : '',
-                  hasBar && phase === 'expand' ? 'city-row--grow' : '',
-                  phase === 'content' ? 'city-row--show' : '',
-                  !hasBar && phase !== 'content' ? 'city-row--hidden' : '',
-                ].join(' ')}
-                style={{
-                  animationDelay: hasBar && phase === 'bars-enter' ? `${barIndex * 120}ms` : undefined,
-                  transitionDelay: phase === 'expand' && hasBar ? `${barIndex * 100}ms`
-                    : phase === 'content' ? `${i * 80}ms` : undefined,
-                }}
-                onClick={() => navigate(`/listing/destination/${city.id}`)}
+            {/* 场地类型筛选 */}
+            <h4 className="dest-filter__title dest-filter__title--gap">场地类型</h4>
+            <p className="dest-filter__en">Venue Types</p>
+            {checkedCategories.size > 0 && (
+              <button
+                className="dest-filter__clear"
+                onClick={() => setCheckedCategories(new Set())}
               >
-                <div className="city-row__img">
-                  <img src={city.img} alt={city.name} />
-                  <span className="city-row__number">{city.number}</span>
-                </div>
-                <div className="city-row__body">
-                  <div className="city-row__meta">
-                    <span className="city-row__crest">{city.crest}</span>
-                    <span className="city-row__country">{city.country}</span>
+                清除筛选
+              </button>
+            )}
+            <ul className="dest-filter__list">
+              {allCategories.map(cat => (
+                <li
+                  key={cat.id}
+                  className={`dest-filter__item dest-filter__item--check${checkedCategories.has(cat.id) ? ' dest-filter__item--checked' : ''}`}
+                  onClick={() => toggleCategory(cat.id)}
+                >
+                  <span className="dest-filter__check-icon">
+                    {checkedCategories.has(cat.id) ? '☑' : '☐'}
+                  </span>
+                  <span className="dest-filter__cat-icon">{cat.icon}</span>
+                  <span className="dest-filter__name">{cat.label}</span>
+                </li>
+              ))}
+            </ul>
+          </aside>
+
+          {/* 右侧内容区 */}
+          <div className="dest-content">
+            {cities.map(city => {
+              const venueCategories = cityVenuesMap[city.id]
+              const hasVenues = !!venueCategories && venueCategories.length > 0
+              const filteredVenues = hasVenues ? getFilteredVenues(venueCategories) : []
+
+              return (
+                <div
+                  key={city.id}
+                  className="dest-city-section"
+                  ref={el => { sectionRefs.current[city.id] = el }}
+                >
+                  {/* 城市头部 */}
+                  <div className="dest-city-header">
+                    <div className="dest-city-header__left">
+                      <span className="dest-city-header__crest">{city.crest}</span>
+                      <div>
+                        <p className="dest-city-header__country">{city.country}</p>
+                        <h3 className="dest-city-header__name">{city.name}</h3>
+                        <p className="dest-city-header__style">{city.style}</p>
+                      </div>
+                    </div>
+                    <p className="dest-city-header__desc">{city.desc}</p>
                   </div>
-                  <h3 className="city-row__name">{city.name}</h3>
-                  <span className="city-row__style">{city.style}</span>
-                  <p className="city-row__intro">{city.intro}</p>
-                  <span className="city-row__cta">定制这座城市婚礼 →</span>
+
+                  {/* 场地卡片（扁平展示，不分类别） */}
+                  {hasVenues ? (
+                    filteredVenues.length > 0 ? (
+                      <div className="dest-city-venues">
+                        {filteredVenues.map(venue => (
+                          <div key={venue.id} onClick={() => setSelectedVenue(venue)}>
+                            <QuoteCard venue={venue} />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="dest-city-empty">
+                        <span className="dest-city-empty__icon">✦</span>
+                        <p>当前筛选条件下无场地</p>
+                      </div>
+                    )
+                  ) : (
+                    <div className="dest-city-empty">
+                      <span className="dest-city-empty__icon">✦</span>
+                      <p>场地精选即将上线</p>
+                      <p className="dest-city-empty__sub">我们正在为这座城市寻找最佳婚礼场地</p>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       </section>
+
+      {/* 场地详情面板 */}
+      <VenuePanel venue={selectedVenue} onClose={() => setSelectedVenue(null)} onBook={() => setSelectedVenue(null)} />
     </div>
   )
 }

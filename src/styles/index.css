@@ -1572,6 +1572,140 @@ section { padding: 120px 60px; }
   letter-spacing: 4px;
 }
 
+/* Wedding Shop Section */
+.wedding-shop {
+  position: relative;
+  padding: 120px 0 100px;
+  background: linear-gradient(180deg, var(--ivory) 0%, #f5ede1 50%, var(--ivory) 100%);
+  text-align: center;
+}
+.wedding-shop__sub {
+  font-size: 15px; letter-spacing: 3px;
+  color: var(--champagne); opacity: 0.7;
+  margin: -20px 0 50px;
+}
+.wedding-shop .product-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+  max-width: 1200px;
+  align-items: start;
+}
+.wedding-shop .product-card__img { height: 360px; }
+.wedding-shop .product-card__name { font-size: 30px; }
+.wedding-shop .product-card__desc { margin-bottom: 20px; }
+
+/* Shop Card - overlay style */
+.shop-card {
+  position: relative;
+  height: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid rgba(212, 184, 150, 0.15);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.shop-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+}
+.shop-card__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+  z-index: 1;
+}
+.shop-card:hover .shop-card__bg {
+  transform: scale(1.06);
+}
+.shop-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(31,26,24,0.25) 0%, rgba(31,26,24,0.55) 100%);
+  z-index: 2;
+  transition: background 0.4s ease;
+}
+.shop-card:hover .shop-card__overlay {
+  background: linear-gradient(180deg, rgba(31,26,24,0.45) 0%, rgba(31,26,24,0.75) 100%);
+}
+.shop-card__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  padding: 24px;
+  text-align: center;
+}
+.shop-card__name {
+  font-size: 30px; font-weight: 400;
+  letter-spacing: 8px; text-transform: uppercase;
+  color: var(--ivory);
+  margin-bottom: 10px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.shop-card__desc {
+  font-size: 14px; letter-spacing: 2px;
+  color: var(--champagne);
+  margin-bottom: 24px;
+  opacity: 0.85;
+}
+.shop-card__btn {
+  display: inline-block;
+  padding: 10px 28px;
+  font-size: 13px; letter-spacing: 3px;
+  color: #1f1a18;
+  background: linear-gradient(135deg, var(--champagne), #c9a96e);
+  border: none; border-radius: 30px;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, letter-spacing 0.3s ease;
+}
+.shop-card__btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  transition: left 0.5s ease;
+}
+.shop-card__btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 24px rgba(212, 184, 150, 0.6);
+  letter-spacing: 5px;
+}
+.shop-card__btn:hover::before {
+  left: 100%;
+}
+.shop-card__btn:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 768px) {
+  .wedding-shop { padding: 80px 0 60px; }
+  .wedding-shop .product-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; width: 90%; }
+  .wedding-shop .product-card__img { height: 240px; }
+  .wedding-shop .product-card__name { font-size: 20px; }
+  .shop-card { height: 300px; }
+  .shop-card__name { font-size: 18px; letter-spacing: 4px; }
+  .shop-card__desc { font-size: 12px; }
+  .shop-card__btn { font-size: 12px; padding: 8px 20px; }
+}
+@media (max-width: 480px) {
+  .wedding-shop .product-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .shop-card { height: 260px; }
+  .wedding-shop .product-card__img { height: 200px; }
+  .wedding-shop .product-card__name { font-size: 16px; letter-spacing: 2px; }
+  .wedding-shop .product-card__desc { font-size: 11px; margin-bottom: 12px; }
+  .wedding-shop .product-card__info { padding: 12px 8px; }
+  .wedding-shop .product-card__btn { font-size: 11px; padding: 6px 12px; }
+}
+
 /* Product Card Grid */
 .product-grid {
   display: grid;
@@ -1650,6 +1784,24 @@ section { padding: 120px 60px; }
 .product-card__desc {
   font-size: 13px; letter-spacing: 2px;
   color: var(--champagne); opacity: 0.7;
+  margin-bottom: 16px;
+}
+.product-card__btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 10px 28px;
+  font-size: 13px; letter-spacing: 3px;
+  color: #1f1a18;
+  background: linear-gradient(135deg, var(--champagne), #c9a96e);
+  border: none; border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+.product-card__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 184, 150, 0.5);
+  background: linear-gradient(135deg, #c9a96e, var(--champagne));
 }
 
 @media (max-width: 768px) {
@@ -1659,8 +1811,12 @@ section { padding: 120px 60px; }
   .product-card__info { padding: 16px 14px; }
 }
 @media (max-width: 480px) {
-  .product-grid { grid-template-columns: 1fr; gap: 24px; }
-  .product-card__img { height: 280px; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .product-card__img { height: 180px; }
+  .product-card__name { font-size: 16px; letter-spacing: 2px; }
+  .product-card__desc { font-size: 11px; }
+  .product-card__info { padding: 12px 8px; }
+  .product-card__btn { font-size: 11px; padding: 6px 12px; }
 }
 
 /* City Row Animation */

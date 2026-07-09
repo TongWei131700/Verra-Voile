@@ -5,6 +5,7 @@ import FloatingDecor from '../components/FloatingDecor'
 import Hero from '../components/Hero'
 import Story from '../components/Story'
 import Venue from '../components/Venue'
+import WeddingShop from '../components/WeddingShop'
 import Destinations from '../components/Destinations'
 import Schedule from '../components/Schedule'
 import Gallery from '../components/Gallery'
@@ -23,6 +24,7 @@ export default function Home() {
       <Hero />
       <Story />
       <Venue />
+      <WeddingShop />
       <Destinations />
       <Schedule />
       <Gallery />

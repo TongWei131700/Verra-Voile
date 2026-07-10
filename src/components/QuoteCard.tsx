@@ -1,4 +1,5 @@
 import type { Venue } from '../data/venues'
+import FallbackImage from './common/FallbackImage'
 
 interface QuoteCardProps {
   venue: Venue
@@ -10,7 +11,7 @@ export default function QuoteCard({ venue, booked }: QuoteCardProps) {
     <div className={`quote-card${booked ? ' quote-card--booked' : ''}`}>
       {/* 图片区 */}
       <div className="quote-card__img">
-        <img src={venue.img} alt={venue.name} loading="lazy" />
+        <FallbackImage src={venue.img} alt={venue.name} loading="lazy" />
         {venue.highlight && (
           <span className="quote-card__badge">{venue.highlight}</span>
         )}

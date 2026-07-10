@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import FallbackImage from '../components/common/FallbackImage'
 
 const products = [
   { id: 'destination', name: '地点', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=800&fit=crop', desc: '全球浪漫目的地' },
@@ -103,7 +104,7 @@ export default function Listing() {
                 }}
               >
                 <div className="product-card__img">
-                  <img src={item.img} alt={item.name} />
+                  <FallbackImage src={item.img} alt={item.name} />
                   <span className="product-card__explore">探索</span>
                 </div>
                 <div className="product-card__info">

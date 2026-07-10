@@ -3,6 +3,7 @@ import { useRevealOnScroll } from '../hooks/useScrollAnimations'
 import SectionTitle from './SectionTitle'
 import CustomSelect from './CustomSelect'
 import DatePicker from './DatePicker'
+import FallbackImage from './common/FallbackImage'
 
 const API_URL = '/api/reservation'
 
@@ -138,7 +139,7 @@ export default function RSVP() {
         </div>
 
         <div className="wechat-qr-wrap">
-          <img
+          <FallbackImage
             className="wechat-qr"
             src="https://img.alicdn.com/imgextra/i2/O1CN01l93RE11HU89n3cZBG_!!6000000000760-2-tps-676-650.png"
             alt="微信二维码"

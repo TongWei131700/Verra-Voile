@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import SectionTitle from './SectionTitle'
+import FallbackImage from './common/FallbackImage'
 
 const products = [
   { id: 'destination', name: '地点', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=800&fit=crop', desc: '全球浪漫目的地' },
@@ -25,7 +26,7 @@ export default function WeddingShop() {
             className="product-card shop-card"
             onClick={() => navigate(`/listing/${item.id === 'destination' ? 'destination' : item.id}`)}
           >
-            <img src={item.img} alt={item.name} className="shop-card__bg" />
+            <FallbackImage src={item.img} alt={item.name} className="shop-card__bg" />
             <div className="shop-card__overlay" />
             <div className="shop-card__content">
               <h3 className="shop-card__name">{item.name}</h3>

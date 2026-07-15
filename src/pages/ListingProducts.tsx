@@ -1,15 +1,32 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
-import { moduleProducts } from '../data/products'
+import { moduleProducts, makeProductKey } from '../data/products'
 import type { Product } from '../data/products'
 import type { Venue } from '../data/venues'
+import {
+  getSelectedProducts,
+  getSelectedByCategory,
+  addSelectedProduct,
+  removeSelectedProduct,
+} from '../utils/selectedProducts'
+import type { SelectedItem } from '../utils/selectedProducts'
 import QuoteCard from '../components/QuoteCard'
 import VenuePanel from '../components/VenuePanel'
 import CustomSelect from '../components/CustomSelect'
 
-// Product 与 Venue 接口兼容，直接复用
-function toVenue(p: Product): Venue {
-  return { id: p.id, name: p.name, nameEn: p.nameEn, desc: p.desc, img: p.img, price: p.price, unit: p.unit, capacity: p.capacity, highlight: p.highlight }
+// Product → Venue 兼容转换，id 使用组合 key
+function toVenue(p: Product, categoryId: string): Venue {
+  return {
+    id: makeProductKey(categoryId, p.id),
+    name: p.name,
+    nameEn: p.nameEn,
+    desc: p.desc,
+    img: p.img,
+    price: p.price,
+    unit: p.unit,
+    capacity: p.capacity,
+    highlight: p.highlight,
+  }
 }
 
 // 模块路由映射
@@ -26,10 +43,29 @@ export default function ListingProducts() {
   const mod = moduleId ? moduleProducts[moduleId] : undefined
 
   const [selectedProduct, setSelectedProduct] = useState<Venue | null>(null)
-  const [bookedIds, setBookedIds] = useState<Set<string>>(new Set())
   const [checkedProducts, setCheckedProducts] = useState<Set<string>>(new Set())
+  // 存储全部已选商品状态
+  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>(() => getSelectedProducts())
+
+  // 页面显示时刷新 sessionStorage
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        setSelectedItems(getSelectedProducts())
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    setSelectedItems(getSelectedProducts())
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
+  }, [])
 
   if (!mod) return <Navigate to="/listing" replace />
+
+  // 当前大类下已选商品 ID 集合
+  const bookedProductIds = useMemo(
+    () => new Set(selectedItems.filter(i => i.categoryId === moduleId).map(i => i.productId)),
+    [selectedItems, moduleId]
+  )
 
   const toggleProduct = useCallback((pid: string) => {
     setCheckedProducts(prev => {
@@ -45,17 +81,22 @@ export default function ListingProducts() {
     : mod.products.filter(p => checkedProducts.has(p.id))
 
   const handleBook = (venue: Venue) => {
-    setBookedIds(prev => new Set(prev).add(venue.id))
+    if (!moduleId) return
+    const productId = venue.id.split(':')[1]
+    const updated = addSelectedProduct(moduleId, productId)
+    setSelectedItems(updated)
+    setSelectedProduct(null)
+  }
+
+  const handleCancel = (venue: Venue) => {
+    if (!moduleId) return
+    const productId = venue.id.split(':')[1]
+    const updated = removeSelectedProduct(moduleId, productId)
+    setSelectedItems(updated)
     setSelectedProduct(null)
   }
 
   const handleConfirm = () => {
-    const booked = mod.products
-      .filter(p => bookedIds.has(p.id))
-      .map(p => ({ venueId: p.id, venueName: p.name, price: p.price, unit: p.unit }))
-    if (booked.length > 0) {
-      localStorage.setItem(`booked_${moduleId}`, JSON.stringify(booked))
-    }
     navigate('/listing')
   }
 
@@ -143,8 +184,8 @@ export default function ListingProducts() {
               {filteredProducts.length > 0 ? (
                 <div className="dest-city-venues">
                   {filteredProducts.map(product => (
-                    <div key={product.id} onClick={() => setSelectedProduct(toVenue(product))}>
-                      <QuoteCard venue={toVenue(product)} booked={bookedIds.has(product.id)} />
+                    <div key={product.id} onClick={() => setSelectedProduct(toVenue(product, mod.id))}>
+                      <QuoteCard venue={toVenue(product, mod.id)} booked={bookedProductIds.has(product.id)} />
                     </div>
                   ))}
                 </div>
@@ -159,10 +200,16 @@ export default function ListingProducts() {
         </div>
       </section>
 
-      <VenuePanel venue={selectedProduct} onClose={() => setSelectedProduct(null)} onBook={handleBook} />
+      <VenuePanel
+        venue={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onBook={handleBook}
+        booked={selectedProduct ? bookedProductIds.has(selectedProduct.id.split(':')[1]) : false}
+        onCancel={handleCancel}
+      />
 
       <div className="confirm-bar">
-        <span className="confirm-bar__info">已选 {bookedIds.size} 项</span>
+        <span className="confirm-bar__info">已选 <span className="confirm-bar__num">{selectedItems.length}</span> 项</span>
         <button type="button" className="confirm-bar__btn" onClick={handleConfirm}>确认选择</button>
       </div>
     </div>

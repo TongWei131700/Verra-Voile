@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
+import { getSelectedProducts } from '../utils/selectedProducts'
 
 const products = [
   { id: 'destination', name: '地点', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=800&fit=crop', desc: '全球浪漫目的地' },
@@ -17,6 +18,21 @@ export default function Listing() {
   const [showCart, setShowCart] = useState(false)
   const [barVisible, setBarVisible] = useState(true)
   const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // 从 sessionStorage 读取所有已选商品，页面显示时刷新
+  const [selectedItems, setSelectedItems] = useState(() => getSelectedProducts())
+
+  // 页面可见时重新读取 sessionStorage
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        setSelectedItems(getSelectedProducts())
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    // 每次路由导航回来也刷新
+    setSelectedItems(getSelectedProducts())
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
+  }, [])
 
   // 滚动时隐藏，停止滚动后再显示
   useEffect(() => {
@@ -35,35 +51,33 @@ export default function Listing() {
   // 模块 ID 到中文名映射
   const moduleNames: Record<string, string> = {
     destination: '地点', team: '婚礼团队', floral: '花卉',
-    wine: '酒水', other: '其他',
+    wine: '酒水', dinner: '宴席', dress: '礼服', catering: '宴席', other: '其他',
   }
-  const moduleKeys = ['destination', 'team', 'floral', 'wine', 'other']
+  const moduleKeys = ['destination', 'team', 'floral', 'wine', 'dinner', 'dress', 'catering', 'other']
 
-  // 读取所有已预定的模块
-  const bookedMap: Record<string, { venueId?: string; venueName: string; price: number; unit: string }[]> = {}
-  for (const key of moduleKeys) {
-    const raw = localStorage.getItem(`booked_${key}`)
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw)
-        bookedMap[key] = Array.isArray(parsed) ? parsed : [parsed]
-      } catch { /* ignore */ }
-    }
+  // 按模块分组
+  const bookedMap: Record<string, { productId: string; venueName: string; price: number; unit: string }[]> = {}
+  for (const item of selectedItems) {
+    if (!bookedMap[item.categoryId]) bookedMap[item.categoryId] = []
+    bookedMap[item.categoryId].push({ productId: item.productId, venueName: item.name, price: item.price, unit: item.unit })
   }
 
   // 汇总已选商品列表
-  const cartItems: { module: string; name: string; price: number; unit: string }[] = []
-  for (const key of moduleKeys) {
-    const items = bookedMap[key]
-    if (items) {
-      for (const item of items) {
-        cartItems.push({ module: moduleNames[key] || key, name: item.venueName, price: item.price || 0, unit: item.unit || '' })
-      }
-    }
+  const cartItems: { module: string; name: string; price: number; unit: string; categoryId: string; productId: string }[] = []
+  for (const item of selectedItems) {
+    cartItems.push({ module: moduleNames[item.categoryId] || item.categoryId, name: item.name, price: item.price, unit: item.unit, categoryId: item.categoryId, productId: item.productId })
   }
 
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price, 0)
   const hasItems = cartItems.length > 0
+
+  const handleRemoveItem = (categoryId: string, productId: string) => {
+    const items = getSelectedProducts().filter(
+      i => !(i.categoryId === categoryId && i.productId === productId)
+    )
+    sessionStorage.setItem('selected_products', JSON.stringify(items))
+    setSelectedItems(items)
+  }
 
   // pad打开时锁定滚动
   useEffect(() => {
@@ -142,13 +156,32 @@ export default function Listing() {
             <button type="button" className="cart-pad__close" onClick={() => setShowCart(false)}>✕</button>
             <h3 className="cart-pad__title">已选商品清单</h3>
             <div className="cart-pad__list">
-              {cartItems.map((item, i) => (
-                <div key={i} className="cart-pad__item">
-                  <span className="cart-pad__item-module">{item.module}</span>
-                  <span className="cart-pad__item-name">{item.name}</span>
-                  <span className="cart-pad__item-price">€{item.price.toLocaleString()}{item.unit}</span>
-                </div>
-              ))}
+              {moduleKeys.map(catId => {
+                const items = bookedMap[catId]
+                if (!items || items.length === 0) return null
+                return (
+                  <div key={catId} className="cart-pad__group">
+                    <div className="cart-pad__group-header">
+                      <span className="cart-pad__group-icon">
+                        {catId === 'destination' ? '📍' : catId === 'team' ? '👥' : catId === 'floral' ? '💐' : catId === 'wine' ? '🍷' : catId === 'dinner' || catId === 'catering' ? '🍽️' : catId === 'dress' ? '👗' : '📦'}
+                      </span>
+                      <span className="cart-pad__group-name">{moduleNames[catId] || catId}</span>
+                      <span className="cart-pad__group-count">{items.length} 项</span>
+                    </div>
+                    {items.map(item => (
+                      <div key={`${catId}:${item.productId}`} className="cart-pad__item">
+                        <span className="cart-pad__item-name">{item.venueName}</span>
+                        <span className="cart-pad__item-price">€{item.price.toLocaleString()}{item.unit}</span>
+                        <button
+                          type="button"
+                          className="cart-pad__item-remove"
+                          onClick={() => handleRemoveItem(catId, item.productId)}
+                        >✕</button>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })}
             </div>
             <div className="cart-pad__total">
               <span>合计</span>

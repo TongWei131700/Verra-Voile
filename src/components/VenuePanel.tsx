@@ -7,9 +7,11 @@ interface VenuePanelProps {
   venue: Venue | null
   onClose: () => void
   onBook: (venue: Venue) => void
+  booked?: boolean
+  onCancel?: (venue: Venue) => void
 }
 
-export default function VenuePanel({ venue, onClose, onBook }: VenuePanelProps) {
+export default function VenuePanel({ venue, onClose, onBook, booked, onCancel }: VenuePanelProps) {
   const [isWide, setIsWide] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth > 1024 : true
   )
@@ -25,6 +27,6 @@ export default function VenuePanel({ venue, onClose, onBook }: VenuePanelProps) 
   if (!venue) return null
 
   return isWide
-    ? <VenuePanelDesktop venue={venue} onClose={onClose} onBook={onBook} />
-    : <VenuePanelMobile  venue={venue} onClose={onClose} onBook={onBook} />
+    ? <VenuePanelDesktop venue={venue} onClose={onClose} onBook={onBook} booked={booked} onCancel={onCancel} />
+    : <VenuePanelMobile  venue={venue} onClose={onClose} onBook={onBook} booked={booked} onCancel={onCancel} />
 }

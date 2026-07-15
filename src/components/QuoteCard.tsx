@@ -12,8 +12,11 @@ export default function QuoteCard({ venue, booked }: QuoteCardProps) {
       {/* 图片区 */}
       <div className="quote-card__img">
         <FallbackImage src={venue.img} alt={venue.name} loading="lazy" />
-        {venue.highlight && (
+        {venue.highlight && !booked && (
           <span className="quote-card__badge">{venue.highlight}</span>
+        )}
+        {booked && (
+          <span className="quote-card__check">✓</span>
         )}
       </div>
 

@@ -1,18 +1,44 @@
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
 import { cities } from '../data/cities'
 import { parisVenues, croatiaVenues } from '../data/venues'
 import type { Venue } from '../data/venues'
+import {
+  getSelectedProducts,
+  setSelectedItem,
+  removeSelectedProduct,
+} from '../utils/selectedProducts'
+import type { SelectedItem } from '../utils/selectedProducts'
 import QuoteCard from '../components/QuoteCard'
 import VenuePanel from '../components/VenuePanel'
 
+const DEST_CATEGORY = 'destination'
 export default function ListingDetail() {
   const navigate = useNavigate()
   const { cityId } = useParams<{ cityId: string }>()
   const city = cities.find(c => c.id === Number(cityId))
   const [checkedCategories, setCheckedCategories] = useState<Set<string>>(new Set())
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null)
-  const [bookedVenueIds, setBookedVenueIds] = useState<Set<string>>(new Set())
+  // 存储全部已选商品状态
+  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>(() => getSelectedProducts())
+
+  // 页面显示时刷新 sessionStorage
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        setSelectedItems(getSelectedProducts())
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    setSelectedItems(getSelectedProducts())
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
+  }, [])
+
+  // 当前目的地已选场地 ID 集合
+  const bookedVenueIds = useMemo(
+    () => new Set(selectedItems.filter(i => i.categoryId === DEST_CATEGORY).map(i => i.productId)),
+    [selectedItems]
+  )
 
   if (!city) return <Navigate to="/listing/destination" replace />
 
@@ -28,19 +54,27 @@ export default function ListingDetail() {
   }
 
   const handleBook = (venue: Venue) => {
-    setBookedVenueIds(prev => new Set(prev).add(venue.id))
+    const item: SelectedItem = {
+      categoryId: DEST_CATEGORY,
+      productId: venue.id,
+      name: venue.name,
+      nameEn: venue.nameEn,
+      price: venue.price,
+      unit: venue.unit,
+    }
+    const updated = setSelectedItem(item)
+    setSelectedItems(updated)
     setSelectedVenue(null)
   }
 
-  // 确认选择：将所有已选场地存入 localStorage 并跳回
+  const handleCancel = (venue: Venue) => {
+    const updated = removeSelectedProduct(DEST_CATEGORY, venue.id)
+    setSelectedItems(updated)
+    setSelectedVenue(null)
+  }
+
+  // 确认选择：跳回
   const handleConfirm = () => {
-    const allVenues = venues.flatMap(cat => cat.venues)
-    const booked = allVenues
-      .filter(v => bookedVenueIds.has(v.id))
-      .map(v => ({ venueId: v.id, venueName: v.name, price: v.price, unit: v.unit, cityName: city!.name }))
-    if (booked.length > 0) {
-      localStorage.setItem('booked_destination', JSON.stringify(booked))
-    }
     navigate('/listing')
   }
 
@@ -128,12 +162,18 @@ export default function ListingDetail() {
         </section>
       )}
       {/* Venue Detail Panel */}
-      <VenuePanel venue={selectedVenue} onClose={() => setSelectedVenue(null)} onBook={handleBook} />
+      <VenuePanel
+        venue={selectedVenue}
+        onClose={() => setSelectedVenue(null)}
+        onBook={handleBook}
+        booked={selectedVenue ? bookedVenueIds.has(selectedVenue.id) : false}
+        onCancel={handleCancel}
+      />
 
       {/* 底部确认栏 */}
       {venues.length > 0 && (
         <div className="confirm-bar">
-          <span className="confirm-bar__info">已选 {bookedVenueIds.size} 项</span>
+          <span className="confirm-bar__info">已选 <span className="confirm-bar__num">{selectedItems.length}</span> 项</span>
           <button type="button" className="confirm-bar__btn" onClick={handleConfirm}>确认选择</button>
         </div>
       )}

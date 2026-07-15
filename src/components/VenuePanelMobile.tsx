@@ -6,9 +6,11 @@ interface VenuePanelMobileProps {
   venue: Venue
   onClose: () => void
   onBook: (venue: Venue) => void
+  booked?: boolean
+  onCancel?: (venue: Venue) => void
 }
 
-export default function VenuePanelMobile({ venue, onClose, onBook }: VenuePanelMobileProps) {
+export default function VenuePanelMobile({ venue, onClose, onBook, booked, onCancel }: VenuePanelMobileProps) {
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
@@ -30,7 +32,10 @@ export default function VenuePanelMobile({ venue, onClose, onBook }: VenuePanelM
         {/* 内容区 - 可滚动 */}
         <div className="venue-panel__content">
           <p className="venue-panel__en">{venue.nameEn}</p>
-          <h2 className="venue-panel__name">{venue.name}</h2>
+          <h2 className="venue-panel__name">
+            {venue.name}
+            {booked && <span className="venue-panel__selected-badge">✓ 已选中</span>}
+          </h2>
 
           <div className="venue-panel__divider" />
 
@@ -55,18 +60,32 @@ export default function VenuePanelMobile({ venue, onClose, onBook }: VenuePanelM
 
         {/* 底部操作栏 */}
         <div className="venue-panel__bar">
-          <div className="venue-panel__bar-price">
-            <span className="venue-panel__bar-price-num">{venue.price}</span>
-            <span className="venue-panel__bar-price-unit">{venue.unit}</span>
-          </div>
-          <div className="venue-panel__btn-wrap">
-            {venue.highlight && (
-              <span className="venue-panel__bar-badge">🔥 {venue.highlight}</span>
-            )}
-            <button type="button" className="venue-panel__btn venue-panel__btn--book" onClick={() => onBook(venue)}>
-              立即预定
-            </button>
-          </div>
+          {booked ? (
+            <div className="venue-panel__btn-wrap" style={{ marginLeft: 'auto' }}>
+              <button
+                type="button"
+                className="venue-panel__btn venue-panel__btn--cancel"
+                onClick={() => onCancel && onCancel(venue)}
+              >
+                取消选中
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="venue-panel__bar-price">
+                <span className="venue-panel__bar-price-num">{venue.price}</span>
+                <span className="venue-panel__bar-price-unit">{venue.unit}</span>
+              </div>
+              <div className="venue-panel__btn-wrap">
+                {venue.highlight && (
+                  <span className="venue-panel__bar-badge">🔥 {venue.highlight}</span>
+                )}
+                <button type="button" className="venue-panel__btn venue-panel__btn--book" onClick={() => onBook(venue)}>
+                  立即预定
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

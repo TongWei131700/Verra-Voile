@@ -13,6 +13,7 @@ import type { SelectedItem } from '../utils/selectedProducts'
 import QuoteCard from '../components/QuoteCard'
 import VenuePanel from '../components/VenuePanel'
 import CustomSelect from '../components/CustomSelect'
+import ConfirmSummary from '../components/ConfirmSummary'
 
 // Product → Venue 兼容转换，id 使用组合 key
 function toVenue(p: Product, categoryId: string): Venue {
@@ -43,6 +44,7 @@ export default function ListingProducts() {
   const mod = moduleId ? moduleProducts[moduleId] : undefined
 
   const [selectedProduct, setSelectedProduct] = useState<Venue | null>(null)
+  const [showSummary, setShowSummary] = useState(false)
   const [checkedProducts, setCheckedProducts] = useState<Set<string>>(new Set())
   // 存储全部已选商品状态
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>(() => getSelectedProducts())
@@ -208,8 +210,10 @@ export default function ListingProducts() {
         onCancel={handleCancel}
       />
 
+      <ConfirmSummary items={selectedItems} show={showSummary} onClose={() => setShowSummary(false)} onRemove={(catId, prodId) => { const updated = removeSelectedProduct(catId, prodId); setSelectedItems(updated); }} />
+
       <div className="confirm-bar">
-        <span className="confirm-bar__info">已选 <span className="confirm-bar__num">{selectedItems.length}</span> 项</span>
+        <span className="confirm-bar__info" onClick={() => setShowSummary(v => !v)}>已选 <span className="confirm-bar__num">{selectedItems.length}</span> 项</span>
         <button type="button" className="confirm-bar__btn" onClick={handleConfirm}>确认选择</button>
       </div>
     </div>

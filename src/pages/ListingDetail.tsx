@@ -11,6 +11,7 @@ import {
 import type { SelectedItem } from '../utils/selectedProducts'
 import QuoteCard from '../components/QuoteCard'
 import VenuePanel from '../components/VenuePanel'
+import ConfirmSummary from '../components/ConfirmSummary'
 
 const DEST_CATEGORY = 'destination'
 export default function ListingDetail() {
@@ -19,6 +20,7 @@ export default function ListingDetail() {
   const city = cities.find(c => c.id === Number(cityId))
   const [checkedCategories, setCheckedCategories] = useState<Set<string>>(new Set())
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null)
+  const [showSummary, setShowSummary] = useState(false)
   // 存储全部已选商品状态
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>(() => getSelectedProducts())
 
@@ -172,10 +174,13 @@ export default function ListingDetail() {
 
       {/* 底部确认栏 */}
       {venues.length > 0 && (
-        <div className="confirm-bar">
-          <span className="confirm-bar__info">已选 <span className="confirm-bar__num">{selectedItems.length}</span> 项</span>
-          <button type="button" className="confirm-bar__btn" onClick={handleConfirm}>确认选择</button>
-        </div>
+        <>
+          <ConfirmSummary items={selectedItems} show={showSummary} onClose={() => setShowSummary(false)} onRemove={(catId, prodId) => { const updated = removeSelectedProduct(catId, prodId); setSelectedItems(updated); }} />
+          <div className="confirm-bar">
+            <span className="confirm-bar__info" onClick={() => setShowSummary(v => !v)}>已选 <span className="confirm-bar__num">{selectedItems.length}</span> 项</span>
+            <button type="button" className="confirm-bar__btn" onClick={handleConfirm}>确认选择</button>
+          </div>
+        </>
       )}
     </div>
   )

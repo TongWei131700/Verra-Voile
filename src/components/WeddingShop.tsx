@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import SectionTitle from './SectionTitle'
+import RevealGroup from './RevealGroup'
 import FallbackImage from './common/FallbackImage'
 
 const products = [
@@ -19,7 +20,7 @@ export default function WeddingShop() {
     <section className="wedding-shop">
       <SectionTitle sub="Wedding Shop" title="婚礼商城" />
       <p className="wedding-shop__sub">从场地到花艺，从酒水到礼服，一站式定制您的梦想婚礼</p>
-      <div className="product-grid">
+      <RevealGroup stagger={120} perRow={3} className="product-grid">
         {products.map((item) => (
           <div
             key={item.id}
@@ -35,7 +36,7 @@ export default function WeddingShop() {
             </div>
           </div>
         ))}
-      </div>
+      </RevealGroup>
     </section>
   )
 }

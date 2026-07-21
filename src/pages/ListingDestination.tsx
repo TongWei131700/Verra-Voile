@@ -13,6 +13,7 @@ import QuoteCard from '../components/QuoteCard'
 import VenuePanel from '../components/VenuePanel'
 import CustomSelect from '../components/CustomSelect'
 import ConfirmSummary from '../components/ConfirmSummary'
+import RevealGroup from '../components/RevealGroup'
 
 const DEST_CATEGORY = 'destination'
 
@@ -206,13 +207,13 @@ export default function ListingDestination() {
                   {/* 场地卡片（扁平展示，不分类别） */}
                   {hasVenues ? (
                     filteredVenues.length > 0 ? (
-                      <div className="dest-city-venues">
+                      <RevealGroup stagger={120} perRow={4} className="dest-city-venues">
                         {filteredVenues.map(venue => (
                           <div key={venue.id} onClick={() => setSelectedVenue(venue)}>
                             <QuoteCard venue={venue} booked={bookedVenueIds.has(venue.id)} />
                           </div>
                         ))}
-                      </div>
+                      </RevealGroup>
                     ) : (
                       <div className="dest-city-empty">
                         <span className="dest-city-empty__icon">✦</span>

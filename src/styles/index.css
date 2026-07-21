@@ -18,6 +18,33 @@ body {
 }
 .script { font-family: 'Great Vibes', cursive; font-weight: 400; }
 
+/* 通用入场动画 — 从下方滑入 */
+.reveal-up {
+  transform: translateY(60px);
+  opacity: 0;
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.9s ease,
+              box-shadow 0.5s ease;
+}
+.reveal-up.is-visible,
+.reveal-up.reveal {
+  transform: translateY(0);
+  opacity: 1;
+}
+/* 与组件自身 transition 合并时保证 reveal 动画优先 */
+.product-card.reveal-up,
+.quote-card.reveal-up {
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.9s ease,
+              box-shadow 0.5s ease,
+              border-color 0.4s ease;
+}
+/* reveal 完成后恢复快速 hover 过渡 */
+.product-card.reveal-up.is-visible:hover,
+.quote-card.reveal-up.is-visible:hover {
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.3s ease;
+}
+
 /* 顶部滚动进度条 */
 .scroll-progress {
   position: fixed; top: 0; left: 0;
@@ -342,12 +369,8 @@ section { padding: 120px 60px; }
 }
 .city-card {
   position: relative; height: 420px; overflow: hidden; cursor: pointer;
-  transform: translateY(60px); opacity: 0;
-  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.9s ease, box-shadow 0.5s ease;
   box-shadow: 0 10px 30px rgba(58, 53, 48, 0.08); background: #2a2520;
 }
-.city-card.reveal { transform: translateY(0); opacity: 1; }
 .city-card:hover { box-shadow: 0 30px 60px rgba(114, 47, 55, 0.25); }
 .city-card .city-img {
   position: absolute; inset: 0; background-size: cover; background-position: center;
@@ -1840,18 +1863,19 @@ section { padding: 120px 60px; }
 .wedding-shop .product-card__desc { margin-bottom: 20px; }
 
 /* Shop Card - overlay style */
-.shop-card {
+.shop-card,
+.wedding-shop .shop-card {
   position: relative;
   height: 400px;
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
   border: 1px solid rgba(212, 184, 150, 0.15);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
-.shop-card:hover {
+.wedding-shop .shop-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 .shop-card__bg {
   position: absolute;

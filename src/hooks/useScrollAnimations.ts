@@ -31,30 +31,43 @@ export function useRevealOnScroll<T extends HTMLElement = HTMLElement>(className
 
 /**
  * 批量 reveal observer — 观察容器内所有子元素
+ * @param stagger 交错延迟(ms)，每个子元素依次延迟该时间
+ * @param perRow 每行数量，用于按行交错（可选，默认按全部子元素顺序交错）
  */
-export function useRevealChildren<T extends HTMLElement = HTMLElement>(selector: string, className = 'is-visible', options: IntersectionObserverInit = {}) {
+export function useRevealChildren<T extends HTMLElement = HTMLElement>(
+  selector: string,
+  className = 'is-visible',
+  options: IntersectionObserverInit & { stagger?: number; perRow?: number } = {}
+) {
   const containerRef = useRef<T>(null)
+  const { stagger = 0, perRow, ...observerOpts } = options
 
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
 
-    const elements = container.querySelectorAll(selector)
+    const elements = Array.from(container.querySelectorAll(selector)) as HTMLElement[]
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add(className)
+            const idx = elements.indexOf(entry.target as HTMLElement)
+            const delay = stagger > 0 ? (idx % (perRow ?? elements.length)) * stagger : 0
+            if (delay > 0) {
+              setTimeout(() => (entry.target as HTMLElement).classList.add(className), delay)
+            } else {
+              (entry.target as HTMLElement).classList.add(className)
+            }
             observer.unobserve(entry.target)
           }
         })
       },
-      { threshold: 0.15, rootMargin: '0px 0px -80px 0px', ...options }
+      { threshold: 0.15, rootMargin: '0px 0px -80px 0px', ...observerOpts }
     )
 
     elements.forEach((el) => observer.observe(el))
     return () => observer.disconnect()
-  }, [selector, className])
+  }, [selector, className, stagger, perRow])
 
   return containerRef
 }

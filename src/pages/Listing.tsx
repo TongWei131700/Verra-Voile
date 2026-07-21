@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
+import RevealGroup from '../components/RevealGroup'
 import { getSelectedProducts } from '../utils/selectedProducts'
 
 const products = [
@@ -98,7 +99,7 @@ export default function Listing() {
       </header>
 
       <section className="cust-section">
-        <div className="product-grid">
+        <RevealGroup stagger={120} perRow={3} className="product-grid">
           {products.map((item) => {
             const booked = bookedMap[item.id]
             const isBooked = !!booked && booked.length > 0
@@ -130,7 +131,7 @@ export default function Listing() {
               </div>
             )
           })}
-        </div>
+        </RevealGroup>
       </section>
 
       {/* 底部订单栏 */}

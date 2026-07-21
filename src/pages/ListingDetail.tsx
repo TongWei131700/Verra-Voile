@@ -12,6 +12,7 @@ import type { SelectedItem } from '../utils/selectedProducts'
 import QuoteCard from '../components/QuoteCard'
 import VenuePanel from '../components/VenuePanel'
 import ConfirmSummary from '../components/ConfirmSummary'
+import RevealGroup from '../components/RevealGroup'
 
 const DEST_CATEGORY = 'destination'
 export default function ListingDetail() {
@@ -139,13 +140,13 @@ export default function ListingDetail() {
                     <span className="venue-category__en">{cat.labelEn}</span>
                     <span className="venue-category__count">{cat.venues.length} 处场地</span>
                   </div>
-                  <div className="cust-grid cust-grid--venue">
+                  <RevealGroup stagger={120} perRow={2} className="cust-grid cust-grid--venue">
                     {cat.venues.map(venue => (
                       <div key={venue.id} onClick={() => setSelectedVenue(venue)}>
                         <QuoteCard venue={venue} booked={bookedVenueIds.has(venue.id)} />
                       </div>
                     ))}
-                  </div>
+                  </RevealGroup>
                 </div>
               ))}
             </div>

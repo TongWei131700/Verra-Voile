@@ -14,6 +14,7 @@ import QuoteCard from '../components/QuoteCard'
 import VenuePanel from '../components/VenuePanel'
 import CustomSelect from '../components/CustomSelect'
 import ConfirmSummary from '../components/ConfirmSummary'
+import RevealGroup from '../components/RevealGroup'
 
 // Product → Venue 兼容转换，id 使用组合 key
 function toVenue(p: Product, categoryId: string): Venue {
@@ -184,13 +185,13 @@ export default function ListingProducts() {
               </div>
 
               {filteredProducts.length > 0 ? (
-                <div className="dest-city-venues">
+                <RevealGroup stagger={120} perRow={4} className="dest-city-venues">
                   {filteredProducts.map(product => (
                     <div key={product.id} onClick={() => setSelectedProduct(toVenue(product, mod.id))}>
                       <QuoteCard venue={toVenue(product, mod.id)} booked={bookedProductIds.has(product.id)} />
                     </div>
                   ))}
-                </div>
+                </RevealGroup>
               ) : (
                 <div className="dest-city-empty">
                   <span className="dest-city-empty__icon">✦</span>

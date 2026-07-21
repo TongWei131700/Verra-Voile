@@ -7,6 +7,8 @@ import ListingDetail from './pages/ListingDetail'
 import ListingProducts from './pages/ListingProducts'
 import Admin from './pages/Admin'
 import Upload from './pages/Upload'
+import Login from './pages/Login'
+import Register from './pages/Register'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -28,6 +30,8 @@ export default function App() {
         <Route path="/listing/:moduleId" element={<ListingProducts />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/upload" element={<Upload />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </>
   )

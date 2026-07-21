@@ -1,4 +1,4 @@
-import { Children, cloneElement, isValidElement, type ReactNode } from 'react'
+import { Children, cloneElement, isValidElement, useRef, type ReactNode } from 'react'
 import { useRevealChildren } from '../hooks/useScrollAnimations'
 
 interface RevealGroupProps {
@@ -25,10 +25,32 @@ export default function RevealGroup({
   perRow,
   className = '',
 }: RevealGroupProps) {
-  const ref = useRevealChildren<HTMLDivElement>('.reveal-up', 'is-visible', { stagger, perRow })
+  // 跟踪已 reveal 的子元素 key，防止状态更新时重复注入 reveal-up 导致闪烁
+  const revealedKeys = useRef(new Set<string>())
 
-  const enhancedChildren = Children.map(children, (child) => {
+  // 监听 DOM 中 .reveal-up 元素，当它们进入视口时通过 DOM 索引找到对应的 React key
+  const containerRef = useRevealChildren<HTMLDivElement>('.reveal-up', 'is-visible', {
+    stagger,
+    perRow,
+    onReveal: (el: HTMLElement) => {
+      const parent = containerRef.current
+      if (!parent) return
+      const domIdx = Array.from(parent.children).indexOf(el)
+      const reactChildren = Children.toArray(children)
+      const reactChild = reactChildren[domIdx]
+      if (reactChild && isValidElement(reactChild) && reactChild.key != null) {
+        revealedKeys.current.add(String(reactChild.key))
+      }
+    },
+  })
+
+  const enhancedChildren = Children.map(children, (child, index) => {
     if (isValidElement(child)) {
+      const key = child.key != null ? String(child.key) : String(index)
+      // 已 reveal 的子元素不再注入 reveal-up，避免状态更新时动画重放
+      if (revealedKeys.current.has(key)) {
+        return child
+      }
       const existing = (child.props as Record<string, unknown>).className as string | undefined
       return cloneElement(child as React.ReactElement<{ className?: string }>, {
         className: `${existing ? existing + ' ' : ''}reveal-up`,
@@ -38,7 +60,7 @@ export default function RevealGroup({
   })
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={containerRef} className={className}>
       {enhancedChildren}
     </div>
   )

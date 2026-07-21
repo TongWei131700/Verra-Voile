@@ -33,14 +33,15 @@ export function useRevealOnScroll<T extends HTMLElement = HTMLElement>(className
  * 批量 reveal observer — 观察容器内所有子元素
  * @param stagger 交错延迟(ms)，每个子元素依次延迟该时间
  * @param perRow 每行数量，用于按行交错（可选，默认按全部子元素顺序交错）
+ * @param onReveal 元素进入视口后的回调（可选）
  */
 export function useRevealChildren<T extends HTMLElement = HTMLElement>(
   selector: string,
   className = 'is-visible',
-  options: IntersectionObserverInit & { stagger?: number; perRow?: number } = {}
+  options: IntersectionObserverInit & { stagger?: number; perRow?: number; onReveal?: (el: HTMLElement) => void } = {}
 ) {
   const containerRef = useRef<T>(null)
-  const { stagger = 0, perRow, ...observerOpts } = options
+  const { stagger = 0, perRow, onReveal, ...observerOpts } = options
 
   useEffect(() => {
     const container = containerRef.current
@@ -53,10 +54,14 @@ export function useRevealChildren<T extends HTMLElement = HTMLElement>(
           if (entry.isIntersecting) {
             const idx = elements.indexOf(entry.target as HTMLElement)
             const delay = stagger > 0 ? (idx % (perRow ?? elements.length)) * stagger : 0
-            if (delay > 0) {
-              setTimeout(() => (entry.target as HTMLElement).classList.add(className), delay)
-            } else {
+            const reveal = () => {
               (entry.target as HTMLElement).classList.add(className)
+              onReveal?.(entry.target as HTMLElement)
+            }
+            if (delay > 0) {
+              setTimeout(reveal, delay)
+            } else {
+              reveal()
             }
             observer.unobserve(entry.target)
           }
@@ -67,7 +72,7 @@ export function useRevealChildren<T extends HTMLElement = HTMLElement>(
 
     elements.forEach((el) => observer.observe(el))
     return () => observer.disconnect()
-  }, [selector, className, stagger, perRow])
+  }, [selector, className, stagger, perRow, onReveal])
 
   return containerRef
 }

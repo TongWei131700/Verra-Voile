@@ -3730,3 +3730,198 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   .dash-table th, .dash-table td { padding: 8px 10px; }
   .tab-btn { padding: 10px 16px; font-size: 13px; }
 }
+
+/* ========== Order Detail Page ========== */
+.order-detail-page {
+  min-height: 100vh;
+  background: var(--ivory);
+  padding-bottom: 120px;
+}
+.order-detail-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 6%;
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.order-detail-back {
+  background: none;
+  border: none;
+  font-size: 15px;
+  color: var(--rose-gold);
+  cursor: pointer;
+  font-family: inherit;
+}
+.order-detail-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--charcoal);
+  letter-spacing: 1px;
+}
+.order-detail-nav-spacer {
+  width: 60px;
+}
+.order-detail-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px 6%;
+}
+/* Empty state */
+.order-detail-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--charcoal);
+}
+.order-detail-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.order-detail-empty p {
+  font-size: 16px;
+  color: #999;
+  margin-bottom: 24px;
+}
+/* Group */
+.order-detail-group {
+  margin-bottom: 32px;
+}
+.order-detail-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(212,184,150,0.3);
+}
+.order-detail-group-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--deep-burgundy);
+  letter-spacing: 0.5px;
+}
+.order-detail-group-count {
+  font-size: 13px;
+  color: #999;
+}
+/* Item card */
+.order-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.order-detail-item-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f0ebe4;
+}
+.order-detail-item-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.order-detail-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.order-detail-item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 2px;
+}
+.order-detail-item-name-en {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+.order-detail-item-price {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--rose-gold);
+}
+.order-detail-item-remove {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #ccc;
+  cursor: pointer;
+  padding: 6px;
+  transition: color 0.2s;
+}
+.order-detail-item-remove:hover {
+  color: var(--rose-gold);
+}
+/* Summary */
+.order-detail-summary {
+  margin-top: 40px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+}
+.order-detail-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #666;
+}
+.order-detail-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--deep-burgundy);
+}
+.order-detail-actions {
+  display: flex;
+  gap: 12px;
+}
+.order-detail-btn-primary {
+  flex: 1;
+  padding: 14px 0;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--champagne), var(--rose-gold));
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s;
+}
+.order-detail-btn-primary:hover {
+  opacity: 0.9;
+}
+.order-detail-btn-clear {
+  padding: 14px 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  color: #999;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s, color 0.2s;
+}
+.order-detail-btn-clear:hover {
+  border-color: var(--rose-gold);
+  color: var(--rose-gold);
+}
+/* Mobile */
+@media (max-width: 768px) {
+  .order-detail-nav { padding: 16px 4%; }
+  .order-detail-content { padding: 20px 4%; }
+  .order-detail-item-img { width: 60px; height: 60px; }
+  .order-detail-summary { padding: 18px; }
+  .order-detail-actions { flex-direction: column; }
+  .order-detail-btn-clear { text-align: center; }
+}

@@ -9,6 +9,7 @@ import Admin from './pages/Admin'
 import Upload from './pages/Upload'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import OrderDetail from './pages/OrderDetail'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/upload" element={<Upload />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/order" element={<OrderDetail />} />
       </Routes>
     </>
   )

@@ -4,6 +4,10 @@ import FallbackImage from '../components/common/FallbackImage'
 import RevealGroup from '../components/RevealGroup'
 import { getSelectedProducts } from '../utils/selectedProducts'
 
+function isLoggedIn() {
+  return !!localStorage.getItem('token')
+}
+
 const products = [
   { id: 'destination', name: '地点', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=800&fit=crop', desc: '全球浪漫目的地' },
   { id: 'team', name: '婚礼团队', img: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600&h=800&fit=crop', desc: '一站式婚礼现场服务' },
@@ -18,6 +22,13 @@ export default function Listing() {
   const navigate = useNavigate()
   const [showCart, setShowCart] = useState(false)
   const [barVisible, setBarVisible] = useState(true)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [loginMode, setLoginMode] = useState<'login' | 'register'>('login')
+  const [loginPhone, setLoginPhone] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+  const [loginConfirmPassword, setLoginConfirmPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
+  const [loginSubmitting, setLoginSubmitting] = useState(false)
   const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   // 从 sessionStorage 读取所有已选商品，页面显示时刷新
   const [selectedItems, setSelectedItems] = useState(() => getSelectedProducts())
@@ -82,9 +93,69 @@ export default function Listing() {
 
   // pad打开时锁定滚动
   useEffect(() => {
-    document.body.style.overflow = showCart ? 'hidden' : ''
+    document.body.style.overflow = showCart || showLoginModal ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
-  }, [showCart])
+  }, [showCart, showLoginModal])
+
+  const handleConsultOrder = () => {
+    if (isLoggedIn()) {
+      navigate('/order')
+    } else {
+      setShowLoginModal(true)
+    }
+  }
+
+  const handleModalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoginError('')
+
+    // 注册模式校验密码一致性
+    if (loginMode === 'register' && loginPassword !== loginConfirmPassword) {
+      setLoginError('两次输入的密码不一致')
+      return
+    }
+
+    setLoginSubmitting(true)
+    try {
+      const url = loginMode === 'login' ? '/api/auth/login' : '/api/auth/register'
+      const body = loginMode === 'login'
+        ? { phone: loginPhone, password: loginPassword }
+        : { phone: loginPhone, password: loginPassword, confirmPassword: loginConfirmPassword }
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        localStorage.setItem('token', data.data.token)
+        localStorage.setItem('userPhone', data.data.phone)
+        setShowLoginModal(false)
+        setLoginPhone('')
+        setLoginPassword('')
+        setLoginConfirmPassword('')
+        navigate('/order')
+      } else {
+        // 根据错误码自动切换模式
+        if (data.code === 'NOT_REGISTERED') {
+          // 登录时账号不存在，切换到注册模式
+          setLoginMode('register')
+          setLoginError('该手机号未注册，请先注册')
+        } else if (data.code === 'ALREADY_REGISTERED') {
+          // 注册时账号已存在，切换到登录模式
+          setLoginMode('login')
+          setLoginError('该手机号已注册，请直接登录')
+        } else {
+          setLoginError(data.message || (loginMode === 'login' ? '登录失败' : '注册失败'))
+        }
+      }
+    } catch {
+      setLoginError('网络异常，请稍后重试')
+    } finally {
+      setLoginSubmitting(false)
+    }
+  }
 
   return (
     <div className="customize-page">
@@ -145,7 +216,7 @@ export default function Listing() {
             📋
             <span className="order-bar__cart-count">{cartItems.length}</span>
           </button>
-          <button type="button" className="order-bar__btn">咨询此订单</button>
+          <button type="button" className="order-bar__btn" onClick={handleConsultOrder}>咨询此订单</button>
         </div>
       )}
 
@@ -188,6 +259,78 @@ export default function Listing() {
               <span>合计</span>
               <span>€{totalPrice.toLocaleString()}</span>
             </div>
+          </div>
+        </>
+      )}
+      {/* 登录/注册弹窗 */}
+      {showLoginModal && (
+        <>
+          <div className="login-modal-backdrop" onClick={() => { setShowLoginModal(false); setLoginError('') }} />
+          <div className="login-modal">
+            <button type="button" className="login-modal__close" onClick={() => { setShowLoginModal(false); setLoginError('') }}>✕</button>
+            <h3 className="login-modal__title">{loginMode === 'login' ? '欢迎回来' : '创建账号'}</h3>
+            <p className="login-modal__desc">{loginMode === 'login' ? '登录后即可咨询订单' : '注册后即可咨询订单'}</p>
+            
+            {/* 登录/注册切换 */}
+            <div className="login-modal__tabs">
+              <button
+                type="button"
+                className={`login-modal__tab ${loginMode === 'login' ? 'login-modal__tab--active' : ''}`}
+                onClick={() => { setLoginMode('login'); setLoginError('') }}
+              >
+                登录
+              </button>
+              <button
+                type="button"
+                className={`login-modal__tab ${loginMode === 'register' ? 'login-modal__tab--active' : ''}`}
+                onClick={() => { setLoginMode('register'); setLoginError('') }}
+              >
+                注册
+              </button>
+            </div>
+
+            <form className="login-modal__form" onSubmit={handleModalSubmit}>
+              <div className="login-modal__field">
+                <input
+                  type="tel"
+                  placeholder="请输入手机号码"
+                  required
+                  value={loginPhone}
+                  onChange={(e) => setLoginPhone(e.target.value)}
+                  maxLength={11}
+                />
+              </div>
+              <div className="login-modal__field">
+                <input
+                  type="password"
+                  placeholder="请输入密码"
+                  required
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                />
+              </div>
+              {loginMode === 'register' && (
+                <div className="login-modal__field">
+                  <input
+                    type="password"
+                    placeholder="请确认密码"
+                    required
+                    value={loginConfirmPassword}
+                    onChange={(e) => setLoginConfirmPassword(e.target.value)}
+                  />
+                </div>
+              )}
+              {loginError && <p className="login-modal__error">{loginError}</p>}
+              <button type="submit" className="login-modal__submit" disabled={loginSubmitting}>
+                {loginSubmitting ? (loginMode === 'login' ? '登录中...' : '注册中...') : (loginMode === 'login' ? '登 录' : '注 册')}
+              </button>
+            </form>
+            <p className="login-modal__tip">
+              {loginMode === 'login' ? '还没有账号？' : '已有账号？'}
+              <button type="button" className="login-modal__switch" onClick={() => { setLoginMode(loginMode === 'login' ? 'register' : 'login'); setLoginError('') }}>
+                {loginMode === 'login' ? '立即注册' : '去登录'}
+              </button>
+            </p>
           </div>
         </>
       )}

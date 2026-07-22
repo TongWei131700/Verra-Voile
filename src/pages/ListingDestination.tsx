@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { cities } from '../data/cities'
 import { cityVenuesMap } from '../data/venues'
 import type { Venue, VenueCategory } from '../data/venues'
@@ -19,6 +19,7 @@ const DEST_CATEGORY = 'destination'
 
 export default function ListingDestination() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [activeCityId, setActiveCityId] = useState<number | null>(null)
   const [checkedCategories, setCheckedCategories] = useState<Set<string>>(new Set())
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null)
@@ -38,6 +39,24 @@ export default function ListingDestination() {
     setSelectedItems(getSelectedProducts())
     return () => document.removeEventListener('visibilitychange', handleVisibility)
   }, [])
+
+  // 读取 URL 参数 city，自动锚定到对应城市
+  useEffect(() => {
+    const cityParam = searchParams.get('city')
+    if (cityParam) {
+      const cityId = parseInt(cityParam, 10)
+      if (cityId && cities.some(c => c.id === cityId)) {
+        setActiveCityId(cityId)
+        // 延迟等待 DOM 渲染完成后滚动
+        setTimeout(() => {
+          const el = sectionRefs.current[cityId]
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+        }, 300)
+      }
+    }
+  }, [searchParams])
 
   // 当前大类下已选商品 ID 集合
   const bookedVenueIds = useMemo(

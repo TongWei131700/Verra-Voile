@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import SectionTitle from './SectionTitle'
 import RevealGroup from './RevealGroup'
 import { cities, type City } from '../data/cities'
 
 function CityCard({ city }: { city: City }) {
+  const navigate = useNavigate()
   const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -30,8 +32,12 @@ function CityCard({ city }: { city: City }) {
     }
   }, [])
 
+  const handleClick = () => {
+    navigate(`/listing/destination?city=${city.id}`)
+  }
+
   return (
-    <div className="city-card" ref={cardRef}>
+    <div className="city-card" ref={cardRef} onClick={handleClick} style={{ cursor: 'pointer' }}>
       <div className="city-img" style={{ backgroundImage: `url('${city.img}')` }}></div>
       <div className="overlay"></div>
       <div className="city-number">{city.number}</div>

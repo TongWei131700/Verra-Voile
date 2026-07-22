@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { io, Socket } from 'socket.io-client'
 
 interface Reservation {
   id: number
@@ -23,7 +24,35 @@ interface Stats {
   todayUsers: number
 }
 
-type Tab = 'overview' | 'reservations' | 'users'
+interface ChatUser {
+  id: number
+  phone: string
+  last_message: string
+  last_message_at: string
+  last_sender_type: string
+  unread_count: number
+}
+
+interface ChatMessage {
+  id: number
+  sender_type: 'user' | 'admin'
+  content: string
+  created_at: string
+  user_id?: number
+  user_phone?: string
+}
+
+interface UserProduct {
+  category_id: string
+  product_id: string
+  name: string
+  name_en: string
+  price: number
+  unit: string
+  created_at: string
+}
+
+type Tab = 'overview' | 'reservations' | 'users' | 'chat'
 
 export default function Admin() {
   const [authed, setAuthed] = useState(!!localStorage.getItem('admin_token'))
@@ -37,6 +66,16 @@ export default function Admin() {
   const [users, setUsers] = useState<User[]>([])
   const [stats, setStats] = useState<Stats>({ totalUsers: 0, totalReservations: 0, todayReservations: 0, todayUsers: 0 })
   const [loading, setLoading] = useState(true)
+
+  // 聊天状态
+  const [chatUsers, setChatUsers] = useState<ChatUser[]>([])
+  const [selectedChatUser, setSelectedChatUser] = useState<ChatUser | null>(null)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [chatInput, setChatInput] = useState('')
+  const [socketConnected, setSocketConnected] = useState(false)
+  const [userProducts, setUserProducts] = useState<UserProduct[]>([])
+  const socketRef = useRef<Socket | null>(null)
+  const chatEndRef = useRef<HTMLDivElement>(null)
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -98,6 +137,98 @@ export default function Admin() {
 
   useEffect(() => { if (authed) fetchAll() }, [authed])
 
+  // 聊天 WebSocket 连接
+  useEffect(() => {
+    if (tab !== 'chat' || !authed) return
+    const adminToken = localStorage.getItem('admin_token')
+    if (!adminToken) return
+
+    const socket = io({
+      auth: { token: adminToken },
+    })
+    socketRef.current = socket
+
+    socket.on('connect', () => setSocketConnected(true))
+    socket.on('disconnect', () => setSocketConnected(false))
+
+    // 加载聊天用户列表
+    fetchChatUsers()
+
+    // 接收用户消息（实时）
+    socket.on('receive_message', (msg: ChatMessage) => {
+      setChatMessages(prev => [...prev, msg])
+      // 如果消息来自当前选中用户，刷新聊天用户列表
+      if (msg.user_id === selectedChatUser?.id) {
+        fetchChatUsers()
+      }
+    })
+
+    // 加载某个用户的聊天记录
+    socket.on('user_chat_loaded', (data: { user_id: number; user_phone: string; messages: ChatMessage[] }) => {
+      setChatMessages(data.messages)
+      // 更新选中用户信息
+      setChatUsers(prev => prev.map(u => u.id === data.user_id ? { ...u, phone: data.user_phone } : u))
+    })
+
+    return () => {
+      socket.disconnect()
+      socketRef.current = null
+      setSocketConnected(false)
+    }
+  }, [tab, authed])
+
+  // 新消息自动滚动
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [chatMessages])
+
+  const fetchChatUsers = async () => {
+    const token = localStorage.getItem('admin_token')
+    try {
+      const res = await fetch('/api/admin/chat-users', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (data.success) setChatUsers(data.data)
+    } catch (e) {
+      console.error('获取聊天用户失败', e)
+    }
+  }
+
+  const handleSelectChatUser = async (user: ChatUser) => {
+    setSelectedChatUser(user)
+    setChatMessages([])
+    socketRef.current?.emit('load_user_chat', { user_id: user.id })
+    // 加载用户商品
+    const token = localStorage.getItem('admin_token')
+    try {
+      const res = await fetch(`/api/admin/user-products/${user.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (data.success) setUserProducts(data.data)
+      else setUserProducts([])
+    } catch {
+      setUserProducts([])
+    }
+  }
+
+  const handleAdminReply = () => {
+    if (!chatInput.trim() || !socketRef.current || !selectedChatUser) return
+    socketRef.current.emit('admin_reply', {
+      target_user_id: selectedChatUser.id,
+      content: chatInput.trim(),
+    })
+    setChatInput('')
+  }
+
+  const handleChatKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleAdminReply()
+    }
+  }
+
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr)
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
@@ -112,6 +243,7 @@ export default function Admin() {
     { key: 'overview', label: '数据概览' },
     { key: 'reservations', label: '预约管理' },
     { key: 'users', label: '注册用户' },
+    { key: 'chat', label: '💬 客户咨询' },
   ]
 
   // 未登录 → 显示登录表单
@@ -329,6 +461,123 @@ export default function Admin() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 客户咨询 */}
+      {tab === 'chat' && (
+        <div className="admin-chat-layout">
+          {/* 左侧：用户列表 */}
+          <div className="admin-chat-sidebar">
+            <div className="admin-chat-sidebar__header">
+              <span>咨询用户</span>
+              <span className={`admin-chat-sidebar__status ${socketConnected ? 'admin-chat-sidebar__status--online' : ''}`}>
+                {socketConnected ? '在线' : '离线'}
+              </span>
+            </div>
+            <div className="admin-chat-sidebar__list">
+              {chatUsers.length === 0 ? (
+                <div className="admin-chat-empty">暂无咨询记录</div>
+              ) : (
+                chatUsers.map(user => (
+                  <div
+                    key={user.id}
+                    className={`admin-chat-user-item ${selectedChatUser?.id === user.id ? 'admin-chat-user-item--active' : ''}`}
+                    onClick={() => handleSelectChatUser(user)}
+                  >
+                    <div className="admin-chat-user-item__top">
+                      <span className="admin-chat-user-item__phone">{user.phone}</span>
+                      <span className="admin-chat-user-item__time">
+                        {new Date(user.last_message_at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <div className="admin-chat-user-item__bottom">
+                      <span className="admin-chat-user-item__last">
+                        {user.last_sender_type === 'admin' ? '我: ' : ''}{user.last_message}
+                      </span>
+                      {user.unread_count > 0 && (
+                        <span className="admin-chat-user-item__badge">{user.unread_count}</span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* 右侧：对话区域 + 商品信息 */}
+          <div className="admin-chat-main">
+            {selectedChatUser ? (
+              <>
+                <div className="admin-chat-main__header">
+                  <span>📱 {selectedChatUser.phone}</span>
+                </div>
+                <div className="admin-chat-main__body">
+                  <div className="admin-chat-main__messages">
+                    {chatMessages.length === 0 && (
+                      <div className="admin-chat-empty">加载中...</div>
+                    )}
+                    {chatMessages.map(msg => (
+                      <div key={msg.id} className={`admin-chat-bubble admin-chat-bubble--${msg.sender_type}`}>
+                        <div className="admin-chat-bubble__content">
+                          <p>{msg.content}</p>
+                          <span className="admin-chat-bubble__time">
+                            {new Date(msg.created_at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                    <div ref={chatEndRef} />
+                  </div>
+                  {/* 用户已选商品面板 */}
+                  <div className="admin-chat-products">
+                    <div className="admin-chat-products__header">
+                      🛒 用户已选商品 ({userProducts.length})
+                    </div>
+                    <div className="admin-chat-products__list">
+                      {userProducts.length === 0 ? (
+                        <div className="admin-chat-empty">该用户暂无已选商品</div>
+                      ) : (
+                        userProducts.map((p, idx) => (
+                          <div key={idx} className="admin-chat-products__item">
+                            <div className="admin-chat-products__name">{p.name}</div>
+                            <div className="admin-chat-products__name-en">{p.name_en}</div>
+                            <div className="admin-chat-products__meta">
+                              <span className="admin-chat-products__price">
+                                {p.unit === '€' ? '€' : '¥'}{p.price.toLocaleString()}
+                              </span>
+                              <span className="admin-chat-products__cat">{p.category_id}</span>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="admin-chat-main__input">
+                  <textarea
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={handleChatKeyDown}
+                    placeholder="输入回复内容，Enter 发送..."
+                    rows={2}
+                  />
+                  <button
+                    className="admin-chat-main__send"
+                    onClick={handleAdminReply}
+                    disabled={!chatInput.trim() || !socketConnected}
+                  >
+                    发送
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="admin-chat-placeholder">
+                <p>💬</p>
+                <p>选择左侧用户开始对话</p>
               </div>
             )}
           </div>

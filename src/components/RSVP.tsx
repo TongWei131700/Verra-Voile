@@ -1,9 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useRevealOnScroll } from '../hooks/useScrollAnimations'
 import SectionTitle from './SectionTitle'
 import CustomSelect from './CustomSelect'
 import DatePicker from './DatePicker'
-import FallbackImage from './common/FallbackImage'
 
 const API_URL = '/api/reservation'
 
@@ -31,6 +31,7 @@ const serviceFeatures = [
 ]
 
 export default function RSVP() {
+  const navigate = useNavigate()
   const taglineRef = useRevealOnScroll<HTMLParagraphElement>()
   const featuresRef = useRevealOnScroll<HTMLDivElement>()
   const formRef = useRevealOnScroll<HTMLFormElement>()
@@ -44,26 +45,9 @@ export default function RSVP() {
   })
   const [submitting, setSubmitting] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitting(true)
-    try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-      if (res.ok) {
-        alert('感谢您的预约！我们的首席策划顾问将于 24 小时内与您联系 ♥')
-        setFormData({ name: '', phone: '', email: '', destination: '', date: '' })
-      } else {
-        alert('提交失败，请稍后重试')
-      }
-    } catch {
-      alert('网络异常，请检查网络后重试')
-    } finally {
-      setSubmitting(false)
-    }
+    navigate('/order')
   }
 
   return (
@@ -135,16 +119,6 @@ export default function RSVP() {
         <div className="contact-band">
           <div><span>☎</span> 15536500878</div>
           <div><span>✉</span> TW15536500878@163.com</div>
-          <div><span>♥</span> WeChat: Verra-Voile</div>
-        </div>
-
-        <div className="wechat-qr-wrap">
-          <FallbackImage
-            className="wechat-qr"
-            src="https://img.alicdn.com/imgextra/i2/O1CN01l93RE11HU89n3cZBG_!!6000000000760-2-tps-676-650.png"
-            alt="微信二维码"
-          />
-          <p className="wechat-qr-tip">扫码添加顾问</p>
         </div>
       </form>
     </section>

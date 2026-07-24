@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom'
 export default function Register() {
   const navigate = useNavigate()
   const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -25,13 +26,16 @@ export default function Register() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, password, confirmPassword }),
+        body: JSON.stringify({ phone, email, password, confirmPassword }),
       })
       const data = await res.json()
 
       if (res.ok && data.success) {
         localStorage.setItem('token', data.data.token)
         localStorage.setItem('userPhone', data.data.phone)
+        if (data.data.email) {
+          localStorage.setItem('userEmail', data.data.email)
+        }
         alert('注册成功！')
         navigate('/')
       } else {
@@ -59,6 +63,16 @@ export default function Register() {
               required
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+
+          <div className="field">
+            <label>邮箱地址（选填）</label>
+            <input
+              type="email"
+              placeholder="请输入邮箱地址"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 

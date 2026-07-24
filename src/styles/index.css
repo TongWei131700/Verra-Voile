@@ -1880,6 +1880,70 @@ section { padding: 120px 60px; }
   text-decoration: underline;
 }
 
+/* 登录方式切换 Tab（手机号/邮箱） */
+.login-modal__method-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 4px;
+  background: rgba(250, 247, 242, 0.05);
+  border-radius: 8px;
+}
+
+.login-modal__method-tab {
+  flex: 1;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  color: rgba(250, 247, 242, 0.6);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.login-modal__method-tab.active {
+  background: rgba(212, 184, 150, 0.2);
+  color: var(--champagne);
+}
+
+.login-modal__method-tab:hover:not(.active) {
+  color: var(--ivory);
+}
+
+/* 验证码输入行 */
+.login-modal__field--code {
+  display: flex;
+  gap: 8px;
+}
+
+.login-modal__field--code input {
+  flex: 1;
+}
+
+.login-modal__send-btn {
+  flex-shrink: 0;
+  padding: 12px 14px;
+  background: transparent;
+  border: 1px solid var(--champagne);
+  border-radius: 8px;
+  color: var(--champagne);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.login-modal__send-btn:hover:not(:disabled) {
+  background: var(--champagne);
+  color: var(--charcoal);
+}
+
+.login-modal__send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Confirm Bar */
 .confirm-bar {
   position: fixed;
@@ -3760,6 +3824,81 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   text-decoration: underline;
 }
 
+/* 登录 Tab 切换 */
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(212, 184, 150, 0.3);
+}
+
+.auth-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px 0;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: rgba(250, 247, 242, 0.5);
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.auth-tab.active {
+  color: var(--champagne);
+}
+
+.auth-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 20%;
+  width: 60%;
+  height: 2px;
+  background: var(--champagne);
+}
+
+.auth-tab:hover {
+  color: var(--ivory);
+}
+
+/* 验证码输入行 */
+.auth-code-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.auth-code-row input {
+  flex: 1;
+}
+
+.auth-send-code-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--champagne);
+  color: var(--champagne);
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.auth-send-code-btn:hover:not(:disabled) {
+  background: var(--champagne);
+  color: var(--charcoal);
+}
+
+.auth-send-code-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .auth-card {
     padding: 36px 24px;
@@ -3771,6 +3910,14 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
     padding: 14px 36px;
     font-size: 13px;
     letter-spacing: 3px;
+  }
+  .auth-code-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .auth-send-code-btn {
+    width: 100%;
+    padding: 12px;
   }
 }
 

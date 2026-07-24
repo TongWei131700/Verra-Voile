@@ -133,10 +133,33 @@ export default function OrderDetail() {
     }
   }
 
+  // 离开订单页时清除首次咨询标记
+  useEffect(() => {
+    return () => {
+      sessionStorage.removeItem('order_first_chat_notified')
+    }
+  }, [])
+
   const handleSendMessage = () => {
     if (!chatInput.trim() || !socketRef.current) return
-    socketRef.current.emit('send_message', { content: chatInput.trim() })
+    const content = chatInput.trim()
+    socketRef.current.emit('send_message', { content })
     setChatInput('')
+
+    // 首次发起咨询时发送提醒邮件
+    if (!sessionStorage.getItem('order_first_chat_notified')) {
+      sessionStorage.setItem('order_first_chat_notified', '1')
+      const token = localStorage.getItem('token')
+      // 从 token 解析用户信息（此处仅传展示用信息，后端通过 socket 可获取更准确数据）
+      fetch('/api/chat/notify-first-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ content }),
+      }).catch(e => console.error('发送咨询提醒邮件失败:', e))
+    }
   }
 
   const handleChatKeyDown = (e: React.KeyboardEvent) => {

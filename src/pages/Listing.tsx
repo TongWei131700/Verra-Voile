@@ -18,12 +18,15 @@ const products = [
   { id: 'other', name: '其他', img: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=600&h=800&fit=crop', desc: '包车及其他服务' },
 ]
 
+type AuthMethod = 'phone' | 'email'
+
 export default function Listing() {
   const navigate = useNavigate()
   const [showCart, setShowCart] = useState(false)
   const [barVisible, setBarVisible] = useState(true)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [loginMode, setLoginMode] = useState<'login' | 'register'>('login')
+  const [authMethod, setAuthMethod] = useState<AuthMethod>('email')
   const [loginPhone, setLoginPhone] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
   const [loginConfirmPassword, setLoginConfirmPassword] = useState('')
@@ -32,6 +35,12 @@ export default function Listing() {
   const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   // 从 sessionStorage 读取所有已选商品，页面显示时刷新
   const [selectedItems, setSelectedItems] = useState(() => getSelectedProducts())
+
+  // 邮箱登录状态
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginEmailCode, setLoginEmailCode] = useState('')
+  const [emailCountdown, setEmailCountdown] = useState(0)
+  const [emailSending, setEmailSending] = useState(false)
 
   // 页面可见时重新读取 sessionStorage
   useEffect(() => {
@@ -102,6 +111,71 @@ export default function Listing() {
       navigate('/order')
     } else {
       setShowLoginModal(true)
+    }
+  }
+
+  // 发送邮箱验证码
+  const handleSendEmailCode = async () => {
+    if (!loginEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginEmail)) {
+      setLoginError('请输入有效的邮箱地址')
+      return
+    }
+    setLoginError('')
+    setEmailSending(true)
+    try {
+      const res = await fetch('/api/auth/send-email-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: loginEmail }),
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setEmailCountdown(60)
+        const timer = setInterval(() => {
+          setEmailCountdown((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer)
+              return 0
+            }
+            return prev - 1
+          })
+        }, 1000)
+      } else {
+        setLoginError(data.message || '发送失败')
+      }
+    } catch {
+      setLoginError('网络异常，请稍后重试')
+    } finally {
+      setEmailSending(false)
+    }
+  }
+
+  // 邮箱验证码登录
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoginError('')
+    setLoginSubmitting(true)
+    try {
+      const res = await fetch('/api/auth/login-by-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: loginEmail, code: loginEmailCode }),
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        localStorage.setItem('token', data.data.token)
+        localStorage.setItem('userEmail', data.data.email)
+        setShowLoginModal(false)
+        setLoginEmail('')
+        setLoginEmailCode('')
+        navigate('/order')
+      } else {
+        setLoginError(data.message || '登录失败')
+      }
+    } catch {
+      setLoginError('网络异常，请稍后重试')
+    } finally {
+      setLoginSubmitting(false)
     }
   }
 
@@ -265,7 +339,7 @@ export default function Listing() {
       {/* 登录/注册弹窗 */}
       {showLoginModal && (
         <>
-          <div className="login-modal-backdrop" onClick={() => { setShowLoginModal(false); setLoginError('') }} />
+          <div className="login-modal-backdrop" />
           <div className="login-modal">
             <button type="button" className="login-modal__close" onClick={() => { setShowLoginModal(false); setLoginError('') }}>✕</button>
             <h3 className="login-modal__title">{loginMode === 'login' ? '欢迎回来' : '创建账号'}</h3>
@@ -283,51 +357,112 @@ export default function Listing() {
               <button
                 type="button"
                 className={`login-modal__tab ${loginMode === 'register' ? 'login-modal__tab--active' : ''}`}
-                onClick={() => { setLoginMode('register'); setLoginError('') }}
+                onClick={() => { setLoginMode('register'); setAuthMethod('phone'); setLoginError('') }}
               >
                 注册
               </button>
             </div>
 
-            <form className="login-modal__form" onSubmit={handleModalSubmit}>
-              <div className="login-modal__field">
-                <input
-                  type="tel"
-                  placeholder="请输入手机号码"
-                  required
-                  value={loginPhone}
-                  onChange={(e) => setLoginPhone(e.target.value)}
-                  maxLength={11}
-                />
+            {/* 登录方式切换：邮箱 / 手机号 */}
+            {loginMode === 'login' && (
+              <div className="login-modal__method-tabs">
+                <button
+                  type="button"
+                  className={`login-modal__method-tab ${authMethod === 'email' ? 'active' : ''}`}
+                  onClick={() => { setAuthMethod('email'); setLoginError('') }}
+                >
+                  邮箱
+                </button>
+                <button
+                  type="button"
+                  className={`login-modal__method-tab ${authMethod === 'phone' ? 'active' : ''}`}
+                  onClick={() => { setAuthMethod('phone'); setLoginError('') }}
+                >
+                  手机号
+                </button>
               </div>
-              <div className="login-modal__field">
-                <input
-                  type="password"
-                  placeholder="请输入密码"
-                  required
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                />
-              </div>
-              {loginMode === 'register' && (
+            )}
+
+            {/* 手机号登录/注册表单 */}
+            {authMethod === 'phone' && (
+              <form className="login-modal__form" onSubmit={handleModalSubmit}>
+                <div className="login-modal__field">
+                  <input
+                    type="tel"
+                    placeholder="请输入手机号码"
+                    required
+                    value={loginPhone}
+                    onChange={(e) => setLoginPhone(e.target.value)}
+                    maxLength={11}
+                  />
+                </div>
                 <div className="login-modal__field">
                   <input
                     type="password"
-                    placeholder="请确认密码"
+                    placeholder="请输入密码"
                     required
-                    value={loginConfirmPassword}
-                    onChange={(e) => setLoginConfirmPassword(e.target.value)}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
                   />
                 </div>
-              )}
-              {loginError && <p className="login-modal__error">{loginError}</p>}
-              <button type="submit" className="login-modal__submit" disabled={loginSubmitting}>
-                {loginSubmitting ? (loginMode === 'login' ? '登录中...' : '注册中...') : (loginMode === 'login' ? '登 录' : '注 册')}
-              </button>
-            </form>
+                {loginMode === 'register' && (
+                  <div className="login-modal__field">
+                    <input
+                      type="password"
+                      placeholder="请确认密码"
+                      required
+                      value={loginConfirmPassword}
+                      onChange={(e) => setLoginConfirmPassword(e.target.value)}
+                    />
+                  </div>
+                )}
+                {loginError && <p className="login-modal__error">{loginError}</p>}
+                <button type="submit" className="login-modal__submit" disabled={loginSubmitting}>
+                  {loginSubmitting ? (loginMode === 'login' ? '登录中...' : '注册中...') : (loginMode === 'login' ? '登 录' : '注 册')}
+                </button>
+              </form>
+            )}
+
+            {/* 邮箱登录表单 */}
+            {authMethod === 'email' && loginMode === 'login' && (
+              <form className="login-modal__form" onSubmit={handleEmailLogin}>
+                <div className="login-modal__field">
+                  <input
+                    type="email"
+                    placeholder="请输入邮箱地址"
+                    required
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                  />
+                </div>
+                <div className="login-modal__field login-modal__field--code">
+                  <input
+                    type="text"
+                    placeholder="请输入6位验证码"
+                    required
+                    maxLength={6}
+                    value={loginEmailCode}
+                    onChange={(e) => setLoginEmailCode(e.target.value.replace(/\D/g, ''))}
+                  />
+                  <button
+                    type="button"
+                    className="login-modal__send-btn"
+                    disabled={emailCountdown > 0 || emailSending}
+                    onClick={handleSendEmailCode}
+                  >
+                    {emailSending ? '发送中...' : emailCountdown > 0 ? `${emailCountdown}s` : '发送验证码'}
+                  </button>
+                </div>
+                {loginError && <p className="login-modal__error">{loginError}</p>}
+                <button type="submit" className="login-modal__submit" disabled={loginSubmitting}>
+                  {loginSubmitting ? '登录中...' : '登 录'}
+                </button>
+              </form>
+            )}
+
             <p className="login-modal__tip">
               {loginMode === 'login' ? '还没有账号？' : '已有账号？'}
-              <button type="button" className="login-modal__switch" onClick={() => { setLoginMode(loginMode === 'login' ? 'register' : 'login'); setLoginError('') }}>
+              <button type="button" className="login-modal__switch" onClick={() => { setLoginMode(loginMode === 'login' ? 'register' : 'login'); setLoginError(''); setAuthMethod('phone') }}>
                 {loginMode === 'login' ? '立即注册' : '去登录'}
               </button>
             </p>

@@ -8,15 +8,28 @@ function isLoggedIn() {
   return !!localStorage.getItem('token')
 }
 
-const products = [
-  { id: 'destination', name: '地点', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=800&fit=crop', desc: '全球浪漫目的地' },
-  { id: 'team', name: '婚礼团队', img: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600&h=800&fit=crop', desc: '一站式婚礼现场服务' },
-  { id: 'floral', name: '花卉', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=600&h=800&fit=crop', desc: '浪漫花艺设计' },
-  { id: 'wine', name: '酒水', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&h=800&fit=crop', desc: '精选婚宴佳酿' },
-  { id: 'dress', name: '礼服', img: 'https://images.unsplash.com/photo-1594552072238-b8a33785b261?w=600&h=800&fit=crop', desc: '梦想中的嫁衣' },
-  { id: 'catering', name: '宴席', img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=800&fit=crop', desc: '米其林级飨宴' },
-  { id: 'other', name: '其他', img: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=600&h=800&fit=crop', desc: '包车及其他服务' },
-]
+interface CategoryItem {
+  id: string
+  name: string
+  nameEn: string
+  image: string
+  description: string
+}
+
+// 骨架屏组件
+function CategorySkeleton() {
+  return (
+    <div className="product-card product-card--skeleton">
+      <div className="product-card__img">
+        <div className="skeleton-pulse" style={{ width: '100%', height: '100%' }} />
+      </div>
+      <div className="product-card__info">
+        <div className="skeleton-pulse" style={{ width: '40%', height: 18, borderRadius: 4, marginBottom: 10 }} />
+        <div className="skeleton-pulse" style={{ width: '70%', height: 14, borderRadius: 4 }} />
+      </div>
+    </div>
+  )
+}
 
 type AuthMethod = 'phone' | 'email'
 
@@ -36,11 +49,34 @@ export default function Listing() {
   // 从 sessionStorage 读取所有已选商品，页面显示时刷新
   const [selectedItems, setSelectedItems] = useState(() => getSelectedProducts())
 
+  // 从 API 获取分类数据
+  const [categories, setCategories] = useState<CategoryItem[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
+
   // 邮箱登录状态
   const [loginEmail, setLoginEmail] = useState('')
   const [loginEmailCode, setLoginEmailCode] = useState('')
   const [emailCountdown, setEmailCountdown] = useState(0)
   const [emailSending, setEmailSending] = useState(false)
+
+  // 从 API 获取分类列表
+  useEffect(() => {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data?.categories) {
+          setCategories(data.data.categories.map((c: any) => ({
+            id: c.id,
+            name: c.name,
+            nameEn: c.nameEn,
+            image: c.image,
+            description: c.description,
+          })))
+        }
+      })
+      .catch(() => {})
+      .finally(() => setCategoriesLoading(false))
+  }, [])
 
   // 页面可见时重新读取 sessionStorage
   useEffect(() => {
@@ -244,8 +280,19 @@ export default function Listing() {
       </header>
 
       <section className="cust-section">
+        {categoriesLoading ? (
+          <div className="product-grid">
+            <CategorySkeleton />
+            <CategorySkeleton />
+            <CategorySkeleton />
+            <CategorySkeleton />
+            <CategorySkeleton />
+            <CategorySkeleton />
+            <CategorySkeleton />
+          </div>
+        ) : (
         <RevealGroup stagger={120} perRow={3} className="product-grid">
-          {products.map((item) => {
+          {categories.map((item) => {
             const booked = bookedMap[item.id]
             const isBooked = !!booked && booked.length > 0
             const bookedSummary = isBooked
@@ -264,19 +311,20 @@ export default function Listing() {
                 }}
               >
                 <div className="product-card__img">
-                  <FallbackImage src={item.img} alt={item.name} />
+                  <FallbackImage src={item.image} alt={item.name} />
                   <span className="product-card__explore">探索</span>
                 </div>
                 <div className="product-card__info">
                   <h3 className="product-card__name">{item.name}</h3>
                   <p className="product-card__desc">
-                    {bookedSummary || item.desc}
+                    {bookedSummary || item.description}
                   </p>
                 </div>
               </div>
             )
           })}
         </RevealGroup>
+        )}
       </section>
 
       {/* 底部订单栏 */}

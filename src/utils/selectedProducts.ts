@@ -1,4 +1,13 @@
-import { makeProductKey, findProduct } from '../data/products'
+/** 生成组合 key：categoryId:productId */
+export function makeProductKey(categoryId: string, productId: string): string {
+  return `${categoryId}:${productId}`
+}
+
+/** 解析组合 key */
+export function parseProductKey(key: string): { categoryId: string; productId: string } {
+  const [categoryId, productId] = key.split(':')
+  return { categoryId, productId }
+}
 
 const STORAGE_KEY = 'selected_products'
 
@@ -10,6 +19,7 @@ export interface SelectedItem {
   nameEn: string
   price: number
   unit: string
+  image?: string
 }
 
 /** 读取所有已选商品 */
@@ -37,18 +47,9 @@ export function setSelectedItem(item: SelectedItem): SelectedItem[] {
   return items
 }
 
-/** 选中一个商品，返回更新后的完整列表 */
-export function addSelectedProduct(categoryId: string, productId: string): SelectedItem[] {
-  const product = findProduct(categoryId, productId)
-  if (!product) return getSelectedProducts()
-  return setSelectedItem({
-    categoryId,
-    productId,
-    name: product.name,
-    nameEn: product.nameEn,
-    price: product.price,
-    unit: product.unit,
-  })
+/** 选中一个商品（由调用方传入完整信息），返回更新后的完整列表 */
+export function addSelectedProduct(item: SelectedItem): SelectedItem[] {
+  return setSelectedItem(item)
 }
 
 /** 取消选中一个商品，返回更新后的完整列表 */

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { io, Socket } from 'socket.io-client'
 import { getSelectedProducts, removeSelectedProduct, clearSelectedProducts } from '../utils/selectedProducts'
 import type { SelectedItem } from '../utils/selectedProducts'
-import { moduleProducts } from '../data/products'
 
 const CATEGORY_LABELS: Record<string, string> = {
   destination: '目的地婚礼',
@@ -13,13 +12,13 @@ const CATEGORY_LABELS: Record<string, string> = {
   other: '其他服务',
 }
 
-/** 根据 categoryId 找到商品图片 */
-function getProductImg(categoryId: string, productId: string): string {
-  if (categoryId === 'destination') {
+/** 根据 SelectedItem 获取商品图片 */
+function getProductImg(item: SelectedItem): string {
+  if (item.image) return item.image
+  if (item.categoryId === 'destination') {
     return 'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=300&fit=crop'
   }
-  const product = moduleProducts[categoryId]?.products.find(p => p.id === productId)
-  return product?.img || 'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=300&fit=crop'
+  return 'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=300&fit=crop'
 }
 
 interface ChatMessage {
@@ -234,7 +233,7 @@ export default function OrderDetail() {
                     >
                       <div className="order-detail-item-img">
                         <img
-                          src={getProductImg(item.categoryId, item.productId)}
+                          src={getProductImg(item)}
                           alt={item.name}
                           loading="lazy"
                         />

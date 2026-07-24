@@ -52,7 +52,44 @@ interface UserProduct {
   created_at: string
 }
 
-type Tab = 'overview' | 'reservations' | 'users' | 'chat'
+interface ProductItem {
+  id: number
+  categoryId: string
+  productId: string
+  name: string
+  nameEn: string
+  description: string
+  image: string
+  price: number
+  unit: string
+  capacity: string
+  highlight: string
+  sort_order: number
+}
+
+interface ProductModule {
+  id: string
+  name: string
+  nameEn: string
+  image: string
+  description: string
+  sort_order: number
+}
+
+interface DeployVersion {
+  id: number
+  version: string
+  branch: string
+  frontend_commit: string
+  backend_commit: string
+  target: string
+  status: string
+  note: string
+  deployed_at: string
+  rolled_back: number
+}
+
+type Tab = 'overview' | 'reservations' | 'users' | 'chat' | 'products' | 'version'
 
 export default function Admin() {
   const [authed, setAuthed] = useState(!!localStorage.getItem('admin_token'))
@@ -67,6 +104,16 @@ export default function Admin() {
   const [stats, setStats] = useState<Stats>({ totalUsers: 0, totalReservations: 0, todayReservations: 0, todayUsers: 0 })
   const [loading, setLoading] = useState(true)
 
+  // 商品管理状态
+  const [products, setProducts] = useState<ProductItem[]>([])
+  const [productModules, setProductModules] = useState<ProductModule[]>([])
+  const [showProductModal, setShowProductModal] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<ProductItem | null>(null)
+  const [productForm, setProductForm] = useState({
+    categoryId: '', productId: '', name: '', nameEn: '', description: '', image: '', price: 0, unit: '€', capacity: '', highlight: '', sortOrder: 0,
+  })
+  const [productFilter, setProductFilter] = useState('')
+
   // 聊天状态
   const [chatUsers, setChatUsers] = useState<ChatUser[]>([])
   const [selectedChatUser, setSelectedChatUser] = useState<ChatUser | null>(null)
@@ -76,6 +123,19 @@ export default function Admin() {
   const [userProducts, setUserProducts] = useState<UserProduct[]>([])
   const socketRef = useRef<Socket | null>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
+
+  // 版本控制状态
+  const [feVersions, setFeVersions] = useState<DeployVersion[]>([])
+  const [beVersions, setBeVersions] = useState<DeployVersion[]>([])
+  const [currentVersion, setCurrentVersion] = useState<any>(null)
+  const [feNext, setFeNext] = useState<{ current: string; next: string; nextBranch: string } | null>(null)
+  const [beNext, setBeNext] = useState<{ current: string; next: string; nextBranch: string } | null>(null)
+  const [feNote, setFeNote] = useState('')
+  const [beNote, setBeNote] = useState('')
+  const [deployingSide, setDeployingSide] = useState<'frontend' | 'backend' | null>(null)
+  const [rollingBack, setRollingBack] = useState<number | null>(null)
+  const [moreOpen, setMoreOpen] = useState(false)
+  const moreRef = useRef<HTMLDivElement>(null)
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -113,17 +173,23 @@ export default function Admin() {
     const token = localStorage.getItem('admin_token')
     const headers = { Authorization: `Bearer ${token}` }
     try {
-      const [resRes, userRes, statsRes] = await Promise.all([
+      const [resRes, userRes, statsRes, prodRes, modRes] = await Promise.all([
         fetch('/api/reservation', { headers }),
         fetch('/api/admin/users', { headers }),
         fetch('/api/admin/stats', { headers }),
+        fetch('/api/admin/products', { headers }),
+        fetch('/api/admin/product-modules', { headers }),
       ])
       const resJson = await resRes.json()
       const userJson = await userRes.json()
       const statsJson = await statsRes.json()
+      const prodJson = await prodRes.json()
+      const modJson = await modRes.json()
       if (resJson.success) setReservations(resJson.data)
       if (userJson.success) setUsers(userJson.data)
       if (statsJson.success) setStats(statsJson.data)
+      if (prodJson.success) setProducts(prodJson.data.products)
+      if (modJson.success) setProductModules(modJson.data)
       // token过期
       if (resJson.message === 'token已过期，请重新登录' || userJson.message === 'token已过期，请重新登录') {
         handleLogout()
@@ -157,8 +223,12 @@ export default function Admin() {
     // 接收用户消息（实时）
     socket.on('receive_message', (msg: ChatMessage) => {
       setChatMessages(prev => [...prev, msg])
-      // 如果消息来自当前选中用户，刷新聊天用户列表
+      // 如果消息来自当前选中用户，自动标记已读并刷新
       if (msg.user_id === selectedChatUser?.id) {
+        fetch(`/api/admin/mark-read/${msg.user_id}`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
+        }).catch(() => {})
         fetchChatUsers()
       }
     })
@@ -199,8 +269,17 @@ export default function Admin() {
     setSelectedChatUser(user)
     setChatMessages([])
     socketRef.current?.emit('load_user_chat', { user_id: user.id })
-    // 加载用户商品
+    // 标记该用户的消息为已读
     const token = localStorage.getItem('admin_token')
+    try {
+      await fetch(`/api/admin/mark-read/${user.id}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      // 清除该用户的未读数
+      setChatUsers(prev => prev.map(u => u.id === user.id ? { ...u, unread_count: 0 } : u))
+    } catch {}
+    // 加载用户商品
     try {
       const res = await fetch(`/api/admin/user-products/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -234,17 +313,193 @@ export default function Admin() {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
   }
 
+  // 商品管理函数
+  const openAddProduct = () => {
+    setEditingProduct(null)
+    setProductForm({ categoryId: productModules[0]?.id || '', productId: '', name: '', nameEn: '', description: '', image: '', price: 0, unit: '€', capacity: '', highlight: '', sortOrder: 0 })
+    setShowProductModal(true)
+  }
+
+  const openEditProduct = (p: ProductItem) => {
+    setEditingProduct(p)
+    setProductForm({
+      categoryId: p.categoryId, productId: p.productId, name: p.name, nameEn: p.nameEn,
+      description: p.description, image: p.image, price: p.price, unit: p.unit,
+      capacity: p.capacity, highlight: p.highlight, sortOrder: p.sort_order,
+    })
+    setShowProductModal(true)
+  }
+
+  const handleSaveProduct = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const token = localStorage.getItem('admin_token')
+    const url = editingProduct ? `/api/admin/products/${editingProduct.id}` : '/api/admin/products'
+    const method = editingProduct ? 'PUT' : 'POST'
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(productForm),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setShowProductModal(false)
+        fetchAll()
+      } else {
+        alert(data.message || '操作失败')
+      }
+    } catch {
+      alert('网络异常')
+    }
+  }
+
+  const handleDeleteProduct = async (id: number, name: string) => {
+    if (!confirm(`确定要删除商品「${name}」吗？`)) return
+    const token = localStorage.getItem('admin_token')
+    try {
+      const res = await fetch(`/api/admin/products/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (data.success) fetchAll()
+      else alert(data.message || '删除失败')
+    } catch {
+      alert('网络异常')
+    }
+  }
+
+  const filteredProducts = productFilter
+    ? products.filter(p => p.name.includes(productFilter) || p.nameEn.toLowerCase().includes(productFilter.toLowerCase()) || p.categoryId.includes(productFilter))
+    : products
+
+  const getModuleName = (catId: string) => productModules.find(m => m.id === catId)?.name || catId
+
   const destinationStats = reservations.reduce((acc, item) => {
     acc[item.destination] = (acc[item.destination] || 0) + 1
     return acc
   }, {} as Record<string, number>)
+
+  // ==================== 版本控制 ====================
+  const fetchVersions = async () => {
+    const token = localStorage.getItem('admin_token')
+    const h = { Authorization: `Bearer ${token}` }
+    try {
+      const [currentRes, feListRes, beListRes, feNextRes, beNextRes] = await Promise.all([
+        fetch('/api/version/current', { headers: h }),
+        fetch('/api/version/list?side=frontend', { headers: h }),
+        fetch('/api/version/list?side=backend', { headers: h }),
+        fetch('/api/version/next?side=frontend', { headers: h }),
+        fetch('/api/version/next?side=backend', { headers: h }),
+      ])
+      const currentData = await currentRes.json()
+      const feListData = await feListRes.json()
+      const beListData = await beListRes.json()
+      const feNextData = await feNextRes.json()
+      const beNextData = await beNextRes.json()
+      if (currentData.success) setCurrentVersion(currentData.data)
+      if (feListData.success) setFeVersions(feListData.data)
+      if (beListData.success) setBeVersions(beListData.data)
+      if (feNextData.success) setFeNext(feNextData.data)
+      if (beNextData.success) setBeNext(beNextData.data)
+    } catch (e) {
+      console.error('获取版本信息失败', e)
+    }
+  }
+
+  useEffect(() => {
+    if (tab === 'version' && authed) fetchVersions()
+  }, [tab, authed])
+
+  const handleDeploy = async (side: 'frontend' | 'backend') => {
+    const nextInfo = side === 'frontend' ? feNext : beNext
+    const note = side === 'frontend' ? feNote : beNote
+    if (!nextInfo) return
+    setDeployingSide(side)
+    const token = localStorage.getItem('admin_token')
+    try {
+      const res = await fetch('/api/version/deploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ side, note }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        await fetch('/api/version/switch-branch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ side, version: nextInfo.next }),
+        })
+        if (side === 'frontend') { setFeNote('') } else { setBeNote('') }
+        fetchVersions()
+        const prefix = side === 'frontend' ? 'fe' : 'be'
+        alert(`${side === 'frontend' ? '前端' : '后端'} v${nextInfo.next} 已发布，分支已切换到 ${prefix}/${nextInfo.next}`)
+      } else {
+        alert(data.message || '操作失败')
+      }
+    } catch {
+      alert('网络异常')
+    } finally {
+      setDeployingSide(null)
+    }
+  }
+
+  const handleRollback = async (id: number, version: string) => {
+    if (!confirm(`确定要回滚到版本 v${version} 吗？`)) return
+    setRollingBack(id)
+    const token = localStorage.getItem('admin_token')
+    try {
+      const res = await fetch(`/api/version/rollback/${id}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (data.success) {
+        alert(data.message)
+        fetchVersions()
+      } else {
+        alert(data.message || '回滚失败')
+      }
+    } catch {
+      alert('网络异常')
+    } finally {
+      setRollingBack(null)
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'success': return { text: '成功', cls: 'version-status--success' }
+      case 'failed': return { text: '失败', cls: 'version-status--failed' }
+      case 'rolled_back': return { text: '已回滚', cls: 'version-status--rolled' }
+      default: return { text: status, cls: '' }
+    }
+  }
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'overview', label: '数据概览' },
     { key: 'reservations', label: '预约管理' },
     { key: 'users', label: '注册用户' },
     { key: 'chat', label: '💬 客户咨询' },
+    { key: 'products', label: ' 商品管理' },
+    { key: 'version', label: '🚀 版本控制' },
   ]
+
+  const MAX_VISIBLE_TABS = 4
+  const visibleTabs = tabs.slice(0, MAX_VISIBLE_TABS)
+  const overflowTabs = tabs.slice(MAX_VISIBLE_TABS)
+  const isOverflowActive = overflowTabs.some(t => t.key === tab)
+
+  // 点击外部关闭下拉
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   // 未登录 → 显示登录表单
   if (!authed) {
@@ -286,6 +541,41 @@ export default function Admin() {
 
   return (
     <div className="dashboard-page">
+      <nav className="dashboard-tabs">
+        {visibleTabs.map(t => (
+          <button
+            key={t.key}
+            className={`tab-btn ${tab === t.key ? 'active' : ''}`}
+            onClick={() => setTab(t.key)}
+          >
+            {t.label}
+          </button>
+        ))}
+        {overflowTabs.length > 0 && (
+          <div className="tab-more-wrapper" ref={moreRef}>
+            <button
+              className={`tab-btn tab-more-btn ${isOverflowActive ? 'active' : ''}`}
+              onClick={() => setMoreOpen(v => !v)}
+            >
+              {isOverflowActive ? overflowTabs.find(t => t.key === tab)?.label : '更多'} ▾
+            </button>
+            {moreOpen && (
+              <div className="tab-more-dropdown">
+                {overflowTabs.map(t => (
+                  <button
+                    key={t.key}
+                    className={`tab-more-item ${tab === t.key ? 'active' : ''}`}
+                    onClick={() => { setTab(t.key); setMoreOpen(false) }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </nav>
+
       <header className="dashboard-header">
         <div className="dashboard-logo">
           <span className="script">Éternel Amour</span>
@@ -300,18 +590,6 @@ export default function Admin() {
           </button>
         </div>
       </header>
-
-      <nav className="dashboard-tabs">
-        {tabs.map(t => (
-          <button
-            key={t.key}
-            className={`tab-btn ${tab === t.key ? 'active' : ''}`}
-            onClick={() => setTab(t.key)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </nav>
 
       {/* 数据概览 */}
       {tab === 'overview' && (
@@ -582,6 +860,286 @@ export default function Admin() {
             )}
           </div>
         </div>
+      )}
+
+      {/* 商品管理 */}
+      {tab === 'products' && (
+        <div className="dashboard-content">
+          <div className="dash-section">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+              <h3 style={{ margin: 0 }}>商品列表 ({products.length})</h3>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <input
+                  type="text"
+                  placeholder="搜索商品..."
+                  value={productFilter}
+                  onChange={e => setProductFilter(e.target.value)}
+                  className="prod-search-input"
+                />
+                <button className="dashboard-refresh prod-add-btn" onClick={openAddProduct}>+ 新增商品</button>
+              </div>
+            </div>
+            {products.length === 0 ? (
+              <p className="empty">暂无商品</p>
+            ) : (
+              <div className="dash-table-wrap">
+                <table className="dash-table">
+                  <thead>
+                    <tr>
+                      <th style={{width: 40}}>ID</th>
+                      <th>分类</th>
+                      <th>商品ID</th>
+                      <th>名称</th>
+                      <th>英文名</th>
+                      <th>价格</th>
+                      <th>标签</th>
+                      <th>排序</th>
+                      <th style={{width: 120}}>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredProducts.map(p => (
+                      <tr key={p.id}>
+                        <td>{p.id}</td>
+                        <td>{getModuleName(p.categoryId)}</td>
+                        <td><code>{p.productId}</code></td>
+                        <td className="cell-name">{p.name}</td>
+                        <td>{p.nameEn}</td>
+                        <td>{p.unit}{p.price.toLocaleString()}</td>
+                        <td>{p.highlight || '-'}</td>
+                        <td>{p.sort_order}</td>
+                        <td>
+                          <button className="prod-action-btn" onClick={() => openEditProduct(p)}>编辑</button>
+                          <button className="prod-action-btn prod-action-btn--danger" onClick={() => handleDeleteProduct(p.id, p.name)}>删除</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 版本控制 */}
+      {tab === 'version' && (
+        <div className="dashboard-content">
+          {/* 当前状态 */}
+          <div className="dash-section">
+            <h3>📍 当前状态</h3>
+            {currentVersion ? (
+              <div className="version-status-grid">
+                <div className="version-status-panel version-status-panel--fe">
+                  <div className="version-status-panel__title">🎨 前端</div>
+                  <div className="version-status-panel__branch">{currentVersion.frontend?.branch || '-'}</div>
+                  <div className="version-status-panel__commit">commit: {currentVersion.frontend?.shortCommit || '-'}</div>
+                  <div className="version-status-panel__version">
+                    最新版本: {currentVersion.frontend?.latest ? `v${currentVersion.frontend.latest.version}` : '暂无'}
+                  </div>
+                </div>
+                <div className="version-status-panel version-status-panel--be">
+                  <div className="version-status-panel__title">⚙️ 后端</div>
+                  <div className="version-status-panel__branch">{currentVersion.backend?.branch || '-'}</div>
+                  <div className="version-status-panel__commit">commit: {currentVersion.backend?.shortCommit || '-'}</div>
+                  <div className="version-status-panel__version">
+                    最新版本: {currentVersion.backend?.latest ? `v${currentVersion.backend.latest.version}` : '暂无'}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="empty">加载中...</p>
+            )}
+          </div>
+
+          {/* 左右分栏：前端 + 后端 */}
+          <div className="version-columns">
+            {/* 前端 */}
+            <div className="version-column">
+              <h3>🎨 前端发布</h3>
+              {feNext && (
+                <div className="version-deploy-form">
+                  <div className="version-deploy-row">
+                    <label>下一版本</label>
+                    <span className="version-deploy-badge version-deploy-badge--fe">v{feNext.next}</span>
+                  </div>
+                  <div className="version-deploy-row">
+                    <label>分支</label>
+                    <span className="version-deploy-branch">fe/{feNext.next}</span>
+                  </div>
+                  <div className="version-deploy-row">
+                    <label>备注</label>
+                    <input type="text" placeholder="如: 修复首页样式" value={feNote} onChange={e => setFeNote(e.target.value)} />
+                  </div>
+                  <button className="version-deploy-btn version-deploy-btn--fe" onClick={() => handleDeploy('frontend')} disabled={deployingSide === 'frontend'}>
+                    {deployingSide === 'frontend' ? '发布中...' : `发布前端 v${feNext.next}`}
+                  </button>
+                </div>
+              )}
+              <div className="version-timeline">
+                <h4>历史记录 ({feVersions.length})</h4>
+                {feVersions.length === 0 ? (
+                  <p className="empty">暂无记录</p>
+                ) : feVersions.map((v, idx) => {
+                  const statusInfo = getStatusLabel(v.status)
+                  const isLatest = idx === 0 && !v.rolled_back
+                  return (
+                    <div key={v.id} className={`version-item ${v.rolled_back ? 'version-item--rolled' : ''} ${isLatest ? 'version-item--latest' : ''}`}>
+                      <div className="version-item__dot" />
+                      <div className="version-item__content">
+                        <div className="version-item__header">
+                          <span className="version-item__version">v{v.version}</span>
+                          <span className={`version-item__status ${statusInfo.cls}`}>{statusInfo.text}</span>
+                          {isLatest && <span className="version-item__latest">当前</span>}
+                        </div>
+                        <div className="version-item__meta">
+                          <span>🔀 {v.branch}</span>
+                          <span>🕐 {formatDate(v.deployed_at)}</span>
+                        </div>
+                        {v.note && <div className="version-item__note">📝 {v.note}</div>}
+                        {v.frontend_commit && <div className="version-item__commits"><span>commit: {v.frontend_commit.substring(0, 7)}</span></div>}
+                        {!isLatest && (
+                          <button className="version-item__rollback" onClick={() => handleRollback(v.id, v.version)} disabled={rollingBack === v.id}>
+                            {rollingBack === v.id ? '回滚中...' : v.rolled_back ? '↩ 重新回滚到此版本' : '↩ 回滚到此版本'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* 后端 */}
+            <div className="version-column">
+              <h3>⚙️ 后端发布</h3>
+              {beNext && (
+                <div className="version-deploy-form">
+                  <div className="version-deploy-row">
+                    <label>下一版本</label>
+                    <span className="version-deploy-badge version-deploy-badge--be">v{beNext.next}</span>
+                  </div>
+                  <div className="version-deploy-row">
+                    <label>分支</label>
+                    <span className="version-deploy-branch">be/{beNext.next}</span>
+                  </div>
+                  <div className="version-deploy-row">
+                    <label>备注</label>
+                    <input type="text" placeholder="如: 新增接口" value={beNote} onChange={e => setBeNote(e.target.value)} />
+                  </div>
+                  <button className="version-deploy-btn version-deploy-btn--be" onClick={() => handleDeploy('backend')} disabled={deployingSide === 'backend'}>
+                    {deployingSide === 'backend' ? '发布中...' : `发布后端 v${beNext.next}`}
+                  </button>
+                </div>
+              )}
+              <div className="version-timeline">
+                <h4>历史记录 ({beVersions.length})</h4>
+                {beVersions.length === 0 ? (
+                  <p className="empty">暂无记录</p>
+                ) : beVersions.map((v, idx) => {
+                  const statusInfo = getStatusLabel(v.status)
+                  const isLatest = idx === 0 && !v.rolled_back
+                  return (
+                    <div key={v.id} className={`version-item ${v.rolled_back ? 'version-item--rolled' : ''} ${isLatest ? 'version-item--latest' : ''}`}>
+                      <div className="version-item__dot" />
+                      <div className="version-item__content">
+                        <div className="version-item__header">
+                          <span className="version-item__version">v{v.version}</span>
+                          <span className={`version-item__status ${statusInfo.cls}`}>{statusInfo.text}</span>
+                          {isLatest && <span className="version-item__latest">当前</span>}
+                        </div>
+                        <div className="version-item__meta">
+                          <span>🔀 {v.branch}</span>
+                          <span>🕐 {formatDate(v.deployed_at)}</span>
+                        </div>
+                        {v.note && <div className="version-item__note">📝 {v.note}</div>}
+                        {v.backend_commit && <div className="version-item__commits"><span>commit: {v.backend_commit.substring(0, 7)}</span></div>}
+                        {!isLatest && (
+                          <button className="version-item__rollback" onClick={() => handleRollback(v.id, v.version)} disabled={rollingBack === v.id}>
+                            {rollingBack === v.id ? '回滚中...' : v.rolled_back ? '↩ 重新回滚到此版本' : '↩ 回滚到此版本'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 商品编辑弹窗 */}
+      {showProductModal && (
+        <>
+          <div className="modal-backdrop" onClick={() => setShowProductModal(false)} />
+          <div className="product-modal">
+            <div className="product-modal__header">
+              <h3>{editingProduct ? '编辑商品' : '新增商品'}</h3>
+              <button className="product-modal__close" onClick={() => setShowProductModal(false)}>✕</button>
+            </div>
+            <form className="product-modal__form" onSubmit={handleSaveProduct}>
+              <div className="product-modal__row">
+                <div className="product-modal__field">
+                  <label>所属分类</label>
+                  <select value={productForm.categoryId} onChange={e => setProductForm(f => ({...f, categoryId: e.target.value}))} required>
+                    {productModules.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                  </select>
+                </div>
+                <div className="product-modal__field">
+                  <label>商品ID</label>
+                  <input type="text" value={productForm.productId} onChange={e => setProductForm(f => ({...f, productId: e.target.value}))} required placeholder="如: base" />
+                </div>
+              </div>
+              <div className="product-modal__row">
+                <div className="product-modal__field">
+                  <label>中文名称</label>
+                  <input type="text" value={productForm.name} onChange={e => setProductForm(f => ({...f, name: e.target.value}))} required />
+                </div>
+                <div className="product-modal__field">
+                  <label>英文名称</label>
+                  <input type="text" value={productForm.nameEn} onChange={e => setProductForm(f => ({...f, nameEn: e.target.value}))} />
+                </div>
+              </div>
+              <div className="product-modal__field">
+                <label>描述</label>
+                <textarea value={productForm.description} onChange={e => setProductForm(f => ({...f, description: e.target.value}))} rows={2} />
+              </div>
+              <div className="product-modal__field">
+                <label>图片URL</label>
+                <input type="text" value={productForm.image} onChange={e => setProductForm(f => ({...f, image: e.target.value}))} placeholder="https://..." />
+              </div>
+              <div className="product-modal__row">
+                <div className="product-modal__field">
+                  <label>价格</label>
+                  <input type="number" value={productForm.price} onChange={e => setProductForm(f => ({...f, price: Number(e.target.value)}))} required />
+                </div>
+                <div className="product-modal__field">
+                  <label>单位</label>
+                  <input type="text" value={productForm.unit} onChange={e => setProductForm(f => ({...f, unit: e.target.value}))} style={{width: 80}} />
+                </div>
+                <div className="product-modal__field">
+                  <label>规格</label>
+                  <input type="text" value={productForm.capacity} onChange={e => setProductForm(f => ({...f, capacity: e.target.value}))} />
+                </div>
+              </div>
+              <div className="product-modal__row">
+                <div className="product-modal__field">
+                  <label>标签（热门/推荐）</label>
+                  <input type="text" value={productForm.highlight} onChange={e => setProductForm(f => ({...f, highlight: e.target.value}))} placeholder="留空则无标签" />
+                </div>
+                <div className="product-modal__field">
+                  <label>排序权重</label>
+                  <input type="number" value={productForm.sortOrder} onChange={e => setProductForm(f => ({...f, sortOrder: Number(e.target.value)}))} />
+                </div>
+              </div>
+              <div className="product-modal__actions">
+                <button type="button" onClick={() => setShowProductModal(false)}>取消</button>
+                <button type="submit" className="product-modal__submit">{editingProduct ? '保存修改' : '创建商品'}</button>
+              </div>
+            </form>
+          </div>
+        </>
       )}
     </div>
   )

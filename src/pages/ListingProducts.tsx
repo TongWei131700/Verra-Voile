@@ -1,11 +1,10 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
-import { moduleProducts, makeProductKey } from '../data/products'
-import type { Product } from '../data/products'
+import { makeProductKey } from '../data/products'
+import type { Product, ProductModule } from '../data/products'
 import type { Venue } from '../data/venues'
 import {
   getSelectedProducts,
-  getSelectedByCategory,
   addSelectedProduct,
   removeSelectedProduct,
 } from '../utils/selectedProducts'
@@ -39,16 +38,68 @@ const moduleRouteMap: Record<string, string> = {
   other: '其他',
 }
 
+// 骨架屏组件
+function ProductSkeleton() {
+  return (
+    <div className="product-skeleton">
+      <div className="product-skeleton__img skeleton-pulse" />
+      <div className="product-skeleton__body">
+        <div className="product-skeleton__line product-skeleton__line--short skeleton-pulse" />
+        <div className="product-skeleton__line skeleton-pulse" />
+        <div className="product-skeleton__line product-skeleton__line--medium skeleton-pulse" />
+      </div>
+    </div>
+  )
+}
+
 export default function ListingProducts() {
   const navigate = useNavigate()
   const { moduleId } = useParams<{ moduleId: string }>()
-  const mod = moduleId ? moduleProducts[moduleId] : undefined
+
+  // 从 API 获取的数据
+  const [mod, setMod] = useState<ProductModule | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   const [selectedProduct, setSelectedProduct] = useState<Venue | null>(null)
   const [showSummary, setShowSummary] = useState(false)
   const [checkedProducts, setCheckedProducts] = useState<Set<string>>(new Set())
   // 存储全部已选商品状态
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>(() => getSelectedProducts())
+
+  // 从 API 获取商品数据
+  useEffect(() => {
+    if (!moduleId) return
+    setLoading(true)
+    setError(false)
+    fetch(`/api/products/${moduleId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          const apiMod = data.data
+          setMod({
+            id: apiMod.id,
+            name: apiMod.name,
+            nameEn: apiMod.nameEn,
+            products: apiMod.products.map((p: any) => ({
+              id: p.productId,
+              name: p.name,
+              nameEn: p.nameEn,
+              desc: p.description,
+              img: p.image,
+              price: p.price,
+              unit: p.unit,
+              capacity: p.capacity,
+              highlight: p.highlight,
+            })),
+          })
+        } else {
+          setError(true)
+        }
+      })
+      .catch(() => setError(true))
+      .finally(() => setLoading(false))
+  }, [moduleId])
 
   // 页面显示时刷新 sessionStorage
   useEffect(() => {
@@ -62,7 +113,7 @@ export default function ListingProducts() {
     return () => document.removeEventListener('visibilitychange', handleVisibility)
   }, [])
 
-  if (!mod) return <Navigate to="/listing" replace />
+  if (!moduleId) return <Navigate to="/listing" replace />
 
   // 当前大类下已选商品 ID 集合
   const bookedProductIds = useMemo(
@@ -79,14 +130,26 @@ export default function ListingProducts() {
     })
   }, [])
 
-  const filteredProducts = checkedProducts.size === 0
-    ? mod.products
-    : mod.products.filter(p => checkedProducts.has(p.id))
+  const filteredProducts = mod
+    ? (checkedProducts.size === 0
+      ? mod.products
+      : mod.products.filter(p => checkedProducts.has(p.id)))
+    : []
 
   const handleBook = (venue: Venue) => {
-    if (!moduleId) return
+    if (!moduleId || !mod) return
     const productId = venue.id.split(':')[1]
-    const updated = addSelectedProduct(moduleId, productId)
+    const product = mod.products.find(p => p.id === productId)
+    if (!product) return
+    const updated = addSelectedProduct({
+      categoryId: moduleId,
+      productId,
+      name: product.name,
+      nameEn: product.nameEn,
+      price: product.price,
+      unit: product.unit,
+      image: product.img,
+    })
     setSelectedItems(updated)
     setSelectedProduct(null)
   }
@@ -104,7 +167,7 @@ export default function ListingProducts() {
   }
 
   // 当前模块在 select 中的默认值
-  const selectValue = moduleRouteMap[moduleId || ''] || mod.name
+  const selectValue = mod ? (moduleRouteMap[moduleId] || mod.name) : '加载中...'
   const selectOptions = ['目的地婚礼', '婚礼团队', '花卉', '酒水', '其他']
 
   return (
@@ -112,8 +175,8 @@ export default function ListingProducts() {
       <header className="cust-header">
         <Link to="/listing" className="cust-back">← 返回定制</Link>
         <div className="cust-header__title">
-          <p className="cust-header__script">{mod.nameEn}</p>
-          <h1>{mod.name}</h1>
+          <p className="cust-header__script">{loading ? 'Loading...' : (mod?.nameEn || '')}</p>
+          <h1>{loading ? '加载中...' : (mod?.name || '')}</h1>
           <div className="divider"></div>
           <p className="cust-header__sub">选择您需要的服务</p>
         </div>
@@ -155,7 +218,13 @@ export default function ListingProducts() {
               </button>
             )}
             <ul className="dest-filter__list">
-              {mod.products.map(product => (
+              {loading ? (
+                <>
+                  <li className="dest-filter__item skeleton-pulse"><span className="dest-filter__name">加载中...</span></li>
+                  <li className="dest-filter__item skeleton-pulse"><span className="dest-filter__name">加载中...</span></li>
+                  <li className="dest-filter__item skeleton-pulse"><span className="dest-filter__name">加载中...</span></li>
+                </>
+              ) : mod?.products.map(product => (
                 <li
                   key={product.id}
                   className={`dest-filter__item dest-filter__item--check${checkedProducts.has(product.id) ? ' dest-filter__item--checked' : ''}`}
@@ -176,19 +245,36 @@ export default function ListingProducts() {
               <div className="dest-city-header">
                 <div className="dest-city-header__left">
                   <div>
-                    <p className="dest-city-header__country">{mod.nameEn}</p>
-                    <h3 className="dest-city-header__name">{mod.name}</h3>
-                    <p className="dest-city-header__style">{mod.products.length} 项服务可选</p>
+                    <p className="dest-city-header__country">{loading ? 'Loading' : (mod?.nameEn || '')}</p>
+                    <h3 className="dest-city-header__name">{loading ? '加载中' : (mod?.name || '')}</h3>
+                    <p className="dest-city-header__style">
+                      {loading ? '...' : `${mod!.products.length} 项服务可选`}
+                    </p>
                   </div>
                 </div>
-                <p className="dest-city-header__desc">为您精选的{mod.name}服务，每一项都经过严格筛选与品质把控</p>
+                <p className="dest-city-header__desc">
+                  {loading ? '正在加载商品数据...' : `为您精选的${mod!.name}服务，每一项都经过严格筛选与品质把控`}
+                </p>
               </div>
 
-              {filteredProducts.length > 0 ? (
+              {loading ? (
+                /* 骨架屏：固定高度的占位卡片，防止布局抖动 */
+                <div className="dest-city-venues">
+                  <ProductSkeleton />
+                  <ProductSkeleton />
+                  <ProductSkeleton />
+                  <ProductSkeleton />
+                </div>
+              ) : error ? (
+                <div className="dest-city-empty">
+                  <span className="dest-city-empty__icon">⚠</span>
+                  <p>加载失败，请稍后重试</p>
+                </div>
+              ) : filteredProducts.length > 0 ? (
                 <RevealGroup stagger={120} perRow={4} className="dest-city-venues">
                   {filteredProducts.map(product => (
-                    <div key={product.id} onClick={() => setSelectedProduct(toVenue(product, mod.id))}>
-                      <QuoteCard venue={toVenue(product, mod.id)} booked={bookedProductIds.has(product.id)} />
+                    <div key={product.id} onClick={() => setSelectedProduct(toVenue(product, mod!.id))}>
+                      <QuoteCard venue={toVenue(product, mod!.id)} booked={bookedProductIds.has(product.id)} />
                     </div>
                   ))}
                 </RevealGroup>

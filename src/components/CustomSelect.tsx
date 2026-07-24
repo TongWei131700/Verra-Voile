@@ -13,6 +13,11 @@ export default function CustomSelect({ options, placeholder, value, onChange, re
   const [selected, setSelected] = useState(value || '')
   const wrapperRef = useRef<HTMLDivElement>(null)
 
+  // 同步外部 value 变化
+  useEffect(() => {
+    if (value) setSelected(value)
+  }, [value])
+
   // 点击外部关闭
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

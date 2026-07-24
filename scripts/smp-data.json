@@ -1,0 +1,1457 @@
+{
+  "crawlTime": "2026-07-24T11:58:23.748Z",
+  "source": "stylemepretty.com",
+  "vendorCategories": [
+    {
+      "name": "Venues",
+      "url": "https://www.stylemepretty.com/vendor-guide/category/all-venues",
+      "vendorCount": 0,
+      "vendors": [],
+      "relatedArticles": [],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.stylemepretty.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Vendor Guide",
+              "item": "https://www.stylemepretty.com/vendor-guide"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Venue",
+              "item": "https://www.stylemepretty.com/vendor-guide/category/all-venues"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Event Planners",
+      "url": "https://www.stylemepretty.com/vendor-guide/category/all-event-planners",
+      "vendorCount": 0,
+      "vendors": [],
+      "relatedArticles": [],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.stylemepretty.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Vendor Guide",
+              "item": "https://www.stylemepretty.com/vendor-guide"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Event Planning and Design",
+              "item": "https://www.stylemepretty.com/vendor-guide/category/all-event-planners"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Florists",
+      "url": "https://www.stylemepretty.com/vendor-guide/category/all-florists",
+      "vendorCount": 0,
+      "vendors": [],
+      "relatedArticles": [],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.stylemepretty.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Vendor Guide",
+              "item": "https://www.stylemepretty.com/vendor-guide"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Florists",
+              "item": "https://www.stylemepretty.com/vendor-guide/category/all-florists"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Event Stylists",
+      "url": "https://www.stylemepretty.com/vendor-guide/category/all-event-stylists",
+      "vendorCount": 0,
+      "vendors": [],
+      "relatedArticles": [],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.stylemepretty.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Vendor Guide",
+              "item": "https://www.stylemepretty.com/vendor-guide"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Floral Design",
+              "item": "https://www.stylemepretty.com/vendor-guide/category/all-event-stylists"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Stationery",
+      "url": "https://www.stylemepretty.com/vendor-guide/category/all-stationery",
+      "vendorCount": 0,
+      "vendors": [],
+      "relatedArticles": [],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.stylemepretty.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Vendor Guide",
+              "item": "https://www.stylemepretty.com/vendor-guide"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Stationery",
+              "item": "https://www.stylemepretty.com/vendor-guide/category/all-stationery"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Rentals & Decor",
+      "url": "https://www.stylemepretty.com/vendor-guide/category/all-rentals-decor",
+      "vendorCount": 0,
+      "vendors": [],
+      "relatedArticles": [],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.stylemepretty.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Vendor Guide",
+              "item": "https://www.stylemepretty.com/vendor-guide"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Event Rentals & Decor",
+              "item": "https://www.stylemepretty.com/vendor-guide/category/all-rentals-decor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cinematographers",
+      "url": "https://www.stylemepretty.com/vendor-guide/category/all-cinematographers",
+      "vendorCount": 0,
+      "vendors": [],
+      "relatedArticles": [],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.stylemepretty.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Vendor Guide",
+              "item": "https://www.stylemepretty.com/vendor-guide"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Cinematography",
+              "item": "https://www.stylemepretty.com/vendor-guide/category/all-cinematographers"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Beauty",
+      "url": "https://www.stylemepretty.com/vendor-guide/category/beauty",
+      "vendorCount": 0,
+      "vendors": [],
+      "relatedArticles": [],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.stylemepretty.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Vendor Guide",
+              "item": "https://www.stylemepretty.com/vendor-guide"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Beauty",
+              "item": "https://www.stylemepretty.com/vendor-guide/category/beauty"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "contentCategories": [
+    {
+      "name": "Real Weddings",
+      "url": "https://www.stylemepretty.com/category/real-weddings",
+      "articleCount": 7,
+      "articles": [
+        {
+          "title": "A Cinematic Wedding Inspired By Paris And Bridgerton At Theatre Cartier",
+          "url": "https://www.stylemepretty.com/2026/07/23/a-cinematic-wedding-inspired-by-paris-and-bridgerton-at-theatre-cartier",
+          "slug": "/2026/07/23/a-cinematic-wedding-inspired-by-paris-and-bridgerton-at-theatre-cartier",
+          "category": "Real Weddings"
+        },
+        {
+          "title": "An English Garden Inspired Wedding At The Brides Childhood Home",
+          "url": "https://www.stylemepretty.com/2026/07/23/an-english-garden-inspired-wedding-at-the-brides-childhood-home",
+          "slug": "/2026/07/23/an-english-garden-inspired-wedding-at-the-brides-childhood-home",
+          "category": "Real Weddings"
+        },
+        {
+          "title": "Block Prints And Garden Blooms Brought This Southern Celevbration To Life",
+          "url": "https://www.stylemepretty.com/2026/07/23/block-prints-and-garden-blooms-brought-this-southern-celevbration-to-life",
+          "slug": "/2026/07/23/block-prints-and-garden-blooms-brought-this-southern-celevbration-to-life",
+          "category": "Real Weddings"
+        },
+        {
+          "title": "A Glamorous Villa Pizzo Celebration With Bond Inspired Flair",
+          "url": "https://www.stylemepretty.com/2026/07/22/a-glamorous-villa-pizzo-celebration-with-bond-inspired-flair",
+          "slug": "/2026/07/22/a-glamorous-villa-pizzo-celebration-with-bond-inspired-flair",
+          "category": "Real Weddings"
+        },
+        {
+          "title": "An Oceanfront Hawaii Wedding With Vip Nightlife Energy",
+          "url": "https://www.stylemepretty.com/2026/07/22/an-oceanfront-hawaii-wedding-with-vip-nightlife-energy",
+          "slug": "/2026/07/22/an-oceanfront-hawaii-wedding-with-vip-nightlife-energy",
+          "category": "Real Weddings"
+        },
+        {
+          "title": "Hydrangea Blues And Candlelight Defined This Marin County Wedding",
+          "url": "https://www.stylemepretty.com/2026/07/22/hydrangea-blues-and-candlelight-defined-this-marin-county-wedding",
+          "slug": "/2026/07/22/hydrangea-blues-and-candlelight-defined-this-marin-county-wedding",
+          "category": "Real Weddings"
+        },
+        {
+          "title": "A Noosa Wedding Weekend Inspired By The Italian Countryside",
+          "url": "https://www.stylemepretty.com/2026/07/21/a-noosa-wedding-weekend-inspired-by-the-italian-countryside",
+          "slug": "/2026/07/21/a-noosa-wedding-weekend-inspired-by-the-italian-countryside",
+          "category": "Real Weddings"
+        }
+      ],
+      "tags": [
+        "Real weddings",
+        "Romantic",
+        "Destination",
+        "Traditional elegance"
+      ],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "url": "https://www.stylemepretty.com/2026/07/23/a-cinematic-wedding-inspired-by-paris-and-bridgerton-at-theatre-cartier/",
+              "name": "A Cinematic Wedding Inspired by Paris and Bridgerton at Théâtre Cartier"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "url": "https://www.stylemepretty.com/2026/07/23/an-english-garden-inspired-wedding-at-the-brides-childhood-home/",
+              "name": "An English Garden-Inspired Wedding at the Bride's Childhood Home"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "url": "https://www.stylemepretty.com/2026/07/23/block-prints-and-garden-blooms-brought-this-southern-celevbration-to-life/",
+              "name": "Block Prints and Garden Blooms Brought This Southern Celebration to Life"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "url": "https://www.stylemepretty.com/2026/07/22/a-glamorous-villa-pizzo-celebration-with-bond-inspired-flair/",
+              "name": "A Glamorous Villa Pizzo Celebration with Bond-Inspired Flair"
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "url": "https://www.stylemepretty.com/2026/07/22/an-oceanfront-hawaii-wedding-with-vip-nightlife-energy/",
+              "name": "An Oceanfront Hawaii Wedding with VIP Nightlife Energy"
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "url": "https://www.stylemepretty.com/2026/07/22/hydrangea-blues-and-candlelight-defined-this-marin-county-wedding/",
+              "name": "Hydrangea Blues and Candlelight Defined This Marin County Wedding"
+            },
+            {
+              "@type": "ListItem",
+              "position": 7,
+              "url": "https://www.stylemepretty.com/2026/07/21/a-noosa-wedding-weekend-inspired-by-the-italian-countryside/",
+              "name": "A Noosa Wedding Weekend Inspired by the Italian Countryside"
+            },
+            {
+              "@type": "ListItem",
+              "position": 8,
+              "url": "https://www.stylemepretty.com/2026/07/21/a-garden-inspired-wedding-beneath-montanas-mountain-peaks/",
+              "name": "A Garden-Inspired Wedding Beneath Montana's Mountain Peaks"
+            },
+            {
+              "@type": "ListItem",
+              "position": 9,
+              "url": "https://www.stylemepretty.com/2026/07/21/a-french-countryside-wedding-weekend-defined-by-thoughtful-design-at-chateau-de-varennes/",
+              "name": "A French Countryside Wedding Weekend Defined by Thoughtful Design at Château de Varennes"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Destination",
+      "url": "https://www.stylemepretty.com/category/destination",
+      "articleCount": 9,
+      "articles": [
+        {
+          "title": "An Oceanfront Hawaii Wedding With Vip Nightlife Energy",
+          "url": "https://www.stylemepretty.com/2026/07/22/an-oceanfront-hawaii-wedding-with-vip-nightlife-energy",
+          "slug": "/2026/07/22/an-oceanfront-hawaii-wedding-with-vip-nightlife-energy",
+          "category": "Destination"
+        },
+        {
+          "title": "A Los Cabos Wedding Where Lush Florals Met The Desert At Acre Resort",
+          "url": "https://www.stylemepretty.com/2026/07/02/a-los-cabos-wedding-where-lush-florals-met-the-desert-at-acre-resort",
+          "slug": "/2026/07/02/a-los-cabos-wedding-where-lush-florals-met-the-desert-at-acre-resort",
+          "category": "Destination"
+        },
+        {
+          "title": "A Greek Island Wedding Where Organic Elegance Met The Beauty Of The Aegean",
+          "url": "https://www.stylemepretty.com/2026/07/02/a-greek-island-wedding-where-organic-elegance-met-the-beauty-of-the-aegean",
+          "slug": "/2026/07/02/a-greek-island-wedding-where-organic-elegance-met-the-beauty-of-the-aegean",
+          "category": "Destination"
+        },
+        {
+          "title": "This Blush Toned Amalfi Coast Wedding Was The Dinner Party Of A Lifetime",
+          "url": "https://www.stylemepretty.com/2026/01/28/this-blush-toned-amalfi-coast-wedding-was-the-dinner-party-of-a-lifetime",
+          "slug": "/2026/01/28/this-blush-toned-amalfi-coast-wedding-was-the-dinner-party-of-a-lifetime",
+          "category": "Destination"
+        },
+        {
+          "title": "A Refined Maui Celebration In Soft Neutrals And Natural Texture",
+          "url": "https://www.stylemepretty.com/2026/01/27/a-refined-maui-celebration-in-soft-neutrals-and-natural-texture",
+          "slug": "/2026/01/27/a-refined-maui-celebration-in-soft-neutrals-and-natural-texture",
+          "category": "Destination"
+        },
+        {
+          "title": "A Three Day Amalfi Coast Celebration Layered In Color Romance And Italian Riviera Style",
+          "url": "https://www.stylemepretty.com/2026/01/22/a-three-day-amalfi-coast-celebration-layered-in-color-romance-and-italian-riviera-style",
+          "slug": "/2026/01/22/a-three-day-amalfi-coast-celebration-layered-in-color-romance-and-italian-riviera-style",
+          "category": "Destination"
+        },
+        {
+          "title": "A Tropical Kissed Wedding Blending Family Legacy And Colombian Spirit",
+          "url": "https://www.stylemepretty.com/2026/01/22/a-tropical-kissed-wedding-blending-family-legacy-and-colombian-spirit",
+          "slug": "/2026/01/22/a-tropical-kissed-wedding-blending-family-legacy-and-colombian-spirit",
+          "category": "Destination"
+        },
+        {
+          "title": "A Citrus Kissed Destination Wedding At Rosewood Mayakoba",
+          "url": "https://www.stylemepretty.com/2026/01/15/a-citrus-kissed-destination-wedding-at-rosewood-mayakoba",
+          "slug": "/2026/01/15/a-citrus-kissed-destination-wedding-at-rosewood-mayakoba",
+          "category": "Destination"
+        },
+        {
+          "title": "Soft Garden Blooms Meet Tropical Elegance At The Four Seasons Maui",
+          "url": "https://www.stylemepretty.com/2026/01/05/soft-garden-blooms-meet-tropical-elegance-at-the-four-seasons-maui",
+          "slug": "/2026/01/05/soft-garden-blooms-meet-tropical-elegance-at-the-four-seasons-maui",
+          "category": "Destination"
+        }
+      ],
+      "tags": [
+        "Real weddings",
+        "Destination"
+      ],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "url": "https://www.stylemepretty.com/2026/07/22/an-oceanfront-hawaii-wedding-with-vip-nightlife-energy/",
+              "name": "An Oceanfront Hawaii Wedding with VIP Nightlife Energy"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "url": "https://www.stylemepretty.com/2026/07/02/a-los-cabos-wedding-where-lush-florals-met-the-desert-at-acre-resort/",
+              "name": "A Los Cabos Wedding Where Lush Florals Met the Desert at Acre Resort"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "url": "https://www.stylemepretty.com/2026/07/02/a-greek-island-wedding-where-organic-elegance-met-the-beauty-of-the-aegean/",
+              "name": "A Greek Island Wedding Where Organic Elegance Met the Beauty of the Aegean"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "url": "https://www.stylemepretty.com/2026/01/28/this-blush-toned-amalfi-coast-wedding-was-the-dinner-party-of-a-lifetime/",
+              "name": "This Blush-Toned Amalfi Coast Wedding Was The Dinner Party Of A Lifetime"
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "url": "https://www.stylemepretty.com/2026/01/27/a-refined-maui-celebration-in-soft-neutrals-and-natural-texture/",
+              "name": "A Refined Maui Celebration in Soft Neutrals and Natural Texture"
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "url": "https://www.stylemepretty.com/2026/01/22/a-three-day-amalfi-coast-celebration-layered-in-color-romance-and-italian-riviera-style/",
+              "name": "A Three-Day Amalfi Coast Celebration Layered in Color, Romance, and Italian Riviera Style"
+            },
+            {
+              "@type": "ListItem",
+              "position": 7,
+              "url": "https://www.stylemepretty.com/2026/01/22/a-tropical-kissed-wedding-blending-family-legacy-and-colombian-spirit/",
+              "name": "A Tropical-Kissed Wedding Blending Family Legacy and Colombian Spirit"
+            },
+            {
+              "@type": "ListItem",
+              "position": 8,
+              "url": "https://www.stylemepretty.com/2026/01/15/a-citrus-kissed-destination-wedding-at-rosewood-mayakoba/",
+              "name": "A Citrus-Kissed Destination Wedding at Rosewood Mayakoba"
+            },
+            {
+              "@type": "ListItem",
+              "position": 9,
+              "url": "https://www.stylemepretty.com/2026/01/05/soft-garden-blooms-meet-tropical-elegance-at-the-four-seasons-maui/",
+              "name": "Soft Garden Blooms Meet Tropical Elegance at the Four Seasons Maui"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Romantic",
+      "url": "https://www.stylemepretty.com/category/romantic",
+      "articleCount": 9,
+      "articles": [
+        {
+          "title": "A Cinematic Wedding Inspired By Paris And Bridgerton At Theatre Cartier",
+          "url": "https://www.stylemepretty.com/2026/07/23/a-cinematic-wedding-inspired-by-paris-and-bridgerton-at-theatre-cartier",
+          "slug": "/2026/07/23/a-cinematic-wedding-inspired-by-paris-and-bridgerton-at-theatre-cartier",
+          "category": "Romantic"
+        },
+        {
+          "title": "An English Garden Inspired Wedding At The Brides Childhood Home",
+          "url": "https://www.stylemepretty.com/2026/07/23/an-english-garden-inspired-wedding-at-the-brides-childhood-home",
+          "slug": "/2026/07/23/an-english-garden-inspired-wedding-at-the-brides-childhood-home",
+          "category": "Romantic"
+        },
+        {
+          "title": "A Noosa Wedding Weekend Inspired By The Italian Countryside",
+          "url": "https://www.stylemepretty.com/2026/07/21/a-noosa-wedding-weekend-inspired-by-the-italian-countryside",
+          "slug": "/2026/07/21/a-noosa-wedding-weekend-inspired-by-the-italian-countryside",
+          "category": "Romantic"
+        },
+        {
+          "title": "A Celebration That Blended Western Spirit With European Romance At Houston Oaks Country Club",
+          "url": "https://www.stylemepretty.com/2026/07/16/a-celebration-that-blended-western-spirit-with-european-romance-at-houston-oaks-country-club",
+          "slug": "/2026/07/16/a-celebration-that-blended-western-spirit-with-european-romance-at-houston-oaks-country-club",
+          "category": "Romantic"
+        },
+        {
+          "title": "A Romantic Cliffside Wedding At Wonderland Uluwatu In Bali",
+          "url": "https://www.stylemepretty.com/2026/07/15/a-romantic-cliffside-wedding-at-wonderland-uluwatu-in-bali",
+          "slug": "/2026/07/15/a-romantic-cliffside-wedding-at-wonderland-uluwatu-in-bali",
+          "category": "Romantic"
+        },
+        {
+          "title": "A Barefoot On The Beach Affair With A Kaleidoscope Of Color In The Bahamas",
+          "url": "https://www.stylemepretty.com/2026/07/15/a-barefoot-on-the-beach-affair-with-a-kaleidoscope-of-color-in-the-bahamas",
+          "slug": "/2026/07/15/a-barefoot-on-the-beach-affair-with-a-kaleidoscope-of-color-in-the-bahamas",
+          "category": "Romantic"
+        },
+        {
+          "title": "An Immersive Garden Wedding With Rich Color And Dramatic Florals",
+          "url": "https://www.stylemepretty.com/2026/07/14/an-immersive-garden-wedding-with-rich-color-and-dramatic-florals",
+          "slug": "/2026/07/14/an-immersive-garden-wedding-with-rich-color-and-dramatic-florals",
+          "category": "Romantic"
+        },
+        {
+          "title": "A Romantic Lake Como Wedding Framed By Villa Del Balbianellos Iconic Gardens",
+          "url": "https://www.stylemepretty.com/2026/07/08/a-romantic-lake-como-wedding-framed-by-villa-del-balbianellos-iconic-gardens",
+          "slug": "/2026/07/08/a-romantic-lake-como-wedding-framed-by-villa-del-balbianellos-iconic-gardens",
+          "category": "Romantic"
+        },
+        {
+          "title": "A Hotel Bel Air Wedding Inspired By Swan Lake Family Legacy And Golden Era Glamour",
+          "url": "https://www.stylemepretty.com/2026/07/08/a-hotel-bel-air-wedding-inspired-by-swan-lake-family-legacy-and-golden-era-glamour",
+          "slug": "/2026/07/08/a-hotel-bel-air-wedding-inspired-by-swan-lake-family-legacy-and-golden-era-glamour",
+          "category": "Romantic"
+        }
+      ],
+      "tags": [
+        "Real weddings",
+        "Romantic"
+      ],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "url": "https://www.stylemepretty.com/2026/07/23/a-cinematic-wedding-inspired-by-paris-and-bridgerton-at-theatre-cartier/",
+              "name": "A Cinematic Wedding Inspired by Paris and Bridgerton at Théâtre Cartier"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "url": "https://www.stylemepretty.com/2026/07/23/an-english-garden-inspired-wedding-at-the-brides-childhood-home/",
+              "name": "An English Garden-Inspired Wedding at the Bride's Childhood Home"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "url": "https://www.stylemepretty.com/2026/07/21/a-noosa-wedding-weekend-inspired-by-the-italian-countryside/",
+              "name": "A Noosa Wedding Weekend Inspired by the Italian Countryside"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "url": "https://www.stylemepretty.com/2026/07/16/a-celebration-that-blended-western-spirit-with-european-romance-at-houston-oaks-country-club/",
+              "name": "A Celebration That Blended Western Spirit with European Romance at Houston Oaks Country Club"
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "url": "https://www.stylemepretty.com/2026/07/15/a-romantic-cliffside-wedding-at-wonderland-uluwatu-in-bali/",
+              "name": "A Romantic Cliffside Wedding at Wonderland Uluwatu in Bali"
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "url": "https://www.stylemepretty.com/2026/07/15/a-barefoot-on-the-beach-affair-with-a-kaleidoscope-of-color-in-the-bahamas/",
+              "name": "A Barefoot on the Beach Affair with a Kaleidoscope of Color in The Bahamas"
+            },
+            {
+              "@type": "ListItem",
+              "position": 7,
+              "url": "https://www.stylemepretty.com/2026/07/14/an-immersive-garden-wedding-with-rich-color-and-dramatic-florals/",
+              "name": "An Immersive Garden Wedding with Rich Color and Dramatic Florals"
+            },
+            {
+              "@type": "ListItem",
+              "position": 8,
+              "url": "https://www.stylemepretty.com/2026/07/08/a-romantic-lake-como-wedding-framed-by-villa-del-balbianellos-iconic-gardens/",
+              "name": "A Romantic Lake Como Wedding Framed by Villa del Balbianello’s Iconic Gardens"
+            },
+            {
+              "@type": "ListItem",
+              "position": 9,
+              "url": "https://www.stylemepretty.com/2026/07/08/a-hotel-bel-air-wedding-inspired-by-swan-lake-family-legacy-and-golden-era-glamour/",
+              "name": "A Hotel Bel-Air Wedding Inspired by Swan Lake, Family Legacy, and Golden-Era Glamour"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Traditional Elegance",
+      "url": "https://www.stylemepretty.com/category/traditional-elegance",
+      "articleCount": 9,
+      "articles": [
+        {
+          "title": "Hydrangea Blues And Candlelight Defined This Marin County Wedding",
+          "url": "https://www.stylemepretty.com/2026/07/22/hydrangea-blues-and-candlelight-defined-this-marin-county-wedding",
+          "slug": "/2026/07/22/hydrangea-blues-and-candlelight-defined-this-marin-county-wedding",
+          "category": "Traditional Elegance"
+        },
+        {
+          "title": "A Garden Inspired Wedding Beneath Montanas Mountain Peaks",
+          "url": "https://www.stylemepretty.com/2026/07/21/a-garden-inspired-wedding-beneath-montanas-mountain-peaks",
+          "slug": "/2026/07/21/a-garden-inspired-wedding-beneath-montanas-mountain-peaks",
+          "category": "Traditional Elegance"
+        },
+        {
+          "title": "A French Countryside Wedding Weekend Defined By Thoughtful Design At Chateau De Varennes",
+          "url": "https://www.stylemepretty.com/2026/07/21/a-french-countryside-wedding-weekend-defined-by-thoughtful-design-at-chateau-de-varennes",
+          "slug": "/2026/07/21/a-french-countryside-wedding-weekend-defined-by-thoughtful-design-at-chateau-de-varennes",
+          "category": "Traditional Elegance"
+        },
+        {
+          "title": "Paris Romance Met Hudson Valley Charm At Blue Hill At Stone Barns",
+          "url": "https://www.stylemepretty.com/2026/07/21/paris-romance-met-hudson-valley-charm-at-blue-hill-at-stone-barns",
+          "slug": "/2026/07/21/paris-romance-met-hudson-valley-charm-at-blue-hill-at-stone-barns",
+          "category": "Traditional Elegance"
+        },
+        {
+          "title": "A Seafoam And Sage Celebration On The Shores Of Key West",
+          "url": "https://www.stylemepretty.com/2026/07/20/a-seafoam-and-sage-celebration-on-the-shores-of-key-west",
+          "slug": "/2026/07/20/a-seafoam-and-sage-celebration-on-the-shores-of-key-west",
+          "category": "Traditional Elegance"
+        },
+        {
+          "title": "The Beauty Of Movement Inspired This Elegant Lake Lucerne Editorial At Vitznauerhof",
+          "url": "https://www.stylemepretty.com/2026/07/20/the-beauty-of-movement-inspired-this-elegant-lake-lucerne-editorial-at-vitznauerhof",
+          "slug": "/2026/07/20/the-beauty-of-movement-inspired-this-elegant-lake-lucerne-editorial-at-vitznauerhof",
+          "category": "Traditional Elegance"
+        },
+        {
+          "title": "A Refined Mountain Wedding Inspired By Colorados Apres Ski Spirit",
+          "url": "https://www.stylemepretty.com/2026/07/20/a-refined-mountain-wedding-inspired-by-colorados-apres-ski-spirit",
+          "slug": "/2026/07/20/a-refined-mountain-wedding-inspired-by-colorados-apres-ski-spirit",
+          "category": "Traditional Elegance"
+        },
+        {
+          "title": "A Garden Ceremony Gave Way To An Intimate Evening At Bastide Du Roy",
+          "url": "https://www.stylemepretty.com/2026/07/17/a-garden-ceremony-gave-way-to-an-intimate-evening-at-bastide-du-roy",
+          "slug": "/2026/07/17/a-garden-ceremony-gave-way-to-an-intimate-evening-at-bastide-du-roy",
+          "category": "Traditional Elegance"
+        },
+        {
+          "title": "A Classic Black White Summer Wedding At Pippin Hill",
+          "url": "https://www.stylemepretty.com/2026/07/17/a-classic-black-white-summer-wedding-at-pippin-hill",
+          "slug": "/2026/07/17/a-classic-black-white-summer-wedding-at-pippin-hill",
+          "category": "Traditional Elegance"
+        }
+      ],
+      "tags": [
+        "Real weddings",
+        "Traditional elegance"
+      ],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "url": "https://www.stylemepretty.com/2026/07/22/hydrangea-blues-and-candlelight-defined-this-marin-county-wedding/",
+              "name": "Hydrangea Blues and Candlelight Defined This Marin County Wedding"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "url": "https://www.stylemepretty.com/2026/07/21/a-garden-inspired-wedding-beneath-montanas-mountain-peaks/",
+              "name": "A Garden-Inspired Wedding Beneath Montana's Mountain Peaks"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "url": "https://www.stylemepretty.com/2026/07/21/a-french-countryside-wedding-weekend-defined-by-thoughtful-design-at-chateau-de-varennes/",
+              "name": "A French Countryside Wedding Weekend Defined by Thoughtful Design at Château de Varennes"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "url": "https://www.stylemepretty.com/2026/07/21/paris-romance-met-hudson-valley-charm-at-blue-hill-at-stone-barns/",
+              "name": "Paris Romance Met Hudson Valley Charm at Blue Hill At Stone Barns"
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "url": "https://www.stylemepretty.com/2026/07/20/a-seafoam-and-sage-celebration-on-the-shores-of-key-west/",
+              "name": "A Seafoam and Sage Celebration on the Shores of Key West"
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "url": "https://www.stylemepretty.com/2026/07/20/the-beauty-of-movement-inspired-this-elegant-lake-lucerne-editorial-at-vitznauerhof/",
+              "name": "The Beauty of Movement Inspired This Elegant Lake Lucerne Editorial at Vitznauerhof"
+            },
+            {
+              "@type": "ListItem",
+              "position": 7,
+              "url": "https://www.stylemepretty.com/2026/07/20/a-refined-mountain-wedding-inspired-by-colorados-apres-ski-spirit/",
+              "name": "A Refined Mountain Wedding Inspired by Colorado’s Après-Ski Spirit"
+            },
+            {
+              "@type": "ListItem",
+              "position": 8,
+              "url": "https://www.stylemepretty.com/2026/07/17/a-garden-ceremony-gave-way-to-an-intimate-evening-at-bastide-du-roy/",
+              "name": "A Garden Ceremony Gave Way to an Intimate Evening at Bastide du Roy"
+            },
+            {
+              "@type": "ListItem",
+              "position": 9,
+              "url": "https://www.stylemepretty.com/2026/07/17/a-classic-black-white-summer-wedding-at-pippin-hill/",
+              "name": "A Classic Black & White Summer Wedding at Pippin Hill"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Modern + Minimal",
+      "url": "https://www.stylemepretty.com/category/modern-minimal",
+      "articleCount": 0,
+      "articles": [],
+      "tags": [],
+      "imageCount": 0,
+      "structuredData": []
+    },
+    {
+      "name": "Bohemian",
+      "url": "https://www.stylemepretty.com/category/bohemian",
+      "articleCount": 0,
+      "articles": [],
+      "tags": [],
+      "imageCount": 0,
+      "structuredData": []
+    },
+    {
+      "name": "Planning + Advice",
+      "url": "https://www.stylemepretty.com/category/planning-weddings-101",
+      "articleCount": 33,
+      "articles": [
+        {
+          "title": "Wedding Florist Confessions",
+          "url": "https://www.stylemepretty.com/2026/03/12/wedding-florist-confessions",
+          "slug": "/2026/03/12/wedding-florist-confessions",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "How To Use Greenery Wedding",
+          "url": "https://www.stylemepretty.com/2025/11/06/how-to-use-greenery-wedding",
+          "slug": "/2025/11/06/how-to-use-greenery-wedding",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "How To Create An Unconventional Wedding Look",
+          "url": "https://www.stylemepretty.com/2025/08/21/how-to-create-an-unconventional-wedding-look",
+          "slug": "/2025/08/21/how-to-create-an-unconventional-wedding-look",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Head To Toe Blueprints For Styling A Classic Themed Wedding",
+          "url": "https://www.stylemepretty.com/2024/12/11/head-to-toe-blueprints-for-styling-a-classic-themed-wedding",
+          "slug": "/2024/12/11/head-to-toe-blueprints-for-styling-a-classic-themed-wedding",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Trending Wedding Florals",
+          "url": "https://www.stylemepretty.com/2018/03/19/trending-wedding-florals",
+          "slug": "/2018/03/19/trending-wedding-florals",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Biggest Wedding Trends 2018",
+          "url": "https://www.stylemepretty.com/2018/02/04/biggest-wedding-trends-2018",
+          "slug": "/2018/02/04/biggest-wedding-trends-2018",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "How To Ditch The Nerves And Get The Best Engagement Photos Ever",
+          "url": "https://www.stylemepretty.com/2026/03/19/how-to-ditch-the-nerves-and-get-the-best-engagement-photos-ever",
+          "slug": "/2026/03/19/how-to-ditch-the-nerves-and-get-the-best-engagement-photos-ever",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Summer Wedding Hair Makeup Tips",
+          "url": "https://www.stylemepretty.com/2026/02/12/summer-wedding-hair-makeup-tips",
+          "slug": "/2026/02/12/summer-wedding-hair-makeup-tips",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "The Most Helpful Features To Add To Your Wedding Website According To Past Brides",
+          "url": "https://www.stylemepretty.com/2019/03/25/the-most-helpful-features-to-add-to-your-wedding-website-according-to-past-brides",
+          "slug": "/2019/03/25/the-most-helpful-features-to-add-to-your-wedding-website-according-to-past-brides",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "The Simple Time Saving Secret To Making Ring Shopping Easier",
+          "url": "https://www.stylemepretty.com/2019/03/21/the-simple-time-saving-secret-to-making-ring-shopping-easier",
+          "slug": "/2019/03/21/the-simple-time-saving-secret-to-making-ring-shopping-easier",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "The 10 Commandments To Having A Budget Friendly Wedding Your Way",
+          "url": "https://www.stylemepretty.com/2018/09/29/the-10-commandments-to-having-a-budget-friendly-wedding-your-way",
+          "slug": "/2018/09/29/the-10-commandments-to-having-a-budget-friendly-wedding-your-way",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Wedding Invitations Calligraphy Define Your Stationery Style",
+          "url": "https://www.stylemepretty.com/2026/04/30/wedding-invitations-calligraphy-define-your-stationery-style",
+          "slug": "/2026/04/30/wedding-invitations-calligraphy-define-your-stationery-style",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Wedding Invitation Details",
+          "url": "https://www.stylemepretty.com/2025/06/05/wedding-invitation-details",
+          "slug": "/2025/06/05/wedding-invitation-details",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Heres Exactly What You Should And Shouldnt Diy For Your Wedding",
+          "url": "https://www.stylemepretty.com/2024/02/08/heres-exactly-what-you-should-and-shouldnt-diy-for-your-wedding",
+          "slug": "/2024/02/08/heres-exactly-what-you-should-and-shouldnt-diy-for-your-wedding",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "How To Incorporate Pantones Color Of The Year Into Your Wedding",
+          "url": "https://www.stylemepretty.com/2020/07/03/how-to-incorporate-pantones-color-of-the-year-into-your-wedding",
+          "slug": "/2020/07/03/how-to-incorporate-pantones-color-of-the-year-into-your-wedding",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Not Just Dresses Vera Wangs Paper Line Proves That Wedding Invitations Can Be Stunning Too",
+          "url": "https://www.stylemepretty.com/2019/10/03/not-just-dresses-vera-wangs-paper-line-proves-that-wedding-invitations-can-be-stunning-too",
+          "slug": "/2019/10/03/not-just-dresses-vera-wangs-paper-line-proves-that-wedding-invitations-can-be-stunning-too",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Royal Wedding Invitations",
+          "url": "https://www.stylemepretty.com/2018/03/22/royal-wedding-invitations",
+          "slug": "/2018/03/22/royal-wedding-invitations",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Where To Honeymoon By Month",
+          "url": "https://www.stylemepretty.com/2025/03/06/where-to-honeymoon-by-month",
+          "slug": "/2025/03/06/where-to-honeymoon-by-month",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Unforgettable Wedding Weekend At Jumby Bay Island Resort__trashed",
+          "url": "https://www.stylemepretty.com/2019/03/01/unforgettable-wedding-weekend-at-jumby-bay-island-resort__trashed",
+          "slug": "/2019/03/01/unforgettable-wedding-weekend-at-jumby-bay-island-resort__trashed",
+          "category": "Planning + Advice"
+        },
+        {
+          "title": "Elopement In Provence Theres So Much More In Provence Than Lavender Fields",
+          "url": "https://www.stylemepretty.com/2018/09/20/elopement-in-provence-theres-so-much-more-in-provence-than-lavender-fields",
+          "slug": "/2018/09/20/elopement-in-provence-theres-so-much-more-in-provence-than-lavender-fields",
+          "category": "Planning + Advice"
+        }
+      ],
+      "tags": [
+        "Planning weddings 101",
+        "Weddings 101",
+        "Wedding resources",
+        "Round ups",
+        "Wedding style",
+        "Photo shoot wedding style",
+        "Decor weddings 101",
+        "Flowers weddings 101",
+        "Photography wedding style",
+        "Bridal beauty weddings 101",
+        "Sponsored posts",
+        "Whimsical",
+        "Budget beautiful",
+        "Wedding invitations",
+        "Smpwedding101",
+        "Packaging diy projects wedding resources",
+        "Diy projects 2",
+        "Accessories",
+        "Travel weddings 101",
+        "Destination",
+        "Engagement session",
+        "Photography weddings 101",
+        "Design",
+        "Wedding 101",
+        "Honeymoon",
+        "Engagement",
+        "Fitness"
+      ],
+      "imageCount": 0,
+      "structuredData": [
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "url": "https://www.stylemepretty.com/2026/04/30/wedding-invitations-calligraphy-define-your-stationery-style/",
+              "name": "Wedding Invitations + Calligraphy: Define Your Stationery Style"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "url": "https://www.stylemepretty.com/2026/03/19/how-to-ditch-the-nerves-and-get-the-best-engagement-photos-ever/",
+              "name": "How to Ditch the Nerves and Get the Best Engagement Photos Ever"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "url": "https://www.stylemepretty.com/2026/03/12/wedding-florist-confessions/",
+              "name": "10 Things Your Florist Wishes You Knew"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "url": "https://www.stylemepretty.com/2026/02/19/unexpected-ways-to-add-color-to-your-wedding/",
+              "name": "Unexpected Ways to Add Color to Your Wedding"
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "url": "https://www.stylemepretty.com/2026/02/12/summer-wedding-hair-makeup-tips/",
+              "name": "Summer-Proof Wedding Hair and Makeup Tips From a Pro"
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "url": "https://www.stylemepretty.com/2026/01/29/the-ultimate-honeymoon-packing-list/",
+              "name": "The Ultimate Honeymoon Packing List"
+            },
+            {
+              "@type": "ListItem",
+              "position": 7,
+              "url": "https://www.stylemepretty.com/2026/01/08/5-questions-most-wedding-guests-will-ask-how-to-answer-them/",
+              "name": "5 Questions Most Wedding Guests Will Ask + How To Answer Them"
+            },
+            {
+              "@type": "ListItem",
+              "position": 8,
+              "url": "https://www.stylemepretty.com/2025/12/11/6-bachelorette-planning-mistakes-to-avoid/",
+              "name": "6 Bachelorette Planning Mistakes to Avoid"
+            },
+            {
+              "@type": "ListItem",
+              "position": 9,
+              "url": "https://www.stylemepretty.com/2025/12/05/your-personal-wedding-planning-terminology-dictionary/",
+              "name": "Your Personal Wedding Planning Terminology Dictionary!"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "allTags": [
+    "Real weddings",
+    "Romantic",
+    "Destination",
+    "Traditional elegance",
+    "Planning weddings 101",
+    "Weddings 101",
+    "Wedding resources",
+    "Round ups",
+    "Wedding style",
+    "Photo shoot wedding style",
+    "Decor weddings 101",
+    "Flowers weddings 101",
+    "Photography wedding style",
+    "Bridal beauty weddings 101",
+    "Sponsored posts",
+    "Whimsical",
+    "Budget beautiful",
+    "Wedding invitations",
+    "Smpwedding101",
+    "Packaging diy projects wedding resources",
+    "Diy projects 2",
+    "Accessories",
+    "Travel weddings 101",
+    "Engagement session",
+    "Photography weddings 101",
+    "Design",
+    "Wedding 101",
+    "Honeymoon",
+    "Engagement",
+    "Fitness"
+  ],
+  "latestArticles": [
+    {
+      "title": "A Cinematic Wedding Inspired By Paris And Bridgerton At Theatre Cartier",
+      "url": "https://www.stylemepretty.com/2026/07/23/a-cinematic-wedding-inspired-by-paris-and-bridgerton-at-theatre-cartier",
+      "slug": "/2026/07/23/a-cinematic-wedding-inspired-by-paris-and-bridgerton-at-theatre-cartier",
+      "category": "Real Weddings"
+    },
+    {
+      "title": "An English Garden Inspired Wedding At The Brides Childhood Home",
+      "url": "https://www.stylemepretty.com/2026/07/23/an-english-garden-inspired-wedding-at-the-brides-childhood-home",
+      "slug": "/2026/07/23/an-english-garden-inspired-wedding-at-the-brides-childhood-home",
+      "category": "Real Weddings"
+    },
+    {
+      "title": "Block Prints And Garden Blooms Brought This Southern Celevbration To Life",
+      "url": "https://www.stylemepretty.com/2026/07/23/block-prints-and-garden-blooms-brought-this-southern-celevbration-to-life",
+      "slug": "/2026/07/23/block-prints-and-garden-blooms-brought-this-southern-celevbration-to-life",
+      "category": "Real Weddings"
+    },
+    {
+      "title": "A Glamorous Villa Pizzo Celebration With Bond Inspired Flair",
+      "url": "https://www.stylemepretty.com/2026/07/22/a-glamorous-villa-pizzo-celebration-with-bond-inspired-flair",
+      "slug": "/2026/07/22/a-glamorous-villa-pizzo-celebration-with-bond-inspired-flair",
+      "category": "Real Weddings"
+    },
+    {
+      "title": "An Oceanfront Hawaii Wedding With Vip Nightlife Energy",
+      "url": "https://www.stylemepretty.com/2026/07/22/an-oceanfront-hawaii-wedding-with-vip-nightlife-energy",
+      "slug": "/2026/07/22/an-oceanfront-hawaii-wedding-with-vip-nightlife-energy",
+      "category": "Real Weddings"
+    },
+    {
+      "title": "A Los Cabos Wedding Where Lush Florals Met The Desert At Acre Resort",
+      "url": "https://www.stylemepretty.com/2026/07/02/a-los-cabos-wedding-where-lush-florals-met-the-desert-at-acre-resort",
+      "slug": "/2026/07/02/a-los-cabos-wedding-where-lush-florals-met-the-desert-at-acre-resort",
+      "category": "Destination"
+    },
+    {
+      "title": "A Greek Island Wedding Where Organic Elegance Met The Beauty Of The Aegean",
+      "url": "https://www.stylemepretty.com/2026/07/02/a-greek-island-wedding-where-organic-elegance-met-the-beauty-of-the-aegean",
+      "slug": "/2026/07/02/a-greek-island-wedding-where-organic-elegance-met-the-beauty-of-the-aegean",
+      "category": "Destination"
+    },
+    {
+      "title": "This Blush Toned Amalfi Coast Wedding Was The Dinner Party Of A Lifetime",
+      "url": "https://www.stylemepretty.com/2026/01/28/this-blush-toned-amalfi-coast-wedding-was-the-dinner-party-of-a-lifetime",
+      "slug": "/2026/01/28/this-blush-toned-amalfi-coast-wedding-was-the-dinner-party-of-a-lifetime",
+      "category": "Destination"
+    },
+    {
+      "title": "A Refined Maui Celebration In Soft Neutrals And Natural Texture",
+      "url": "https://www.stylemepretty.com/2026/01/27/a-refined-maui-celebration-in-soft-neutrals-and-natural-texture",
+      "slug": "/2026/01/27/a-refined-maui-celebration-in-soft-neutrals-and-natural-texture",
+      "category": "Destination"
+    },
+    {
+      "title": "A Noosa Wedding Weekend Inspired By The Italian Countryside",
+      "url": "https://www.stylemepretty.com/2026/07/21/a-noosa-wedding-weekend-inspired-by-the-italian-countryside",
+      "slug": "/2026/07/21/a-noosa-wedding-weekend-inspired-by-the-italian-countryside",
+      "category": "Romantic"
+    },
+    {
+      "title": "A Celebration That Blended Western Spirit With European Romance At Houston Oaks Country Club",
+      "url": "https://www.stylemepretty.com/2026/07/16/a-celebration-that-blended-western-spirit-with-european-romance-at-houston-oaks-country-club",
+      "slug": "/2026/07/16/a-celebration-that-blended-western-spirit-with-european-romance-at-houston-oaks-country-club",
+      "category": "Romantic"
+    },
+    {
+      "title": "A Romantic Cliffside Wedding At Wonderland Uluwatu In Bali",
+      "url": "https://www.stylemepretty.com/2026/07/15/a-romantic-cliffside-wedding-at-wonderland-uluwatu-in-bali",
+      "slug": "/2026/07/15/a-romantic-cliffside-wedding-at-wonderland-uluwatu-in-bali",
+      "category": "Romantic"
+    },
+    {
+      "title": "Hydrangea Blues And Candlelight Defined This Marin County Wedding",
+      "url": "https://www.stylemepretty.com/2026/07/22/hydrangea-blues-and-candlelight-defined-this-marin-county-wedding",
+      "slug": "/2026/07/22/hydrangea-blues-and-candlelight-defined-this-marin-county-wedding",
+      "category": "Traditional Elegance"
+    },
+    {
+      "title": "A Garden Inspired Wedding Beneath Montanas Mountain Peaks",
+      "url": "https://www.stylemepretty.com/2026/07/21/a-garden-inspired-wedding-beneath-montanas-mountain-peaks",
+      "slug": "/2026/07/21/a-garden-inspired-wedding-beneath-montanas-mountain-peaks",
+      "category": "Traditional Elegance"
+    },
+    {
+      "title": "A French Countryside Wedding Weekend Defined By Thoughtful Design At Chateau De Varennes",
+      "url": "https://www.stylemepretty.com/2026/07/21/a-french-countryside-wedding-weekend-defined-by-thoughtful-design-at-chateau-de-varennes",
+      "slug": "/2026/07/21/a-french-countryside-wedding-weekend-defined-by-thoughtful-design-at-chateau-de-varennes",
+      "category": "Traditional Elegance"
+    },
+    {
+      "title": "Paris Romance Met Hudson Valley Charm At Blue Hill At Stone Barns",
+      "url": "https://www.stylemepretty.com/2026/07/21/paris-romance-met-hudson-valley-charm-at-blue-hill-at-stone-barns",
+      "slug": "/2026/07/21/paris-romance-met-hudson-valley-charm-at-blue-hill-at-stone-barns",
+      "category": "Traditional Elegance"
+    },
+    {
+      "title": "A Seafoam And Sage Celebration On The Shores Of Key West",
+      "url": "https://www.stylemepretty.com/2026/07/20/a-seafoam-and-sage-celebration-on-the-shores-of-key-west",
+      "slug": "/2026/07/20/a-seafoam-and-sage-celebration-on-the-shores-of-key-west",
+      "category": "Traditional Elegance"
+    },
+    {
+      "title": "Wedding Florist Confessions",
+      "url": "https://www.stylemepretty.com/2026/03/12/wedding-florist-confessions",
+      "slug": "/2026/03/12/wedding-florist-confessions",
+      "category": "Planning + Advice"
+    },
+    {
+      "title": "How To Use Greenery Wedding",
+      "url": "https://www.stylemepretty.com/2025/11/06/how-to-use-greenery-wedding",
+      "slug": "/2025/11/06/how-to-use-greenery-wedding",
+      "category": "Planning + Advice"
+    },
+    {
+      "title": "How To Create An Unconventional Wedding Look",
+      "url": "https://www.stylemepretty.com/2025/08/21/how-to-create-an-unconventional-wedding-look",
+      "slug": "/2025/08/21/how-to-create-an-unconventional-wedding-look",
+      "category": "Planning + Advice"
+    },
+    {
+      "title": "Head To Toe Blueprints For Styling A Classic Themed Wedding",
+      "url": "https://www.stylemepretty.com/2024/12/11/head-to-toe-blueprints-for-styling-a-classic-themed-wedding",
+      "slug": "/2024/12/11/head-to-toe-blueprints-for-styling-a-classic-themed-wedding",
+      "category": "Planning + Advice"
+    },
+    {
+      "title": "Trending Wedding Florals",
+      "url": "https://www.stylemepretty.com/2018/03/19/trending-wedding-florals",
+      "slug": "/2018/03/19/trending-wedding-florals",
+      "category": "Planning + Advice"
+    }
+  ],
+  "vendors": [],
+  "structuredData": [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.stylemepretty.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Vendor Guide",
+          "item": "https://www.stylemepretty.com/vendor-guide"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Venue",
+          "item": "https://www.stylemepretty.com/vendor-guide/category/all-venues"
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.stylemepretty.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Vendor Guide",
+          "item": "https://www.stylemepretty.com/vendor-guide"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Event Planning and Design",
+          "item": "https://www.stylemepretty.com/vendor-guide/category/all-event-planners"
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.stylemepretty.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Vendor Guide",
+          "item": "https://www.stylemepretty.com/vendor-guide"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Florists",
+          "item": "https://www.stylemepretty.com/vendor-guide/category/all-florists"
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.stylemepretty.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Vendor Guide",
+          "item": "https://www.stylemepretty.com/vendor-guide"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Floral Design",
+          "item": "https://www.stylemepretty.com/vendor-guide/category/all-event-stylists"
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.stylemepretty.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Vendor Guide",
+          "item": "https://www.stylemepretty.com/vendor-guide"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Stationery",
+          "item": "https://www.stylemepretty.com/vendor-guide/category/all-stationery"
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.stylemepretty.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Vendor Guide",
+          "item": "https://www.stylemepretty.com/vendor-guide"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Event Rentals & Decor",
+          "item": "https://www.stylemepretty.com/vendor-guide/category/all-rentals-decor"
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.stylemepretty.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Vendor Guide",
+          "item": "https://www.stylemepretty.com/vendor-guide"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Cinematography",
+          "item": "https://www.stylemepretty.com/vendor-guide/category/all-cinematographers"
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.stylemepretty.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Vendor Guide",
+          "item": "https://www.stylemepretty.com/vendor-guide"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Beauty",
+          "item": "https://www.stylemepretty.com/vendor-guide/category/beauty"
+        }
+      ]
+    }
+  ],
+  "homepage": {
+    "articleCount": 11,
+    "articles": [
+      {
+        "title": "A Cinematic Wedding Inspired By Paris And Bridgerton At Theatre Cartier",
+        "url": "https://www.stylemepretty.com/2026/07/23/a-cinematic-wedding-inspired-by-paris-and-bridgerton-at-theatre-cartier",
+        "slug": "/2026/07/23/a-cinematic-wedding-inspired-by-paris-and-bridgerton-at-theatre-cartier"
+      },
+      {
+        "title": "An English Garden Inspired Wedding At The Brides Childhood Home",
+        "url": "https://www.stylemepretty.com/2026/07/23/an-english-garden-inspired-wedding-at-the-brides-childhood-home",
+        "slug": "/2026/07/23/an-english-garden-inspired-wedding-at-the-brides-childhood-home"
+      },
+      {
+        "title": "Block Prints And Garden Blooms Brought This Southern Celevbration To Life",
+        "url": "https://www.stylemepretty.com/2026/07/23/block-prints-and-garden-blooms-brought-this-southern-celevbration-to-life",
+        "slug": "/2026/07/23/block-prints-and-garden-blooms-brought-this-southern-celevbration-to-life"
+      },
+      {
+        "title": "A Glamorous Villa Pizzo Celebration With Bond Inspired Flair",
+        "url": "https://www.stylemepretty.com/2026/07/22/a-glamorous-villa-pizzo-celebration-with-bond-inspired-flair",
+        "slug": "/2026/07/22/a-glamorous-villa-pizzo-celebration-with-bond-inspired-flair"
+      },
+      {
+        "title": "An Oceanfront Hawaii Wedding With Vip Nightlife Energy",
+        "url": "https://www.stylemepretty.com/2026/07/22/an-oceanfront-hawaii-wedding-with-vip-nightlife-energy",
+        "slug": "/2026/07/22/an-oceanfront-hawaii-wedding-with-vip-nightlife-energy"
+      },
+      {
+        "title": "Hydrangea Blues And Candlelight Defined This Marin County Wedding",
+        "url": "https://www.stylemepretty.com/2026/07/22/hydrangea-blues-and-candlelight-defined-this-marin-county-wedding",
+        "slug": "/2026/07/22/hydrangea-blues-and-candlelight-defined-this-marin-county-wedding"
+      },
+      {
+        "title": "A Noosa Wedding Weekend Inspired By The Italian Countryside",
+        "url": "https://www.stylemepretty.com/2026/07/21/a-noosa-wedding-weekend-inspired-by-the-italian-countryside",
+        "slug": "/2026/07/21/a-noosa-wedding-weekend-inspired-by-the-italian-countryside"
+      },
+      {
+        "title": "A Garden Inspired Wedding Beneath Montanas Mountain Peaks",
+        "url": "https://www.stylemepretty.com/2026/07/21/a-garden-inspired-wedding-beneath-montanas-mountain-peaks",
+        "slug": "/2026/07/21/a-garden-inspired-wedding-beneath-montanas-mountain-peaks"
+      },
+      {
+        "title": "A French Countryside Wedding Weekend Defined By Thoughtful Design At Chateau De Varennes",
+        "url": "https://www.stylemepretty.com/2026/07/21/a-french-countryside-wedding-weekend-defined-by-thoughtful-design-at-chateau-de-varennes",
+        "slug": "/2026/07/21/a-french-countryside-wedding-weekend-defined-by-thoughtful-design-at-chateau-de-varennes"
+      },
+      {
+        "title": "Paris Romance Met Hudson Valley Charm At Blue Hill At Stone Barns",
+        "url": "https://www.stylemepretty.com/2026/07/21/paris-romance-met-hudson-valley-charm-at-blue-hill-at-stone-barns",
+        "slug": "/2026/07/21/paris-romance-met-hudson-valley-charm-at-blue-hill-at-stone-barns"
+      },
+      {
+        "title": "A Seafoam And Sage Celebration On The Shores Of Key West",
+        "url": "https://www.stylemepretty.com/2026/07/20/a-seafoam-and-sage-celebration-on-the-shores-of-key-west",
+        "slug": "/2026/07/20/a-seafoam-and-sage-celebration-on-the-shores-of-key-west"
+      }
+    ],
+    "tags": [
+      "Real weddings",
+      "Romantic",
+      "Planning weddings 101",
+      "Destination",
+      "Traditional elegance",
+      "Engagement"
+    ],
+    "imageCount": 0,
+    "sampleImages": []
+  },
+  "summary": {
+    "totalVendorCategories": 8,
+    "totalVendors": 0,
+    "totalContentCategories": 7,
+    "totalArticles": 22,
+    "totalTags": 30
+  }
+}

@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { cities } from '../data/cities'
-import { cityVenuesMap } from '../data/venues'
 import type { Venue, VenueCategory } from '../data/venues'
 import {
   getSelectedProducts,
@@ -17,6 +16,12 @@ import RevealGroup from '../components/RevealGroup'
 
 const DEST_CATEGORY = 'destination'
 
+// API 返回的城市场地数据结构
+interface ApiCityData {
+  cityId: number
+  categories: VenueCategory[]
+}
+
 export default function ListingDestination() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -25,8 +30,27 @@ export default function ListingDestination() {
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null)
   const [showSummary, setShowSummary] = useState(false)
   const sectionRefs = useRef<Record<number, HTMLElement | null>>({})
-  // 存储全部已选商品状态
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>(() => getSelectedProducts())
+
+  // 从 API 获取目的地数据
+  const [cityDataMap, setCityDataMap] = useState<Record<number, VenueCategory[]>>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/products/destination')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data?.cities) {
+          const map: Record<number, VenueCategory[]> = {}
+          for (const city of data.data.cities as ApiCityData[]) {
+            map[city.cityId] = city.categories
+          }
+          setCityDataMap(map)
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
 
   // 页面显示时刷新 sessionStorage
   useEffect(() => {
@@ -67,7 +91,7 @@ export default function ListingDestination() {
   // 汇总所有城市的场地分类（去重）
   const allCategories = useMemo(() => {
     const map = new Map<string, { label: string; labelEn: string; icon: string }>()
-    for (const cats of Object.values(cityVenuesMap)) {
+    for (const cats of Object.values(cityDataMap)) {
       for (const cat of cats) {
         if (!map.has(cat.id)) {
           map.set(cat.id, { label: cat.label, labelEn: cat.labelEn, icon: cat.icon })
@@ -75,7 +99,7 @@ export default function ListingDestination() {
       }
     }
     return Array.from(map.entries()).map(([id, info]) => ({ id, ...info }))
-  }, [])
+  }, [cityDataMap])
 
   const handleCityClick = useCallback((cityId: number) => {
     setActiveCityId(cityId)
@@ -96,7 +120,7 @@ export default function ListingDestination() {
 
   // 统计每个城市的场地总数
   const getCityVenueCount = (cityId: number) => {
-    const cats = cityVenuesMap[cityId]
+    const cats = cityDataMap[cityId]
     if (!cats) return 0
     return cats.reduce((sum, cat) => sum + cat.venues.length, 0)
   }
@@ -199,8 +223,10 @@ export default function ListingDestination() {
 
           {/* 右侧内容区 */}
           <div className="dest-content">
-            {cities.map(city => {
-              const venueCategories = cityVenuesMap[city.id]
+            {loading ? (
+              <div style={{ padding: '40px 0', textAlign: 'center', color: '#999' }}>加载场地数据中...</div>
+            ) : cities.map(city => {
+              const venueCategories = cityDataMap[city.id]
               const hasVenues = !!venueCategories && venueCategories.length > 0
               const filteredVenues = hasVenues ? getFilteredVenues(venueCategories) : []
 

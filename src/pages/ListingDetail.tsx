@@ -1,8 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
 import { cities } from '../data/cities'
-import { parisVenues, croatiaVenues } from '../data/venues'
-import type { Venue } from '../data/venues'
+import type { Venue, VenueCategory } from '../data/venues'
 import {
   getSelectedProducts,
   setSelectedItem,
@@ -22,8 +21,30 @@ export default function ListingDetail() {
   const [checkedCategories, setCheckedCategories] = useState<Set<string>>(new Set())
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null)
   const [showSummary, setShowSummary] = useState(false)
-  // 存储全部已选商品状态
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>(() => getSelectedProducts())
+
+  // 从 API 获取当前城市的场地数据
+  const [venues, setVenues] = useState<VenueCategory[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!city) return
+    setLoading(true)
+    fetch('/api/products/destination')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data?.cities) {
+          const cityData = data.data.cities.find((c: any) => c.cityId === city.id)
+          if (cityData) {
+            setVenues(cityData.categories)
+          } else {
+            setVenues([])
+          }
+        }
+      })
+      .catch(() => setVenues([]))
+      .finally(() => setLoading(false))
+  }, [city])
 
   // 页面显示时刷新 sessionStorage
   useEffect(() => {
@@ -44,8 +65,6 @@ export default function ListingDetail() {
   )
 
   if (!city) return <Navigate to="/listing/destination" replace />
-
-  const venues = city.id === 1 ? parisVenues : city.id === 13 ? croatiaVenues : []
 
   const toggleCategory = (id: string) => {
     setCheckedCategories(prev => {

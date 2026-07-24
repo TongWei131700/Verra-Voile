@@ -1,0 +1,604 @@
+{
+  "crawlTime": "2026-07-24T12:13:57.248Z",
+  "source": "stylemepretty.com",
+  "summary": {
+    "totalCategories": 3,
+    "totalVendors": 9,
+    "successCount": 9,
+    "failCount": 0
+  },
+  "categories": [
+    "Photographers",
+    "Venues",
+    "Event Planners"
+  ],
+  "vendors": [
+    {
+      "name": "Jose Villa Photography",
+      "category": "Photography",
+      "subCategory": "Destination",
+      "breadcrumbPath": [
+        "Photography",
+        "Destination"
+      ],
+      "location": "ServingDestination",
+      "about": "",
+      "services": [],
+      "socialLinks": {
+        "instagram": "https://www.instagram.com/stylemepretty/",
+        "pinterest": "https://www.pinterest.com/stylemepretty/",
+        "facebook": "https://www.facebook.com/stylemepretty"
+      },
+      "website": "http://josevilla.com",
+      "profileImage": "/_next/image?url=https%3A%2F%2Fsmp-is.stylemepretty.com%2Fuploads%2Fportfolio%2F268%2Ftm8g9a1%24!1200x.jpg&w=3840&q=75",
+      "collaboratedVendors": [
+        {
+          "name": "Profile",
+          "url": "https://www.stylemepretty.com/vendor-profile/amorology-weddings"
+        },
+        {
+          "name": "Brooke Nash Photography",
+          "url": "https://www.stylemepretty.com/vendor-profile/brooke-nash-photography"
+        },
+        {
+          "name": "Portfolio",
+          "url": "https://www.stylemepretty.com/vendor-profile/paulina-perrucci"
+        },
+        {
+          "name": "KT Merry Photography",
+          "url": "https://www.stylemepretty.com/vendor-profile/kt-merry-photography"
+        },
+        {
+          "name": "Paulina Perrucci",
+          "url": "https://www.stylemepretty.com/vendor-profile/paulina-perrucci"
+        }
+      ],
+      "galleries": [],
+      "editorials": [
+        {
+          "title": "A Floral Filled and Fabulous Wedding at the Iconic Beverly Hills Hotel",
+          "url": "https://www.stylemepretty.com/2025/04/09/a-floral-filled-and-fabulous-wedding-at-the-iconic-beverly-hills-hotel"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2025/04/09/a-floral-filled-and-fabulous-wedding-at-the-iconic-beverly-hills-hotel"
+        },
+        {
+          "title": "This Iconic Bride Designed and Constructed Her Entire Wedding Party Fashion, All Inspired by Bridgerton!",
+          "url": "https://www.stylemepretty.com/2024/02/27/this-iconic-bride-designed-and-constructed-her-entire-wedding-party-fashion-all-inspired-by-bridgerton"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2024/02/27/this-iconic-bride-designed-and-constructed-her-entire-wedding-party-fashion-all-inspired-by-bridgerton"
+        },
+        {
+          "title": "Mountain Brides Need to See This Elegant Aspen Affair",
+          "url": "https://www.stylemepretty.com/2023/08/01/mountain-brides-need-to-see-this-elegant-aspen-affair"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2023/08/01/mountain-brides-need-to-see-this-elegant-aspen-affair"
+        }
+      ],
+      "otherVendors": [],
+      "profileUrl": "https://www.stylemepretty.com/vendor-profile/jose-villa?location=destination",
+      "slug": "jose-villa",
+      "crawlStatus": "success"
+    },
+    {
+      "name": "Paulina Perrucci",
+      "category": "Photography",
+      "subCategory": "Destination",
+      "breadcrumbPath": [
+        "Photography",
+        "Destination"
+      ],
+      "location": "ServingCalifornia ~ Northern",
+      "about": "",
+      "services": [],
+      "socialLinks": {
+        "instagram": "https://www.instagram.com/stylemepretty/",
+        "pinterest": "https://www.pinterest.com/stylemepretty/",
+        "facebook": "https://www.facebook.com/stylemepretty"
+      },
+      "website": "https://www.tiktok.com/@paulinaperrucciphoto",
+      "profileImage": "/_next/image?url=https%3A%2F%2Fsmp-is.stylemepretty.com%2Fuploads%2Fportfolio%2F363505%2F6kclrh4%24!1200x.JPG&w=3840&q=75",
+      "collaboratedVendors": [
+        {
+          "name": "Profile",
+          "url": "https://www.stylemepretty.com/vendor-profile/summer-robbins-flowers"
+        },
+        {
+          "name": "Jose Villa Photography",
+          "url": "https://www.stylemepretty.com/vendor-profile/jose-villa"
+        },
+        {
+          "name": "Portfolio",
+          "url": "https://www.stylemepretty.com/vendor-profile/tiffany-longeway-photography"
+        },
+        {
+          "name": "Amber GC Photography",
+          "url": "https://www.stylemepretty.com/vendor-profile/amber-gc-photography"
+        },
+        {
+          "name": "Tiffany Longeway Photography",
+          "url": "https://www.stylemepretty.com/vendor-profile/tiffany-longeway-photography"
+        }
+      ],
+      "galleries": [],
+      "editorials": [
+        {
+          "title": "A Painterly Editorial Inspired by the Timeless Romance of Ireland's Gloster House",
+          "url": "https://www.stylemepretty.com/2025/12/15/a-painterly-editorial-inspired-by-the-timeless-romance-of-irelands-gloster-house"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2025/12/15/a-painterly-editorial-inspired-by-the-timeless-romance-of-irelands-gloster-house"
+        },
+        {
+          "title": "Where Western Heritage Meets High Style: A Luxurious Reimagining of the American Spirit",
+          "url": "https://www.stylemepretty.com/2025/10/27/where-western-heritage-meets-high-style-a-luxurious-reimagining-of-the-american-spirit"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2025/10/27/where-western-heritage-meets-high-style-a-luxurious-reimagining-of-the-american-spirit"
+        },
+        {
+          "title": "A Playful, Floral-Filled Carmel Valley Ranch Wedding That Celebrated Local Roots",
+          "url": "https://www.stylemepretty.com/2025/07/04/a-playful-floral-filled-carmel-valley-rancg-wedding-that-celebrated-local-roots"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2025/07/04/a-playful-floral-filled-carmel-valley-rancg-wedding-that-celebrated-local-roots"
+        }
+      ],
+      "otherVendors": [],
+      "profileUrl": "https://www.stylemepretty.com/vendor-profile/paulina-perrucci?location=destination",
+      "slug": "paulina-perrucci",
+      "crawlStatus": "success"
+    },
+    {
+      "name": "Brooke Nash Photography",
+      "category": "Photography",
+      "subCategory": "Destination",
+      "breadcrumbPath": [
+        "Photography",
+        "Destination"
+      ],
+      "location": "ServingNew England",
+      "about": "",
+      "services": [],
+      "socialLinks": {
+        "instagram": "https://www.instagram.com/stylemepretty/",
+        "facebook": "https://www.facebook.com/stylemepretty",
+        "pinterest": "https://www.pinterest.com/stylemepretty/"
+      },
+      "website": "https://brookenashphotography.com",
+      "profileImage": "/_next/image?url=https%3A%2F%2Fsmp-is.stylemepretty.com%2Fuploads%2Fportfolio%2F547171%2F1xgzmeu%24!1200x.jpg&w=3840&q=75",
+      "collaboratedVendors": [
+        {
+          "name": "Profile",
+          "url": "https://www.stylemepretty.com/vendor-profile/the-boston-bridal-stylist"
+        },
+        {
+          "name": "Rachel Maloney",
+          "url": "https://www.stylemepretty.com/vendor-profile/rachel-maloney"
+        },
+        {
+          "name": "Portfolio",
+          "url": "https://www.stylemepretty.com/vendor-profile/ing-weddings"
+        },
+        {
+          "name": "Camden Lane Photography",
+          "url": "https://www.stylemepretty.com/vendor-profile/camden-lane-photography"
+        },
+        {
+          "name": "ING Weddings",
+          "url": "https://www.stylemepretty.com/vendor-profile/ing-weddings"
+        }
+      ],
+      "galleries": [],
+      "editorials": [
+        {
+          "title": "A Nancy Meyers-Inspired Coastal Wedding at Castle Hill in Newport",
+          "url": "https://www.stylemepretty.com/2026/03/04/a-nancy-meyers-inspired-coastal-wedding-at-castle-hill-in-newport"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2026/03/04/a-nancy-meyers-inspired-coastal-wedding-at-castle-hill-in-newport"
+        },
+        {
+          "title": "Coastal Charm and Gilded Age Glamour at a Seaside Newport Wedding",
+          "url": "https://www.stylemepretty.com/2025/07/14/coastal-charm-and-gilded-age-glamour-at-a-seaside-newport-wedding"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2025/07/14/coastal-charm-and-gilded-age-glamour-at-a-seaside-newport-wedding"
+        },
+        {
+          "title": "An Ethereal Inspiration Shoot Evoking The Emotions Of Spring",
+          "url": "https://www.stylemepretty.com/2024/05/03/an-ethereal-inspiration-shoot-evoking-the-emotions-of-spring"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2024/05/03/an-ethereal-inspiration-shoot-evoking-the-emotions-of-spring"
+        }
+      ],
+      "otherVendors": [],
+      "profileUrl": "https://www.stylemepretty.com/vendor-profile/brooke-nash-photography?location=destination",
+      "slug": "brooke-nash-photography",
+      "crawlStatus": "success"
+    },
+    {
+      "name": "Luttrellstown Castle, Dublin",
+      "category": "Venue",
+      "subCategory": "Destination",
+      "breadcrumbPath": [
+        "Venue",
+        "Destination"
+      ],
+      "location": "ServingDublin, Ireland",
+      "about": "",
+      "services": [],
+      "socialLinks": {
+        "instagram": "https://www.instagram.com/stylemepretty/",
+        "pinterest": "https://www.pinterest.com/stylemepretty/",
+        "facebook": "https://www.facebook.com/stylemepretty"
+      },
+      "website": "https://www.luttrellstowncastle.com",
+      "profileImage": "/_next/image?url=https%3A%2F%2Fsmp-is.stylemepretty.com%2Fuploads%2Flbb%2Fdefault-listing%24!1200x.png&w=3840&q=75",
+      "collaboratedVendors": [
+        {
+          "name": "Profile",
+          "url": "https://www.stylemepretty.com/vendor-profile/hope-helmuth-photography"
+        },
+        {
+          "name": "Gloster House",
+          "url": "https://www.stylemepretty.com/vendor-profile/gloster-house"
+        },
+        {
+          "name": "Portfolio",
+          "url": "https://www.stylemepretty.com/vendor-profile/gloster-house"
+        }
+      ],
+      "galleries": [],
+      "editorials": [
+        {
+          "title": "A Dreamy Pastel Castle Wedding Blending Refined Romance with Black-Tie Sophistication",
+          "url": "https://www.stylemepretty.com/2026/03/19/a-dreamy-pastel-castle-wedding-blending-refined-romance-with-black-tie-sophistication"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2026/03/19/a-dreamy-pastel-castle-wedding-blending-refined-romance-with-black-tie-sophistication"
+        },
+        {
+          "title": "A Georgian Autumn Romance Inspired by Pride & Prejudice at Luttrellstown Castle Resort",
+          "url": "https://www.stylemepretty.com/2026/01/05/jane-austen-inspired-wedding-at-luttrellstown-castle"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2026/01/05/jane-austen-inspired-wedding-at-luttrellstown-castle"
+        },
+        {
+          "title": "Deep Hues and Rich Texture at Luttrellstown Castle in Dublin",
+          "url": "https://www.stylemepretty.com/2023/12/20/deep-hues-and-rich-texture-at-luttrellstown-castle-in-dublin"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2023/12/20/deep-hues-and-rich-texture-at-luttrellstown-castle-in-dublin"
+        }
+      ],
+      "otherVendors": [],
+      "profileUrl": "https://www.stylemepretty.com/vendor-profile/luttrellstown-castle-dublin?location=destination",
+      "slug": "luttrellstown-castle-dublin",
+      "crawlStatus": "success"
+    },
+    {
+      "name": "The Lake House on Canandaigua",
+      "category": "Venue",
+      "subCategory": "Destination",
+      "breadcrumbPath": [
+        "Venue",
+        "Destination"
+      ],
+      "location": "ServingWestern NY + The Finger Lakes, New York",
+      "about": "",
+      "services": [],
+      "socialLinks": {
+        "instagram": "https://www.instagram.com/stylemepretty/",
+        "facebook": "https://www.facebook.com/stylemepretty",
+        "pinterest": "https://www.pinterest.com/stylemepretty/"
+      },
+      "website": "https://www.tiktok.com/@lakehousecdga",
+      "profileImage": "/_next/image?url=https%3A%2F%2Fsmp-is.stylemepretty.com%2Fuploads%2Fportfolio%2F556707%2F1js5j86%24!1200x.JPG&w=3840&q=75",
+      "collaboratedVendors": [
+        {
+          "name": "Profile",
+          "url": "https://www.stylemepretty.com/vendor-profile/verve-event-co"
+        }
+      ],
+      "galleries": [],
+      "editorials": [
+        {
+          "title": "A Retro Summer Camp Wedding on the Lake with Botanical Patterns and Subtle Disney Details",
+          "url": "https://www.stylemepretty.com/2026/06/08/a-retro-summer-camp-wedding-on-the-lake-with-botanical-patterns-and-subtle-disney-details"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2026/06/08/a-retro-summer-camp-wedding-on-the-lake-with-botanical-patterns-and-subtle-disney-details"
+        },
+        {
+          "title": "Rattan Details and Soft Blush Blooms in a Whimsical Lakeside Celebration",
+          "url": "https://www.stylemepretty.com/2026/03/02/rattan-details-and-soft-blush-blooms-in-a-whimsical-lakeside-celebration"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2026/03/02/rattan-details-and-soft-blush-blooms-in-a-whimsical-lakeside-celebration"
+        },
+        {
+          "title": "A Meaningful Autumn Wedding in the Finger Lakes, Where Their Story Began",
+          "url": "https://www.stylemepretty.com/2025/12/10/a-meaningful-autumn-wedding-in-the-finger-lakes-where-their-story-began"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2025/12/10/a-meaningful-autumn-wedding-in-the-finger-lakes-where-their-story-began"
+        }
+      ],
+      "otherVendors": [],
+      "profileUrl": "https://www.stylemepretty.com/vendor-profile/the-lake-house-on-canandaquia?location=destination",
+      "slug": "the-lake-house-on-canandaquia",
+      "crawlStatus": "success"
+    },
+    {
+      "name": "Château de la Valouze",
+      "category": "Venue",
+      "subCategory": "Destination",
+      "breadcrumbPath": [
+        "Venue",
+        "Destination"
+      ],
+      "location": "ServingBordeaux, France",
+      "about": "",
+      "services": [],
+      "socialLinks": {
+        "instagram": "https://www.instagram.com/stylemepretty/",
+        "facebook": "https://www.facebook.com/stylemepretty",
+        "pinterest": "https://www.pinterest.com/stylemepretty/"
+      },
+      "website": "http://www.chateaudelavalouze.com",
+      "profileImage": "/_next/image?url=https%3A%2F%2Fsmp-is.stylemepretty.com%2Fuploads%2Fportfolio%2F511492%2Fhyepjvq%24!1200x.jpg&w=3840&q=75",
+      "collaboratedVendors": [
+        {
+          "name": "Profile",
+          "url": "https://www.stylemepretty.com/vendor-profile/stephanie-manganelli"
+        },
+        {
+          "name": "Chateau Gassies",
+          "url": "https://www.stylemepretty.com/vendor-profile/chateau-gassies"
+        },
+        {
+          "name": "Portfolio",
+          "url": "https://www.stylemepretty.com/vendor-profile/domaine-de-la-rose-blanche"
+        },
+        {
+          "name": "domaine de la rose blanche",
+          "url": "https://www.stylemepretty.com/vendor-profile/domaine-de-la-rose-blanche"
+        }
+      ],
+      "galleries": [],
+      "editorials": [],
+      "otherVendors": [],
+      "profileUrl": "https://www.stylemepretty.com/vendor-profile/chteau-de-la-valouze?location=destination",
+      "slug": "chteau-de-la-valouze",
+      "crawlStatus": "success"
+    },
+    {
+      "name": "Karla Casillas and Co.",
+      "category": "Event Planning and Design",
+      "subCategory": "Destination",
+      "breadcrumbPath": [
+        "Event Planning and Design",
+        "Destination"
+      ],
+      "location": "ServingCabo San Lucas, Mexico",
+      "about": "",
+      "services": [],
+      "socialLinks": {
+        "instagram": "https://www.instagram.com/stylemepretty/",
+        "pinterest": "https://www.pinterest.com/stylemepretty/",
+        "facebook": "https://www.facebook.com/stylemepretty"
+      },
+      "website": "https://www.tiktok.com/@karlacasillasandco",
+      "profileImage": "/_next/image?url=https%3A%2F%2Fsmp-is.stylemepretty.com%2Fuploads%2Fportfolio%2F2049%2Fkxne113%24!1200x.jpeg&w=3840&q=75",
+      "collaboratedVendors": [
+        {
+          "name": "Profile",
+          "url": "https://www.stylemepretty.com/vendor-profile/piel-canela"
+        },
+        {
+          "name": "S.O.S. Wedding planners",
+          "url": "https://www.stylemepretty.com/vendor-profile/lesly-orozco"
+        },
+        {
+          "name": "Portfolio",
+          "url": "https://www.stylemepretty.com/vendor-profile/amorology-weddings"
+        },
+        {
+          "name": "Del Cabo Weddings",
+          "url": "https://www.stylemepretty.com/vendor-profile/del-cabo-weddings"
+        },
+        {
+          "name": "Amorology Weddings",
+          "url": "https://www.stylemepretty.com/vendor-profile/amorology-weddings"
+        }
+      ],
+      "galleries": [],
+      "editorials": [
+        {
+          "title": "An Ethereal French Garden Inspired Celebration in Soft Whites and Subtle Hues at Baja Lune",
+          "url": "https://www.stylemepretty.com/2025/08/04/an-ethereal-french-garden-inspired-celebration-in-soft-whites-and-subtle-hues-at-baja-lune"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2025/08/04/an-ethereal-french-garden-inspired-celebration-in-soft-whites-and-subtle-hues-at-baja-lune"
+        },
+        {
+          "title": "An All White Wedding Ceremony & Tropical Infused Reception at Las Ventanas Al Paraiso",
+          "url": "https://www.stylemepretty.com/2024/10/03/an-all-white-wedding-ceremony-tropical-infused-reception-at-las-ventanas-al-paraiso"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2024/10/03/an-all-white-wedding-ceremony-tropical-infused-reception-at-las-ventanas-al-paraiso"
+        },
+        {
+          "title": "A Cabo San Lucas Wedding Inspired By Colors Straight From The Fashion Runways",
+          "url": "https://www.stylemepretty.com/2023/06/20/a-cabo-san-lucas-wedding-inspired-by-colors-straight-from-the-fashion-runways"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2023/06/20/a-cabo-san-lucas-wedding-inspired-by-colors-straight-from-the-fashion-runways"
+        }
+      ],
+      "otherVendors": [],
+      "profileUrl": "https://www.stylemepretty.com/vendor-profile/karla-casillas?location=destination",
+      "slug": "karla-casillas",
+      "crawlStatus": "success"
+    },
+    {
+      "name": "Center Of Attention Events",
+      "category": "Event Planning and Design",
+      "subCategory": "Destination",
+      "breadcrumbPath": [
+        "Event Planning and Design",
+        "Destination"
+      ],
+      "location": "ServingLos Angeles, California",
+      "about": "",
+      "services": [],
+      "socialLinks": {
+        "instagram": "https://www.instagram.com/stylemepretty/",
+        "pinterest": "https://www.pinterest.com/stylemepretty/",
+        "facebook": "https://www.facebook.com/stylemepretty"
+      },
+      "website": "https://www.tiktok.com/@https://@center_of_attention_",
+      "profileImage": "/_next/image?url=https%3A%2F%2Fsmp-is.stylemepretty.com%2Fuploads%2Fportfolio%2F130077%2Fhlhqnwi%24!1200x.jpg&w=3840&q=75",
+      "collaboratedVendors": [
+        {
+          "name": "Profile",
+          "url": "https://www.stylemepretty.com/vendor-profile/pixster-photo-booths"
+        },
+        {
+          "name": "Detailed Touch Events",
+          "url": "https://www.stylemepretty.com/vendor-profile/detailed-touch-events"
+        },
+        {
+          "name": "Portfolio",
+          "url": "https://www.stylemepretty.com/vendor-profile/our-societys-events"
+        },
+        {
+          "name": "Lynden Lane Co.",
+          "url": "https://www.stylemepretty.com/vendor-profile/the-lynden-lane"
+        },
+        {
+          "name": "Our Society’s Events",
+          "url": "https://www.stylemepretty.com/vendor-profile/our-societys-events"
+        }
+      ],
+      "galleries": [],
+      "editorials": [
+        {
+          "title": "This Modern Day Cinderella Story Will Sweep You off Your Feet!",
+          "url": "https://www.stylemepretty.com/2021/10/28/this-modern-day-cinderella-story-will-sweep-you-off-your-feet"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2021/10/28/this-modern-day-cinderella-story-will-sweep-you-off-your-feet"
+        },
+        {
+          "title": "Digital Media Co-Workers Turned Bride & Groom!",
+          "url": "https://www.stylemepretty.com/2016/07/26/joel-rubin-dana-silverman-wedding"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2016/07/26/joel-rubin-dana-silverman-wedding"
+        }
+      ],
+      "otherVendors": [],
+      "profileUrl": "https://www.stylemepretty.com/vendor-profile/center-of-attention-events?location=destination",
+      "slug": "center-of-attention-events",
+      "crawlStatus": "success"
+    },
+    {
+      "name": "Happy Moments Collector",
+      "category": "Event Planning and Design",
+      "subCategory": "Destination",
+      "breadcrumbPath": [
+        "Event Planning and Design",
+        "Destination"
+      ],
+      "location": "ServingComo, Italy",
+      "about": "",
+      "services": [],
+      "socialLinks": {
+        "instagram": "https://www.instagram.com/stylemepretty/",
+        "facebook": "https://www.facebook.com/stylemepretty",
+        "pinterest": "https://www.pinterest.com/stylemepretty/"
+      },
+      "website": "https://en.happymomentscollector.com/",
+      "profileImage": "/_next/image?url=https%3A%2F%2Fsmp-is.stylemepretty.com%2Fuploads%2Fportfolio%2F436692%2F7wc7my1pu%24!1200x.JPG&w=3840&q=75",
+      "collaboratedVendors": [
+        {
+          "name": "Profile",
+          "url": "https://www.stylemepretty.com/vendor-profile/daria-events-and-weddings"
+        },
+        {
+          "name": "Eventoile",
+          "url": "https://www.stylemepretty.com/vendor-profile/eventoile-destination-weddings"
+        },
+        {
+          "name": "Portfolio",
+          "url": "https://www.stylemepretty.com/vendor-profile/carissa-corsi-events"
+        },
+        {
+          "name": "My Tuscan Wedding",
+          "url": "https://www.stylemepretty.com/vendor-profile/my-tuscan-wedding"
+        },
+        {
+          "name": "Carissa Corsi Events",
+          "url": "https://www.stylemepretty.com/vendor-profile/carissa-corsi-events"
+        }
+      ],
+      "galleries": [],
+      "editorials": [
+        {
+          "title": "Three Days of Modern Romance at Villa Pizzo",
+          "url": "https://www.stylemepretty.com/2026/03/06/three-days-of-modern-romance-at-villa-pizzo"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2026/03/06/three-days-of-modern-romance-at-villa-pizzo"
+        },
+        {
+          "title": "An Immersive Lakefront Wedding Rooted in Romance and Place at Villa Pizzo",
+          "url": "https://www.stylemepretty.com/2026/02/05/an-immersive-lakefront-wedding-rooted-in-romance-and-place-at-villa-pizzo"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2026/02/05/an-immersive-lakefront-wedding-rooted-in-romance-and-place-at-villa-pizzo"
+        },
+        {
+          "title": "Delicate Romantic Elegance with a Summery Palette of Bold Beauty and Soft Florals",
+          "url": "https://www.stylemepretty.com/2026/01/07/delicate-romantic-elegance-with-a-summery-palette-of-bold-beauty-and-soft-florals"
+        },
+        {
+          "title": "read more",
+          "url": "https://www.stylemepretty.com/2026/01/07/delicate-romantic-elegance-with-a-summery-palette-of-bold-beauty-and-soft-florals"
+        }
+      ],
+      "otherVendors": [],
+      "profileUrl": "https://www.stylemepretty.com/vendor-profile/happy-moments-collector?location=destination",
+      "slug": "happy-moments-collector",
+      "crawlStatus": "success"
+    }
+  ]
+}

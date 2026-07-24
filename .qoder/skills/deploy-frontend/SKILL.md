@@ -15,34 +15,6 @@ description: 将前端代码构建并部署到远程服务器，包括 git 版�
 
 ## 部署步骤
 
-### 0. Git 版本控制（必须先执行）
-
-在部署前，必须先完成以下 git 操作：
-
-```bash
-cd /Users/hongli/WorkSpace/Verra-Voile
-
-# 1. 提交所有改动
-git add -A
-git commit -m "feat: 部署更新"
-
-# 2. 合并到 main
-git checkout main
-git merge <当前分支> --no-edit
-git push origin main
-
-# 3. 获取下一版本号（从线上 API 获取）
-NEXT_VERSION=$(curl -s http://47.99.138.250/api/version/next?side=frontend | grep -o '"version":"[^"]*"' | cut -d'"' -f4)
-
-# 4. 创建并切换到下一版本分支
-git checkout -b daily/${NEXT_VERSION}
-git push origin daily/${NEXT_VERSION}
-```
-
-**分支命名规范**: `daily/x.y.z`（不使用 fe/ 或 be/ 前缀）
-
-**注意**: 如果当前没有未提交改动，跳过 commit 步骤，但仍需执行合并 main 和创建新分支。
-
 ### 1. 确认部署
 
 使用 `AskUserQuestion` 告知用户即将部署，确认继续。
@@ -80,6 +52,36 @@ curl -s -o /dev/null -w "HTTP Status: %{http_code}\nSize: %{size_download} bytes
 ```
 
 确认 HTTP 200，报告访问 URL。
+
+### 5. Git 版本控制（部署完成后执行）
+
+部署成功后，将所有改动（包括部署过程中产生的新文件）提交并切换新分支：
+
+```bash
+cd /Users/hongli/WorkSpace/Verra-Voile
+
+# 1. 提交所有改动
+git add -A
+git commit -m "feat: 部署更新"
+
+# 2. 合并到 main
+git checkout main
+git merge <当前分支> --no-edit
+git push origin main
+
+# 3. 版本号递增（根据当前分支号 +1）
+# 例如当前 daily/0.0.6 → 下一版本 daily/0.0.7
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+CURRENT_VERSION=$(echo "$CURRENT_BRANCH" | sed 's/daily\///')
+IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+NEXT_BRANCH="daily/${MAJOR}.${MINOR}.$((PATCH + 1))"
+
+# 4. 创建并切换到下一版本分支
+git checkout -b $NEXT_BRANCH
+git push origin $NEXT_BRANCH
+```
+
+**分支命名规范**: `daily/x.y.z`（不使用 fe/ 或 be/ 前缀）
 
 ## Nginx 配置（已配置，无需重复）
 

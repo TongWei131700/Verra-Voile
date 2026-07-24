@@ -113,6 +113,9 @@ export default function Admin() {
     categoryId: '', productId: '', name: '', nameEn: '', description: '', image: '', price: 0, unit: '€', capacity: '', highlight: '', sortOrder: 0,
   })
   const [productFilter, setProductFilter] = useState('')
+  const [productCategoryTab, setProductCategoryTab] = useState<string>('')
+  const [quickFillId, setQuickFillId] = useState<string>('')
+  const [customNameMode, setCustomNameMode] = useState(false)
 
   // 聊天状态
   const [chatUsers, setChatUsers] = useState<ChatUser[]>([])
@@ -189,7 +192,13 @@ export default function Admin() {
       if (userJson.success) setUsers(userJson.data)
       if (statsJson.success) setStats(statsJson.data)
       if (prodJson.success) setProducts(prodJson.data.products)
-      if (modJson.success) setProductModules(modJson.data)
+      if (modJson.success) {
+        setProductModules(modJson.data)
+        // 默认选中第一个分类Tab
+        if (!productCategoryTab && modJson.data.length > 0) {
+          setProductCategoryTab(modJson.data[0].id)
+        }
+      }
       // token过期
       if (resJson.message === 'token已过期，请重新登录' || userJson.message === 'token已过期，请重新登录') {
         handleLogout()
@@ -314,14 +323,41 @@ export default function Admin() {
   }
 
   // 商品管理函数
+  // 当前分类下的已有商品（用于快速填充下拉）
+  const categoryProducts = products.filter(p => p.categoryId === productForm.categoryId)
+
+  const handleQuickFill = (key: string) => {
+    setQuickFillId(key)
+    if (key === '__custom__') {
+      setCustomNameMode(true)
+      setProductForm(f => ({ ...f, name: '', nameEn: '', description: '' }))
+      return
+    }
+    setCustomNameMode(false)
+    const found = products.find(p => `${p.categoryId}:${p.productId}` === key)
+    if (found) {
+      setProductForm(f => ({
+        ...f,
+        productId: found.productId,
+        name: found.name,
+        nameEn: found.nameEn,
+        description: found.description,
+      }))
+    }
+  }
+
   const openAddProduct = () => {
     setEditingProduct(null)
-    setProductForm({ categoryId: productModules[0]?.id || '', productId: '', name: '', nameEn: '', description: '', image: '', price: 0, unit: '€', capacity: '', highlight: '', sortOrder: 0 })
+    setQuickFillId('')
+    setCustomNameMode(true)
+    setProductForm({ categoryId: productCategoryTab || productModules[0]?.id || '', productId: '', name: '', nameEn: '', description: '', image: '', price: 0, unit: '€', capacity: '', highlight: '', sortOrder: 0 })
     setShowProductModal(true)
   }
 
   const openEditProduct = (p: ProductItem) => {
     setEditingProduct(p)
+    setQuickFillId(`${p.categoryId}:${p.productId}`)
+    setCustomNameMode(false)
     setProductForm({
       categoryId: p.categoryId, productId: p.productId, name: p.name, nameEn: p.nameEn,
       description: p.description, image: p.image, price: p.price, unit: p.unit,
@@ -353,13 +389,14 @@ export default function Admin() {
     }
   }
 
-  const handleDeleteProduct = async (id: number, name: string) => {
-    if (!confirm(`确定要删除商品「${name}」吗？`)) return
+  const handleDeleteProduct = async (p: ProductItem) => {
+    if (!confirm(`确定要删除商品「${p.name}」吗？`)) return
     const token = localStorage.getItem('admin_token')
     try {
-      const res = await fetch(`/api/admin/products/${id}`, {
+      const res = await fetch(`/api/admin/products/${p.id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ categoryId: p.categoryId }),
       })
       const data = await res.json()
       if (data.success) fetchAll()
@@ -369,9 +406,9 @@ export default function Admin() {
     }
   }
 
-  const filteredProducts = productFilter
-    ? products.filter(p => p.name.includes(productFilter) || p.nameEn.toLowerCase().includes(productFilter.toLowerCase()) || p.categoryId.includes(productFilter))
-    : products
+  const filteredProducts = products
+    .filter(p => !productCategoryTab || p.categoryId === productCategoryTab)
+    .filter(p => !productFilter || p.name.includes(productFilter) || p.nameEn.toLowerCase().includes(productFilter.toLowerCase()))
 
   const getModuleName = (catId: string) => productModules.find(m => m.id === catId)?.name || catId
 
@@ -865,9 +902,27 @@ export default function Admin() {
       {/* 商品管理 */}
       {tab === 'products' && (
         <div className="dashboard-content">
+          {/* 分类子Tab */}
+          <div className="prod-category-tabs">
+            {productModules.map(mod => (
+              <button
+                key={mod.id}
+                className={`prod-category-tab ${productCategoryTab === mod.id ? 'prod-category-tab--active' : ''}`}
+                onClick={() => { setProductCategoryTab(mod.id); setProductFilter('') }}
+              >
+                {mod.name}
+                <span className="prod-category-tab__count">
+                  {products.filter(p => p.categoryId === mod.id).length}
+                </span>
+              </button>
+            ))}
+          </div>
+
           <div className="dash-section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
-              <h3 style={{ margin: 0 }}>商品列表 ({products.length})</h3>
+              <h3 style={{ margin: 0 }}>
+                {productCategoryTab ? getModuleName(productCategoryTab) : '全部'} 商品列表 ({filteredProducts.length})
+              </h3>
               <div style={{ display: 'flex', gap: 10 }}>
                 <input
                   type="text"
@@ -879,7 +934,7 @@ export default function Admin() {
                 <button className="dashboard-refresh prod-add-btn" onClick={openAddProduct}>+ 新增商品</button>
               </div>
             </div>
-            {products.length === 0 ? (
+            {filteredProducts.length === 0 ? (
               <p className="empty">暂无商品</p>
             ) : (
               <div className="dash-table-wrap">
@@ -887,10 +942,10 @@ export default function Admin() {
                   <thead>
                     <tr>
                       <th style={{width: 40}}>ID</th>
-                      <th>分类</th>
                       <th>商品ID</th>
                       <th>名称</th>
                       <th>英文名</th>
+                      <th>描述</th>
                       <th>价格</th>
                       <th>标签</th>
                       <th>排序</th>
@@ -901,16 +956,16 @@ export default function Admin() {
                     {filteredProducts.map(p => (
                       <tr key={p.id}>
                         <td>{p.id}</td>
-                        <td>{getModuleName(p.categoryId)}</td>
                         <td><code>{p.productId}</code></td>
                         <td className="cell-name">{p.name}</td>
                         <td>{p.nameEn}</td>
+                        <td className="cell-desc">{p.description || '-'}</td>
                         <td>{p.unit}{p.price.toLocaleString()}</td>
                         <td>{p.highlight || '-'}</td>
                         <td>{p.sort_order}</td>
                         <td>
                           <button className="prod-action-btn" onClick={() => openEditProduct(p)}>编辑</button>
-                          <button className="prod-action-btn prod-action-btn--danger" onClick={() => handleDeleteProduct(p.id, p.name)}>删除</button>
+                          <button className="prod-action-btn prod-action-btn--danger" onClick={() => handleDeleteProduct(p)}>删除</button>
                         </td>
                       </tr>
                     ))}
@@ -1082,7 +1137,7 @@ export default function Admin() {
               <div className="product-modal__row">
                 <div className="product-modal__field">
                   <label>所属分类</label>
-                  <select value={productForm.categoryId} onChange={e => setProductForm(f => ({...f, categoryId: e.target.value}))} required>
+                  <select value={productForm.categoryId} onChange={e => { setProductForm(f => ({...f, categoryId: e.target.value})); setQuickFillId(''); setCustomNameMode(true) }} required>
                     {productModules.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
                   </select>
                 </div>
@@ -1093,17 +1148,34 @@ export default function Admin() {
               </div>
               <div className="product-modal__row">
                 <div className="product-modal__field">
-                  <label>中文名称</label>
-                  <input type="text" value={productForm.name} onChange={e => setProductForm(f => ({...f, name: e.target.value}))} required />
+                  <label>中文名称 {categoryProducts.length > 0 && !customNameMode && <span style={{fontSize:12,color:'#999'}}>（下拉选择自动填充英文名和描述）</span>}</label>
+                  {categoryProducts.length > 0 && !customNameMode ? (
+                    <select value={quickFillId} onChange={e => handleQuickFill(e.target.value)} required>
+                      <option value="">— 请选择已有商品 —</option>
+                      {categoryProducts.map(p => (
+                        <option key={`${p.categoryId}:${p.productId}`} value={`${p.categoryId}:${p.productId}`}>
+                          {p.name}
+                        </option>
+                      ))}
+                      <option value="__custom__">+ 自定义新名称</option>
+                    </select>
+                  ) : (
+                    <div style={{display:'flex',gap:8}}>
+                      <input type="text" value={productForm.name} onChange={e => setProductForm(f => ({...f, name: e.target.value}))} required placeholder="输入新商品名称" style={{flex:1}} />
+                      {categoryProducts.length > 0 && (
+                        <button type="button" className="prod-action-btn" style={{whiteSpace:'nowrap'}} onClick={() => { setCustomNameMode(false); setQuickFillId('') }}>选择已有</button>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="product-modal__field">
-                  <label>英文名称</label>
-                  <input type="text" value={productForm.nameEn} onChange={e => setProductForm(f => ({...f, nameEn: e.target.value}))} />
+                  <label>英文名称 {!customNameMode && <span style={{fontSize:12,color:'#999'}}>（自动填充）</span>}</label>
+                  <input type="text" value={productForm.nameEn} onChange={e => setProductForm(f => ({...f, nameEn: e.target.value}))} readOnly={customNameMode && categoryProducts.length === 0 ? false : !customNameMode} style={!customNameMode ? {background:'#f5f5f5',color:'#999'} : {}} />
                 </div>
               </div>
               <div className="product-modal__field">
-                <label>描述</label>
-                <textarea value={productForm.description} onChange={e => setProductForm(f => ({...f, description: e.target.value}))} rows={2} />
+                <label>描述 {!customNameMode && <span style={{fontSize:12,color:'#999'}}>（自动填充）</span>}</label>
+                <textarea value={productForm.description} onChange={e => setProductForm(f => ({...f, description: e.target.value}))} rows={2} readOnly={!customNameMode} style={!customNameMode ? {background:'#f5f5f5',color:'#999'} : {}} />
               </div>
               <div className="product-modal__field">
                 <label>图片URL</label>

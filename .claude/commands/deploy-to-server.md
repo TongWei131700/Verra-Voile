@@ -22,6 +22,34 @@ Use this skill when the user says:
 
 ## Steps
 
+### 0. Git 版本控制（必须先执行）
+
+在部署前，必须先完成以下 git 操作：
+
+```bash
+cd /Users/hongli/WorkSpace/Verra-Voile
+
+# 1. 提交所有改动
+git add -A
+git commit -m "feat: 部署更新"
+
+# 2. 合并到 main
+git checkout main
+git merge <当前分支> --no-edit
+git push origin main
+
+# 3. 获取下一版本号
+NEXT_VERSION=$(curl -s http://47.99.138.250/api/version/next?side=frontend | grep -o '"version":"[^"]*"' | cut -d'"' -f4)
+
+# 4. 创建并切换到下一版本分支
+git checkout -b daily/${NEXT_VERSION}
+git push origin daily/${NEXT_VERSION}
+```
+
+**分支命名规范**: `daily/x.y.z`
+
+**注意**: 如果当前没有未提交改动，跳过 commit 步骤，但仍需执行合并 main 和创建新分支。
+
 ### 1. Confirm deployment target and collect password
 
 Tell the user:

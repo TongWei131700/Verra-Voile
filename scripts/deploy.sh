@@ -8,9 +8,9 @@
 set -e
 
 # ---------- 配置区 ----------
-SERVER_IP="8.222.246.16"
+SERVER_IP="47.99.138.250"
 SERVER_USER="root"
-SERVER_PASS="Chineseman."
+SERVER_PASS="TongWei131700"
 FRONTEND_DIR="/Users/hongli/WorkSpace/Verra-Voile"
 BACKEND_DIR="/Users/hongli/WorkSpace/Verra-Voile-End"
 REMOTE_FRONTEND="/var/www/verra-voile"
@@ -241,7 +241,7 @@ else
   fi
 
   # --- 后端版本 ---
-  BE_VERSION=$(echo "$BACKEND_BRANCH" | sed 's/be\///' 2>/dev/null || echo '')
+  BE_VERSION=$(echo "$BACKEND_BRANCH" | sed 's/daily\///' 2>/dev/null || echo '')
   if [ -n "$BE_VERSION" ] && [ "$BE_VERSION" != "main" ] && [ "$BE_VERSION" != "$BACKEND_BRANCH" ]; then
     echo "  后端版本: v${BE_VERSION} (${BACKEND_BRANCH})"
     BE_RESP=$(curl -s -X POST "${API_BASE}/api/version/deploy" \
@@ -251,7 +251,7 @@ else
     BE_NEXT=$(echo "$BE_RESP" | grep -o '"version":"[^"]*"' | cut -d'"' -f4)
     if [ -n "$BE_NEXT" ]; then
       IFS='.' read -r MAJOR MINOR PATCH <<< "$BE_NEXT"
-      BE_NEXT_BRANCH="be/${MAJOR}.${MINOR}.$((PATCH + 1))"
+      BE_NEXT_BRANCH="daily/${MAJOR}.${MINOR}.$((PATCH + 1))"
       cd "$BACKEND_DIR"
       # 合并到 main
       git checkout main 2>/dev/null
@@ -267,7 +267,7 @@ else
       echo "  ✓ 后端版本已记录"
     fi
   else
-    echo "  ⚠ 后端分支: ${BACKEND_BRANCH}（非 be/x.y.z 格式，跳过）"
+    echo "   后端分支: ${BACKEND_BRANCH}（非 daily/x.y.z 格式，跳过）"
   fi
 fi
 

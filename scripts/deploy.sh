@@ -211,7 +211,7 @@ if [ -z "$ADMIN_TOKEN" ]; then
   echo "  ⚠ 无法获取管理员 token，跳过版本记录"
 else
   # --- 前端版本 ---
-  FE_VERSION=$(echo "$FRONTEND_BRANCH" | sed 's/fe\///' 2>/dev/null || echo '')
+  FE_VERSION=$(echo "$FRONTEND_BRANCH" | sed 's/daily\///' 2>/dev/null || echo '')
   if [ -n "$FE_VERSION" ] && [ "$FE_VERSION" != "main" ] && [ "$FE_VERSION" != "$FRONTEND_BRANCH" ]; then
     echo "  前端版本: v${FE_VERSION} (${FRONTEND_BRANCH})"
     FE_RESP=$(curl -s -X POST "${API_BASE}/api/version/deploy" \
@@ -221,7 +221,7 @@ else
     FE_NEXT=$(echo "$FE_RESP" | grep -o '"version":"[^"]*"' | cut -d'"' -f4)
     if [ -n "$FE_NEXT" ]; then
       IFS='.' read -r MAJOR MINOR PATCH <<< "$FE_NEXT"
-      FE_NEXT_BRANCH="fe/${MAJOR}.${MINOR}.$((PATCH + 1))"
+      FE_NEXT_BRANCH="daily/${MAJOR}.${MINOR}.$((PATCH + 1))"
       cd "$FRONTEND_DIR"
       # 合并到 main
       git checkout main 2>/dev/null
@@ -237,7 +237,7 @@ else
       echo "  ✓ 前端版本已记录"
     fi
   else
-    echo "  ⚠ 前端分支: ${FRONTEND_BRANCH}（非 fe/x.y.z 格式，跳过）"
+    echo "  ⚠ 前端分支: ${FRONTEND_BRANCH}（非 daily/x.y.z 格式，跳过）"
   fi
 
   # --- 后端版本 ---

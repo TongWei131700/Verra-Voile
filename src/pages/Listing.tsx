@@ -320,6 +320,20 @@ export default function Listing() {
               <p className="product-card__desc">浪漫法兰西，从普罗旺斯到巴黎的梦幻婚礼</p>
             </div>
           </div>
+          {/* 希腊目的地入口 */}
+          <div
+            className="product-card"
+            onClick={() => navigate('/crawled-greece')}
+          >
+            <div className="product-card__img">
+              <FallbackImage src="https://images.unsplash.com/photo-1570071677475-280c43668156?w=600" alt="希腊" />
+              <span className="product-card__explore">探索</span>
+            </div>
+            <div className="product-card__info">
+              <h3 className="product-card__name">希腊目的地</h3>
+              <p className="product-card__desc">爱琴海上的浪漫婚礼，从圣托里尼到雅典</p>
+            </div>
+          </div>
           {categories.map((item) => {
             const booked = bookedMap[item.id]
             const isBooked = !!booked && booked.length > 0

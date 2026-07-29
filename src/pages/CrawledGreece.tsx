@@ -327,7 +327,7 @@ export default function CrawledGreece() {
           {filteredList.length > 0 ? (
             filteredList.map(item => (
               <div key={item.id} className="cd-card" onClick={() => openDetail(item.slug)}>
-                <div className="cd-card__imgwrap">
+                <div className="cd-card__img-wrap">
                   <img src={imgUrl(item.cover_image)} alt={item.name} className="cd-card__img" />
                   <div className="cd-card__img-overlay" />
                   <span className="cd-card__country">{item.country_cn}</span>

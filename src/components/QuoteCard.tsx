@@ -34,8 +34,8 @@ export default function QuoteCard({ venue, booked }: QuoteCardProps) {
 
         {/* 价格 */}
         <div className="quote-card__price">
-          <span className="quote-card__price-num">{venue.price}</span>
-          <span className="quote-card__price-unit">{venue.unit}</span>
+          <span className="quote-card__price-num">{venue.price === 0 ? '——' : venue.price}</span>
+          {venue.price !== 0 && <span className="quote-card__price-unit">{venue.unit}</span>}
         </div>
 
         {/* 特点 */}

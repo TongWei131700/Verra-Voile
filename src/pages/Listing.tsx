@@ -292,6 +292,34 @@ export default function Listing() {
           </div>
         ) : (
         <RevealGroup stagger={120} perRow={3} className="product-grid">
+          {/* 爬取目的地入口 */}
+          <div
+            className="product-card"
+            onClick={() => navigate('/crawled-destinations')}
+          >
+            <div className="product-card__img">
+              <FallbackImage src="https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?w=600" alt="意大利" />
+              <span className="product-card__explore">探索</span>
+            </div>
+            <div className="product-card__info">
+              <h3 className="product-card__name">意大利目的地</h3>
+              <p className="product-card__desc">精选意大利浪漫婚礼目的地，开启你的梦想婚礼</p>
+            </div>
+          </div>
+          {/* 法国目的地入口 */}
+          <div
+            className="product-card"
+            onClick={() => navigate('/crawled-france')}
+          >
+            <div className="product-card__img">
+              <FallbackImage src="https://images.unsplash.com/photo-1502602682916-715737543b1c?w=600" alt="法国" />
+              <span className="product-card__explore">探索</span>
+            </div>
+            <div className="product-card__info">
+              <h3 className="product-card__name">法国目的地</h3>
+              <p className="product-card__desc">浪漫法兰西，从普罗旺斯到巴黎的梦幻婚礼</p>
+            </div>
+          </div>
           {categories.map((item) => {
             const booked = bookedMap[item.id]
             const isBooked = !!booked && booked.length > 0

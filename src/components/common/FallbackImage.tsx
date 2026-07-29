@@ -7,8 +7,9 @@ interface FallbackImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   alt?: string
 }
 
-export default function FallbackImage({ src, alt = '', ...rest }: FallbackImageProps) {
+export default function FallbackImage({ src, alt = '', className = '', ...rest }: FallbackImageProps) {
   const [imgSrc, setImgSrc] = useState(src)
+  const [loaded, setLoaded] = useState(false)
 
   const handleError = () => {
     if (imgSrc !== FALLBACK_IMG) {
@@ -16,5 +17,17 @@ export default function FallbackImage({ src, alt = '', ...rest }: FallbackImageP
     }
   }
 
-  return <img src={imgSrc} alt={alt} onError={handleError} {...rest} />
+  return (
+    <div className={`fallback-img-wrapper ${className}`}>
+      {!loaded && <div className="fallback-img-skeleton" />}
+      <img
+        src={imgSrc}
+        alt={alt}
+        className={`fallback-img ${loaded ? 'fallback-img--loaded' : ''}`}
+        onError={handleError}
+        onLoad={() => setLoaded(true)}
+        {...rest}
+      />
+    </div>
+  )
 }

@@ -10,6 +10,8 @@ import Upload from './pages/Upload'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import OrderDetail from './pages/OrderDetail'
+import CrawledDestinations from './pages/CrawledDestinations'
+import CrawledFrance from './pages/CrawledFrance'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -34,6 +36,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/order" element={<OrderDetail />} />
+        <Route path="/crawled-destinations" element={<CrawledDestinations />} />
+        <Route path="/crawled-france" element={<CrawledFrance />} />
       </Routes>
     </>
   )

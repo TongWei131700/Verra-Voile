@@ -121,9 +121,87 @@ export const swissVenues: VenueCategory[] = [
   },
 ]
 
+export const bordeauxVenues: VenueCategory[] = [
+  {
+    id: 'manor',
+    label: '庄园',
+    labelEn: 'Manor & Château',
+    icon: '🏰',
+    venues: [
+      { id: 'chateau-valouze', name: '瓦卢兹城堡', nameEn: 'Château de la Valouze', desc: '波尔多乡野间的百年庄园，43间卧室可容纳96人住宿。Grand Hall可举办150人晚宴或200人派对，配有地下爵士吧、Black Swan夜店、泳池及34公顷公园', img: 'https://smp-is.stylemepretty.com/uploads/portfolio/511492/hyepjvq$!1200x.jpg', price: 0, unit: '——', capacity: '96-200人', highlight: '' },
+    ],
+  },
+]
+
+export const dublinVenues: VenueCategory[] = [
+  {
+    id: 'manor',
+    label: '庄园',
+    labelEn: 'Manor & Château',
+    icon: '🏰',
+    venues: [
+      { id: 'luttrellstown-castle', name: '拉特雷尔斯敦城堡', nameEn: 'Luttrellstown Castle', desc: '都柏林近郊的专属城堡庄园，适合独家婚礼派对、商务活动及影视拍摄，中世纪建筑与翡翠绿茵交相辉映', img: 'https://smp-is.stylemepretty.com/uploads/lbb/default-listing$!1200x.png', price: 0, unit: '——', capacity: '——', highlight: '' },
+    ],
+  },
+]
+
+export const newyorkVenues: VenueCategory[] = [
+  {
+    id: 'lakeside',
+    label: '湖畔',
+    labelEn: 'Lakeside',
+    icon: '🏞️',
+    venues: [
+      { id: 'lake-house-canandaigua', name: '卡南代瓜湖畔庄园', nameEn: 'The Lake House on Canandaigua', desc: '纽约指金湖畔的顶级度假胜地，拥有专属婚礼策划师、精致花园、湖畔场地与世界级餐饮，打造难忘的婚礼周末体验', img: 'https://smp-is.stylemepretty.com/uploads/portfolio/556707/1js5j86$!1200x.JPG', price: 0, unit: '——', capacity: '——', highlight: '' },
+    ],
+  },
+]
+
+export const tampaVenues: VenueCategory[] = [
+  {
+    id: 'manor',
+    label: '庄园',
+    labelEn: 'Manor & Estate',
+    icon: '🏰',
+    venues: [
+      { id: 'mill-pond-estate', name: '磨坊池塘庄园', nameEn: 'Mill Pond Estate', desc: '坦帕户外婚礼场地，灵感丰富的户外仪式与接待空间，每年限量接待新人，专注打造个性化婚礼体验，欢迎所有伴侣', img: 'https://smp-is.stylemepretty.com/uploads/portfolio/547814/2tu2pyvjq$!1200x.jpg', price: 0, unit: '——', capacity: '——', highlight: '' },
+    ],
+  },
+]
+
+export const capeCodVenues: VenueCategory[] = [
+  {
+    id: 'hotel',
+    label: '度假村',
+    labelEn: 'Resort & Club',
+    icon: '🏨',
+    venues: [
+      { id: 'wychmere-beach-club', name: '威奇米尔海滩俱乐部', nameEn: 'Wychmere Beach Club', desc: '科德角海滨度假胜地，将新英格兰经典美式风格与航海优雅完美融合，海景露台与海滨仪式场地提供绝美背景', img: 'https://smp-is.stylemepretty.com/uploads/portfolio/570081/40vobao$!1200x.jpg', price: 0, unit: '——', capacity: '——', highlight: '' },
+    ],
+  },
+]
+
+export const parkCityVenues: VenueCategory[] = [
+  {
+    id: 'manor',
+    label: '庄园',
+    labelEn: 'Ranch & Estate',
+    icon: '🏰',
+    venues: [
+      { id: 'river-bottoms-ranch', name: '河滩牧场', nameEn: 'River Bottoms Ranch', desc: '落基山脉脚下的现代农舍风格牧场，白色谷仓大厅可容纳175位晚宴或300位派对嘉宾，360度山谷、河流与雪山全景', img: 'https://smp-is.stylemepretty.com/uploads/portfolio/532904/41q3uvx$!1200x.JPG', price: 0, unit: '——', capacity: '175-300人', highlight: '' },
+    ],
+  },
+]
+
 /** cityId → VenueCategory[] 映射 */
 export const cityVenuesMap: Record<number, VenueCategory[]> = {
   1: parisVenues,
   13: croatiaVenues,
   14: swissVenues,
+  15: bordeauxVenues,
+  16: dublinVenues,
+  17: newyorkVenues,
+  18: tampaVenues,
+  19: capeCodVenues,
+  20: parkCityVenues,
 }

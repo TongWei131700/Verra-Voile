@@ -53,6 +53,9 @@ function CityCard({ city }: { city: City }) {
   )
 }
 
+/** 首页“欧陆十二城”仅展示前 12 个城市（id 1-12），与 listing 目的地页的完整城市列表分开 */
+const HOME_CITIES = cities.filter(c => c.id <= 12)
+
 export default function Destinations() {
   return (
     <section id="destinations" className="destinations">
@@ -61,7 +64,7 @@ export default function Destinations() {
         " 从塞纳河的浪漫到爱琴海的湛蓝，从泰晤士河畔的庄重到亚得里亚海的诗意 —— 选一座城，许一生约定。"
       </p>
       <RevealGroup stagger={120} perRow={4} className="cities-grid">
-        {cities.map((city) => (
+        {HOME_CITIES.map((city) => (
           <CityCard key={city.id} city={city} />
         ))}
       </RevealGroup>

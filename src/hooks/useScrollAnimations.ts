@@ -30,7 +30,7 @@ export function useRevealOnScroll<T extends HTMLElement = HTMLElement>(className
 }
 
 /**
- * 批量 reveal observer — 观察容器内所有子元素
+ * 批量 reveal observer — 观察容器，容器进入视口时所有子元素同时触发动画
  * @param stagger 交错延迟(ms)，每个子元素依次延迟该时间
  * @param perRow 每行数量，用于按行交错（可选，默认按全部子元素顺序交错）
  * @param onReveal 元素进入视口后的回调（可选）
@@ -52,25 +52,27 @@ export function useRevealChildren<T extends HTMLElement = HTMLElement>(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const idx = elements.indexOf(entry.target as HTMLElement)
-            const delay = stagger > 0 ? (idx % (perRow ?? elements.length)) * stagger : 0
-            const reveal = () => {
-              (entry.target as HTMLElement).classList.add(className)
-              onReveal?.(entry.target as HTMLElement)
-            }
-            if (delay > 0) {
-              setTimeout(reveal, delay)
-            } else {
-              reveal()
-            }
+            // 容器进入视口，所有子元素同时触发（带交错延迟）
+            elements.forEach((el, idx) => {
+              const delay = stagger > 0 ? (idx % (perRow ?? elements.length)) * stagger : 0
+              const reveal = () => {
+                el.classList.add(className)
+                onReveal?.(el)
+              }
+              if (delay > 0) {
+                setTimeout(reveal, delay)
+              } else {
+                reveal()
+              }
+            })
             observer.unobserve(entry.target)
           }
         })
       },
-      { threshold: 0.15, rootMargin: '0px 0px -80px 0px', ...observerOpts }
+      { threshold: 0.05, rootMargin: '0px 0px -40px 0px', ...observerOpts }
     )
 
-    elements.forEach((el) => observer.observe(el))
+    observer.observe(container)
     return () => observer.disconnect()
   }, [selector, className, stagger, perRow, onReveal])
 

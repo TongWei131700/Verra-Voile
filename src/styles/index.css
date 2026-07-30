@@ -5880,3 +5880,284 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .cd-source p { font-size: 13px; color: #aaa; }
 .cd-source a { color: var(--rose-gold); text-decoration: none; word-break: break-all; }
 .cd-source a:hover { text-decoration: underline; }
+
+/* ====== TestDestination 页面 ====== */
+.test-dest-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at top, rgba(114, 47, 55, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(212, 184, 150, 0.12) 0%, transparent 60%),
+    #1f1a18;
+  color: var(--ivory);
+  padding-bottom: 60px;
+}
+
+.test-dest-header {
+  position: relative;
+  text-align: center;
+  padding: 80px 60px 50px;
+}
+.test-dest-header .cust-back {
+  position: absolute;
+  top: 40px;
+  left: 60px;
+  color: var(--champagne);
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 3px;
+  padding: 8px 18px;
+  border: 1px solid rgba(212, 184, 150, 0.4);
+  transition: all 0.3s ease;
+}
+.test-dest-header .cust-back:hover {
+  background: rgba(212, 184, 150, 0.15);
+  border-color: var(--champagne);
+  color: var(--ivory);
+}
+.test-dest-header__content { max-width: 600px; margin: 0 auto; }
+.test-dest-header__script {
+  font-family: 'Great Vibes', cursive;
+  font-size: 42px;
+  color: var(--rose-gold);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.test-dest-header__title {
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: 8px;
+  color: var(--ivory);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.test-dest-header__content .divider {
+  width: 60px;
+  height: 1px;
+  background: var(--champagne);
+  margin: 24px auto;
+}
+.test-dest-header__sub {
+  font-size: 17px;
+  color: rgba(212, 184, 150, 0.85);
+  font-style: italic;
+  margin-top: 16px;
+}
+
+/* 城市列表 */
+.test-dest-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 50px 60px 40px;
+}
+.test-dest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* 卡片 */
+.test-dest-card {
+  display: flex;
+  align-items: stretch;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 184, 150, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.45s ease,
+              border-color 0.4s ease;
+}
+.test-dest-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(212, 184, 150, 0.3);
+}
+.test-dest-card--reverse {
+  flex-direction: row-reverse;
+}
+
+/* 图片区 */
+.test-dest-card__image {
+  position: relative;
+  flex: 0 0 40%;
+  min-height: 240px;
+  overflow: hidden;
+}
+.test-dest-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+.test-dest-card:hover .test-dest-card__image img {
+  transform: scale(1.05);
+}
+.test-dest-card__overlay {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(31, 26, 24, 0.75);
+  border: 1px solid rgba(212, 184, 150, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.test-dest-card--reverse .test-dest-card__overlay {
+  left: auto;
+  right: 14px;
+}
+.test-dest-card__number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--champagne);
+}
+
+/* 文字区 */
+.test-dest-card__content {
+  flex: 1;
+  padding: 24px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.test-dest-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.test-dest-card__crest {
+  font-size: 16px;
+  color: var(--champagne);
+}
+.test-dest-card__country {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--rose-gold);
+  font-weight: 600;
+}
+.test-dest-card__name {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--ivory);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.test-dest-card__style {
+  font-size: 13px;
+  color: var(--champagne);
+  font-style: italic;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.test-dest-card__desc {
+  font-size: 14px;
+  color: rgba(212, 184, 150, 0.9);
+  line-height: 1.7;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.test-dest-card__intro {
+  font-size: 13px;
+  color: rgba(250, 247, 242, 0.5);
+  line-height: 1.75;
+  margin-bottom: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.test-dest-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rose-gold);
+  letter-spacing: 1px;
+  transition: gap 0.3s ease;
+}
+.test-dest-card:hover .test-dest-card__cta {
+  gap: 14px;
+}
+
+/* 底部 */
+.test-dest-footer {
+  text-align: center;
+  padding: 50px 20px 30px;
+}
+.test-dest-footer .divider {
+  width: 60px;
+  height: 1px;
+  background: var(--champagne);
+  margin: 0 auto 20px;
+}
+.test-dest-footer .script {
+  font-size: 24px;
+  color: var(--rose-gold);
+  margin-bottom: 8px;
+}
+.test-dest-footer p:last-child {
+  font-size: 14px;
+  color: rgba(212, 184, 150, 0.7);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .test-dest-header {
+    padding: 60px 20px 40px;
+  }
+  .test-dest-header .cust-back {
+    left: 20px;
+    top: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .test-dest-header__title {
+    font-size: 28px;
+    letter-spacing: 4px;
+  }
+  .test-dest-header__script {
+    font-size: 32px;
+  }
+  .test-dest-list {
+    gap: 20px;
+    padding: 20px 16px;
+  }
+  .test-dest-card,
+  .test-dest-card--reverse {
+    flex-direction: column;
+  }
+  .test-dest-card__image {
+    flex: none;
+    min-height: 200px;
+    max-height: 240px;
+  }
+  .test-dest-card__overlay {
+    left: 12px;
+    right: auto;
+    width: 38px;
+    height: 38px;
+  }
+  .test-dest-card--reverse .test-dest-card__overlay {
+    left: 12px;
+    right: auto;
+  }
+  .test-dest-card__content {
+    padding: 20px 18px;
+  }
+  .test-dest-card__name {
+    font-size: 22px;
+  }
+  .test-dest-card__intro {
+    -webkit-line-clamp: 2;
+  }
+}

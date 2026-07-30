@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import GalleryCarousel from '../components/common/GalleryCarousel'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_BASE = import.meta.env.VITE_API_URL || ''
 
 const imgUrl = (src: string) => {
   if (!src) return ''
@@ -27,12 +28,7 @@ export default function CrawledDestinations() {
   const [list, setList] = useState<CrawledDestination[]>([])
   const [detail, setDetail] = useState<DestinationDetail | null>(null)
   const [loading, setLoading] = useState(true)
-  const [imgIdx, setImgIdx] = useState(0)
   const [scrollY, setScrollY] = useState(0)
-  const [autoPlay, setAutoPlay] = useState(true)
-  const [fade, setFade] = useState(true)
-  const [lightbox, setLightbox] = useState(false)
-  const [touchStart, setTouchStart] = useState(0)
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<Set<string>>(new Set())
 
   // 汇总所有场地类型（去重）
@@ -63,29 +59,6 @@ export default function CrawledDestinations() {
     })
   }
 
-  // 触摸滑动
-  const onTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX)
-  const onTouchEnd = (e: React.TouchEvent) => {
-    const diff = touchStart - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) goImg((imgIdx + 1) % (detail?.images?.length || 1))
-      else goImg((imgIdx - 1 + (detail?.images?.length || 1)) % (detail?.images?.length || 1))
-    }
-  }
-
-  // 自动轮播
-  useEffect(() => {
-    if (!autoPlay || !detail) return
-    const timer = setInterval(() => {
-      setFade(false)
-      setTimeout(() => {
-        setImgIdx(i => (i + 1) % (detail.images?.length || 1))
-        setFade(true)
-      }, 300)
-    }, 4000)
-    return () => clearInterval(timer)
-  }, [autoPlay, detail])
-
   useEffect(() => {
     fetch(`${API_BASE}/api/products/crawled-destinations`)
       .then(r => r.json())
@@ -99,20 +72,11 @@ export default function CrawledDestinations() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [onScroll])
 
-  const goImg = (idx: number) => {
-    setAutoPlay(false)
-    setFade(false)
-    setTimeout(() => {
-      setImgIdx(idx)
-      setFade(true)
-    }, 200)
-  }
-
   const openDetail = (slug: string) => {
     window.scrollTo(0, 0)
     fetch(`${API_BASE}/api/products/crawled-destinations/${slug}`)
       .then(r => r.json())
-      .then(res => { if (res.success) { setDetail(res.data); setImgIdx(0) } })
+      .then(res => { if (res.success) { setDetail(res.data) } })
   }
 
   if (loading) {
@@ -153,53 +117,7 @@ export default function CrawledDestinations() {
         <button className="cd-back" onClick={() => { setDetail(null); window.scrollTo(0, 0) }}>← 返回</button>
 
         {/* 图片画廊 — 轮播 */}
-        {imgs.length > 0 && (
-          <section className="cd-gallery" onMouseEnter={() => setAutoPlay(false)} onMouseLeave={() => setAutoPlay(true)}
-            onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-            <div className="cd-gallery__viewer">
-              <img src={imgUrl(imgs[imgIdx])} alt="" className={`cd-gallery__main-img ${fade ? 'cd-gallery__fade-in' : 'cd-gallery__fade-out'}`}
-                onClick={() => { setAutoPlay(false); setLightbox(true) }} style={{ cursor: 'zoom-in' }} />
-              <button className="cd-gallery__arrow cd-gallery__arrow--left" onClick={() => goImg((imgIdx - 1 + imgs.length) % imgs.length)}>
-                <svg width="24" height="24" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" fill="none"/></svg>
-              </button>
-              <button className="cd-gallery__arrow cd-gallery__arrow--right" onClick={() => goImg((imgIdx + 1) % imgs.length)}>
-                <svg width="24" height="24" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" fill="none"/></svg>
-              </button>
-              <div className="cd-gallery__counter">{imgIdx + 1} / {imgs.length}</div>
-              {/* 轮播指示器 */}
-              <div className="cd-gallery__dots">
-                {imgs.map((_, i) => (
-                  <span key={i} className={`cd-gallery__dot ${i === imgIdx ? 'active' : ''}`} onClick={() => goImg(i)} />
-                ))}
-              </div>
-            </div>
-            <div className="cd-gallery__strip">
-              {imgs.map((src, i) => (
-                <div key={i} className={`cd-gallery__thumb-wrap ${i === imgIdx ? 'active' : ''}`} onClick={() => goImg(i)}>
-                  <img src={imgUrl(src)} alt="" className="cd-gallery__thumb" />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Lightbox 放大查看 */}
-        {lightbox && (
-          <div className="cd-lightbox" onClick={() => { setLightbox(false); setAutoPlay(true) }}
-            onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-            <button className="cd-lightbox__close" onClick={() => { setLightbox(false); setAutoPlay(true) }}>
-              <svg width="28" height="28" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#fff" strokeWidth="2" fill="none"/></svg>
-            </button>
-            <button className="cd-lightbox__arrow cd-lightbox__arrow--left" onClick={e => { e.stopPropagation(); goImg((imgIdx - 1 + imgs.length) % imgs.length) }}>
-              <svg width="28" height="28" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="#fff" strokeWidth="2" fill="none"/></svg>
-            </button>
-            <img src={imgUrl(imgs[imgIdx])} alt="" className="cd-lightbox__img" onClick={e => e.stopPropagation()} />
-            <button className="cd-lightbox__arrow cd-lightbox__arrow--right" onClick={e => { e.stopPropagation(); goImg((imgIdx + 1) % imgs.length) }}>
-              <svg width="28" height="28" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="#fff" strokeWidth="2" fill="none"/></svg>
-            </button>
-            <div className="cd-lightbox__counter">{imgIdx + 1} / {imgs.length}</div>
-          </div>
-        )}
+        <GalleryCarousel images={imgs.map(imgUrl)} />
 
         {/* 内容区 */}
         <div className="cd-content">

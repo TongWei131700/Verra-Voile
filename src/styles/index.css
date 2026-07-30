@@ -2410,11 +2410,13 @@ section { padding: 120px 60px; }
   background: linear-gradient(90deg, #e8e4df 25%, #f5f2ed 50%, #e8e4df 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
-  z-index: 1;
+  z-index: 0;
 }
 
 .fallback-img {
   display: block;
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -5455,16 +5457,14 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .cd-list-hero {
   position: relative; height: 70vh; min-height: 420px; overflow: hidden;
 }
-.cd-list-hero__bg {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; filter: brightness(0.7);
-}
+.cd-list-hero__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cd-list-hero__bg .fallback-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
 .cd-list-hero__overlay {
-  position: absolute; inset: 0;
+  position: absolute; inset: 0; z-index: 1;
   background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%);
 }
 .cd-list-hero__content {
-  position: absolute; inset: 0; display: flex; flex-direction: column;
+  position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column;
   align-items: center; justify-content: center; color: #fff; text-align: center;
 }
 .cd-list-hero__sub {
@@ -5580,11 +5580,9 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .cd-card__img-wrap {
   position: relative; height: 240px; overflow: hidden;
 }
-.cd-card__img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
-}
-.cd-card:hover .cd-card__img { transform: scale(1.08); }
+.cd-card__img { width: 100%; height: 100%; }
+.cd-card__img .fallback-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+.cd-card:hover .cd-card__img .fallback-img { transform: scale(1.08); }
 .cd-card__img-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
@@ -5626,18 +5624,17 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   position: absolute; inset: -10% 0 0 0; height: 120%;
   will-change: transform;
 }
-.cd-hero__img {
-  width: 100%; height: 100%; object-fit: cover;
-}
+.cd-hero__img { width: 100%; height: 100%; object-fit: cover; }
+.cd-hero__img .fallback-img { width: 100%; height: 100%; object-fit: cover; }
 .cd-hero__overlay {
-  position: absolute; inset: 0;
+  position: absolute; inset: 0; z-index: 1;
   background: linear-gradient(180deg,
     rgba(0,0,0,0.1) 0%,
     rgba(0,0,0,0.05) 40%,
     rgba(0,0,0,0.6) 100%);
 }
 .cd-hero__content {
-  position: absolute; bottom: 0; left: 0; right: 0;
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
   padding: 50px 40px 50px; color: #fff; text-align: center;
 }
 .cd-hero__badge {
@@ -5681,14 +5678,25 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   position: relative; max-width: 1200px; margin: 0 auto;
   aspect-ratio: 16/9; overflow: hidden;
 }
-.cd-gallery__main-img {
-  width: 100%; height: 100%; object-fit: contain;
-  transition: opacity 0.3s ease;
+.cd-gallery__main-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.cd-gallery__main-img .fallback-img { width: 100%; height: 100%; object-fit: cover; }
+/* 滑动动画期间隐藏骨架屏，避免闪烁 */
+.cd-gallery__slide-in--left .fallback-img-skeleton,
+.cd-gallery__slide-in--right .fallback-img-skeleton,
+.cd-gallery__slide-out .fallback-img-skeleton { display: none; }
+/* 滑入动画：新图从左/右滑入覆盖旧图 */
+.cd-gallery__slide-in--left { animation: cdSlideInLeft 0.4s ease forwards; z-index: 2; }
+.cd-gallery__slide-in--right { animation: cdSlideInRight 0.4s ease forwards; z-index: 2; }
+@keyframes cdSlideInLeft {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }
-.cd-gallery__fade-in { opacity: 1; }
-.cd-gallery__fade-out { opacity: 0; }
+@keyframes cdSlideInRight {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
 .cd-gallery__arrow {
-  position: absolute; top: 50%; transform: translateY(-50%);
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
   background: rgba(255,255,255,0.15); border: none; color: #fff;
   width: 48px; height: 48px; border-radius: 50%; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -5699,7 +5707,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .cd-gallery__arrow--left { left: 16px; }
 .cd-gallery__arrow--right { right: 16px; }
 .cd-gallery__counter {
-  position: absolute; bottom: 16px; right: 16px;
+  position: absolute; bottom: 16px; right: 16px; z-index: 3;
   background: rgba(0,0,0,0.5); color: #fff;
   padding: 4px 14px; border-radius: 12px; font-size: 12px;
 }
@@ -5729,9 +5737,8 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 }
 .cd-gallery__thumb-wrap:hover { opacity: 0.7; }
 .cd-gallery__thumb-wrap.active { opacity: 1; border-color: var(--champagne); }
-.cd-gallery__thumb {
-  width: 100%; height: 100%; object-fit: cover;
-}
+.cd-gallery__thumb { width: 100%; height: 100%; }
+.cd-gallery__thumb .fallback-img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ===== Lightbox 放大查看 ===== */
 .cd-lightbox {
@@ -5742,10 +5749,8 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   animation: cd-lb-in 0.25s ease;
 }
 @keyframes cd-lb-in { from { opacity: 0; } to { opacity: 1; } }
-.cd-lightbox__img {
-  max-width: 88vw; max-height: 85vh; object-fit: contain;
-  border-radius: 8px; box-shadow: 0 12px 60px rgba(0,0,0,0.4);
-}
+.cd-lightbox__img { max-width: 88vw; max-height: 85vh; }
+.cd-lightbox__img .fallback-img { max-width: 88vw; max-height: 85vh; object-fit: contain; border-radius: 8px; box-shadow: 0 12px 60px rgba(0,0,0,0.4); }
 .cd-lightbox__close {
   position: absolute; top: 20px; right: 20px;
   background: rgba(255,255,255,0.15); border: none; border-radius: 50%;
@@ -5836,6 +5841,36 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   box-shadow: 0 2px 8px rgba(183,110,121,0.2);
 }
 .cd-budget-item__label { color: #fff; font-size: 13px; font-weight: 500; }
+
+/* FAQ 手风琴 */
+.cd-faq { padding: 48px 0 32px; }
+.cd-faq__subtitle { font-size: 13px; color: #aaa; margin-bottom: 20px; font-style: italic; }
+.cd-faq__accordion {
+  border: 1px solid #d9d9d9; border-radius: 8px; overflow: hidden;
+}
+.cd-faq__item { border-bottom: 1px solid #d9d9d9; }
+.cd-faq__item:last-child { border-bottom: none; }
+.cd-faq__question {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px; background: none; border: none; cursor: pointer;
+  font-size: 15px; color: #222; text-align: left; gap: 12px;
+  transition: background 0.2s;
+}
+.cd-faq__question:hover { background: #fafafa; }
+.cd-faq__arrow {
+  flex-shrink: 0; transition: transform 0.25s ease; color: #888;
+}
+.cd-faq__arrow--open { transform: rotate(180deg); }
+.cd-faq__answer {
+  padding: 0 20px 16px 20px; animation: cdFaqSlide 0.25s ease;
+}
+.cd-faq__answer p {
+  font-size: 14px; color: #555; line-height: 1.7; margin: 0;
+}
+@keyframes cdFaqSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* 来源 */
 .cd-source {

@@ -94,24 +94,25 @@ VALUES ('slug值', '英文名', '中文名', 'England', '英国', '来源URL', '
 
 ---
 
-### Step 4: 下载压缩图片到本地（关键步骤）
+### Step 4: 下载图片到本地（关键步骤）
 
-数据入库后，**必须立即执行**图片下载压缩脚本：
+数据入库后，**必须立即执行**图片下载脚本（使用 puppeteer 无头浏览器绕过 CDN 防盗链）：
 
 ```bash
-cd /Users/hongli/WorkSpace/Verra-Voile-End && node scripts/download-images.js
+cd /Users/hongli/WorkSpace/Verra-Voile-End && node scripts/download-images-puppeteer.cjs
 ```
 
 **脚本自动完成**：
 1. 从 `crawled_destinations` 表读取所有图片URL和 `cover_image_url`
-2. 封面图（第1张）从 `cover_image_url` 下载，**保存原图不压缩**（仅做方向校正）
-3. 其余图片用 sharp 压缩：最大宽度 1200px，JPEG 质量 80（mozjpeg）
+2. 通过无头浏览器访问图片URL，绕过 Akamai 等 CDN 防盗链
+3. 所有图片**保存原图，不压缩**
 4. 存储到 `uploads/crawled/{slug}/` 目录
-5. 更新数据库中 `cover_image` 和 `images` 字段为本地路径 `/uploads/crawled/...`
-6. 已存在的图片自动跳过，不会重复下载
-7. 如果封面本地文件丢失，自动从 `cover_image_url` 重新下载原图
+5. 自动检测实际文件格式，修正错误扩展名（如 .webp 实际是 JPEG 需改为 .jpeg）
+6. 更新数据库中 `cover_image` 和 `images` 字段为本地路径 `/uploads/crawled/...`
+7. 已存在的图片自动跳过，不会重复下载
+8. 每个商品最多下载 12 张图片
 
-**依赖**：需要 `sharp` 库（已在 package.json 中安装）
+**依赖**：需要 `puppeteer-core` 库（已在 package.json 中安装）
 
 ---
 
@@ -187,7 +188,8 @@ for d in data:
 ## 注意事项
 
 - 所有展示文本必须为中文，英文内容需翻译
+- **头图极其重要**：必须从所有图片中选择宽度最大的作为 cover_image，优先航拍/全景图，禁止竖版窄图（拉伸会模糊）
 - 图片脚本支持断点续传：已下载的图片自动跳过
 - 下载失败的图片保留原始外部URL，不影响其他图片
 - 部署后本地图片自动通过 `https://www.europewedding.cn/uploads/...` 访问
-- 每次爬取新目的地后都要运行 `node scripts/download-images.js`
+- 每次爬取新目的地后都要运行 `node scripts/download-images-puppeteer.cjs`

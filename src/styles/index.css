@@ -5505,6 +5505,27 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   transform: translateX(-2px);
 }
 
+/* ===== 国家 Tab 切换 ===== */
+.cd-country-tabs {
+  display: flex; justify-content: center; gap: 8px;
+  padding: 24px 16px 0; max-width: 600px; margin: 0 auto;
+}
+.cd-country-tab {
+  padding: 10px 28px; border: 1px solid rgba(180,160,130,.25);
+  border-radius: 999px; background: transparent; color: #8a7e6e;
+  font-size: 15px; cursor: pointer; transition: all .3s;
+  font-family: inherit;
+}
+.cd-country-tab:hover { background: rgba(180,160,130,.08); color: #5a5040; }
+.cd-country-tab--active {
+  background: linear-gradient(135deg,#c9a96e,#b8935a); color: #fff;
+  border-color: transparent; box-shadow: 0 2px 12px rgba(201,169,110,.3);
+}
+@media (max-width: 480px) {
+  .cd-country-tabs { gap: 6px; padding: 16px 12px 0; }
+  .cd-country-tab { padding: 8px 18px; font-size: 13px; }
+}
+
 /* ===== 筛选 + 卡片布局 ===== */
 .cd-filter-layout {
   max-width: 1200px; margin: 0 auto; padding: 60px 24px 80px;

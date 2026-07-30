@@ -11,10 +11,10 @@ const europeanCities = cities.filter(c =>
 
 // 国家 → 爬取页面路由映射
 const countryRouteMap: Record<string, string> = {
-  '法国': '/crawled-france',
-  '希腊': '/crawled-greece',
-  '葡萄牙': '/crawled-portugal',
-  '意大利': '/crawled-destinations',
+  '法国': '/europe/france',
+  '希腊': '/europe/greece',
+  '葡萄牙': '/europe/portugal',
+  '意大利': '/europe/italy',
 }
 
 export default function TestDestination() {

@@ -57,9 +57,8 @@ export default function CrawledCountries() {
 
   // 按当前国家筛选
   const list = useMemo(() => {
-    if (currentKey === 'italy') return allData
     return allData.filter(d => d.country === currentCountry.code)
-  }, [allData, currentKey, currentCountry.code])
+  }, [allData, currentCountry.code])
 
   // 汇总所有场地类型（去重）
   const allVenueTypes = useMemo(() => {

@@ -1,7 +1,6 @@
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
-import GalleryCarousel from '../components/common/GalleryCarousel'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -17,6 +16,7 @@ const COUNTRIES: Record<string, { code: string; label: string; en: string; sub: 
   france:  { code: 'France',   label: '法国',   en: 'France',  sub: 'France Destination Wedding' },
   greece:  { code: 'Greece',   label: '希腊',   en: 'Greece',  sub: 'Greece Destination Wedding' },
   portugal:{ code: 'Portugal', label: '葡萄牙', en: 'Portugal',sub: 'Portugal Destination Wedding' },
+  uk:      { code: 'UK',       label: '英国',   en: 'UK',      sub: 'UK Destination Wedding' },
 }
 
 interface CrawledDestination {
@@ -28,10 +28,6 @@ interface CrawledDestination {
   budget_ranges: { label: string; min: number; max: number | null }[]
   guest_capacities: string[]; sort_order: number
 }
-interface DestinationDetail extends CrawledDestination {
-  description: string; images: string[]
-  faq: { q: string; a: string }[]
-}
 
 export default function CrawledCountries() {
   const { country = 'italy' } = useParams<{ country: string }>()
@@ -40,20 +36,8 @@ export default function CrawledCountries() {
   const currentCountry = COUNTRIES[currentKey]
 
   const [allData, setAllData] = useState<CrawledDestination[]>([])
-  const [detail, setDetail] = useState<DestinationDetail | null>(null)
   const [loading, setLoading] = useState(true)
-  const [scrollY, setScrollY] = useState(0)
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<Set<string>>(new Set())
-  const [openFaq, setOpenFaq] = useState<Set<number>>(new Set())
-
-  const toggleFaq = (idx: number) => {
-    setOpenFaq(prev => {
-      const next = new Set(prev)
-      if (next.has(idx)) next.delete(idx)
-      else next.add(idx)
-      return next
-    })
-  }
 
   // 按当前国家筛选
   const list = useMemo(() => {
@@ -88,10 +72,9 @@ export default function CrawledCountries() {
     })
   }
 
-  // 切换国家时重置筛选和详情
+  // 切换国家时重置筛选
   useEffect(() => {
     setSelectedVenueTypes(new Set())
-    setDetail(null)
     window.scrollTo(0, 0)
   }, [currentKey])
 
@@ -102,145 +85,12 @@ export default function CrawledCountries() {
       .finally(() => setLoading(false))
   }, [])
 
-  const onScroll = useCallback(() => setScrollY(window.scrollY), [])
-  useEffect(() => {
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [onScroll])
-
-  const openDetail = (slug: string) => {
-    window.scrollTo(0, 0)
-    fetch(`${API_BASE}/api/products/crawled-destinations/${slug}`)
-      .then(r => r.json())
-      .then(res => { if (res.success) { setDetail(res.data) } })
-  }
-
   if (loading) {
     return (
       <div className="cd-page">
         <div className="cd-loading">
           <div className="cd-spinner" />
           <p>加载目的地数据…</p>
-        </div>
-      </div>
-    )
-  }
-
-  /* ========== 详情视图 ========== */
-  if (detail) {
-    const imgs = detail.images || []
-    return (
-      <div className="cd-page">
-        {/* 全屏首图 */}
-        <section className="cd-hero">
-          <div className="cd-hero__parallax" style={{ transform: `translateY(${scrollY * 0.35}px)` }}>
-            <FallbackImage src={imgUrl(detail.cover_image)} alt={detail.name_cn} className="cd-hero__img" />
-          </div>
-          <div className="cd-hero__overlay" />
-          <div className="cd-hero__content">
-            <span className="cd-hero__badge">{detail.country_cn}</span>
-            <h1 className="cd-hero__title">{detail.name_cn || detail.name}</h1>
-            <div className="cd-hero__divider" />
-            <p className="cd-hero__tagline">{detail.tagline}</p>
-          </div>
-          <div className="cd-hero__scroll" onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}>
-            <span>向下探索</span>
-            <svg width="20" height="12" viewBox="0 0 20 12"><path d="M1 1l9 9 9-9" stroke="#fff" strokeWidth="1.5" fill="none"/></svg>
-          </div>
-        </section>
-
-        {/* 返回按钮 */}
-        <button className="cd-back" onClick={() => { setDetail(null); window.scrollTo(0, 0) }}>← 返回</button>
-
-        {/* 图片画廊 — 轮播 */}
-        <GalleryCarousel images={imgs.map(imgUrl)} />
-
-        {/* 内容区 */}
-        <div className="cd-content">
-          {/* 介绍 */}
-          <section className="cd-block">
-            <h2 className="cd-block__title">关于这里</h2>
-            <div className="cd-block__body">
-              {detail.description.split('\n\n').map((p, i) => <p key={i}>{p}</p>)}
-            </div>
-          </section>
-
-          {/* 亮点 + 场地 并排 */}
-          <section className="cd-duo">
-            <div className="cd-duo__col">
-              <h2 className="cd-block__title">特色亮点</h2>
-              <ul className="cd-highlights">
-                {detail.features.map((f, i) => (
-                  <li key={i} className="cd-highlights__item">
-                    <span className="cd-highlights__dot" />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="cd-duo__col">
-              <h2 className="cd-block__title">场地类型</h2>
-              <div className="cd-chips">
-                {detail.venue_types.map((v, i) => (
-                  <span key={i} className="cd-chip">{v.name}</span>
-                ))}
-              </div>
-              <h2 className="cd-block__title" style={{ marginTop: 28 }}>推荐城镇</h2>
-              <div className="cd-chips">
-                {detail.towns.map((t, i) => (
-                  <span key={i} className="cd-chip cd-chip--alt">{t.name_cn}</span>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* 预算 + 宾客 */}
-          <section className="cd-block cd-block--alt">
-            <h2 className="cd-block__title">预算参考</h2>
-            <div className="cd-budgets">
-              {detail.budget_ranges.map((b, i) => (
-                <div key={i} className="cd-budget-item">
-                  <span className="cd-budget-item__label">{b.label}</span>
-                </div>
-              ))}
-            </div>
-            <h2 className="cd-block__title" style={{ marginTop: 28 }}>宾客规模</h2>
-            <div className="cd-chips">
-              {detail.guest_capacities.map((g, i) => (
-                <span key={i} className="cd-chip">{g}</span>
-              ))}
-            </div>
-          </section>
-
-          {/* FAQ 常见问题 */}
-          {detail.faq && detail.faq.length > 0 && (
-            <section className="cd-faq">
-              <h2 className="cd-block__title">常见问题</h2>
-              <p className="cd-faq__subtitle">{detail.name_cn || detail.name} frequently asked questions</p>
-              <div className="cd-faq__accordion">
-                {detail.faq.map((item, i) => (
-                  <div key={i} className={`cd-faq__item${openFaq.has(i) ? ' cd-faq__item--open' : ''}`}>
-                    <button className="cd-faq__question" onClick={() => toggleFaq(i)}>
-                      <span>{item.q}</span>
-                      <svg className={`cd-faq__arrow${openFaq.has(i) ? ' cd-faq__arrow--open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </button>
-                    {openFaq.has(i) && (
-                      <div className="cd-faq__answer">
-                        <p>{item.a}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* 来源 */}
-          <section className="cd-source">
-            <p>数据来源：<a href={detail.source_url} target="_blank" rel="noreferrer">{detail.source_url}</a></p>
-          </section>
         </div>
       </div>
     )
@@ -301,7 +151,7 @@ export default function CrawledCountries() {
         <div className="cd-list">
           {filteredList.length > 0 ? (
             filteredList.map(item => (
-              <div key={item.id} className="cd-card" onClick={() => openDetail(item.slug)}>
+              <div key={item.id} className="cd-card" onClick={() => navigate(`/venue/${item.slug}`)}>
                 <div className="cd-card__img-wrap">
                   <FallbackImage src={imgUrl(item.cover_image)} alt={item.name} className="cd-card__img" />
                   <div className="cd-card__img-overlay" />
@@ -313,7 +163,9 @@ export default function CrawledCountries() {
                   <p className="cd-card__preview">{item.description_preview}…</p>
                   <div className="cd-card__footer">
                     <span className="cd-card__stat">✦ {item.features?.length || 0} 个亮点</span>
-                    <span className="cd-card__stat">🖼 {item.budget_ranges?.length || 0} 档预算</span>
+                    {item.budget_ranges?.length > 0 && (
+                      <span className="cd-card__price">€{item.budget_ranges[0].min?.toLocaleString()} 起</span>
+                    )}
                     <span className="cd-card__arrow">查看详情 →</span>
                   </div>
                 </div>

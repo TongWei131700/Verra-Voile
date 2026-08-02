@@ -25,14 +25,14 @@ export default function WeddingShop() {
           <div
             key={item.id}
             className="product-card shop-card"
-            onClick={() => navigate(`/listing/${item.id === 'destination' ? 'destination' : item.id}`)}
+            onClick={() => navigate(item.id === 'destination' ? '/destinations' : `/listing/${item.id}`)}
           >
             <FallbackImage src={item.img} alt={item.name} className="shop-card__bg" />
             <div className="shop-card__overlay" />
             <div className="shop-card__content">
               <h3 className="shop-card__name">{item.name}</h3>
               <p className="shop-card__desc">{item.desc}</p>
-              <button className="shop-card__btn" onClick={(e) => { e.stopPropagation(); navigate(`/listing/${item.id === 'destination' ? 'destination' : item.id}`) }}>开始定制</button>
+              <button className="shop-card__btn" onClick={(e) => { e.stopPropagation(); navigate(item.id === 'destination' ? '/destinations' : `/listing/${item.id}`) }}>开始定制</button>
             </div>
           </div>
         ))}

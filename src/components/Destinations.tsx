@@ -33,7 +33,9 @@ function CityCard({ city }: { city: City }) {
   }, [])
 
   const handleClick = () => {
-    navigate(`/listing/destination?city=${city.id}`)
+    // 测试阶段：所有卡片统一跳转到波尔多场地详情页
+    // 后续可根据 city 映射到不同的 venue slug
+    navigate('/venue/bordeaux')
   }
 
   return (

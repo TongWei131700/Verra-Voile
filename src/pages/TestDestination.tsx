@@ -15,6 +15,7 @@ const countryRouteMap: Record<string, string> = {
   '希腊': '/europe/greece',
   '葡萄牙': '/europe/portugal',
   '意大利': '/europe/italy',
+  '英国': '/europe/uk',
 }
 
 export default function TestDestination() {

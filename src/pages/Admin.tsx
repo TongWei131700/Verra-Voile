@@ -89,7 +89,7 @@ interface DeployVersion {
   rolled_back: number
 }
 
-type Tab = 'overview' | 'reservations' | 'users' | 'chat' | 'products' | 'version'
+type Tab = 'overview' | 'reservations' | 'users' | 'chat' | 'products' | 'version' | 'db-version'
 
 export default function Admin() {
   const [authed, setAuthed] = useState(!!localStorage.getItem('admin_token'))
@@ -138,6 +138,22 @@ export default function Admin() {
   const [deployingSide, setDeployingSide] = useState<'frontend' | 'backend' | null>(null)
   const [rollingBack, setRollingBack] = useState<number | null>(null)
   const [moreOpen, setMoreOpen] = useState(false)
+  // 数据库版本控制状态
+  const [dbTables, setDbTables] = useState<{name: string; label: string; record_count: number; version_count: number}[]>([])
+  const [dbSelectedTable, setDbSelectedTable] = useState<string>('')
+  const [dbVersions, setDbVersions] = useState<any[]>([])
+  const [dbPreviewData, setDbPreviewData] = useState<any[] | null>(null)
+  const [dbPreviewTotal, setDbPreviewTotal] = useState(0)
+  const [dbPreviewVersionId, setDbPreviewVersionId] = useState<number | null>(null)
+  const [dbPreviewPage, setDbPreviewPage] = useState(1)
+  const [dbPreviewTotalPages, setDbPreviewTotalPages] = useState(0)
+  const [dbPreviewColumns, setDbPreviewColumns] = useState<string[]>([])
+  const [dbShowSaveDialog, setDbShowSaveDialog] = useState(false)
+  const [dbSaveName, setDbSaveName] = useState('')
+  const [dbSaveNote, setDbSaveNote] = useState('')
+  const [dbSaving, setDbSaving] = useState(false)
+  const [dbRestoreConfirm, setDbRestoreConfirm] = useState<{id: number; name: string} | null>(null)
+  const [dbRestoring, setDbRestoring] = useState(false)
   const moreRef = useRef<HTMLDivElement>(null)
 
   const handleAdminLogin = async (e: React.FormEvent) => {
@@ -446,7 +462,130 @@ export default function Admin() {
 
   useEffect(() => {
     if (tab === 'version' && authed) fetchVersions()
+    if (tab === 'db-version' && authed) fetchDbTables()
   }, [tab, authed])
+
+  // 数据库版本控制函数
+  const fetchDbTables = async () => {
+    try {
+      const res = await fetch('/api/data-version/tables')
+      const data = await res.json()
+      if (data.success) {
+        setDbTables(data.data)
+        if (data.data.length > 0 && !dbSelectedTable) {
+          setDbSelectedTable(data.data[0].name)
+        }
+      }
+    } catch (e) {
+      console.error('获取数据库表列表失败:', e)
+    }
+  }
+
+  const fetchDbVersions = async (table?: string) => {
+    const targetTable = table || dbSelectedTable
+    if (!targetTable) return
+    try {
+      const res = await fetch(`/api/data-version/list?table=${encodeURIComponent(targetTable)}`)
+      const data = await res.json()
+      if (data.success) setDbVersions(data.data)
+    } catch (e) {
+      console.error('获取版本列表失败:', e)
+    }
+  }
+
+  useEffect(() => {
+    if (dbSelectedTable) fetchDbVersions(dbSelectedTable)
+  }, [dbSelectedTable])
+
+  const handleDbSaveVersion = async () => {
+    if (!dbSaveName.trim()) return alert('请输入版本名称')
+    setDbSaving(true)
+    try {
+      const res = await fetch('/api/data-version/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: dbSelectedTable, name: dbSaveName.trim(), note: dbSaveNote.trim() }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setDbShowSaveDialog(false)
+        setDbSaveName('')
+        setDbSaveNote('')
+        fetchDbVersions()
+        fetchDbTables()
+      } else {
+        alert(data.message || '保存失败')
+      }
+    } catch (e) {
+      alert('保存失败: ' + (e as Error).message)
+    } finally {
+      setDbSaving(false)
+    }
+  }
+
+  const handleDbPreview = async (versionId: number, page: number = 1) => {
+    try {
+      const res = await fetch(`/api/data-version/preview/${versionId}?page=${page}&pageSize=10`)
+      const data = await res.json()
+      if (data.success) {
+        setDbPreviewData(data.data)
+        setDbPreviewTotal(data.total)
+        setDbPreviewTotalPages(data.totalPages)
+        setDbPreviewPage(data.page)
+        setDbPreviewColumns(data.columns || [])
+        setDbPreviewVersionId(versionId)
+      }
+    } catch (e) {
+      console.error('预览失败:', e)
+    }
+  }
+
+  const handleDbPreviewPageChange = (newPage: number) => {
+    if (dbPreviewVersionId && newPage >= 1 && newPage <= dbPreviewTotalPages) {
+      handleDbPreview(dbPreviewVersionId, newPage)
+    }
+  }
+
+  const handleDbRestore = (versionId: number, versionName: string) => {
+    setDbRestoreConfirm({ id: versionId, name: versionName })
+  }
+
+  const handleDbConfirmRestore = async () => {
+    if (!dbRestoreConfirm) return
+    setDbRestoring(true)
+    try {
+      const res = await fetch(`/api/data-version/restore/${dbRestoreConfirm.id}`, { method: 'POST' })
+      const data = await res.json()
+      if (data.success) {
+        alert(data.message)
+        setDbRestoreConfirm(null)
+        setDbPreviewData(null)
+        setDbPreviewVersionId(null)
+        fetchDbVersions()
+        fetchDbTables()
+      } else {
+        alert(data.message || '回滚失败')
+      }
+    } catch (e) {
+      alert('回滚失败: ' + (e as Error).message)
+    } finally {
+      setDbRestoring(false)
+    }
+  }
+
+  const handleDbDeleteVersion = async (versionId: number, versionName: string) => {
+    if (!confirm(`确定删除版本「${versionName}」？此操作不可恢复。`)) return
+    try {
+      const res = await fetch(`/api/data-version/${versionId}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (data.success) {
+        fetchDbVersions()
+        fetchDbTables()
+      }
+    } catch (e) {
+      console.error('删除失败:', e)
+    }
+  }
 
   const handleDeploy = async (side: 'frontend' | 'backend') => {
     const nextInfo = side === 'frontend' ? feNext : beNext
@@ -520,6 +659,7 @@ export default function Admin() {
     { key: 'chat', label: '💬 客户咨询' },
     { key: 'products', label: ' 商品管理' },
     { key: 'version', label: '🚀 版本控制' },
+    { key: 'db-version', label: '🗄️ 数据库' },
   ]
 
   const MAX_VISIBLE_TABS = 4
@@ -1121,6 +1261,199 @@ export default function Admin() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* 数据库版本控制 */}
+      {tab === 'db-version' && (
+        <div className="dashboard-content">
+          {/* 表选择器 */}
+          <div className="dash-section">
+            <h3>🗄️ 数据库版本管理</h3>
+            <div className="db-table-selector">
+              {dbTables.map(t => (
+                <button
+                  key={t.name}
+                  className={`db-table-btn ${dbSelectedTable === t.name ? 'db-table-btn--active' : ''}`}
+                  onClick={() => setDbSelectedTable(t.name)}
+                >
+                  <span className="db-table-btn__name">{t.label}</span>
+                  <span className="db-table-btn__meta">{t.record_count} 条 · {t.version_count} 版本</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 版本列表 */}
+          <div className="dash-section">
+            <div className="db-version-header">
+              <h4>📋 {dbTables.find(t => t.name === dbSelectedTable)?.label || ''}版本列表</h4>
+              <button className="db-save-btn" onClick={() => setDbShowSaveDialog(true)}>+ 保存当前数据为新版本</button>
+            </div>
+            {dbVersions.length === 0 ? (
+              <p className="empty">暂无版本，点击「保存当前数据为新版本」创建第一个快照</p>
+            ) : (
+              <div className="db-version-list">
+                {dbVersions.map(v => {
+                  const countrySummary = typeof v.country_summary === 'string' ? JSON.parse(v.country_summary) : v.country_summary
+                  return (
+                    <div key={v.id} className="db-version-card">
+                      <div className="db-version-card__header">
+                        <div className="db-version-card__title">
+                          <span className="db-version-card__name">{v.version_name}</span>
+                          <span className="db-version-card__count">{v.record_count} 条记录</span>
+                        </div>
+                        <div className="db-version-card__time">{new Date(v.created_at).toLocaleString('zh-CN')}</div>
+                      </div>
+                      {v.note && <div className="db-version-card__note">📝 {v.note}</div>}
+                      {countrySummary && countrySummary.length > 0 && (
+                        <div className="db-version-card__summary">
+                          {countrySummary.map((c: any) => (
+                            <span key={c.country} className="db-version-card__tag">{c.country_cn || c.country}: {c.cnt}</span>
+                          ))}
+                        </div>
+                      )}
+                      <div className="db-version-card__actions">
+                        <button className="db-action-btn db-action-btn--preview" onClick={() => handleDbPreview(v.id)}>
+                          👁 预览数据
+                        </button>
+                        <button className="db-action-btn db-action-btn--restore" onClick={() => handleDbRestore(v.id, v.version_name)}>
+                          ↩ 回滚到此版本
+                        </button>
+                        <button className="db-action-btn db-action-btn--delete" onClick={() => handleDbDeleteVersion(v.id, v.version_name)}>
+                          🗑 删除
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* 数据预览弹窗 */}
+          {dbPreviewData && (
+            <>
+              <div className="modal-backdrop" onClick={() => { setDbPreviewData(null); setDbPreviewVersionId(null) }} />
+              <div className="db-preview-modal">
+                <div className="db-preview-modal__header">
+                  <h3>📊 数据预览 - 版本 #{dbPreviewVersionId}</h3>
+                  <button className="product-modal__close" onClick={() => { setDbPreviewData(null); setDbPreviewVersionId(null) }}>✕</button>
+                </div>
+                <div className="db-preview-modal__info">
+                  共 {dbPreviewTotal} 条记录 · 第 {dbPreviewPage}/{dbPreviewTotalPages} 页
+                </div>
+                <div className="db-preview-modal__table-wrap">
+                  <table className="db-preview-table">
+                    <thead>
+                      <tr>
+                        {dbPreviewColumns.map(col => (
+                          <th key={col} title={col}>{col}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dbPreviewData.map(row => (
+                        <tr key={row.id}>
+                          {dbPreviewColumns.map(col => {
+                            const val = row[col]
+                            // 图片字段
+                            if (col === 'cover_image' || col === 'cover_image_url') {
+                              return (
+                                <td key={col}>
+                                  {val && <img src={val} alt="" style={{width: 50, height: 35, objectFit: 'cover', borderRadius: 4}} />}
+                                </td>
+                              )
+                            }
+                            // JSON 数组/对象
+                            if (Array.isArray(val)) {
+                              const text = val.map((item: any) => {
+                                if (typeof item === 'string') return item
+                                if (typeof item === 'object') return item.name_cn || item.name || item.label || JSON.stringify(item)
+                                return String(item)
+                              }).join(', ')
+                              return <td key={col} className="db-cell-truncate" title={text}>{text}</td>
+                            }
+                            if (val !== null && typeof val === 'object') {
+                              const text = JSON.stringify(val)
+                              return <td key={col} className="db-cell-truncate" title={text}>{text}</td>
+                            }
+                            // 长文本截断
+                            if (typeof val === 'string' && val.length > 60) {
+                              return <td key={col} className="db-cell-truncate" title={val}>{val}</td>
+                            }
+                            // 普通值
+                            return <td key={col}>{val === null || val === undefined ? '' : String(val)}</td>
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="db-preview-modal__footer">
+                  <div className="db-pagination">
+                    <button disabled={dbPreviewPage <= 1} onClick={() => handleDbPreviewPageChange(1)}>«</button>
+                    <button disabled={dbPreviewPage <= 1} onClick={() => handleDbPreviewPageChange(dbPreviewPage - 1)}>‹</button>
+                    <span className="db-pagination__info">{dbPreviewPage} / {dbPreviewTotalPages}</span>
+                    <button disabled={dbPreviewPage >= dbPreviewTotalPages} onClick={() => handleDbPreviewPageChange(dbPreviewPage + 1)}>›</button>
+                    <button disabled={dbPreviewPage >= dbPreviewTotalPages} onClick={() => handleDbPreviewPageChange(dbPreviewTotalPages)}>»</button>
+                  </div>
+                  <div className="db-preview-modal__actions">
+                    <button onClick={() => { setDbPreviewData(null); setDbPreviewVersionId(null) }}>关闭</button>
+                    <button className="db-action-btn db-action-btn--restore" onClick={() => {
+                      const version = dbVersions.find(v => v.id === dbPreviewVersionId)
+                      if (version) handleDbRestore(version.id, version.version_name)
+                    }}>
+                      ↩ 确认回滚到此版本
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* 保存版本弹窗 */}
+          {dbShowSaveDialog && (
+            <>
+              <div className="modal-backdrop" onClick={() => setDbShowSaveDialog(false)} />
+              <div className="db-save-modal">
+                <h3>💾 保存当前数据为新版本</h3>
+                <p>将 <strong>{dbTables.find(t => t.name === dbSelectedTable)?.label}</strong> 的当前数据创建快照</p>
+                <div className="db-save-modal__field">
+                  <label>版本名称 *</label>
+                  <input type="text" value={dbSaveName} onChange={e => setDbSaveName(e.target.value)} placeholder="如: 爬取意大利前" autoFocus />
+                </div>
+                <div className="db-save-modal__field">
+                  <label>备注</label>
+                  <textarea value={dbSaveNote} onChange={e => setDbSaveNote(e.target.value)} placeholder="可选，记录本次操作说明" rows={3} />
+                </div>
+                <div className="db-save-modal__actions">
+                  <button onClick={() => { setDbShowSaveDialog(false); setDbSaveName(''); setDbSaveNote('') }}>取消</button>
+                  <button className="db-save-btn" onClick={handleDbSaveVersion} disabled={dbSaving}>
+                    {dbSaving ? '保存中...' : '确认保存'}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* 回滚确认弹窗 */}
+          {dbRestoreConfirm && (
+            <>
+              <div className="modal-backdrop" onClick={() => setDbRestoreConfirm(null)} />
+              <div className="db-restore-modal">
+                <h3>⚠️ 确认回滚</h3>
+                <p>确定要将 <strong>{dbTables.find(t => t.name === dbSelectedTable)?.label}</strong> 的数据回滚到版本「<strong>{dbRestoreConfirm.name}</strong>」吗？</p>
+                <p className="db-restore-modal__warning">⚠️ 这将覆盖当前表中的所有数据，此操作不可撤销！</p>
+                <div className="db-restore-modal__actions">
+                  <button onClick={() => setDbRestoreConfirm(null)}>取消</button>
+                  <button className="db-restore-btn" onClick={handleDbConfirmRestore} disabled={dbRestoring}>
+                    {dbRestoring ? '回滚中...' : '确认回滚'}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 

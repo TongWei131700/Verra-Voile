@@ -439,9 +439,48 @@ section { padding: 120px 60px; }
 
 /* Destinations */
 .destinations {
-  background: linear-gradient(180deg, var(--ivory) 0%, #f5ede1 50%, var(--ivory) 100%);
+  background: var(--ivory);
   overflow: hidden;
+  padding: 0;
 }
+
+/* ===== Destinations Hero (仿 cd-list-hero) ===== */
+.dest-hero {
+  position: relative; height: 70vh; min-height: 420px; overflow: hidden;
+}
+.dest-hero__bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  background-size: cover; background-position: center;
+  filter: brightness(0.7);
+}
+.dest-hero__overlay {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%);
+}
+.dest-hero__content {
+  position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; color: #fff; text-align: center;
+}
+.dest-hero__sub {
+  font-size: 13px; letter-spacing: 6px; text-transform: uppercase;
+  opacity: 0.7; margin-bottom: 16px;
+}
+.dest-hero__title {
+  font-size: 56px; font-weight: 300; letter-spacing: 8px;
+}
+.dest-hero__divider {
+  width: 60px; height: 1px; background: var(--champagne);
+  margin: 20px auto;
+}
+.dest-hero__desc {
+  font-size: 15px; opacity: 0.8; letter-spacing: 2px; max-width: 500px;
+}
+
+/* ===== Destinations 卡片区域 ===== */
+.dest-body {
+  padding: 60px 0 80px;
+}
+
 .destinations-intro {
   text-align: center; max-width: 680px; margin: -40px auto 70px;
   font-size: 19px; color: #6a645e; font-style: italic;
@@ -1560,11 +1599,6 @@ section { padding: 120px 60px; }
   background: rgba(40, 36, 32, 0.96);
   border-top: 1px solid rgba(212, 184, 150, 0.15);
   backdrop-filter: blur(12px);
-  transform: translateY(0);
-  transition: transform 0.35s ease;
-}
-.order-bar--hidden {
-  transform: translateY(100%);
 }
 .order-bar__price {
   display: flex; align-items: baseline; gap: 6px;
@@ -3426,6 +3460,10 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   .venue-card h3 { font-size: 28px; }
   .venue-features { grid-template-columns: 1fr; gap: 16px; padding-top: 24px; margin-top: 24px; }
   .venue-features .num { font-size: 44px; }
+  .dest-hero { height: 50vh; min-height: 320px; }
+  .dest-hero__title { font-size: 36px; letter-spacing: 4px; }
+  .dest-hero__desc { font-size: 13px; padding: 0 16px; }
+  .dest-body { padding: 40px 0 60px; }
   .destinations-intro { font-size: 16px; padding: 0 8px; margin-bottom: 50px; }
   .cities-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .city-card { height: 280px; }
@@ -5526,6 +5564,55 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   .cd-country-tab { padding: 8px 18px; font-size: 13px; }
 }
 
+/* ===== 搜索框 ===== */
+.cd-search-bar {
+  max-width: 900px; margin: -36px auto 0; padding: 0 24px;
+  position: relative; z-index: 5;
+}
+.cd-search-bar__inner {
+  display: flex; align-items: center; gap: 16px;
+  background: rgba(255,255,255,.97); border: 1px solid rgba(180,160,130,.18);
+  border-radius: 999px; padding: 20px 36px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.1), 0 2px 8px rgba(201,169,110,.08);
+  transition: border-color .3s, box-shadow .3s;
+  backdrop-filter: blur(8px);
+}
+.cd-search-bar__inner:focus-within {
+  border-color: rgba(201,169,110,.5);
+  box-shadow: 0 8px 48px rgba(201,169,110,.2), 0 2px 12px rgba(201,169,110,.12);
+}
+.cd-search-bar__icon {
+  flex-shrink: 0; color: #c9a96e; width: 22px; height: 22px;
+}
+.cd-search-bar__input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-size: 17px; color: #3a3a3a; font-family: inherit;
+  letter-spacing: 1px;
+}
+.cd-search-bar__input::placeholder {
+  color: #c0b8a8; letter-spacing: 1.5px;
+}
+.cd-search-bar__clear {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+  border: none; background: rgba(201,169,110,.1); color: #b4a082;
+  font-size: 14px; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; transition: all .2s;
+}
+.cd-search-bar__clear:hover {
+  background: rgba(201,169,110,.22); color: #8a7e6e;
+}
+@media (max-width: 768px) {
+  .cd-search-bar {
+    margin-top: -28px; padding: 0 16px;
+  }
+  .cd-search-bar__inner {
+    padding: 16px 24px;
+  }
+  .cd-search-bar__input {
+    font-size: 15px;
+  }
+}
+
 /* ===== 筛选 + 卡片布局 ===== */
 .cd-filter-layout {
   max-width: 1200px; margin: 0 auto; padding: 60px 24px 80px;
@@ -5589,6 +5676,28 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 @media (min-width: 640px) {
   .cd-list { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* 分区标签 */
+.cd-section-label {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0 4px;
+  font-size: 14px; font-weight: 600; color: var(--rose-gold);
+  letter-spacing: 1px;
+}
+.cd-section-label__icon { font-size: 16px; }
+.cd-section-label__count {
+  margin-left: auto;
+  background: var(--rose-gold); color: #fff;
+  font-size: 12px; font-weight: 600;
+  padding: 2px 10px; border-radius: 10px;
+}
+.cd-section-label--rest {
+  color: #aaa; font-weight: 500;
+}
+.cd-section-label--rest .cd-section-label__count {
+  background: #ddd; color: #888;
+}
 .cd-card {
   background: #fff; border-radius: 16px; overflow: hidden;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08); cursor: pointer;
@@ -5613,6 +5722,23 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   background: rgba(255,255,255,0.9); color: var(--charcoal);
   padding: 5px 14px; border-radius: 14px; font-size: 12px;
   font-weight: 500; backdrop-filter: blur(4px);
+}
+
+/* 已预定选中态 */
+.cd-card--selected {
+  border: 2px solid var(--rose-gold);
+  box-shadow: 0 4px 24px rgba(183, 110, 121, 0.15);
+}
+.cd-card--selected:hover {
+  box-shadow: 0 12px 40px rgba(183, 110, 121, 0.25);
+}
+.cd-card__selected-badge {
+  position: absolute; top: 16px; left: 16px;
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--rose-gold); color: #fff;
+  padding: 5px 12px; border-radius: 14px; font-size: 12px;
+  font-weight: 600; letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(183, 110, 121, 0.4);
 }
 .cd-card__body { padding: 24px; }
 .cd-card__name {
@@ -5639,6 +5765,54 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .cd-card__price {
   font-size: 14px; font-weight: 600; color: #d32f2f;
   letter-spacing: 0.3px;
+}
+
+/* ===== 下拉加载更多 ===== */
+.cd-load-sentinel {
+  grid-column: 1 / -1; height: 1px;
+}
+.cd-load-end {
+  grid-column: 1 / -1; text-align: center; padding: 32px 20px;
+  color: var(--muted); font-size: 13px; letter-spacing: 2px;
+  opacity: 0.7;
+}
+
+/* ===== 骨架屏卡片 ===== */
+.cd-card--skeleton {
+  pointer-events: none;
+}
+.cd-skeleton__img {
+  background: linear-gradient(90deg, #f0ece6 25%, #e8e2d8 50%, #f0ece6 75%);
+  background-size: 200% 100%;
+  animation: cd-shimmer 1.5s infinite;
+}
+.cd-skeleton__line {
+  height: 14px; border-radius: 4px; margin-bottom: 10px;
+  background: linear-gradient(90deg, #f0ece6 25%, #e8e2d8 50%, #f0ece6 75%);
+  background-size: 200% 100%;
+  animation: cd-shimmer 1.5s infinite;
+}
+.cd-skeleton__title {
+  width: 60%; height: 18px; margin-bottom: 14px;
+}
+.cd-skeleton__tagline {
+  width: 80%;
+}
+.cd-skeleton__text {
+  width: 100%;
+}
+.cd-skeleton__text--short {
+  width: 45%;
+}
+.cd-skeleton__stat {
+  width: 80px; height: 12px;
+}
+.cd-skeleton__price {
+  width: 60px; height: 12px; margin-left: auto; margin-bottom: 0;
+}
+@keyframes cd-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ===== 详情首图 ===== */
@@ -5671,6 +5845,18 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .cd-hero__title {
   font-size: 48px; font-weight: 300; letter-spacing: 5px;
   line-height: 1.2; margin-bottom: 14px;
+}
+.cd-hero__booked-badge {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 6px 20px;
+  background: var(--rose-gold);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(183, 110, 121, 0.4);
 }
 @media (max-width: 640px) {
   .cd-hero__title { font-size: 32px; letter-spacing: 3px; }
@@ -6462,14 +6648,11 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   border-radius: 8px; color: #aaa; cursor: pointer;
 }
 
-/* ====== TestDestination 页面 ====== */
+/* ====== Destinations 页面 ====== */
 .test-dest-page {
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at top, rgba(114, 47, 55, 0.25) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, rgba(212, 184, 150, 0.12) 0%, transparent 60%),
-    #1f1a18;
-  color: var(--ivory);
+  background: var(--ivory);
+  color: var(--charcoal);
   padding-bottom: 60px;
 }
 
@@ -6482,18 +6665,22 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   position: absolute;
   top: 40px;
   left: 60px;
-  color: var(--champagne);
+  color: var(--charcoal);
   text-decoration: none;
   font-size: 14px;
   letter-spacing: 3px;
   padding: 8px 18px;
-  border: 1px solid rgba(212, 184, 150, 0.4);
+  border: 1px solid rgba(58, 53, 48, 0.2);
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
   transition: all 0.3s ease;
 }
 .test-dest-header .cust-back:hover {
-  background: rgba(212, 184, 150, 0.15);
-  border-color: var(--champagne);
-  color: var(--ivory);
+  background: #fff;
+  border-color: rgba(58, 53, 48, 0.3);
+  color: var(--charcoal);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.1);
 }
 .test-dest-header__content { max-width: 600px; margin: 0 auto; }
 .test-dest-header__script {
@@ -6507,9 +6694,20 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   font-size: 44px;
   font-weight: 400;
   letter-spacing: 8px;
-  color: var(--ivory);
+  color: var(--charcoal);
   text-transform: uppercase;
   margin-bottom: 4px;
+}
+.test-dest-header__selected {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 14px;
+  background: var(--rose-gold);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 12px;
+  letter-spacing: 1px;
 }
 .test-dest-header__content .divider {
   width: 60px;
@@ -6519,7 +6717,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 }
 .test-dest-header__sub {
   font-size: 17px;
-  color: rgba(212, 184, 150, 0.85);
+  color: #6a645e;
   font-style: italic;
   margin-top: 16px;
 }
@@ -6540,18 +6738,27 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .test-dest-card {
   display: flex;
   align-items: stretch;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(212, 184, 150, 0.12);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.04);
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.45s ease,
               border-color 0.4s ease;
+  position: relative;
+}
+.test-dest-card--selected {
+  border: 2px solid var(--rose-gold);
+  box-shadow: 0 4px 24px rgba(183, 110, 121, 0.15);
+}
+.test-dest-card--selected:hover {
+  box-shadow: 0 12px 40px rgba(183, 110, 121, 0.25);
 }
 .test-dest-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
   border-color: rgba(212, 184, 150, 0.3);
 }
 .test-dest-card--reverse {
@@ -6582,7 +6789,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(31, 26, 24, 0.75);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(212, 184, 150, 0.4);
   display: flex;
   align-items: center;
@@ -6598,6 +6805,23 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   font-size: 16px;
   font-weight: 700;
   color: var(--champagne);
+}
+.test-dest-card__selected-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--rose-gold);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(183, 110, 121, 0.4);
 }
 
 /* 文字区 */
@@ -6625,10 +6849,16 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   color: var(--rose-gold);
   font-weight: 600;
 }
+.test-dest-card__count {
+  font-size: 11px;
+  color: #999;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
 .test-dest-card__name {
   font-size: 24px;
   font-weight: 500;
-  color: var(--ivory);
+  color: var(--charcoal);
   margin-bottom: 4px;
   line-height: 1.3;
 }
@@ -6641,14 +6871,14 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 }
 .test-dest-card__desc {
   font-size: 14px;
-  color: rgba(212, 184, 150, 0.9);
+  color: #5a544e;
   line-height: 1.7;
   margin-bottom: 8px;
   font-weight: 500;
 }
 .test-dest-card__intro {
   font-size: 13px;
-  color: rgba(250, 247, 242, 0.5);
+  color: #8a847e;
   line-height: 1.75;
   margin-bottom: 14px;
   display: -webkit-box;
@@ -6688,7 +6918,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 }
 .test-dest-footer p:last-child {
   font-size: 14px;
-  color: rgba(212, 184, 150, 0.7);
+  color: #8a847e;
 }
 
 /* 移动端适配 */

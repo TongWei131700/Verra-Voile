@@ -1,8 +1,16 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import SectionTitle from './SectionTitle'
 import RevealGroup from './RevealGroup'
 import { cities, type City } from '../data/cities'
+
+// 国家 → europe 页面路由映射
+const countryRouteMap: Record<string, string> = {
+  '法国': '/europe/france',
+  '希腊': '/europe/greece',
+  '葡萄牙': '/europe/portugal',
+  '意大利': '/europe/italy',
+  '英国': '/europe/uk',
+}
 
 function CityCard({ city }: { city: City }) {
   const navigate = useNavigate()
@@ -33,9 +41,13 @@ function CityCard({ city }: { city: City }) {
   }, [])
 
   const handleClick = () => {
-    // 测试阶段：所有卡片统一跳转到波尔多场地详情页
-    // 后续可根据 city 映射到不同的 venue slug
-    navigate('/venue/bordeaux')
+    // 根据国家跳转到对应的 europe 页面
+    const route = countryRouteMap[city.country]
+    if (route) {
+      navigate(route)
+    } else {
+      navigate('/destinations')
+    }
   }
 
   return (
@@ -46,30 +58,46 @@ function CityCard({ city }: { city: City }) {
       <div className="crest-mark"><span>{city.crest}</span></div>
       <div className="heart-pop">♥</div>
       <div className="city-info">
-        <div className="country">{city.country}</div>
-        <div className="city-name">{city.name}</div>
+        <div className="city-name">{city.country}</div>
         <div className="city-style">{city.style}</div>
-        <div className="city-desc">{city.desc}</div>
       </div>
     </div>
   )
 }
 
-/** 首页“欧陆十二城”仅展示前 12 个城市（id 1-12），与 listing 目的地页的完整城市列表分开 */
-const HOME_CITIES = cities.filter(c => c.id <= 12)
+/** 首页“欧陆十二城”展示前 12 个国家（去重），每个国家一张卡片 */
+const seen = new Set<string>()
+const HOME_CITIES = cities.filter(c => {
+  if (c.id > 12 || seen.has(c.country)) return false
+  seen.add(c.country)
+  return true
+})
 
 export default function Destinations() {
   return (
     <section id="destinations" className="destinations">
-      <SectionTitle sub="Destinations of Love" title="欧陆十二城" />
-      <p className="destinations-intro">
-        " 从塞纳河的浪漫到爱琴海的湛蓝，从泰晤士河畔的庄重到亚得里亚海的诗意 —— 选一座城，许一生约定。"
-      </p>
-      <RevealGroup stagger={120} perRow={4} className="cities-grid">
-        {HOME_CITIES.map((city) => (
-          <CityCard key={city.id} city={city} />
-        ))}
-      </RevealGroup>
+      {/* 仿 europe 页面风格的全屏 hero 背景 */}
+      <div className="dest-hero">
+        <div
+          className="dest-hero__bg"
+          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1600&q=80')` }}
+        />
+        <div className="dest-hero__overlay" />
+        <div className="dest-hero__content">
+          <p className="dest-hero__sub">Destinations of Love</p>
+          <h1 className="dest-hero__title">欧洲目的地</h1>
+          <div className="dest-hero__divider" />
+          <p className="dest-hero__desc">从塞纳河的浪漫到爱琴海的湛蓝，选一座城，许一生约定</p>
+        </div>
+      </div>
+
+      <div className="dest-body">
+        <RevealGroup stagger={120} perRow={4} className="cities-grid">
+          {HOME_CITIES.map((city) => (
+            <CityCard key={city.id} city={city} />
+          ))}
+        </RevealGroup>
+      </div>
     </section>
   )
 }

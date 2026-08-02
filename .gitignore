@@ -23,3 +23,8 @@ npm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Screenshots
+*.png
+*.jpg
+*.jpeg

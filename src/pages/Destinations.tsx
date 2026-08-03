@@ -138,8 +138,37 @@ export default function Destinations() {
             </div>
             )
           })}
+          {/* 测试英国商品卡片 */}
+          <div className="test-dest-card test-dest-card--reverse" onClick={() => navigate('/europe/test-uk')}>
+            <div className="test-dest-card__image">
+              <FallbackImage src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=900&q=80" alt="测试英国" />
+              <div className="test-dest-card__overlay">
+                <span className="test-dest-card__number">T</span>
+              </div>
+            </div>
+            <div className="test-dest-card__content">
+              <div className="test-dest-card__badge">
+                <span className="test-dest-card__crest">♖</span>
+                <span className="test-dest-card__country">United Kingdom</span>
+                {venueCounts['测试英国'] !== undefined && (
+                  <span className="test-dest-card__count">{venueCounts['测试英国']} 个场地</span>
+                )}
+              </div>
+              <h2 className="test-dest-card__name">测试英国</h2>
+              <p className="test-dest-card__style">试验商品</p>
+              <p className="test-dest-card__intro">这是一个测试用的英国目的地商品。</p>
+              <div className="test-dest-card__cta">
+                <span>探索此目的地</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+
+
 
       {/* 底部留白 */}
       <footer className="test-dest-footer">

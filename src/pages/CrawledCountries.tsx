@@ -18,6 +18,7 @@ const COUNTRIES: Record<string, { code: string; label: string; en: string; sub: 
   greece:  { code: 'Greece',   label: '希腊',   en: 'Greece',  sub: 'Greece Destination Wedding' },
   portugal:{ code: 'Portugal', label: '葡萄牙', en: 'Portugal',sub: 'Portugal Destination Wedding' },
   uk:      { code: 'United Kingdom', label: '英国', en: 'UK', sub: 'UK Destination Wedding' },
+  'test-uk': { code: '测试英国', label: '测试英国', en: 'Test UK', sub: 'Test UK Destination Wedding' },
 }
 
 interface CrawledDestination {
@@ -47,7 +48,7 @@ export default function CrawledCountries() {
 
   // 按当前国家筛选
   const list = useMemo(() => {
-    return allData.filter(d => d.country === currentCountry.code)
+    return allData.filter(d => d.country === currentCountry.code || d.country_cn === currentCountry.code)
   }, [allData, currentCountry.code])
 
   // 汇总所有场地类型（去重）

@@ -19,6 +19,7 @@ const COUNTRIES: Record<string, { code: string; label: string; en: string; sub: 
   portugal:{ code: 'Portugal', label: '葡萄牙', en: 'Portugal',sub: 'Portugal Destination Wedding' },
   uk:      { code: 'United Kingdom', label: '英国', en: 'UK', sub: 'UK Destination Wedding' },
   'test-uk': { code: '测试英国', label: '测试英国', en: 'Test UK', sub: 'Test UK Destination Wedding' },
+  'test-france': { code: '测试法国', label: '测试法国', en: 'Test France', sub: 'Test France Destination Wedding' },
 }
 
 interface CrawledDestination {

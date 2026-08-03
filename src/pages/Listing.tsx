@@ -305,6 +305,8 @@ export default function Listing() {
                 onClick={() => {
                   if (item.id === 'destination') {
                     navigate('/destinations')
+                  } else if (item.id === 'team') {
+                    navigate('/wedding-team')
                   } else {
                     navigate(`/listing/${item.id}`)
                   }

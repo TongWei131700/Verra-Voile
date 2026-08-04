@@ -268,7 +268,7 @@ export default function Listing() {
   }
 
   return (
-    <div className="customize-page">
+    <div className="listing-page">
       <header className="cust-header">
         <Link to="/" className="cust-back">← 返回首页</Link>
         <div className="cust-header__title">

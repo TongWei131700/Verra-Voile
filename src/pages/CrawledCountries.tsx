@@ -181,9 +181,50 @@ export default function CrawledCountries() {
   if (loading) {
     return (
       <div className="cd-page">
-        <div className="cd-loading">
-          <div className="cd-spinner" />
-          <p>加载目的地数据…</p>
+        {/* 首屏骨架 */}
+        <section className="cd-list-hero">
+          <div className="cd-list-hero__bg cd-skeleton__img" />
+          <div className="cd-list-hero__overlay" />
+          <div className="cd-list-hero__content">
+            <div className="cd-skeleton__line" style={{ width: 120, height: 12, margin: '0 auto 16px', opacity: 0.3 }} />
+            <div className="cd-skeleton__line" style={{ width: 200, height: 40, margin: '0 auto 20px', opacity: 0.3 }} />
+            <div className="cd-skeleton__line" style={{ width: 60, height: 1, margin: '0 auto 20px', opacity: 0.3 }} />
+            <div className="cd-skeleton__line" style={{ width: 160, height: 12, margin: '0 auto', opacity: 0.3 }} />
+          </div>
+        </section>
+        {/* 搜索框骨架 */}
+        <div className="cd-search-bar">
+          <div className="cd-search-bar__inner">
+            <div className="cd-skeleton__line" style={{ width: 18, height: 18, borderRadius: '50%', marginBottom: 0 }} />
+            <div className="cd-skeleton__line" style={{ flex: 1, height: 18, marginBottom: 0 }} />
+          </div>
+        </div>
+        {/* 卡片列表骨架 */}
+        <div className="cd-filter-layout">
+          <aside className="cd-filter">
+            <div className="cd-skeleton__line" style={{ width: '60%', height: 14, marginBottom: 8 }} />
+            <div className="cd-skeleton__line" style={{ width: '40%', height: 10, marginBottom: 16 }} />
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="cd-skeleton__line" style={{ width: `${70 + Math.random() * 30}%`, height: 12, marginBottom: 12 }} />
+            ))}
+          </aside>
+          <div className="cd-list">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="cd-card cd-card--skeleton">
+                <div className="cd-card__img-wrap cd-skeleton__img" />
+                <div className="cd-card__body">
+                  <div className="cd-skeleton__line cd-skeleton__title" />
+                  <div className="cd-skeleton__line cd-skeleton__tagline" />
+                  <div className="cd-skeleton__line cd-skeleton__text" />
+                  <div className="cd-skeleton__line cd-skeleton__text cd-skeleton__text--short" />
+                  <div className="cd-card__footer">
+                    <div className="cd-skeleton__line cd-skeleton__stat" />
+                    <div className="cd-skeleton__line cd-skeleton__price" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )

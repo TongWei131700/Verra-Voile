@@ -197,3 +197,78 @@ allData.filter(d => d.country === currentCountry.code || d.country_cn === curren
 6. **puppeteer-core 反爬**：必须用浏览器渲染，fetch 会被 WeddingWire 拦截
 7. **部署用 tar.gz**：服务器网络不稳定，单文件打包传输更可靠
 8. **API 缓存策略**：后端使用 `Cache-Control: no-cache` + ETag，确保新数据实时生效
+
+---
+
+## 踩坑记录与解决思路
+
+### 坑1：搜索页分页无法自动化抓取
+
+**问题**：WeddingWire 搜索页使用传统分页（`?page=1`, `?page=2`...），但分页链接带有 `app-directory-filters-change-page` class，由客户端 JS 拦截处理。puppeteer 的 `page.goto()` 直接访问分页 URL 无效（内容不变），`page.click()` 点击 Next 按钮也无法触发页面内容更新。
+
+**解决**：放弃自动化分页爬取，改用**硬编码 URL 列表**方式：
+1. 先用 Browser Agent 手动打开搜索页，逐页点击提取所有场地 URL
+2. 将全部 URL 硬编码到爬取脚本的数组中（参考葡萄牙脚本 `crawl-portugal-full.cjs` 的做法）
+3. 爬取时逐个检查 slug 是否已存在，已存在则跳过，只爬新增的
+
+**教训**：对于分页机制复杂或有 JS 拦截的网站，不要浪费时间尝试自动化翻页，直接用 Browser Agent 提取 URL 后硬编码更可靠高效。
+
+### 坑2：country 字段与正式数据冲突
+
+**问题**：爬取"测试法国"时，`country` 字段设为 `'France'`，导致测试数据出现在正式法国页面（因为法国页面的 `code` 也是 `'France'`）。
+
+**解决**：测试数据的 `country` 字段使用 `'Test France'`（而非 `'France'`），避免与正式数据冲突。"测试英国"没出问题是因为正式英国的 `code` 是 `'United Kingdom'`，而测试数据恰好也用了 `'United Kingdom'`，靠 `country_cn` 区分。
+
+**规则**：测试数据的 `country` 字段必须加 `Test` 前缀，如 `'Test France'`、`'Test Spain'` 等。
+
+### 坑3：slug 去重未限定国家导致跨国影响
+
+**问题**：slug 去重检查只用 `WHERE slug = ?`，没有限定 `country_cn`，导致不同国家同 slug 的场地互相影响（A 国已存在的场地会导致 B 国同 slug 场地被跳过）。
+
+**解决**：slug 检查必须加 `AND country_cn = ?`：
+```sql
+SELECT id FROM crawled_venues WHERE slug = ? AND country_cn = ?
+```
+
+### 坑4：API 双表合并去重优先级错误
+
+**问题**：`crawled_destinations` 和 `crawled_venues` 两张表的数据合并时，直接拼接 `[...rows, ...venueData]` 导致大量重复。修复去重后，优先级设反（`crawled_destinations` 优先），导致测试数据被正式数据覆盖。
+
+**解决**：用 Map 以 slug 为键去重，`crawled_venues` 优先（因为它是最新爬取数据）：
+```javascript
+const merged = new Map()
+for (const item of venueData) merged.set(item.slug, item)
+for (const item of rows) { if (!merged.has(item.slug)) merged.set(item.slug, item) }
+```
+
+### 坑5：SSH 不稳定时如何触发爬取
+
+**问题**：服务器 SSH（22端口）经常超时不可达，无法远程执行脚本。
+
+**解决**：发现 HTTP（80端口）始终可用，通过 HTTP API 在服务器内部触发爬取：
+```bash
+# 从服务器内部调用（SSH 可用时）
+ssh root@47.99.138.250 "curl -s -X POST http://localhost:3000/api/crawl/start -H 'Content-Type: application/json' -d '{\"country\":\"france\",\"limit\":51}'"
+
+# 或通过域名（HTTPS 可用时）
+curl -X POST https://europewedding.cn/api/crawl/start -H 'Content-Type: application/json' -d '{"country":"france","limit":51}'
+```
+
+### 坑6：重复爬取浪费时间
+
+**问题**：每次触发爬取都从第1个 URL 开始，已入库的场地被重复访问（虽然不重复入库，但浪费了爬取时间）。
+
+**解决**：爬取脚本中先查询数据库已有的 slug 列表，在遍历 URL 时直接跳过已存在的，只爬取新增的：
+```javascript
+// 先获取已有的 slug
+const [existingRows] = await pool.execute(
+  'SELECT slug FROM crawled_venues WHERE country_cn = ?', [COUNTRY_CN]
+)
+const existingSlugs = new Set(existingRows.map(r => r.slug))
+
+// 遍历时跳过
+if (existingSlugs.has(slug)) {
+  results.push({ name: venueData.name, slug, status: '已存在' })
+  continue
+}
+```

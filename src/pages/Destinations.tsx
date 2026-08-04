@@ -192,10 +192,89 @@ export default function Destinations() {
               </div>
             </div>
           </div>
+{/* 测试希腊商品卡片 */}
+<div className="test-dest-card test-dest-card--reverse" onClick={() => navigate('/europe/test-greece')}>
+            <div className="test-dest-card__image">
+<FallbackImage src="https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=900&q=80" alt="测试希腊" />
+              <div className="test-dest-card__overlay">
+                <span className="test-dest-card__number">T</span>
+              </div>
+            </div>
+            <div className="test-dest-card__content">
+              <div className="test-dest-card__badge">
+                <span className="test-dest-card__crest">♖</span>
+                <span className="test-dest-card__country">Greece</span>
+{venueCounts['测试希腊'] !== undefined && (
+<span className="test-dest-card__count">{venueCounts['测试希腊']} 个场地</span>
+                )}
+              </div>
+<h2 className="test-dest-card__name">测试希腊</h2>
+              <p className="test-dest-card__style">试验商品</p>
+              <p className="test-dest-card__intro">这是一个测试用的希腊目的地商品。</p>
+              <div className="test-dest-card__cta">
+                <span>探索此目的地</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+{/* 测试意大利商品卡片 */}
+<div className="test-dest-card" onClick={() => navigate('/europe/test-italy')}>
+            <div className="test-dest-card__image">
+<FallbackImage src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=900&q=80" alt="测试意大利" />
+              <div className="test-dest-card__overlay">
+                <span className="test-dest-card__number">T</span>
+              </div>
+            </div>
+            <div className="test-dest-card__content">
+              <div className="test-dest-card__badge">
+                <span className="test-dest-card__crest">♖</span>
+                <span className="test-dest-card__country">Italy</span>
+{venueCounts['测试意大利'] !== undefined && (
+<span className="test-dest-card__count">{venueCounts['测试意大利']} 个场地</span>
+                )}
+              </div>
+<h2 className="test-dest-card__name">测试意大利</h2>
+              <p className="test-dest-card__style">试验商品</p>
+              <p className="test-dest-card__intro">这是一个测试用的意大利目的地商品。</p>
+              <div className="test-dest-card__cta">
+                <span>探索此目的地</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+{/* 测试西班牙商品卡片 */}
+<div className="test-dest-card test-dest-card--reverse" onClick={() => navigate('/europe/test-spain')}>
+            <div className="test-dest-card__image">
+<FallbackImage src="https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=900&q=80" alt="测试西班牙" />
+              <div className="test-dest-card__overlay">
+                <span className="test-dest-card__number">T</span>
+              </div>
+            </div>
+            <div className="test-dest-card__content">
+              <div className="test-dest-card__badge">
+                <span className="test-dest-card__crest">♖</span>
+                <span className="test-dest-card__country">Spain</span>
+{venueCounts['测试西班牙'] !== undefined && (
+<span className="test-dest-card__count">{venueCounts['测试西班牙']} 个场地</span>
+                )}
+              </div>
+<h2 className="test-dest-card__name">测试西班牙</h2>
+              <p className="test-dest-card__style">试验商品</p>
+              <p className="test-dest-card__intro">这是一个测试用的西班牙目的地商品。</p>
+              <div className="test-dest-card__cta">
+                <span>探索此目的地</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
-
-
 
       {/* 底部留白 */}
       <footer className="test-dest-footer">

@@ -20,13 +20,16 @@ const COUNTRIES: Record<string, { code: string; label: string; en: string; sub: 
   uk:      { code: 'United Kingdom', label: '英国', en: 'UK', sub: 'UK Destination Wedding' },
   'test-uk': { code: '测试英国', label: '测试英国', en: 'Test UK', sub: 'Test UK Destination Wedding' },
   'test-france': { code: '测试法国', label: '测试法国', en: 'Test France', sub: 'Test France Destination Wedding' },
+'test-greece': { code: '测试希腊', label: '测试希腊', en: 'Test Greece', sub: 'Test Greece Destination Wedding' },
+'test-italy': { code: '测试意大利', label: '测试意大利', en: 'Test Italy', sub: 'Test Italy Destination Wedding' },
+'test-spain': { code: '测试西班牙', label: '测试西班牙', en: 'Test Spain', sub: 'Test Spain Destination Wedding' },
 }
 
 interface CrawledDestination {
   id: number; slug: string; name: string; name_cn: string
   country: string; country_cn: string; source_url: string; tagline: string
   description_preview: string; cover_image: string; features: string[]
-  venue_types: { name: string; name_en: string }[]
+  venue_types: { name: string; name_cn?: string }[]
   towns: { name: string; name_cn: string }[]
   budget_ranges: { label: string; min: number; max: number | null }[]
   guest_capacities: string[]; sort_order: number
@@ -57,10 +60,10 @@ export default function CrawledCountries() {
     const map = new Map<string, string>()
     for (const dest of list) {
       for (const vt of dest.venue_types || []) {
-        if (!map.has(vt.name)) map.set(vt.name, vt.name_en || vt.name)
+        if (!map.has(vt.name)) map.set(vt.name, vt.name_cn || vt.name)
       }
     }
-    return Array.from(map.entries()).map(([name, nameEn]) => ({ name, nameEn }))
+    return Array.from(map.entries()).map(([name, nameCn]) => ({ name, nameCn }))
   }, [list])
 
   // 搜索 + 筛选后的列表
@@ -79,7 +82,7 @@ export default function CrawledCountries() {
         dest.tagline?.toLowerCase().includes(q) ||
         dest.description_preview?.toLowerCase().includes(q) ||
         dest.venue_types?.some(vt =>
-          vt.name.toLowerCase().includes(q) || vt.name_en?.toLowerCase().includes(q)
+          vt.name.toLowerCase().includes(q) || vt.name_cn?.toLowerCase().includes(q)
         )
       )
     }
@@ -297,7 +300,7 @@ export default function CrawledCountries() {
                 <span className="cd-filter__check-icon">
                   {selectedVenueTypes.has(vt.name) ? '☑' : '☐'}
                 </span>
-                <span className="cd-filter__name">{vt.name}</span>
+                <span className="cd-filter__name">{vt.nameCn || vt.name}</span>
               </li>
             ))}
           </ul>

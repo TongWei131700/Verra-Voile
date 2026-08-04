@@ -21,7 +21,7 @@ interface VenueData {
   country: string; country_cn: string; source_url: string; tagline: string; tagline_cn?: string
   description: string; description_cn?: string; images: string[]; cover_image: string
   features: string[]
-  venue_types: { name: string; name_en: string }[]
+  venue_types: { name: string; name_cn?: string }[]
   towns: { name: string; name_cn: string }[]
   budget_ranges: { label: string; min: number; max: number | null }[]
   guest_capacities: string[]
@@ -213,7 +213,7 @@ export default function CrawledVenueDetail() {
             <h2 className="cd-block__title">场地类型</h2>
             <div className="cd-chips">
               {detail.venue_types.map((v, i) => (
-                <span key={i} className="cd-chip">{v.name}</span>
+                <span key={i} className="cd-chip">{v.name_cn || v.name}</span>
               ))}
             </div>
 

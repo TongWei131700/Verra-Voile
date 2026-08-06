@@ -21,18 +21,64 @@ import NewHome from './pages/NewHome'
 import Wine from './pages/Wine'
 import WineDetail from './pages/WineDetail'
 
-function ScrollToTop() {
+const scrollCache: Record<string, number> = {}
+
+// 暴露到 window 供 BackButton 等组件调用
+if (typeof window !== 'undefined') {
+  (window as any).__scrollCache = scrollCache
+  ;(window as any).__saveScrollPos = (path: string) => {
+    const nhIntro = document.querySelector('.nh-intro')
+    if (nhIntro) {
+      scrollCache[path] = nhIntro.scrollTop
+    } else {
+      scrollCache[path] = window.scrollY
+    }
+  }
+}
+
+// 获取当前页面的实际滚动容器
+function getScrollContainer(): Element | Window {
+  const main = document.querySelector('.nh-intro')
+  if (main) return main
+  return window
+}
+
+function getScrollTop(el: Element | Window): number {
+  return el instanceof Window ? el.scrollY : el.scrollTop
+}
+
+function setScrollTop(el: Element | Window, value: number) {
+  if (el instanceof Window) el.scrollTo(0, value)
+  else el.scrollTop = value
+}
+
+function ScrollRestoration() {
   const { pathname } = useLocation()
+
+  // 路由切换时恢复滚动位置
   useEffect(() => {
-    window.scrollTo(0, 0)
+    const savedPos = scrollCache[pathname]
+    if (savedPos !== undefined && savedPos > 0) {
+      let attempts = 0
+      const tryRestore = () => {
+        const nhIntro = document.querySelector('.nh-intro')
+        const container: Element | Window = nhIntro || window
+        setScrollTop(container, savedPos)
+        attempts++
+        if (attempts < 5) setTimeout(tryRestore, 60)
+      }
+      const timer = setTimeout(tryRestore, 60)
+      return () => clearTimeout(timer)
+    }
   }, [pathname])
+
   return null
 }
 
 export default function App() {
   return (
     <>
-      <ScrollToTop />
+      <ScrollRestoration />
       <Routes>
         <Route path="/" element={<NewHome />} />
         <Route path="/new-home" element={<NewHome />} />

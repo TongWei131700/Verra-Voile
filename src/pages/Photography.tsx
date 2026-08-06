@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
+import BackButton from '../components/common/BackButton'
 import { photoCategoryList, photographerProducts, type PhotographerProduct, type PhotoCategory } from '../data/junebugPhotographers'
+import heroImg from '../assets/mariah-krafft-ayc1G5wV3aA-unsplash.jpg'
 
 const allProducts: PhotographerProduct[] = photographerProducts
 
-const HERO_IMG = 'https://images.junebugweddings.com/09/9f/099f0d9d40804819.jpg'
+const HERO_IMG = heroImg
 
 export default function Photography() {
   const navigate = useNavigate()
@@ -36,13 +38,7 @@ export default function Photography() {
           width: '100%', height: '100%'
         }} />
         <div className="cd-list-hero__overlay" />
-        <button className="cd-list-hero__back" onClick={() => navigate('/listing')}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          <span>返回</span>
-        </button>
+        <BackButton />
         <div className="cd-list-hero__content">
           <p className="cd-list-hero__sub">Wedding Photography</p>
           <h1 className="cd-list-hero__title">摄影</h1>

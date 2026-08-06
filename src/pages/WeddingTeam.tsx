@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
+import BackButton from '../components/common/BackButton'
 import heroImg from '../assets/wedding-team-hero.png'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
@@ -110,13 +111,7 @@ export default function WeddingTeam() {
           style={{ filter: 'brightness(0.7)' }}
         />
         <div className="cd-list-hero__overlay" />
-        <button className="cd-list-hero__back" onClick={() => navigate('/listing')}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          <span>返回</span>
-        </button>
+        <BackButton />
         <div className="cd-list-hero__content">
           <p className="cd-list-hero__sub">Wedding Planner Companies</p>
           <h1 className="cd-list-hero__title">婚礼团队</h1>

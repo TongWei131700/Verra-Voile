@@ -28,3 +28,7 @@ npm-debug.log*
 *.png
 *.jpg
 *.jpeg
+
+# But track project assets
+!src/assets/
+!src/assets/**

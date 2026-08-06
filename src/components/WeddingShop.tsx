@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import SectionTitle from './SectionTitle'
 import RevealGroup from './RevealGroup'
 import FallbackImage from './common/FallbackImage'
+import coverPhotography from '../assets/cover-wedding-photography.jpg'
 
 const products = [
   { id: 'destination', name: '地点', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=800&fit=crop', desc: '全球浪漫目的地' },
@@ -9,7 +10,7 @@ const products = [
   { id: 'floral', name: '花卉', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=600&h=800&fit=crop', desc: '浪漫花艺设计' },
   { id: 'wine', name: '酒水宴席', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&h=800&fit=crop', desc: '精选婚宴佳酿与米其林级飨宴' },
   { id: 'dress', name: '礼服', img: 'https://images.unsplash.com/photo-1594552072238-b8a33785b261?w=600&h=800&fit=crop', desc: '梦想中的嫁衣' },
-  { id: 'photography', name: '摄影', img: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=600&h=800&fit=crop', desc: '记录每一个珍贵瞬间' },
+  { id: 'photography', name: '摄影', img: coverPhotography, desc: '记录每一个珍贵瞬间' },
   { id: 'other', name: '其他', img: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=600&h=800&fit=crop', desc: '包车及其他服务' },
 ]
 

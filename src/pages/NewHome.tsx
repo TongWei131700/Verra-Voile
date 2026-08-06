@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import logoUrl from '../assets/europewedding-logo.png'
 import coverDest from '../assets/cover-destination.jpg'
 import coverTeam from '../assets/cover-team.jpg'
 import coverFloral from '../assets/cover-floral.jpg'
+import coverWine from '../assets/cover-wine-dining.jpg'
+import coverDress from '../assets/cover-wedding-dress.jpg'
+import coverPhoto from '../assets/cover-wedding-photography.jpg'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -18,9 +21,9 @@ const MODULES: ModuleDef[] = [
   { id: 'destination', title: '地点', route: '/destinations' },
   { id: 'team', title: '婚礼团队', route: '/wedding-team' },
   { id: 'floral', title: '花卉', route: '/flowers' },
-  { id: 'wine', title: '酒水宴席', route: '/wine' },
   { id: 'dress', title: '礼服', route: '/dresses' },
   { id: 'photography', title: '摄影', route: '/photography' },
+  { id: 'wine', title: '酒水宴席', route: '/wine' },
 ]
 
 // 酒水/宴席历史数据归并到 wine 分组
@@ -31,6 +34,9 @@ const COVER_OVERRIDES: Record<string, string> = {
   destination: coverDest,
   team: coverTeam,
   floral: coverFloral,
+  wine: coverWine,
+  dress: coverDress,
+  photography: coverPhoto,
 }
 
 export default function NewHome() {
@@ -41,6 +47,35 @@ export default function NewHome() {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userAccount, setUserAccount] = useState('')
+  const mainRef = useRef<HTMLElement>(null)
+
+  // 首页滚动位置记忆：持续追踪并保存到 sessionStorage
+  useEffect(() => {
+    const el = mainRef.current
+    if (!el) return
+
+    // 恢复滚动位置
+    const saved = sessionStorage.getItem('nh-scroll-top')
+    if (saved) {
+      const pos = parseInt(saved, 10)
+      if (pos > 0) {
+        el.style.scrollBehavior = 'auto'
+        el.scrollTop = pos
+        requestAnimationFrame(() => { el.style.scrollBehavior = '' })
+      }
+    }
+
+    // 持续追踪滚动位置（rAF + scroll 事件双保险）
+    let rafId: number
+    const savePos = () => sessionStorage.setItem('nh-scroll-top', String(el.scrollTop))
+    const track = () => { savePos(); rafId = requestAnimationFrame(track) }
+    rafId = requestAnimationFrame(track)
+    el.addEventListener('scroll', savePos, { passive: true })
+    return () => {
+      cancelAnimationFrame(rafId)
+      el.removeEventListener('scroll', savePos)
+    }
+  }, [loading])
 
   // 检查登录状态
   const checkLoginStatus = () => {
@@ -213,7 +248,7 @@ export default function NewHome() {
               </nav>
             </div>
           </header>
-          <main className="nh-intro">
+          <main className="nh-skeleton-intro">
             <section className="nh-desktop-only">
               {MODULES.slice(0, 3).map(m => (
                 <div key={m.id} className="nh-item nh-skeleton-item">
@@ -259,7 +294,7 @@ export default function NewHome() {
       )}
 
       {/* 主体：滚动吸附容器 */}
-      <main className="nh-intro">
+      <main ref={mainRef} className="nh-intro">
         {/* 桌面端：每屏三块面板并排，六模块分两屏 */}
         <section className="nh-desktop-only">
           {MODULES.slice(0, 3).map(m => (

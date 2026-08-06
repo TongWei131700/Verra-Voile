@@ -5558,27 +5558,47 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   font-size: 15px; opacity: 0.8; letter-spacing: 2px;
 }
 .cd-list-hero__back {
-  position: absolute; top: 32px; left: 32px; z-index: 10;
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,0.12); backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.25); border-radius: 28px;
-  color: #fff; font-size: 14px; font-weight: 400;
-  padding: 12px 24px 12px 18px;
-  cursor: pointer; transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: fixed; top: 28px; left: 28px; z-index: 1000;
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255, 253, 250, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(180, 160, 130, 0.2); border-radius: 32px;
+  color: #5a4a3a; font-size: 14px; font-weight: 500;
+  padding: 13px 24px 13px 18px;
+  cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   letter-spacing: 0.5px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(90, 74, 58, 0.08), 0 1px 3px rgba(0,0,0,0.05);
+  overflow: hidden; white-space: nowrap;
 }
 .cd-list-hero__back:hover {
-  background: rgba(255,255,255,0.22);
-  border-color: rgba(255,255,255,0.45);
+  background: rgba(255, 253, 250, 0.95);
+  border-color: rgba(180, 160, 130, 0.35);
   transform: translateX(-3px);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 28px rgba(90, 74, 58, 0.12), 0 2px 6px rgba(0,0,0,0.06);
+  color: #3a2a1a;
 }
 .cd-list-hero__back svg {
+  flex-shrink: 0;
   transition: transform 0.3s ease;
+  stroke: currentColor;
 }
 .cd-list-hero__back:hover svg {
   transform: translateX(-2px);
+}
+.cd-list-hero__back span {
+  transition: opacity 0.3s ease, max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), margin 0.3s ease;
+  max-width: 60px; opacity: 1;
+}
+.cd-list-hero__back--collapsed {
+  padding: 13px; border-radius: 50%;
+  gap: 0;
+}
+.cd-list-hero__back--collapsed span {
+  max-width: 0; opacity: 0; margin-left: -4px;
+}
+.cd-list-hero__back--collapsed:hover {
+  transform: translateX(-2px) scale(1.05);
 }
 
 /* ===== 国家 Tab 切换 ===== */
@@ -8118,6 +8138,17 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   background: linear-gradient(90deg, rgba(212, 184, 150, 0.03) 25%, rgba(212, 184, 150, 0.08) 50%, rgba(212, 184, 150, 0.03) 75%);
   background-size: 200% 100%;
   animation: skeletonShimmer 1.8s linear infinite;
+}
+
+/* 骨架屏容器：复用 nh-intro 布局但不可滚动 */
+.nh-skeleton-intro {
+  height: 100vh;
+  height: 100svh;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+.nh-skeleton-intro section {
+  padding: 0;
 }
 
 /* 主体容器：滚动吸附，每行占满整屏 */

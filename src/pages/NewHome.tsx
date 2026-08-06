@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import logoUrl from '../assets/europewedding-logo.png'
-import coverDestLow from '../assets/cover-destination-low.jpg'
-import coverTeamLow from '../assets/cover-team-low.jpg'
-import coverFloralLow from '../assets/cover-floral-low.jpg'
 import coverDest from '../assets/cover-destination.jpg'
 import coverTeam from '../assets/cover-team.jpg'
 import coverFloral from '../assets/cover-floral.jpg'
@@ -29,23 +26,17 @@ const MODULES: ModuleDef[] = [
 // 酒水/宴席历史数据归并到 wine 分组
 const mergeCategoryId = (id: string) => (id === 'dinner' || id === 'catering' ? 'wine' : id)
 
-// 前三个模块固定使用本地封面图
+// 前三个模块使用本地压缩封面图（直接使用，不再预加载原图）
 const COVER_OVERRIDES: Record<string, string> = {
   destination: coverDest,
   team: coverTeam,
   floral: coverFloral,
 }
 
-// 压缩版封面图（用于快速加载）
-const COVER_LOW: Record<string, string> = {
-  destination: coverDestLow,
-  team: coverTeamLow,
-  floral: coverFloralLow,
-}
-
 export default function NewHome() {
   const navigate = useNavigate()
   const [images, setImages] = useState<Record<string, string>>({})
+  const [loading, setLoading] = useState(true)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -94,30 +85,25 @@ export default function NewHome() {
     setTimeout(() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth' }), 120)
   }
 
-  // 从 API 获取分类图片，先展示压缩版，后展示原图
+  // 从 API 获取分类图片（前三个模块固定使用压缩封面图）
   useEffect(() => {
-    // 先设置压缩版封面图（快速加载）
-    setImages(COVER_LOW)
-    
-    // 预加载原图
-    const preloadImages = Object.entries(COVER_OVERRIDES).map(([id, url]) => {
-      return new Promise<{ id: string; url: string }>((resolve) => {
-        const img = new Image()
-        img.onload = () => resolve({ id, url })
-        img.onerror = () => resolve({ id, url: COVER_LOW[id] || url })
-        img.src = url
-      })
+    setImages(COVER_OVERRIDES)
+
+    // 预加载所有封面图，完成后关闭骨架屏
+    const urls = Object.values(COVER_OVERRIDES)
+    let loaded = 0
+    const total = urls.length
+    const onLoaded = () => {
+      loaded++
+      if (loaded >= total) setLoading(false)
+    }
+    urls.forEach(url => {
+      const img = new Image()
+      img.onload = onLoaded
+      img.onerror = onLoaded
+      img.src = url
     })
-    
-    Promise.all(preloadImages).then(results => {
-      const highResMap: Record<string, string> = {}
-      for (const { id, url } of results) {
-        highResMap[id] = url
-      }
-      setImages(prev => ({ ...prev, ...highResMap }))
-    })
-    
-    // 同时从 API 获取其他分类图片
+
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
@@ -201,6 +187,75 @@ export default function NewHome() {
             </nav>
           </aside>
         </>
+      )}
+
+      {/* 骨架屏：复用页面真实结构，文案/logo直接展示，图片区域显示shimmer */}
+      {loading && (
+        <div className="nh-skeleton-overlay">
+          <header className="nh-header">
+            <div className="nh-container">
+              <nav className="nh-menu-nav">
+                <ul className="nh-menu-list">
+                  <li className="nh-logo">
+                    <button type="button" aria-label="首页">
+                      <img src={logoUrl} alt="EuropeWedding" />
+                    </button>
+                  </li>
+                  <li className="nh-user">
+                    <button type="button" className="nh-user__btn" aria-label="用户菜单">
+                      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+                      </svg>
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </header>
+          <main className="nh-intro">
+            <section className="nh-desktop-only">
+              {MODULES.slice(0, 3).map(m => (
+                <div key={m.id} className="nh-item nh-skeleton-item">
+                  <div className="nh-skeleton-shimmer" />
+                  <div className="nh-content">
+                    <h2>{m.title}</h2>
+                    <div className="nh-wrapper">
+                      <button type="button">定制</button>
+                      <button type="button">咨询</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </section>
+            <section className="nh-desktop-only">
+              {MODULES.slice(3).map(m => (
+                <div key={m.id} className="nh-item nh-skeleton-item">
+                  <div className="nh-skeleton-shimmer" />
+                  <div className="nh-content">
+                    <h2>{m.title}</h2>
+                    <div className="nh-wrapper">
+                      <button type="button">定制</button>
+                      <button type="button">咨询</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </section>
+            {MODULES.map(m => (
+              <section key={m.id} className="nh-mobile-only nh-skeleton-item">
+                <div className="nh-skeleton-shimmer" />
+                <div className="nh-mobile-container">
+                  <h2>{m.title}</h2>
+                  <div className="nh-wrapper">
+                    <button type="button">定制</button>
+                    <button type="button">咨询</button>
+                  </div>
+                </div>
+              </section>
+            ))}
+          </main>
+        </div>
       )}
 
       {/* 主体：滚动吸附容器 */}

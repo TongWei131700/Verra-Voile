@@ -9,7 +9,8 @@ description: 将后端代码打包部署到远程服务器，包括上传代码�
 
 - **IP**: `47.99.138.250`
 - **SSH用户**: `root`
-- **SSH密码**: `TongWei131700`
+- **SSH认证**: **仅密钥认证**（服务器已禁用密码登录，用密码会报 `Permission denied (publickey)`）。本机 `~/.ssh/id_ed25519` 已授权，直接 `ssh/scp root@47.99.138.250` 即可，无需 expect
+- **历史密码备份**（仅数据库用途，SSH 不可用）: `TongWei131700` / `Chineseman.`
 - **部署路径**: `/var/www/verra-voile-end`
 - **服务端口**: `3000`
 - **PM2进程名**: `verra-voile-api`
@@ -19,7 +20,7 @@ description: 将后端代码打包部署到远程服务器，包括上传代码�
 - **DB_HOST**: `127.0.0.1`
 - **DB_PORT**: `3306`
 - **DB_USER**: `root`
-- **DB_PASSWORD**: `caoqiangiot@123`
+- **DB_PASSWORD**: `TongWei131700`
 - **DB_NAME**: `verra_voile`
 
 ## 部署步骤
@@ -39,20 +40,10 @@ tar --exclude='node_modules' --exclude='.git' --exclude='uploads' --exclude='.en
 
 ### 3. 上传到服务器
 
-使用 `expect` 处理密码认证：
+直接使用密钥认证（无需 expect）：
 
 ```bash
-expect << 'EXPECT_EOF'
-set timeout 60
-spawn scp -o StrictHostKeyChecking=no /tmp/verra-voile-end.tar.gz root@47.99.138.250:/tmp/
-expect {
-    "password:" {
-        send "TongWei131700\r"
-        exp_continue
-    }
-    eof
-}
-EXPECT_EOF
+scp /tmp/verra-voile-end.tar.gz root@47.99.138.250:/tmp/
 ```
 
 ### 4. 服务器解压并安装依赖
@@ -113,6 +104,7 @@ EXPECT_EOF
 
 **同步范围（业务数据表，本地为主）：**
 - 爬取数据：`crawled_destinations`, `crawled_venues`
+- 国家分表（全部 cd_* 和 cv_* 表）：`cd_uk`, `cd_france`, `cd_greece`, `cd_italy`, `cd_spain`, `cd_portugal`, `cd_test_uk`, `cd_test_france`, `cd_test_greece`, `cd_test_italy`, `cd_test_spain`, `cv_uk`, `cv_france`, `cv_greece`, `cv_italy`, `cv_spain`, `cv_portugal`, `cv_test_uk`, `cv_test_france`, `cv_test_greece`, `cv_test_italy`, `cv_test_spain`
 - 商品数据：`products`, `product_modules`, `products_catering`, `products_destination`, `products_dress`, `products_floral`, `products_other`, `products_team`, `products_wine`
 - 版本/配置：`data_versions`, `deploy_versions`, `wedding_teams`
 
@@ -146,7 +138,7 @@ EXPECT_EOF
 # 3. 服务器导入（全量替换业务表）
 expect << 'EXPECT_EOF'
 set timeout 60
-spawn ssh -o StrictHostKeyChecking=no root@47.99.138.250 "mysql -h 127.0.0.1 -P 3306 -u root -p'caoqiangiot@123' verra_voile < /tmp/full_business_tables.sql && echo DB_SYNC_OK"
+spawn ssh -o StrictHostKeyChecking=no root@47.99.138.250 "mysql -h 127.0.0.1 -P 3306 -u root -p'TongWei131700' verra_voile < /tmp/full_business_tables.sql && echo DB_SYNC_OK"
 expect {
     "password:" {
         send "TongWei131700\r"

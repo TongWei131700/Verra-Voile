@@ -5,7 +5,11 @@ const CATEGORY_LABELS: Record<string, string> = {
   destination: '目的地婚礼',
   team: '婚礼团队',
   floral: '花卉',
-  wine: '酒水',
+  wine: '酒水宴席',
+  dinner: '酒水宴席',
+  catering: '酒水宴席',
+  dress: '礼服',
+  photography: '摄影',
   other: '其他',
 }
 

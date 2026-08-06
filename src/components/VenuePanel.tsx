@@ -9,9 +9,10 @@ interface VenuePanelProps {
   onBook: (venue: Venue) => void
   booked?: boolean
   onCancel?: (venue: Venue) => void
+  loading?: boolean
 }
 
-export default function VenuePanel({ venue, onClose, onBook, booked, onCancel }: VenuePanelProps) {
+export default function VenuePanel({ venue, onClose, onBook, booked, onCancel, loading }: VenuePanelProps) {
   const [isWide, setIsWide] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth > 1024 : true
   )
@@ -24,9 +25,9 @@ export default function VenuePanel({ venue, onClose, onBook, booked, onCancel }:
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  if (!venue) return null
+  if (!venue && !loading) return null
 
   return isWide
-    ? <VenuePanelDesktop venue={venue} onClose={onClose} onBook={onBook} booked={booked} onCancel={onCancel} />
-    : <VenuePanelMobile  venue={venue} onClose={onClose} onBook={onBook} booked={booked} onCancel={onCancel} />
+    ? <VenuePanelDesktop venue={venue!} onClose={onClose} onBook={onBook} booked={booked} onCancel={onCancel} loading={loading} />
+    : <VenuePanelMobile  venue={venue!} onClose={onClose} onBook={onBook} booked={booked} onCancel={onCancel} loading={loading} />
 }

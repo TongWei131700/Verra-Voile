@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import GalleryCarousel from '../components/common/GalleryCarousel'
 import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
+import { wonaBrand } from '../data/wonaDresses'
+import { wonaProducts } from '../data/wonaDressProducts'
 
 function isLoggedIn() {
   return !!localStorage.getItem('token')
@@ -10,87 +12,46 @@ function isLoggedIn() {
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
-const imgUrl = (src: string) => {
-  if (!src) return ''
-  if (src.startsWith('/uploads/') || src.startsWith('/uploads')) return `${API_BASE}${src}`
-  return src
-}
+// 全部礼服商品：WONÁ Concept 批量爬取商品（测试数据）
+const allProducts = [...wonaProducts]
 
-interface VenueData {
-  id: number; slug: string; name: string; name_cn: string
-  country: string; country_cn: string; source_url: string; tagline: string; tagline_cn?: string
-  description: string; description_cn?: string; images: string[]; cover_image: string; video_url?: string
-  features: string[]
-  venue_types: { name: string; name_cn?: string }[]
-  towns: { name: string; name_cn: string }[]
-  budget_ranges: { label: string; min: number; max: number | null }[]
-  guest_capacities: string[]
-  faq: { q: string; a: string }[] | null
-  rating: string; review_count: string; location: string
-}
-
-/** Hero 视频：先显示封面图，视频就绪后替换，自动播放静音循环 */
-function HeroVideo({ videoUrl, poster, alt }: { videoUrl: string; poster: string; alt: string }) {
-  const [ready, setReady] = useState(false)
-  return (
-    <div className="cd-hero__video-wrap">
-      {!ready && poster && (
-        <img src={poster} alt={alt} className="cd-hero__img" />
-      )}
-      <video
-        src={videoUrl}
-        muted
-        loop
-        playsInline
-        autoPlay
-        onCanPlay={() => setReady(true)}
-        className="cd-hero__video"
-        style={{ opacity: ready ? 1 : 0 }}
-      />
-    </div>
-  )
-}
-
-export default function CrawledVenueDetail() {
+export default function DressesDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const [detail, setDetail] = useState<VenueData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [openFaq, setOpenFaq] = useState<Set<number>>(new Set())
+  const navigate = useNavigate()
+  const [scrollY, setScrollY] = useState(0)
   const [showBar, setShowBar] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [isBooked, setIsBooked] = useState(false)
   const aboutRef = useRef<HTMLElement>(null)
-  const parallaxRef = useRef<HTMLDivElement>(null)
-  const navigate = useNavigate()
+
+  const detail = allProducts.find(p => p.slug === slug) || null
 
   // 检查是否已预定
   useEffect(() => {
-    if (detail) {
-      setIsBooked(isProductSelected('destination', detail.slug))
-    }
+    if (detail) setIsBooked(isProductSelected('dress', detail.slug))
   }, [detail])
 
-  // 预定/取消预定处理
+  // 预定/取消预定
   const handleBook = useCallback(() => {
     if (!detail) return
     if (isBooked) {
-      removeSelectedProduct('destination', detail.slug)
+      removeSelectedProduct('dress', detail.slug)
       setIsBooked(false)
     } else {
       setSelectedItem({
-        categoryId: 'destination',
+        categoryId: 'dress',
         productId: detail.slug,
-        name: detail.name_cn || detail.name,
-        nameEn: detail.name,
-        price: detail.budget_ranges?.[0]?.min || 0,
+        name: detail.name,
+        nameEn: detail.nameEn,
+        price: detail.price || 0,
         unit: '€',
-        image: detail.cover_image,
+        image: detail.cover,
       })
       setIsBooked(true)
     }
   }, [detail, isBooked])
 
-  // 咨询按钮点击处理
+  // 咨询按钮
   const handleConsult = useCallback(() => {
     if (!isLoggedIn()) {
       setShowLoginModal(true)
@@ -98,120 +59,65 @@ export default function CrawledVenueDetail() {
     }
     if (detail) {
       setSelectedItem({
-        categoryId: 'destination',
+        categoryId: 'dress',
         productId: detail.slug,
-        name: detail.name_cn || detail.name,
-        nameEn: detail.name,
-        price: detail.budget_ranges?.[0]?.min || 0,
+        name: detail.name,
+        nameEn: detail.nameEn,
+        price: detail.price || 0,
         unit: '€',
-        image: detail.cover_image,
+        image: detail.cover,
       })
     }
     navigate('/order')
   }, [detail, navigate])
 
-  const toggleFaq = (idx: number) => {
-    setOpenFaq(prev => {
-      const next = new Set(prev)
-      if (next.has(idx)) next.delete(idx)
-      else next.add(idx)
-      return next
-    })
-  }
-
+  const onScroll = useCallback(() => setScrollY(window.scrollY), [])
   useEffect(() => {
-    if (!slug) return
-    setLoading(true)
-    window.scrollTo(0, 0)
-    fetch(`${API_BASE}/api/products/crawled-venues/${slug}`)
-      .then(r => r.json())
-      .then(res => { if (res.success) setDetail(res.data) })
-      .finally(() => setLoading(false))
-  }, [slug])
-
-  // 视差滚动：直接操作 DOM，避免 React 重渲染导致页面抖动
-  useEffect(() => {
-    let rafId: number | null = null
-    const onScroll = () => {
-      if (rafId !== null) return
-      rafId = requestAnimationFrame(() => {
-        if (parallaxRef.current) {
-          parallaxRef.current.style.transform = `translateY(${window.scrollY * 0.35}px)`
-        }
-        rafId = null
-      })
-    }
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      if (rafId !== null) cancelAnimationFrame(rafId)
-    }
-  }, [])
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [onScroll])
 
   useEffect(() => {
     if (!aboutRef.current) return
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting || entry.boundingClientRect.top < 0) {
-          setShowBar(true)
-        } else {
-          setShowBar(false)
-        }
+        if (entry.isIntersecting || entry.boundingClientRect.top < 0) setShowBar(true)
+        else setShowBar(false)
       },
       { threshold: 0 }
     )
     observer.observe(aboutRef.current)
     return () => observer.disconnect()
-  }, [loading])
-
-  if (loading) {
-    return (
-      <div className="cd-page">
-        <div className="cd-loading">
-          <div className="cd-spinner" />
-          <p>加载场地数据…</p>
-        </div>
-      </div>
-    )
-  }
+  }, [detail])
 
   if (!detail) {
     return (
       <div className="cd-page">
-        <div className="cd-loading"><p>未找到场地数据</p></div>
+        <button className="cd-back" onClick={() => navigate('/dresses')}>← 返回列表</button>
+        <div className="cd-loading"><p>未找到该礼服作品</p></div>
       </div>
     )
   }
 
-  const imgs = detail.images || []
-  const lowestBudget = detail.budget_ranges?.reduce((prev, curr) =>
-    curr.min < prev.min ? curr : prev
-  , detail.budget_ranges?.[0])
-
   return (
     <div className="cd-page">
       {/* 返回按钮 */}
-      <button className="cd-back" onClick={() => window.history.back()}>← 返回</button>
+      <button className="cd-back" onClick={() => navigate('/dresses')}>← 返回列表</button>
 
       {/* ===== 1. 全屏首图 Hero ===== */}
       <section className="cd-hero">
-        <div className="cd-hero__parallax" ref={parallaxRef}>
-          {/* 有视频时：先显示封面图，视频就绪后替换 */}
-          {detail.video_url ? (
-            <HeroVideo videoUrl={detail.video_url} poster={imgUrl(detail.cover_image)} alt={detail.name_cn || detail.name} />
-          ) : (
-            <FallbackImage src={imgUrl(detail.cover_image)} alt={detail.name_cn || detail.name} className="cd-hero__img" />
-          )}
+        <div className="cd-hero__parallax" style={{ transform: `translateY(${scrollY * 0.35}px)` }}>
+          <FallbackImage src={detail.cover} alt={detail.name} className="cd-hero__img" />
         </div>
         <div className="cd-hero__overlay" />
         <div className="cd-hero__content">
-          <span className="cd-hero__badge">{detail.country_cn}{detail.rating ? ` · ★${detail.rating}` : ''}</span>
-          <h1 className="cd-hero__title">{detail.name_cn || detail.name}</h1>
+          <span className="cd-hero__badge">{detail.categoryCn} · {wonaBrand.name}</span>
+          <h1 className="cd-hero__title">{detail.name}</h1>
           {isBooked && (
             <span className="cd-hero__booked-badge">✓ 已预定</span>
           )}
           <div className="cd-hero__divider" />
-          <p className="cd-hero__tagline">{detail.tagline_cn || detail.tagline || detail.location}</p>
+          <p className="cd-hero__tagline">{detail.tagline}</p>
         </div>
         <div className="cd-hero__scroll" onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}>
           <span>向下探索</span>
@@ -219,84 +125,46 @@ export default function CrawledVenueDetail() {
         </div>
       </section>
 
-      {/* ===== 图片画廊 ===== */}
-      <GalleryCarousel images={imgs.map(imgUrl)} />
+      {/* ===== 图片画廊（含官方展示视频） ===== */}
+      <GalleryCarousel images={detail.images} videoUrl={detail.video} />
 
       {/* ===== 内容区 ===== */}
       <div className="cd-content">
 
-        {/* ===== 2. 场地描述 ===== */}
+        {/* ===== 2. 作品描述 ===== */}
         <section className="cd-about" ref={aboutRef}>
-          <h2 className="cd-about__title">关于这里</h2>
+          <h2 className="cd-about__title">作品介绍</h2>
           <div className="cd-about__divider" />
           <div className="cd-about__body">
-            {(detail.description_cn || detail.description).split('\n\n').map((p, i) => {
-              // 短文本且无句末标点 → 视为小标题
-              const isHeading = p.length < 20 && !/[。！？；，,.!?;:]/.test(p)
-              return isHeading
-                ? <h3 key={i} className="cd-about__subtitle">{p}</h3>
-                : <p key={i}>{p}</p>
-            })}
+            {detail.desc.split('\n\n').map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
           </div>
         </section>
 
-        {/* ===== 3. 特色亮点 + 场地类型/位置 ===== */}
-        <section className="cd-duo">
-          <div className="cd-duo__col">
-            <h2 className="cd-block__title">特色亮点</h2>
-            <ul className="cd-highlights">
-              {detail.features.map((f, i) => (
-                <li key={i} className="cd-highlights__item">
-                  <span className="cd-highlights__dot" />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="cd-duo__col">
-            <h2 className="cd-block__title">场地类型</h2>
-            <div className="cd-chips">
-              {detail.venue_types.map((v, i) => (
-                <span key={i} className="cd-chip">{v.name_cn || v.name}</span>
-              ))}
-            </div>
+        {/* ===== 3. 作品亮点 ===== */}
+        <section className="cd-block cd-block--alt">
+          <h2 className="cd-block__title">作品亮点</h2>
+          <div className="cd-chips">
+            {detail.highlights.map((h, i) => (
+              <span key={i} className="cd-chip">{h}</span>
+            ))}
           </div>
         </section>
 
-        {/* ===== 详细地址 ===== */}
-        {detail.location && (
-          <section className="cd-block cd-block--alt">
-            <h2 className="cd-block__title">详细地址</h2>
-            <p className="cd-about__body" style={{ fontSize: '0.95rem', opacity: 0.85, marginBottom: 0 }}>{detail.location}</p>
-          </section>
-        )}
+        {/* ===== 4. 出品方介绍 ===== */}
+        <section className="cd-block">
+          <h2 className="cd-block__title">出品方</h2>
+          <div className="cd-about__body">
+            <p>{wonaBrand.introCn}</p>
+            <p>📍 {wonaBrand.location} · 📞 {wonaBrand.phone} · ✉️ {wonaBrand.email}</p>
+          </div>
+        </section>
 
-        {/* ===== FAQ ===== */}
-        {detail.faq && detail.faq.length > 0 && (
-          <section className="cd-faq">
-            <h2 className="cd-block__title">常见问题</h2>
-            <p className="cd-faq__subtitle">{detail.name_cn || detail.name} 常见问题</p>
-            <div className="cd-faq__accordion">
-              {detail.faq.map((item, i) => (
-                <div key={i} className={`cd-faq__item${openFaq.has(i) ? ' cd-faq__item--open' : ''}`}>
-                  <button className="cd-faq__question" onClick={() => toggleFaq(i)}>
-                    <span>{item.q}</span>
-                    <svg className={`cd-faq__arrow${openFaq.has(i) ? ' cd-faq__arrow--open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
-                  </button>
-                  {openFaq.has(i) && (
-                    <div className="cd-faq__answer">
-                      <p>{item.a}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-
+        {/* 来源 */}
+        <section className="cd-source">
+          <p>数据来源：<a href={detail.source?.url || wonaBrand.sourceUrl} target="_blank" rel="noreferrer">{wonaBrand.nameCn}</a></p>
+        </section>
       </div>
 
       {/* ===== 底部预定栏 ===== */}
@@ -304,7 +172,11 @@ export default function CrawledVenueDetail() {
         <div className="cd-book-bar__inner">
           <div className="cd-book-bar__price">
             <span className="cd-book-bar__price-label">起步价</span>
-            <span className="cd-book-bar__price-value cd-book-bar__price-value--red">{lowestBudget && lowestBudget.min > 0 ? `€${lowestBudget.min.toLocaleString()}` : '？'}</span>
+            {detail.price ? (
+              <span className="cd-book-bar__price-value cd-book-bar__price-value--red">€{detail.price.toFixed(2)}</span>
+            ) : (
+              <span className="cd-book-bar__price-value cd-book-bar__price-value--red">？</span>
+            )}
           </div>
           <div className="cd-book-bar__actions">
             <button className="cd-book-bar__consult" onClick={handleConsult}>
@@ -324,10 +196,10 @@ export default function CrawledVenueDetail() {
         </div>
       </div>
 
-      {/* 登录/注册弹窗 */}
+      {/* 登录弹窗 */}
       {showLoginModal && (
         <>
-          <div className="login-modal-backdrop" onClick={() => { setShowLoginModal(false); }} />
+          <div className="login-modal-backdrop" onClick={() => setShowLoginModal(false)} />
           <div className="login-modal">
             <button type="button" className="login-modal__close" onClick={() => setShowLoginModal(false)}>✕</button>
             <h3 className="login-modal__title">登录</h3>
@@ -340,20 +212,17 @@ export default function CrawledVenueDetail() {
   )
 }
 
-// 登录/注册表单子组件（复用首页结构）
+// 登录/注册表单子组件
 function LoginForm({ onSuccess }: { onSuccess: () => void }) {
   const [loginMode, setLoginMode] = useState<'login' | 'register'>('login')
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email')
-  // 邮箱登录
   const [email, setEmail] = useState('')
   const [emailCode, setEmailCode] = useState('')
   const [emailSending, setEmailSending] = useState(false)
   const [emailCountdown, setEmailCountdown] = useState(0)
-  // 手机号登录/注册
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  // 通用
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -406,14 +275,12 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
         <button type="button" className={`login-modal__tab ${loginMode === 'login' ? 'login-modal__tab--active' : ''}`} onClick={() => { setLoginMode('login'); setError('') }}>登录</button>
         <button type="button" className={`login-modal__tab ${loginMode === 'register' ? 'login-modal__tab--active' : ''}`} onClick={() => { setLoginMode('register'); setAuthMethod('phone'); setError('') }}>注册</button>
       </div>
-
       {loginMode === 'login' && (
         <div className="login-modal__method-tabs">
           <button type="button" className={`login-modal__method-tab ${authMethod === 'email' ? 'active' : ''}`} onClick={() => { setAuthMethod('email'); setError('') }}>邮箱</button>
           <button type="button" className={`login-modal__method-tab ${authMethod === 'phone' ? 'active' : ''}`} onClick={() => { setAuthMethod('phone'); setError('') }}>手机号</button>
         </div>
       )}
-
       {authMethod === 'phone' ? (
         <form className="login-modal__form" onSubmit={handleModalSubmit}>
           <div className="login-modal__field">
@@ -447,7 +314,6 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
           <button type="submit" className="login-modal__submit" disabled={submitting}>{submitting ? '登录中...' : '登 录'}</button>
         </form>
       )}
-
       <p className="login-modal__tip">
         {loginMode === 'login' ? '还没有账号？' : '已有账号？'}
         <button type="button" className="login-modal__switch" onClick={switchMode}>

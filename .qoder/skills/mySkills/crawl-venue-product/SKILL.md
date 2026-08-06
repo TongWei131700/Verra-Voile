@@ -205,15 +205,41 @@ await pool.execute(
 
 **必须翻译**：name_cn、tagline_cn（≤30字）、description_cn（按 `\n\n` 分段）、features（每条≤25字）、venue_types（name_cn）、towns（name_cn）、location
 
-**翻译方式**：爬取时由 AI 直接翻译写入，或运行翻译脚本：
+### 翻译流程（推荐：文件导出 → 翻译 → 导入）
+
+**步骤1：导出待翻译文本**
 ```bash
 cd /Users/hongli/WorkSpace/Verra-Voile-End
-node scripts/translate-venues.cjs
+node scripts/export-for-translate.cjs --country={country}
+# 输出: scripts/translate-pending-{country}.json
 ```
 
-### 翻译脚本模板
+**步骤2：批量翻译文件**
+```bash
+node scripts/batch-translate-file.cjs --country={country}
+# 使用 Google Translate gtx 端点，免费无限制
+# 支持断点续翻：已有 name_cn 的条目自动跳过
+# 每5条自动保存进度
+```
 
-爬取完成后，单独编写翻译脚本批量更新中文内容：
+**步骤3：导入翻译结果**
+```bash
+node scripts/import-translated.cjs --country={country}
+# 根据 slug 标识更新 cv_、cd_ 表
+```
+
+### 翻译 API
+
+使用 Google Translate `gtx` 端点（免费，无需 API Key）：
+```
+https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-CN&dt=t&q={text}
+```
+
+> **注意**：MyMemory API 有每日5000词限额，Google 官方 API 需要付费 Key。gtx 端点是目前最稳定的免费方案。
+
+### 翻译脚本模板（手动翻译模式）
+
+少量场地或需要精确翻译时，可手动编写翻译脚本：
 
 ```javascript
 // scripts/translate-{country}.cjs
@@ -415,9 +441,12 @@ cheerio/puppeteer 爬取只写入英文原文，_cn 后缀字段和 JSON 中的�
 ## 相关文件
 
 ### 爬取与翻译
-- 爬取脚本：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/crawl-venue-detail.cjs`
+- 批量爬取：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/crawl-batch.cjs`
+- 单场地爬取：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/crawl-venue-detail.cjs`
 - puppeteer 模板：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/crawl-uk-puppeteer.cjs`
-- 翻译脚本：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/translate-venues.cjs`
+- 翻译导出：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/export-for-translate.cjs`
+- 批量翻译：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/batch-translate-file.cjs`
+- 翻译导入：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/import-translated.cjs`
 - 翻译示例：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/translate-test-uk.cjs`
 
 ### 后端

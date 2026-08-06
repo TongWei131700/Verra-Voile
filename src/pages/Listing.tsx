@@ -65,7 +65,7 @@ export default function Listing() {
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data?.categories) {
-          setCategories(data.data.categories.map((c: any) => ({
+          setCategories(data.data.categories.filter((c: any) => c.id !== 'other').map((c: any) => ({
             id: c.id,
             name: c.name,
             nameEn: c.nameEn,
@@ -108,15 +108,20 @@ export default function Listing() {
   // 模块 ID 到中文名映射
   const moduleNames: Record<string, string> = {
     destination: '地点', team: '婚礼团队', floral: '花卉',
-    wine: '酒水', dinner: '宴席', dress: '礼服', catering: '宴席', other: '其他',
+    wine: '酒水宴席', dinner: '酒水宴席', dress: '礼服', catering: '酒水宴席',
+    photography: '摄影',
   }
-  const moduleKeys = ['destination', 'team', 'floral', 'wine', 'dinner', 'dress', 'catering', 'other']
+  const moduleKeys = ['destination', 'team', 'floral', 'wine', 'dress', 'photography']
+
+  // 酒水/宴席历史数据归并到 wine 分组
+  const mergeCategoryId = (id: string) => (id === 'dinner' || id === 'catering' ? 'wine' : id)
 
   // 按模块分组
   const bookedMap: Record<string, { productId: string; venueName: string; price: number; unit: string }[]> = {}
   for (const item of selectedItems) {
-    if (!bookedMap[item.categoryId]) bookedMap[item.categoryId] = []
-    bookedMap[item.categoryId].push({ productId: item.productId, venueName: item.name, price: item.price, unit: item.unit })
+    const groupId = mergeCategoryId(item.categoryId)
+    if (!bookedMap[groupId]) bookedMap[groupId] = []
+    bookedMap[groupId].push({ productId: item.productId, venueName: item.name, price: item.price, unit: item.unit })
   }
 
   // 汇总已选商品列表
@@ -130,7 +135,7 @@ export default function Listing() {
 
   const handleRemoveItem = (categoryId: string, productId: string) => {
     const items = getSelectedProducts().filter(
-      i => !(i.categoryId === categoryId && i.productId === productId)
+      i => !(mergeCategoryId(i.categoryId) === categoryId && i.productId === productId)
     )
     sessionStorage.setItem('selected_products', JSON.stringify(items))
     setSelectedItems(items)
@@ -307,6 +312,14 @@ export default function Listing() {
                     navigate('/destinations')
                   } else if (item.id === 'team') {
                     navigate('/wedding-team')
+                  } else if (item.id === 'floral') {
+                    navigate('/flowers')
+                  } else if (item.id === 'dress') {
+                    navigate('/dresses')
+                  } else if (item.id === 'wine') {
+                    navigate('/wine')
+                  } else if (item.id === 'photography') {
+                    navigate('/photography')
                   } else {
                     navigate(`/listing/${item.id}`)
                   }
@@ -359,7 +372,7 @@ export default function Listing() {
                   <div key={catId} className="cart-pad__group">
                     <div className="cart-pad__group-header">
                       <span className="cart-pad__group-icon">
-                        {catId === 'destination' ? '📍' : catId === 'team' ? '👥' : catId === 'floral' ? '💐' : catId === 'wine' ? '🍷' : catId === 'dinner' || catId === 'catering' ? '🍽️' : catId === 'dress' ? '👗' : '📦'}
+                        {catId === 'destination' ? '📍' : catId === 'team' ? '👥' : catId === 'floral' ? '💐' : catId === 'wine' || catId === 'dinner' || catId === 'catering' ? '🍷' : catId === 'dress' ? '👗' : catId === 'photography' ? '📷' : '📦'}
                       </span>
                       <span className="cart-pad__group-name">{moduleNames[catId] || catId}</span>
                       <span className="cart-pad__group-count">{items.length} 项</span>

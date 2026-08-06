@@ -34,7 +34,8 @@ function toVenue(p: Product, categoryId: string): Venue {
 const moduleRouteMap: Record<string, string> = {
   team: '婚礼团队',
   floral: '花卉',
-  wine: '酒水',
+  wine: '酒水宴席',
+  photography: '摄影',
   other: '其他',
 }
 
@@ -168,7 +169,7 @@ export default function ListingProducts() {
 
   // 当前模块在 select 中的默认值
   const selectValue = mod ? (moduleRouteMap[moduleId] || mod.name) : '加载中...'
-  const selectOptions = ['目的地婚礼', '婚礼团队', '花卉', '酒水', '其他']
+  const selectOptions = ['目的地婚礼', '婚礼团队', '花卉', '酒水宴席', '摄影', '其他']
 
   return (
     <div className="customize-page">
@@ -191,11 +192,16 @@ export default function ListingProducts() {
                 '目的地婚礼': 'destination',
                 '婚礼团队': 'team',
                 '花卉': 'floral',
-                '酒水': 'wine',
+                '酒水宴席': 'wine',
+                '摄影': 'photography',
                 '其他': 'other',
               }
               const route = map[val]
-              if (route) {
+              if (route === 'wine') {
+                navigate('/wine')
+              } else if (route === 'photography') {
+                navigate('/photography')
+              } else if (route) {
                 navigate(`/listing/${route}`)
               }
             }}

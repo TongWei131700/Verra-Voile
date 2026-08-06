@@ -273,6 +273,87 @@ export default function Destinations() {
               </div>
             </div>
           </div>
+{/* 测试奥地利商品卡片 */}
+<div className="test-dest-card" onClick={() => navigate('/europe/test-austria')}>
+            <div className="test-dest-card__image">
+<FallbackImage src="https://images.unsplash.com/photo-1516466723877-e4ec1d73608a?w=900&q=80" alt="测试奥地利" />
+              <div className="test-dest-card__overlay">
+                <span className="test-dest-card__number">T</span>
+              </div>
+            </div>
+            <div className="test-dest-card__content">
+              <div className="test-dest-card__badge">
+                <span className="test-dest-card__crest">♗</span>
+                <span className="test-dest-card__country">Austria</span>
+{venueCounts['测试奥地利'] !== undefined && (
+<span className="test-dest-card__count">{venueCounts['测试奥地利']} 个场地</span>
+                )}
+              </div>
+<h2 className="test-dest-card__name">测试奥地利</h2>
+              <p className="test-dest-card__style">试验商品</p>
+              <p className="test-dest-card__intro">这是一个测试用的奥地利目的地商品，城堡与阿尔卑斯山间的梦幻婚礼。</p>
+              <div className="test-dest-card__cta">
+                <span>探索此目的地</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+{/* 测试peachperfectweddings商品卡片 */}
+<div className="test-dest-card test-dest-card--reverse" onClick={() => navigate('/europe/test-peachperfectweddings')}>
+            <div className="test-dest-card__image">
+<FallbackImage src="https://edculdonasdlqjrowlzt.supabase.co/storage/v1/render/image/public/cms/ppwd9n48rrg8vm9?height=1200&width=1200&resize=contain&quality=80" alt="测试peachperfectweddings" />
+              <div className="test-dest-card__overlay">
+                <span className="test-dest-card__number">T</span>
+              </div>
+            </div>
+            <div className="test-dest-card__content">
+              <div className="test-dest-card__badge">
+                <span className="test-dest-card__crest">♕</span>
+                <span className="test-dest-card__country">PPW</span>
+{venueCounts['测试peachperfectweddings'] !== undefined && (
+<span className="test-dest-card__count">{venueCounts['测试peachperfectweddings']} 个目的地</span>
+                )}
+              </div>
+<h2 className="test-dest-card__name">测试peachperfectweddings</h2>
+              <p className="test-dest-card__style">试验商品</p>
+              <p className="test-dest-card__intro">来自peachperfectweddings.com的7个欧洲目的地婚礼目的地，涵盖爱尔兰、意大利、西班牙、葡萄牙、德国、奥地利和瑞士。</p>
+              <div className="test-dest-card__cta">
+                <span>探索此目的地</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+{/* 意大利商品卡片 */}
+<div className="test-dest-card" onClick={() => navigate('/europe/real-italy')}>
+            <div className="test-dest-card__image">
+<FallbackImage src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=900&q=80" alt="意大利" />
+              <div className="test-dest-card__overlay">
+                <span className="test-dest-card__number">R</span>
+              </div>
+            </div>
+            <div className="test-dest-card__content">
+              <div className="test-dest-card__badge">
+                <span className="test-dest-card__crest">♕</span>
+                <span className="test-dest-card__country">Italy</span>
+{venueCounts['意大利'] !== undefined && (
+<span className="test-dest-card__count">{venueCounts['意大利']} 个场地</span>
+                )}
+              </div>
+<h2 className="test-dest-card__name">意大利</h2>
+              <p className="test-dest-card__style">精选商品</p>
+              <p className="test-dest-card__intro">来自WeddingWire的意大利婚礼场地，精选优质酒店与庄园。</p>
+              <div className="test-dest-card__cta">
+                <span>探索此目的地</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

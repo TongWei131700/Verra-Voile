@@ -148,7 +148,7 @@ export default function ListingDestination() {
         <div className="dest-module-select">
           <p className="dest-module-select__label">类别</p>
           <CustomSelect
-            options={['目的地婚礼', '婚礼团队', '花卉', '酒水', '其他']}
+            options={['目的地婚礼', '婚礼团队', '花卉', '酒水宴席', '摄影', '其他']}
             placeholder="目的地婚礼"
             value="目的地婚礼"
             onChange={(val) => {
@@ -156,11 +156,16 @@ export default function ListingDestination() {
                 '目的地婚礼': 'destination',
                 '婚礼团队': 'team',
                 '花卉': 'floral',
-                '酒水': 'wine',
+                '酒水宴席': 'wine',
+                '摄影': 'photography',
                 '其他': 'other',
               }
               const route = map[val]
-              if (route && route !== 'destination') {
+              if (route === 'wine') {
+                navigate('/wine')
+              } else if (route === 'photography') {
+                navigate('/photography')
+              } else if (route && route !== 'destination') {
                 navigate(`/listing/${route}`)
               }
             }}

@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
+import heroImg from '../assets/wedding-team-hero.png'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -10,56 +11,56 @@ const imgUrl = (src: string) => {
   return src
 }
 
-interface TeamMember {
+interface TeamCompany {
   id: number
+  slug: string
   name: string
-  name_en: string
-  role: string
-  role_en: string
-  description: string
-  image: string
-  price: number
-  unit: string
-  highlight: string
-  sort_order: number
+  name_cn: string
+  country_cn: string
+  city_cn: string
+  tagline: string
+  description_preview: string
+  founded_year: number
+  team_members: { name: string; name_cn: string; role: string; role_cn: string }[]
+  services: { name: string; name_cn: string }[]
+  service_areas: { name: string; name_cn: string }[]
+  cover_image: string
 }
 
 export default function WeddingTeam() {
   const navigate = useNavigate()
-  const [list, setList] = useState<TeamMember[]>([])
+  const [list, setList] = useState<TeamCompany[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [visibleCount, setVisibleCount] = useState(6)
   const [loadingMore, setLoadingMore] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
 
-  // 从新 API 获取婚礼团队数据
   useEffect(() => {
-    fetch(`${API_BASE}/api/products/wedding-teams`)
+    fetch(`${API_BASE}/api/products/crawled-wedding-teams`)
       .then(r => r.json())
       .then(res => {
-        if (res.success && res.data) {
-          setList(res.data)
-        }
+        if (res.success && res.data) setList(res.data)
       })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
-  // 搜索筛选
   const filteredList = useMemo(() => {
     if (!searchQuery.trim()) return list
     const q = searchQuery.trim().toLowerCase()
-    return list.filter(p =>
-      p.name?.toLowerCase().includes(q) ||
-      p.name_en?.toLowerCase().includes(q) ||
-      p.role?.toLowerCase().includes(q) ||
-      p.role_en?.toLowerCase().includes(q) ||
-      p.description?.toLowerCase().includes(q)
+    return list.filter(item =>
+      item.name_cn?.toLowerCase().includes(q) ||
+      item.name?.toLowerCase().includes(q) ||
+      item.country_cn?.toLowerCase().includes(q) ||
+      item.city_cn?.toLowerCase().includes(q) ||
+      item.tagline?.toLowerCase().includes(q) ||
+      item.description_preview?.toLowerCase().includes(q) ||
+      item.services?.some((s: any) => s.name_cn?.toLowerCase().includes(q)) ||
+      item.team_members?.some((m: any) => m.name_cn?.toLowerCase().includes(q) || m.role_cn?.toLowerCase().includes(q))
     )
   }, [list, searchQuery])
 
-  // 分页
   const displayList = useMemo(() => filteredList.slice(0, visibleCount), [filteredList, visibleCount])
   const hasMore = visibleCount < filteredList.length
 
@@ -72,20 +73,14 @@ export default function WeddingTeam() {
     }, 300)
   }, [loadingMore])
 
-  // 搜索时重置分页
-  useEffect(() => {
-    setVisibleCount(6)
-  }, [searchQuery])
+  useEffect(() => { setVisibleCount(6) }, [searchQuery])
 
-  // IntersectionObserver 监听哨兵元素
   useEffect(() => {
     const sentinel = sentinelRef.current
     if (!sentinel || loadingMore) return
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          handleLoadMore()
-        }
+        if (entries[0].isIntersecting && hasMore && !loadingMore) handleLoadMore()
       },
       { rootMargin: '100px' }
     )
@@ -108,10 +103,12 @@ export default function WeddingTeam() {
     <div className="cd-page">
       {/* 首屏 */}
       <section className="cd-list-hero">
-        <div className="cd-list-hero__bg" style={{
-          background: 'linear-gradient(135deg, #2c2c2c 0%, #1a1a2e 50%, #16213e 100%)',
-          width: '100%', height: '100%'
-        }} />
+        <img
+          className="cd-list-hero__bg"
+          src={heroImg}
+          alt=""
+          style={{ filter: 'brightness(0.7)' }}
+        />
         <div className="cd-list-hero__overlay" />
         <button className="cd-list-hero__back" onClick={() => navigate('/listing')}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -121,11 +118,11 @@ export default function WeddingTeam() {
           <span>返回</span>
         </button>
         <div className="cd-list-hero__content">
-          <p className="cd-list-hero__sub">Wedding Team</p>
+          <p className="cd-list-hero__sub">Wedding Planner Companies</p>
           <h1 className="cd-list-hero__title">婚礼团队</h1>
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
-            {list.length > 0 ? `共收录 ${list.length} 项专业服务` : '专业婚礼服务团队，为您打造完美婚礼'}
+            {list.length > 0 ? `共收录 ${list.length} 家专业婚礼策划公司` : '专业婚礼策划公司，为您打造完美婚礼'}
           </p>
         </div>
       </section>
@@ -140,14 +137,12 @@ export default function WeddingTeam() {
           <input
             className="cd-search-bar__input"
             type="text"
-            placeholder="搜索服务名称、角色…"
+            placeholder="搜索公司名称、服务、地区…"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
           {searchQuery && (
-            <button className="cd-search-bar__clear" onClick={() => setSearchQuery('')}>
-              ✕
-            </button>
+            <button className="cd-search-bar__clear" onClick={() => setSearchQuery('')}>✕</button>
           )}
         </div>
       </div>
@@ -157,33 +152,33 @@ export default function WeddingTeam() {
         <div className="cd-list">
           {displayList.length > 0 ? (
             <>
-              {displayList.map(item => (
-                <div key={item.id} className="cd-card cd-card--team">
-                  <div className="cd-card__img-wrap">
-                    <FallbackImage src={imgUrl(item.image)} alt={item.name} className="cd-card__img" />
-                    <div className="cd-card__img-overlay" />
-                    {item.highlight && (
-                      <span className="cd-card__country">{item.highlight}</span>
-                    )}
-                  </div>
-                  <div className="cd-card__body">
-                    <h3 className="cd-card__name">{item.name}</h3>
-                    <p className="cd-card__tagline">{item.role || item.name_en}</p>
-                    <p className="cd-card__preview">{item.description}</p>
-                    <div className="cd-card__footer">
-                      {item.role && (
-                        <span className="cd-card__stat">✦ {item.role}</span>
-                      )}
-                      {item.price > 0 && (
-                        <span className="cd-card__price">
-                          €{item.price?.toLocaleString()}{item.unit || ''}
-                        </span>
-                      )}
-                      <span className="cd-card__arrow">查看详情 →</span>
+              {displayList.map(item => {
+                const memberCount = item.team_members?.length || 0
+                const serviceCount = item.services?.length || 0
+                return (
+                  <div key={item.id} className="cd-card cd-card--team" onClick={() => navigate(`/wedding-team/${item.slug}`)}>
+                    <div className="cd-card__img-wrap">
+                      <FallbackImage src={imgUrl(item.cover_image)} alt={item.name_cn || item.name} className="cd-card__img" />
+                      <div className="cd-card__img-overlay" />
+                      <span className="cd-card__country">{item.country_cn}</span>
+                    </div>
+                    <div className="cd-card__body">
+                      <h3 className="cd-card__name">{item.name_cn || item.name}</h3>
+                      <p className="cd-card__tagline">{item.tagline}</p>
+                      <p className="cd-card__preview">{item.description_preview}…</p>
+                      <div className="cd-card__footer">
+                        {memberCount > 0 && (
+                          <span className="cd-card__stat">✦ {memberCount} 位成员</span>
+                        )}
+                        {serviceCount > 0 && (
+                          <span className="cd-card__stat">✦ {serviceCount} 项服务</span>
+                        )}
+                        <span className="cd-card__arrow">查看详情 →</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
               {hasMore && (
                 <>
                   {loadingMore ? (
@@ -211,12 +206,12 @@ export default function WeddingTeam() {
           ) : (
             <div className="cd-filter__empty" style={{ gridColumn: '1 / -1' }}>
               <span className="cd-filter__empty-icon">✦</span>
-              <p>{searchQuery ? '当前搜索条件下无服务' : '暂无婚礼团队服务，敬请期待'}</p>
+              <p>{searchQuery ? '当前搜索条件下无婚礼策划公司' : '暂无婚礼策划公司，敬请期待'}</p>
             </div>
           )}
           {!hasMore && displayList.length > 0 && (
             <div className="cd-load-end">
-              <span>— 已展示全部 {filteredList.length} 项服务 —</span>
+              <span>— 已展示全部 {filteredList.length} 家公司 —</span>
             </div>
           )}
         </div>

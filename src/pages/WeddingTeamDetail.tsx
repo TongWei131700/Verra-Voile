@@ -16,57 +16,39 @@ const imgUrl = (src: string) => {
   return src
 }
 
-interface VenueData {
+interface TeamMember { name: string; name_cn: string; role: string; role_cn: string; description: string; image: string }
+interface Service { name: string; name_cn: string; category: string; description: string }
+interface ServiceArea { name: string; name_cn: string; detail: string }
+interface FAQ { q: string; a: string }
+
+interface TeamData {
   id: number; slug: string; name: string; name_cn: string
-  country: string; country_cn: string; source_url: string; tagline: string; tagline_cn?: string
-  description: string; description_cn?: string; images: string[]; cover_image: string; video_url?: string
-  features: string[]
-  venue_types: { name: string; name_cn?: string }[]
-  towns: { name: string; name_cn: string }[]
-  budget_ranges: { label: string; min: number; max: number | null }[]
-  guest_capacities: string[]
-  faq: { q: string; a: string }[] | null
-  rating: string; review_count: string; location: string
+  source_url: string; country: string; country_cn: string
+  city: string; city_cn: string; tagline: string
+  description: string; story: string; founded_year: number
+  team_members: TeamMember[]; services: Service[]
+  service_areas: ServiceArea[]
+  faq: FAQ[]
+  images: string[]
+  cover_image: string; website: string
 }
 
-/** Hero 视频：先显示封面图，视频就绪后替换，自动播放静音循环 */
-function HeroVideo({ videoUrl, poster, alt }: { videoUrl: string; poster: string; alt: string }) {
-  const [ready, setReady] = useState(false)
-  return (
-    <div className="cd-hero__video-wrap">
-      {!ready && poster && (
-        <img src={poster} alt={alt} className="cd-hero__img" />
-      )}
-      <video
-        src={videoUrl}
-        muted
-        loop
-        playsInline
-        autoPlay
-        onCanPlay={() => setReady(true)}
-        className="cd-hero__video"
-        style={{ opacity: ready ? 1 : 0 }}
-      />
-    </div>
-  )
-}
-
-export default function CrawledVenueDetail() {
+export default function WeddingTeamDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const [detail, setDetail] = useState<VenueData | null>(null)
+  const [detail, setDetail] = useState<TeamData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [scrollY, setScrollY] = useState(0)
   const [openFaq, setOpenFaq] = useState<Set<number>>(new Set())
   const [showBar, setShowBar] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [isBooked, setIsBooked] = useState(false)
   const aboutRef = useRef<HTMLElement>(null)
-  const parallaxRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
   // 检查是否已预定
   useEffect(() => {
     if (detail) {
-      setIsBooked(isProductSelected('destination', detail.slug))
+      setIsBooked(isProductSelected('wedding-team', detail.slug))
     }
   }, [detail])
 
@@ -74,15 +56,15 @@ export default function CrawledVenueDetail() {
   const handleBook = useCallback(() => {
     if (!detail) return
     if (isBooked) {
-      removeSelectedProduct('destination', detail.slug)
+      removeSelectedProduct('wedding-team', detail.slug)
       setIsBooked(false)
     } else {
       setSelectedItem({
-        categoryId: 'destination',
+        categoryId: 'wedding-team',
         productId: detail.slug,
         name: detail.name_cn || detail.name,
         nameEn: detail.name,
-        price: detail.budget_ranges?.[0]?.min || 0,
+        price: 0,
         unit: '€',
         image: detail.cover_image,
       })
@@ -98,11 +80,11 @@ export default function CrawledVenueDetail() {
     }
     if (detail) {
       setSelectedItem({
-        categoryId: 'destination',
+        categoryId: 'wedding-team',
         productId: detail.slug,
         name: detail.name_cn || detail.name,
         nameEn: detail.name,
-        price: detail.budget_ranges?.[0]?.min || 0,
+        price: 0,
         unit: '€',
         image: detail.cover_image,
       })
@@ -113,8 +95,7 @@ export default function CrawledVenueDetail() {
   const toggleFaq = (idx: number) => {
     setOpenFaq(prev => {
       const next = new Set(prev)
-      if (next.has(idx)) next.delete(idx)
-      else next.add(idx)
+      if (next.has(idx)) next.delete(idx); else next.add(idx)
       return next
     })
   }
@@ -123,40 +104,24 @@ export default function CrawledVenueDetail() {
     if (!slug) return
     setLoading(true)
     window.scrollTo(0, 0)
-    fetch(`${API_BASE}/api/products/crawled-venues/${slug}`)
+    fetch(`${API_BASE}/api/products/crawled-wedding-teams/${slug}`)
       .then(r => r.json())
       .then(res => { if (res.success) setDetail(res.data) })
       .finally(() => setLoading(false))
   }, [slug])
 
-  // 视差滚动：直接操作 DOM，避免 React 重渲染导致页面抖动
+  const onScroll = useCallback(() => setScrollY(window.scrollY), [])
   useEffect(() => {
-    let rafId: number | null = null
-    const onScroll = () => {
-      if (rafId !== null) return
-      rafId = requestAnimationFrame(() => {
-        if (parallaxRef.current) {
-          parallaxRef.current.style.transform = `translateY(${window.scrollY * 0.35}px)`
-        }
-        rafId = null
-      })
-    }
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      if (rafId !== null) cancelAnimationFrame(rafId)
-    }
-  }, [])
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [onScroll])
 
   useEffect(() => {
     if (!aboutRef.current) return
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting || entry.boundingClientRect.top < 0) {
-          setShowBar(true)
-        } else {
-          setShowBar(false)
-        }
+        if (entry.isIntersecting || entry.boundingClientRect.top < 0) setShowBar(true)
+        else setShowBar(false)
       },
       { threshold: 0 }
     )
@@ -167,10 +132,7 @@ export default function CrawledVenueDetail() {
   if (loading) {
     return (
       <div className="cd-page">
-        <div className="cd-loading">
-          <div className="cd-spinner" />
-          <p>加载场地数据…</p>
-        </div>
+        <div className="cd-loading"><div className="cd-spinner" /><p>加载婚礼团队数据…</p></div>
       </div>
     )
   }
@@ -178,40 +140,37 @@ export default function CrawledVenueDetail() {
   if (!detail) {
     return (
       <div className="cd-page">
-        <div className="cd-loading"><p>未找到场地数据</p></div>
+        <div className="cd-loading"><p>未找到婚礼团队数据</p></div>
       </div>
     )
   }
 
   const imgs = detail.images || []
-  const lowestBudget = detail.budget_ranges?.reduce((prev, curr) =>
-    curr.min < prev.min ? curr : prev
-  , detail.budget_ranges?.[0])
+  const weddingServices = detail.services?.filter((s: Service) => s.category === 'wedding') || []
+  const eventServices = detail.services?.filter((s: Service) => s.category === 'event') || []
 
   return (
     <div className="cd-page">
       {/* 返回按钮 */}
-      <button className="cd-back" onClick={() => window.history.back()}>← 返回</button>
+      <button className="cd-back" onClick={() => navigate('/wedding-team')}>← 返回列表</button>
 
       {/* ===== 1. 全屏首图 Hero ===== */}
       <section className="cd-hero">
-        <div className="cd-hero__parallax" ref={parallaxRef}>
-          {/* 有视频时：先显示封面图，视频就绪后替换 */}
-          {detail.video_url ? (
-            <HeroVideo videoUrl={detail.video_url} poster={imgUrl(detail.cover_image)} alt={detail.name_cn || detail.name} />
-          ) : (
-            <FallbackImage src={imgUrl(detail.cover_image)} alt={detail.name_cn || detail.name} className="cd-hero__img" />
-          )}
+        <div className="cd-hero__parallax" style={{ transform: `translateY(${scrollY * 0.35}px)` }}>
+          <FallbackImage src={imgUrl(detail.cover_image)} alt={detail.name_cn || detail.name} className="cd-hero__img" />
         </div>
         <div className="cd-hero__overlay" />
         <div className="cd-hero__content">
-          <span className="cd-hero__badge">{detail.country_cn}{detail.rating ? ` · ★${detail.rating}` : ''}</span>
+          <span className="cd-hero__badge">
+            {detail.country_cn}{detail.city_cn ? ` · ${detail.city_cn}` : ''}
+            {detail.founded_year ? ` · 成立于${detail.founded_year}` : ''}
+          </span>
           <h1 className="cd-hero__title">{detail.name_cn || detail.name}</h1>
           {isBooked && (
             <span className="cd-hero__booked-badge">✓ 已预定</span>
           )}
           <div className="cd-hero__divider" />
-          <p className="cd-hero__tagline">{detail.tagline_cn || detail.tagline || detail.location}</p>
+          <p className="cd-hero__tagline">{detail.tagline}</p>
         </div>
         <div className="cd-hero__scroll" onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}>
           <span>向下探索</span>
@@ -225,59 +184,112 @@ export default function CrawledVenueDetail() {
       {/* ===== 内容区 ===== */}
       <div className="cd-content">
 
-        {/* ===== 2. 场地描述 ===== */}
+        {/* ===== 2. 公司介绍 ===== */}
         <section className="cd-about" ref={aboutRef}>
-          <h2 className="cd-about__title">关于这里</h2>
+          <h2 className="cd-about__title">关于我们</h2>
           <div className="cd-about__divider" />
           <div className="cd-about__body">
-            {(detail.description_cn || detail.description).split('\n\n').map((p, i) => {
-              // 短文本且无句末标点 → 视为小标题
-              const isHeading = p.length < 20 && !/[。！？；，,.!?;:]/.test(p)
-              return isHeading
-                ? <h3 key={i} className="cd-about__subtitle">{p}</h3>
-                : <p key={i}>{p}</p>
-            })}
+            {detail.description.split('\n\n').map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
           </div>
         </section>
 
-        {/* ===== 3. 特色亮点 + 场地类型/位置 ===== */}
-        <section className="cd-duo">
-          <div className="cd-duo__col">
-            <h2 className="cd-block__title">特色亮点</h2>
-            <ul className="cd-highlights">
-              {detail.features.map((f, i) => (
-                <li key={i} className="cd-highlights__item">
-                  <span className="cd-highlights__dot" />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="cd-duo__col">
-            <h2 className="cd-block__title">场地类型</h2>
-            <div className="cd-chips">
-              {detail.venue_types.map((v, i) => (
-                <span key={i} className="cd-chip">{v.name_cn || v.name}</span>
+        {/* ===== 3. 品牌故事 ===== */}
+        {detail.story && (
+          <section className="cd-block cd-block--alt">
+            <h2 className="cd-block__title">品牌故事</h2>
+            <div className="cd-about__body">
+              {detail.story.split('\n\n').map((p, i) => (
+                <p key={i}>{p}</p>
               ))}
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        {/* ===== 详细地址 ===== */}
-        {detail.location && (
+        {/* ===== 4. 团队成员 ===== */}
+        {detail.team_members?.length > 0 && (
+          <section className="cd-block">
+            <h2 className="cd-block__title">团队成员</h2>
+            <div className="cd-team-grid">
+              {detail.team_members.map((m: TeamMember, i: number) => (
+                <div key={i} className="cd-team-card">
+                  <div className="cd-team-card__avatar">
+                    {m.image ? (
+                      <FallbackImage src={imgUrl(m.image)} alt={m.name_cn || m.name} className="cd-team-card__photo" />
+                    ) : (
+                      <div className="cd-team-card__initial">{(m.name_cn || m.name || '?')[0]}</div>
+                    )}
+                  </div>
+                  <h3 className="cd-team-card__name">{m.name_cn || m.name}</h3>
+                  <p className="cd-team-card__role">{m.role_cn || m.role}</p>
+                  <p className="cd-team-card__desc">{m.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ===== 5. 服务项目 ===== */}
+        {detail.services?.length > 0 && (
           <section className="cd-block cd-block--alt">
-            <h2 className="cd-block__title">详细地址</h2>
-            <p className="cd-about__body" style={{ fontSize: '0.95rem', opacity: 0.85, marginBottom: 0 }}>{detail.location}</p>
+            <h2 className="cd-block__title">服务项目</h2>
+            {weddingServices.length > 0 && (
+              <>
+                <h3 className="cd-block__subtitle">婚礼服务</h3>
+                <div className="cd-service-list">
+                  {weddingServices.map((s: Service, i: number) => (
+                    <div key={i} className="cd-service-item">
+                      <span className="cd-service-item__icon">💒</span>
+                      <div>
+                        <strong>{s.name_cn}</strong>
+                        <p>{s.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+            {eventServices.length > 0 && (
+              <>
+                <h3 className="cd-block__subtitle" style={{ marginTop: 24 }}>活动策划</h3>
+                <div className="cd-service-list">
+                  {eventServices.map((s: Service, i: number) => (
+                    <div key={i} className="cd-service-item">
+                      <span className="cd-service-item__icon">🎉</span>
+                      <div>
+                        <strong>{s.name_cn}</strong>
+                        <p>{s.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </section>
+        )}
+
+        {/* ===== 6. 服务地区 ===== */}
+        {detail.service_areas?.length > 0 && (
+          <section className="cd-block">
+            <h2 className="cd-block__title">服务地区</h2>
+            <div className="cd-chips">
+              {detail.service_areas.map((a: ServiceArea, i: number) => (
+                <span key={i} className="cd-chip cd-chip--location" title={a.detail}>
+                  {a.name_cn}
+                </span>
+              ))}
+            </div>
           </section>
         )}
 
         {/* ===== FAQ ===== */}
-        {detail.faq && detail.faq.length > 0 && (
+        {detail.faq?.length > 0 && (
           <section className="cd-faq">
             <h2 className="cd-block__title">常见问题</h2>
             <p className="cd-faq__subtitle">{detail.name_cn || detail.name} 常见问题</p>
             <div className="cd-faq__accordion">
-              {detail.faq.map((item, i) => (
+              {detail.faq.map((item: FAQ, i: number) => (
                 <div key={i} className={`cd-faq__item${openFaq.has(i) ? ' cd-faq__item--open' : ''}`}>
                   <button className="cd-faq__question" onClick={() => toggleFaq(i)}>
                     <span>{item.q}</span>
@@ -286,9 +298,7 @@ export default function CrawledVenueDetail() {
                     </svg>
                   </button>
                   {openFaq.has(i) && (
-                    <div className="cd-faq__answer">
-                      <p>{item.a}</p>
-                    </div>
+                    <div className="cd-faq__answer"><p>{item.a}</p></div>
                   )}
                 </div>
               ))}
@@ -296,7 +306,10 @@ export default function CrawledVenueDetail() {
           </section>
         )}
 
-
+        {/* 来源 */}
+        <section className="cd-source">
+          <p>数据来源：<a href={detail.source_url || detail.website} target="_blank" rel="noreferrer">{detail.source_url || detail.website}</a></p>
+        </section>
       </div>
 
       {/* ===== 底部预定栏 ===== */}
@@ -304,7 +317,7 @@ export default function CrawledVenueDetail() {
         <div className="cd-book-bar__inner">
           <div className="cd-book-bar__price">
             <span className="cd-book-bar__price-label">起步价</span>
-            <span className="cd-book-bar__price-value cd-book-bar__price-value--red">{lowestBudget && lowestBudget.min > 0 ? `€${lowestBudget.min.toLocaleString()}` : '？'}</span>
+            <span className="cd-book-bar__price-value cd-book-bar__price-value--red">？</span>
           </div>
           <div className="cd-book-bar__actions">
             <button className="cd-book-bar__consult" onClick={handleConsult}>
@@ -340,20 +353,17 @@ export default function CrawledVenueDetail() {
   )
 }
 
-// 登录/注册表单子组件（复用首页结构）
+// 登录/注册表单子组件
 function LoginForm({ onSuccess }: { onSuccess: () => void }) {
   const [loginMode, setLoginMode] = useState<'login' | 'register'>('login')
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email')
-  // 邮箱登录
   const [email, setEmail] = useState('')
   const [emailCode, setEmailCode] = useState('')
   const [emailSending, setEmailSending] = useState(false)
   const [emailCountdown, setEmailCountdown] = useState(0)
-  // 手机号登录/注册
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  // 通用
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -406,14 +416,12 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
         <button type="button" className={`login-modal__tab ${loginMode === 'login' ? 'login-modal__tab--active' : ''}`} onClick={() => { setLoginMode('login'); setError('') }}>登录</button>
         <button type="button" className={`login-modal__tab ${loginMode === 'register' ? 'login-modal__tab--active' : ''}`} onClick={() => { setLoginMode('register'); setAuthMethod('phone'); setError('') }}>注册</button>
       </div>
-
       {loginMode === 'login' && (
         <div className="login-modal__method-tabs">
           <button type="button" className={`login-modal__method-tab ${authMethod === 'email' ? 'active' : ''}`} onClick={() => { setAuthMethod('email'); setError('') }}>邮箱</button>
           <button type="button" className={`login-modal__method-tab ${authMethod === 'phone' ? 'active' : ''}`} onClick={() => { setAuthMethod('phone'); setError('') }}>手机号</button>
         </div>
       )}
-
       {authMethod === 'phone' ? (
         <form className="login-modal__form" onSubmit={handleModalSubmit}>
           <div className="login-modal__field">
@@ -447,7 +455,6 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
           <button type="submit" className="login-modal__submit" disabled={submitting}>{submitting ? '登录中...' : '登 录'}</button>
         </form>
       )}
-
       <p className="login-modal__tip">
         {loginMode === 'login' ? '还没有账号？' : '已有账号？'}
         <button type="button" className="login-modal__switch" onClick={switchMode}>

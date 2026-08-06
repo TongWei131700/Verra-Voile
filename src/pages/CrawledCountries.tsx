@@ -23,6 +23,9 @@ const COUNTRIES: Record<string, { code: string; label: string; en: string; sub: 
 'test-greece': { code: '测试希腊', label: '测试希腊', en: 'Test Greece', sub: 'Test Greece Destination Wedding' },
 'test-italy': { code: '测试意大利', label: '测试意大利', en: 'Test Italy', sub: 'Test Italy Destination Wedding' },
 'test-spain': { code: '测试西班牙', label: '测试西班牙', en: 'Test Spain', sub: 'Test Spain Destination Wedding' },
+'test-austria': { code: '测试奥地利', label: '测试奥地利', en: 'Test Austria', sub: 'Test Austria Destination Wedding' },
+'test-peachperfectweddings': { code: '测试peachperfectweddings', label: '测试peachperfectweddings', en: 'Test PPW', sub: 'Peach Perfect Weddings Destinations' },
+'real-italy': { code: '意大利', label: '意大利', en: 'Italy', sub: 'Italy Destination Wedding' },
 }
 
 interface CrawledDestination {

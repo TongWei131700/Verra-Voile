@@ -7956,41 +7956,143 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
   letter-spacing: 1px;
 }
-/* 导航右侧操作区：登录 + 订单 */
-.nh-menu-list li.nh-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+/* 导航右侧头像按钮 + 下拉菜单（登录/订单） */
+.nh-menu-list li.nh-user {
+  position: relative;
 }
-.nh-menu-list li.nh-nav-actions a,
-.nh-menu-list li.nh-nav-actions button {
-  text-decoration: none;
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 600;
-  letter-spacing: 1px;
-  font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+.nh-user__btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
   border: 1px solid #fff;
-  padding: 0.5rem 1.5rem;
-  border-radius: 5px;
   background: transparent;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  line-height: 1;
+  padding: 0;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
-.nh-menu-list li.nh-nav-actions a:hover,
-.nh-menu-list li.nh-nav-actions button:hover {
+.nh-user__btn:hover {
   background-color: #fff;
   color: #1a1a1a;
 }
+/* 登录状态下头像缩小 */
+.nh-menu-list li.nh-user--logged .nh-user__btn {
+  width: 44px;
+  height: 44px;
+}
+.nh-menu-list li.nh-user--logged .nh-user__btn svg {
+  width: 22px;
+  height: 22px;
+}
+/* 账号文字 */
+.nh-user__account {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  opacity: 0.9;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 右侧全高抽屉菜单（头像点开） */
+.nh-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+}
+.nh-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  height: 100dvh;
+  width: 300px;
+  max-width: 85vw;
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  background: rgba(22, 20, 18, 0.96);
+  backdrop-filter: blur(8px);
+  padding: 220px 0 40px;
+  animation: nh-drawer-in 0.3s ease;
+  isolation: isolate;
+}
+@keyframes nh-drawer-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.nh-drawer__close {
+  position: absolute;
+  top: 20px;
+  right: 22px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+.nh-drawer__close:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.nh-drawer__menu {
+  display: flex;
+  flex-direction: column;
+  margin-top: 160px;
+  padding: 0;
+}
+.nh-drawer__item {
+  padding: 1.4rem 3rem;
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  text-decoration: none;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  transition: background-color 0.2s ease, padding-left 0.2s ease;
+}
+.nh-drawer__item:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  padding-left: 3.5rem;
+}
 /* 导航品牌 logo（原“首页”位置），反白以适配透明导航叠图 */
-.nh-menu-list li.nh-logo a {
+.nh-menu-list li.nh-logo,
+.nh-menu-list li.nh-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.nh-menu-list li.nh-logo button {
   padding: 0;
   display: inline-flex;
   align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 .nh-menu-list li.nh-logo img {
-  height: 64px;
+  height: 80px;
   width: auto;
   display: block;
   filter: brightness(0) invert(1);
@@ -8131,6 +8233,27 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   }
 }
 
+/* 移动端滑动引导动画 */
+.nh-scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  opacity: 0.3;
+  animation: nh-scroll-bounce 2s ease-in-out infinite;
+}
+@keyframes nh-scroll-bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateX(-50%) translateY(12px);
+    opacity: 0.1;
+  }
+}
+
 /* 手机 */
 @media (max-width: 767px) {
   .nh-desktop-only {
@@ -8139,8 +8262,28 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   .nh-mobile-only {
     display: flex;
   }
-  .nh-menu-nav {
-    display: none;
+  /* 窄屏保留品牌 logo 与头像，缩小尺寸适配 */
+  .nh-header {
+    padding: 10px 0;
+  }
+  .nh-menu-list li.nh-logo img {
+    height: 56px;
+  }
+  .nh-user__btn {
+    width: 44px;
+    height: 44px;
+  }
+  .nh-menu-list li.nh-user--logged .nh-user__btn {
+    width: 36px;
+    height: 36px;
+  }
+  .nh-menu-list li.nh-user--logged .nh-user__btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  .nh-user__btn svg {
+    width: 22px;
+    height: 22px;
   }
   .nh-mobile-container {
     gap: 2rem;

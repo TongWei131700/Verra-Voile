@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import logoUrl from '../assets/europewedding-logo.png'
+import coverDestLow from '../assets/cover-destination-low.jpg'
+import coverTeamLow from '../assets/cover-team-low.jpg'
+import coverFloralLow from '../assets/cover-floral-low.jpg'
+import coverDest from '../assets/cover-destination.jpg'
+import coverTeam from '../assets/cover-team.jpg'
+import coverFloral from '../assets/cover-floral.jpg'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -16,27 +22,102 @@ const MODULES: ModuleDef[] = [
   { id: 'team', title: '婚礼团队', route: '/wedding-team' },
   { id: 'floral', title: '花卉', route: '/flowers' },
   { id: 'wine', title: '酒水宴席', route: '/wine' },
-  { id: 'dress', title: '礼服', route: '/listing/dress' },
+  { id: 'dress', title: '礼服', route: '/dresses' },
   { id: 'photography', title: '摄影', route: '/photography' },
 ]
 
 // 酒水/宴席历史数据归并到 wine 分组
 const mergeCategoryId = (id: string) => (id === 'dinner' || id === 'catering' ? 'wine' : id)
 
-// 前三个模块固定使用 villapiccolomini 参考站封面图
+// 前三个模块固定使用本地封面图
 const COVER_OVERRIDES: Record<string, string> = {
-  destination: 'https://villapiccolomini.com/wp-content/uploads/2025/05/IMG_8086.jpg',
-  team: 'https://villapiccolomini.com/wp-content/uploads/2025/05/IMG_8088-scaled.jpg',
-  floral: 'https://villapiccolomini.com/wp-content/uploads/2025/05/IMG_8087-scaled.jpg',
+  destination: coverDest,
+  team: coverTeam,
+  floral: coverFloral,
+}
+
+// 压缩版封面图（用于快速加载）
+const COVER_LOW: Record<string, string> = {
+  destination: coverDestLow,
+  team: coverTeamLow,
+  floral: coverFloralLow,
 }
 
 export default function NewHome() {
   const navigate = useNavigate()
   const [images, setImages] = useState<Record<string, string>>({})
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userAccount, setUserAccount] = useState('')
 
-  // 从 API 获取分类图片
+  // 检查登录状态
+  const checkLoginStatus = () => {
+    const token = localStorage.getItem('token')
+    const phone = localStorage.getItem('userPhone')
+    const email = localStorage.getItem('userEmail')
+    if (token) {
+      setIsLoggedIn(true)
+      const account = phone || email || ''
+      setUserAccount(account.length > 8 ? account.slice(0, 8) + '...' : account)
+    } else {
+      setIsLoggedIn(false)
+      setUserAccount('')
+    }
+  }
+
+  // 退出登录
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userPhone')
+    localStorage.removeItem('userEmail')
+    setIsLoggedIn(false)
+    setUserAccount('')
+  }
+
+  // 组件挂载时检查登录状态
   useEffect(() => {
+    checkLoginStatus()
+  }, [])
+
+  // 登录弹窗关闭后重新检查登录状态
+  useEffect(() => {
+    if (!showLoginModal) {
+      checkLoginStatus()
+    }
+  }, [showLoginModal])
+
+  // 客服：跳转旧首页预约咨询区
+  const goService = () => {
+    setShowUserMenu(false)
+    navigate('/old-home#rsvp')
+    setTimeout(() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth' }), 120)
+  }
+
+  // 从 API 获取分类图片，先展示压缩版，后展示原图
+  useEffect(() => {
+    // 先设置压缩版封面图（快速加载）
+    setImages(COVER_LOW)
+    
+    // 预加载原图
+    const preloadImages = Object.entries(COVER_OVERRIDES).map(([id, url]) => {
+      return new Promise<{ id: string; url: string }>((resolve) => {
+        const img = new Image()
+        img.onload = () => resolve({ id, url })
+        img.onerror = () => resolve({ id, url: COVER_LOW[id] || url })
+        img.src = url
+      })
+    })
+    
+    Promise.all(preloadImages).then(results => {
+      const highResMap: Record<string, string> = {}
+      for (const { id, url } of results) {
+        highResMap[id] = url
+      }
+      setImages(prev => ({ ...prev, ...highResMap }))
+    })
+    
+    // 同时从 API 获取其他分类图片
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
@@ -45,10 +126,10 @@ export default function NewHome() {
           for (const c of data.data.categories as { id: string; image: string }[]) {
             map[mergeCategoryId(c.id)] = c.image
           }
-          setImages({ ...map, ...COVER_OVERRIDES })
+          setImages(prev => ({ ...prev, ...map, ...COVER_OVERRIDES }))
         }
       })
-      .catch(() => setImages({ ...COVER_OVERRIDES }))
+      .catch(() => {})
   }, [])
 
   const itemStyle = (id: string) =>
@@ -56,12 +137,20 @@ export default function NewHome() {
       ? { backgroundImage: `url(${images[id]})` }
       : { backgroundColor: '#2a2723' }
 
+  const handleConsult = () => {
+    if (isLoggedIn) {
+      navigate('/order')
+    } else {
+      setShowLoginModal(true)
+    }
+  }
+
   const renderItemContent = (m: ModuleDef) => (
     <div className="nh-content">
       <h2>{m.title}</h2>
       <div className="nh-wrapper">
         <button type="button" onClick={() => navigate(m.route)}>定制</button>
-        <Link to="/listing">咨询</Link>
+        <button type="button" onClick={handleConsult}>咨询</button>
       </div>
     </div>
   )
@@ -74,18 +163,45 @@ export default function NewHome() {
           <nav className="nh-menu-nav">
             <ul className="nh-menu-list">
               <li className="nh-logo">
-                <Link to="/old-home" aria-label="首页">
+                <button type="button" aria-label="首页" onClick={() => window.location.reload()}>
                   <img src={logoUrl} alt="EuropeWedding" />
-                </Link>
+                </button>
               </li>
-              <li className="nh-nav-actions">
-                <button type="button" onClick={() => setShowLoginModal(true)}>登录</button>
-                <Link to="/order">订单</Link>
+              <li className={`nh-user${isLoggedIn ? ' nh-user--logged' : ''}`}>
+                <button type="button" className="nh-user__btn" aria-label="用户菜单" onClick={() => setShowUserMenu(v => !v)}>
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+                  </svg>
+                </button>
+                {isLoggedIn && userAccount && (
+                  <span className="nh-user__account">{userAccount}</span>
+                )}
               </li>
             </ul>
           </nav>
         </div>
       </header>
+
+      {/* 右侧全高抽屉菜单 */}
+      {showUserMenu && (
+        <>
+          <div className="nh-drawer-backdrop" onClick={() => setShowUserMenu(false)} />
+          <aside className="nh-drawer">
+            <button type="button" className="nh-drawer__close" onClick={() => setShowUserMenu(false)}>✕</button>
+            <nav className="nh-drawer__menu">
+              {!isLoggedIn && (
+                <button type="button" className="nh-drawer__item" onClick={() => { setShowUserMenu(false); setShowLoginModal(true) }}>登录</button>
+              )}
+              <Link to="/order" className="nh-drawer__item" onClick={() => setShowUserMenu(false)}>订单</Link>
+              <Link to="/order" className="nh-drawer__item" onClick={() => setShowUserMenu(false)}>客服</Link>
+              {isLoggedIn && (
+                <button type="button" className="nh-drawer__item" onClick={() => { setShowUserMenu(false); handleLogout() }}>退出登录</button>
+              )}
+            </nav>
+          </aside>
+        </>
+      )}
 
       {/* 主体：滚动吸附容器 */}
       <main className="nh-intro">
@@ -106,15 +222,23 @@ export default function NewHome() {
         </section>
 
         {/* 移动端：每个模块独立一屏 */}
-        {MODULES.map(m => (
+        {MODULES.map((m, idx) => (
           <section key={m.id} className="nh-mobile-only" style={itemStyle(m.id)}>
             <div className="nh-mobile-container">
               <h2>{m.title}</h2>
               <div className="nh-wrapper">
                 <button type="button" onClick={() => navigate(m.route)}>定制</button>
-                <Link to="/listing">咨询</Link>
+                <button type="button" onClick={handleConsult}>咨询</button>
               </div>
             </div>
+            {idx < MODULES.length - 1 && (
+              <div className="nh-scroll-hint">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M7 13l5 5 5-5" />
+                  <path d="M7 6l5 5 5-5" />
+                </svg>
+              </div>
+            )}
           </section>
         ))}
       </main>

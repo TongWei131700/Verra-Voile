@@ -45,7 +45,21 @@ expect {
 EXPECT_EOF
 ```
 
-### 4. 验证部署
+### 4. 检查 Nginx 配置清洁度
+
+**⚠️ 必须执行！** 每次前端部署后都要检查 `sites-enabled/` 下是否有冲突的配置文件，否则可能导致前端页面无法访问。
+
+```bash
+# 检查 sites-enabled 下是否有多个配置文件导致 server_name 冲突
+ssh -o StrictHostKeyChecking=no root@47.99.138.250 "ls -la /etc/nginx/sites-enabled/"
+
+# 如果存在 .bak 或其他多余文件，立即删除并重载
+ssh -o StrictHostKeyChecking=no root@47.99.138.250 "rm -f /etc/nginx/sites-enabled/*.bak && nginx -t 2>&1 && nginx -s reload"
+```
+
+> **踩坑记录**：`sites-enabled/` 下同时存在 `verra-voile` 和 `verra-voile.bak`，两者监听相同端口和 server_name，导致 Nginx 路由冲突，前端页面返回 404。
+
+### 5. 验证部署
 
 ```bash
 curl -s -o /dev/null -w "HTTP Status: %{http_code}\nSize: %{size_download} bytes\n" https://www.europewedding.cn/
@@ -53,7 +67,7 @@ curl -s -o /dev/null -w "HTTP Status: %{http_code}\nSize: %{size_download} bytes
 
 确认 HTTP 200，报告访问 URL。
 
-### 5. Git 版本控制（部署完成后执行）
+### 6. Git 版本控制（部署完成后执行）
 
 部署成功后，将所有改动（包括部署过程中产生的新文件）提交并切换新分支：
 
@@ -91,6 +105,14 @@ git push origin $NEXT_BRANCH
 - SSL 证书: `/etc/letsencrypt/live/europewedding.cn/`
 - SPA 路由: `try_files $uri $uri/ /index.html`
 - API 代理: `/api/` → `http://127.0.0.1:3000`
+- 配置文件位置: `/etc/nginx/sites-enabled/verra-voile`
+
+## ⚠️ 前端部署踩坑清单（必读）
+
+| # | 问题 | 原因 | 解决方案 |
+|---|------|------|----------|
+| 1 | 前端页面 404 无法访问 | `sites-enabled/` 下有 `.bak` 冲突配置文件 | 部署后必须检查并清理 sites-enabled 下的多余文件 |
+| 2 | 前端上传后数据库导出静默失败 | 和数据库导出用 `&&` 串联，上传耗时导致后续命令被跳过 | 前后端部署的每个步骤**独立执行**，不要用 `&&` 串联长时间命令 |
 
 ## 输出
 

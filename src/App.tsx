@@ -57,6 +57,20 @@ function ScrollRestoration() {
 
   // 路由切换时恢复滚动位置
   useEffect(() => {
+    // photography 详情页每次进入都回到顶部，不恢复滚动位置
+    if (pathname.startsWith('/photography/')) {
+      let attempts = 0
+      const resetTop = () => {
+        const nhIntro = document.querySelector('.nh-intro')
+        const container: Element | Window = nhIntro || window
+        setScrollTop(container, 0)
+        attempts++
+        if (attempts < 5) setTimeout(resetTop, 60)
+      }
+      const timer = setTimeout(resetTop, 60)
+      delete scrollCache[pathname]
+      return () => clearTimeout(timer)
+    }
     const savedPos = scrollCache[pathname]
     if (savedPos !== undefined && savedPos > 0) {
       let attempts = 0

@@ -437,6 +437,7 @@ export default function PhotographyDetail() {
             const visibleImages = galleryImages.slice(0, visibleCount)
 
             const loadMore = () => {
+              setGalleryScrolledToEnd(false)
               setGallerySuppressUntil(Date.now() + 1000)
               setGalleryLoading(true)
               setTimeout(() => {

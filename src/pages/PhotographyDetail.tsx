@@ -73,16 +73,13 @@ export default function PhotographyDetail() {
   const [heroLightbox, setHeroLightbox] = useState(false)
   const [galleryPage, setGalleryPage] = useState(1)
   const [galleryLoading, setGalleryLoading] = useState(false)
-  const [gallerySuppressUntil, setGallerySuppressUntil] = useState(0)
-  const [galleryTick, setGalleryTick] = useState(0) // 用于 1s 后触发重渲染
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
   const [galleryScrolledToEnd, setGalleryScrolledToEnd] = useState(false)
-  const [galleryLoadedCount, setGalleryLoadedCount] = useState(0)
   const [isBooking, setIsBooking] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const aboutRef = useRef<HTMLElement>(null)
-  const galleryWrapperRef = useRef<HTMLDivElement>(null)
+  const lastImageRef = useRef<HTMLDivElement>(null)
 
   // 从 API 加载摄影师详情
   useEffect(() => {
@@ -106,33 +103,16 @@ export default function PhotographyDetail() {
     if (detail) setIsBooked(isProductSelected('photography', detail.slug))
   }, [detail])
 
-  // “查看更多”点击后 1s 再出现
+  // 监听最后一张图：可见时显示"查看更多"
   useEffect(() => {
-    if (gallerySuppressUntil > 0 && !galleryLoading) {
-      const delay = gallerySuppressUntil - Date.now()
-      if (delay > 0) {
-        const t = setTimeout(() => setGalleryTick(n => n + 1), delay)
-        return () => clearTimeout(t)
-      }
-    }
-  }, [gallerySuppressUntil, galleryLoading])
-
-  // 监听滚动：图片全部加载后，滑过作品底部才显示"查看更多"
-  useEffect(() => {
-    if (!detail) return
-    const totalGalleryImages = detail.images.slice(3).length
-    const visibleCount = Math.min(galleryPage * 6, totalGalleryImages)
-    if (visibleCount === 0) return
-
-    const handleScroll = () => {
-      if (!galleryWrapperRef.current) return
-      if (galleryLoadedCount < visibleCount) return
-      const rect = galleryWrapperRef.current.getBoundingClientRect()
-      setGalleryScrolledToEnd(rect.bottom <= window.innerHeight + 100)
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [galleryPage, detail, galleryLoadedCount])
+    if (!lastImageRef.current) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setGalleryScrolledToEnd(entry.isIntersecting),
+      { threshold: 0 }
+    )
+    observer.observe(lastImageRef.current)
+    return () => observer.disconnect()
+  }, [galleryPage, detail])
 
 
   // 预定/取消预定
@@ -445,8 +425,6 @@ export default function PhotographyDetail() {
 
             const loadMore = () => {
               setGalleryScrolledToEnd(false)
-              setGalleryLoadedCount(0)
-              setGallerySuppressUntil(Date.now() + 1000)
               setGalleryLoading(true)
               setTimeout(() => {
                 setGalleryPage(prev => prev + 1)
@@ -457,15 +435,16 @@ export default function PhotographyDetail() {
             return (
               <div className="photo-style-gallery__gallery">
                 <h2 className="cd-block__title">作品展</h2>
-                <div className="photo-gallery__wrapper" ref={galleryWrapperRef}>
+                <div className="photo-gallery__wrapper">
                   <div className="photo-gallery__columns">
                     {/* 左列 */}
                     <div className="photo-gallery__col">
                       {visibleImages.filter((_, i) => i % 2 === 0).map((img, idx) => {
                         const origIdx = idx * 2
+                        const isLast = origIdx === visibleImages.length - 1
                         return (
-                          <div key={origIdx} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
-                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" onImageLoad={() => setGalleryLoadedCount(c => c + 1)} />
+                          <div key={origIdx} ref={isLast ? lastImageRef : undefined} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
+                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
                           </div>
                         )
                       })}
@@ -477,9 +456,10 @@ export default function PhotographyDetail() {
                     <div className="photo-gallery__col">
                       {visibleImages.filter((_, i) => i % 2 === 1).map((img, idx) => {
                         const origIdx = idx * 2 + 1
+                        const isLast = origIdx === visibleImages.length - 1
                         return (
-                          <div key={origIdx} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
-                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" onImageLoad={() => setGalleryLoadedCount(c => c + 1)} />
+                          <div key={origIdx} ref={isLast ? lastImageRef : undefined} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
+                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
                           </div>
                         )
                       })}

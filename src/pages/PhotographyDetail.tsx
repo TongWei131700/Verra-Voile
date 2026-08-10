@@ -77,6 +77,7 @@ export default function PhotographyDetail() {
   const [galleryTick, setGalleryTick] = useState(0) // 用于 1s 后触发重渲染
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
   const [galleryScrolledToEnd, setGalleryScrolledToEnd] = useState(false)
+  const [galleryLoadedCount, setGalleryLoadedCount] = useState(0)
   const [isBooking, setIsBooking] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -116,42 +117,22 @@ export default function PhotographyDetail() {
     }
   }, [gallerySuppressUntil, galleryLoading])
 
-  // 监听滚动 + 尺寸变化：图片全部加载后，滑过作品底部才显示“查看更多”
+  // 监听滚动：图片全部加载后，滑过作品底部才显示"查看更多"
   useEffect(() => {
-    if (!detail || !galleryWrapperRef.current) return
+    if (!detail) return
     const totalGalleryImages = detail.images.slice(3).length
     const visibleCount = Math.min(galleryPage * 6, totalGalleryImages)
     if (visibleCount === 0) return
 
-    let resizeTimer: ReturnType<typeof setTimeout> | null = null
-    let imagesReady = false
-
-    // 用 ResizeObserver 检测图片加载完成（高度不再变化）
-    const observer = new ResizeObserver(() => {
-      if (resizeTimer) clearTimeout(resizeTimer)
-      resizeTimer = setTimeout(() => {
-        imagesReady = true
-        // 尺寸稳定后立刻检测一次
-        if (galleryWrapperRef.current) {
-          const rect = galleryWrapperRef.current.getBoundingClientRect()
-          setGalleryScrolledToEnd(rect.bottom <= window.innerHeight + 100)
-        }
-      }, 300)
-    })
-    observer.observe(galleryWrapperRef.current)
-
     const handleScroll = () => {
-      if (!imagesReady || !galleryWrapperRef.current) return
+      if (!galleryWrapperRef.current) return
+      if (galleryLoadedCount < visibleCount) return
       const rect = galleryWrapperRef.current.getBoundingClientRect()
       setGalleryScrolledToEnd(rect.bottom <= window.innerHeight + 100)
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => {
-      observer.disconnect()
-      if (resizeTimer) clearTimeout(resizeTimer)
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [galleryPage, detail])
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [galleryPage, detail, galleryLoadedCount])
 
 
   // 预定/取消预定
@@ -464,6 +445,7 @@ export default function PhotographyDetail() {
 
             const loadMore = () => {
               setGalleryScrolledToEnd(false)
+              setGalleryLoadedCount(0)
               setGallerySuppressUntil(Date.now() + 1000)
               setGalleryLoading(true)
               setTimeout(() => {
@@ -483,7 +465,7 @@ export default function PhotographyDetail() {
                         const origIdx = idx * 2
                         return (
                           <div key={origIdx} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
-                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
+                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" onImageLoad={() => setGalleryLoadedCount(c => c + 1)} />
                           </div>
                         )
                       })}
@@ -497,7 +479,7 @@ export default function PhotographyDetail() {
                         const origIdx = idx * 2 + 1
                         return (
                           <div key={origIdx} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
-                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
+                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" onImageLoad={() => setGalleryLoadedCount(c => c + 1)} />
                           </div>
                         )
                       })}

@@ -9089,9 +9089,9 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .photo-hero__skeleton-shimmer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, #2a2420 25%, #3a3430 50%, #2a2420 75%);
+  background: linear-gradient(90deg, #2a2420 20%, #332e28 50%, #2a2420 80%);
   background-size: 200% 100%;
-  animation: photo-shimmer 1.5s ease-in-out infinite;
+  animation: photo-shimmer 2.8s ease-in-out infinite;
 }
 @keyframes photo-shimmer {
   0% { background-position: 200% 0; }

@@ -23,6 +23,9 @@ interface PhotographerItem {
 
 const HERO_IMG = heroImg
 
+// 模块级缓存：从详情返回列表页时复用，避免重复请求
+let _cachedProducts: PhotographerItem[] | null = null
+
 // 从数据中提取去重后的选项列表
 function extractUnique<T>(products: PhotographerItem[], getter: (p: PhotographerItem) => T | T[]): T[] {
   const set = new Set<T>()
@@ -73,14 +76,21 @@ export default function Photography() {
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
   const [listLoading, setListLoading] = useState(false)
 
-  // 从 API 加载摄影师数据
+  // 从 API 加载摄影师数据（有缓存则复用）
   useEffect(() => {
+    if (_cachedProducts) {
+      setAllProducts(_cachedProducts)
+      setDataLoading(false)
+      return
+    }
     setDataLoading(true)
     fetch(`${API_BASE}/api/products/crawled-photographers`)
       .then(r => r.json())
       .then(res => {
         if (res.success && Array.isArray(res.data)) {
-          setAllProducts(res.data.map(mapApiItem))
+          const items = res.data.map(mapApiItem)
+          _cachedProducts = items
+          setAllProducts(items)
         }
       })
       .catch(err => console.error('加载摄影师列表失败:', err))

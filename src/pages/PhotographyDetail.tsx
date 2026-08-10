@@ -81,7 +81,7 @@ export default function PhotographyDetail() {
   const [isCanceling, setIsCanceling] = useState(false)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const aboutRef = useRef<HTMLElement>(null)
-  const gallerySentinelRef = useRef<HTMLDivElement>(null)
+  const galleryWrapperRef = useRef<HTMLDivElement>(null)
 
   // 从 API 加载摄影师详情
   useEffect(() => {
@@ -116,15 +116,16 @@ export default function PhotographyDetail() {
     }
   }, [gallerySuppressUntil, galleryLoading])
 
-  // 监听作品区域底部哨兵，滑到底才显示“查看更多”
+  // 监听滚动：滑过作品区域底部才显示“查看更多”
   useEffect(() => {
-    if (!gallerySentinelRef.current) return
-    const observer = new IntersectionObserver(
-      ([entry]) => setGalleryScrolledToEnd(entry.isIntersecting),
-      { threshold: 0 }
-    )
-    observer.observe(gallerySentinelRef.current)
-    return () => observer.disconnect()
+    const handleScroll = () => {
+      if (!galleryWrapperRef.current) return
+      const rect = galleryWrapperRef.current.getBoundingClientRect()
+      // 作品区域底部已进入视口（距视口底部 100px 以内）
+      setGalleryScrolledToEnd(rect.bottom <= window.innerHeight + 100)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [galleryPage, detail])
 
 
@@ -364,7 +365,7 @@ export default function PhotographyDetail() {
           )}
           <BackButton to="/photography" />
           <div className="photo-hero__headshot">
-            <FallbackImage src={proxyImage(detail.headshot || defaultHeadshot)} alt={detail.nameEn} className="photo-hero__headshot-img" />
+            <img src={proxyImage(detail.headshot || defaultHeadshot)} alt={detail.nameEn} className="photo-hero__headshot-img" />
           </div>
           <div className="photo-hero__meta">
             <span className="photo-hero__badge">{detail.categoryCn}</span>
@@ -449,7 +450,7 @@ export default function PhotographyDetail() {
             return (
               <div className="photo-style-gallery__gallery">
                 <h2 className="cd-block__title">作品展</h2>
-                <div className="photo-gallery__wrapper">
+                <div className="photo-gallery__wrapper" ref={galleryWrapperRef}>
                   <div className="photo-gallery__columns">
                     {/* 左列 */}
                     <div className="photo-gallery__col">
@@ -480,8 +481,6 @@ export default function PhotographyDetail() {
                       ))}
                     </div>
                   </div>
-                  {/* 哨兵：滑到此处才显示“查看更多” */}
-                  {hasMore && <div ref={gallerySentinelRef} style={{ height: 1 }} />}
                   {hasMore && galleryScrolledToEnd && !galleryLoading && (
                     <>
                       <div className="photo-gallery__fade" />

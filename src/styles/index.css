@@ -9330,6 +9330,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   border: 3px solid rgba(212, 184, 150, 0.5);
   margin-bottom: 28px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  background: #2a2420;
 }
 
 .photo-hero__headshot-img {

@@ -5887,6 +5887,12 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .ph-filter-section__header:hover {
   background: rgba(212, 175, 55, 0.04);
 }
+.ph-filter-section__title {
+  display: flex; align-items: center; gap: 6px;
+  padding: 14px 20px 8px;
+  font-size: 15px; font-weight: 600; color: var(--charcoal);
+  letter-spacing: 1px;
+}
 .ph-filter-section__en {
   font-size: 11px; font-weight: 400; color: var(--muted);
 }
@@ -9919,5 +9925,450 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 @keyframes photo-text-fade {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
+}
+
+/* ==================== Wedding Team (wt-) ==================== */
+
+/* Hero 区域 — 参照 photo-hero */
+.wt-hero {
+  background: var(--ivory);
+  padding: 40px 5%;
+  min-height: 110vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wt-hero__card {
+  display: flex;
+  gap: 40px;
+  max-width: 1200px;
+  width: 100%;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+  min-height: 560px;
+  position: relative;
+}
+.wt-hero__carousel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 560px;
+}
+.wt-hero__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.65s ease;
+  pointer-events: none;
+}
+.wt-hero__slide--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.wt-hero__slide--prev {
+  opacity: 0;
+}
+.wt-hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wt-hero__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  background: rgba(255,255,255,0.85);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #333;
+}
+.wt-hero__arrow:hover { background: #fff; }
+.wt-hero__arrow--left { left: 16px; }
+.wt-hero__arrow--right { right: 16px; }
+.wt-hero__dots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+.wt-hero__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+}
+.wt-hero__dot--active {
+  background: #fff;
+  transform: scale(1.3);
+}
+
+/* 信息面板 */
+.wt-hero__info {
+  width: 380px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 36px;
+  position: relative;
+  background: #fff;
+}
+.wt-hero__headshot {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 20px;
+  border: 3px solid rgba(212,184,150,0.3);
+}
+.wt-hero__headshot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wt-hero__meta { flex: 1; }
+.wt-hero__badge {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #b8860b;
+  border: 1px solid rgba(184,134,11,0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+.wt-hero__name {
+  font-family: 'Playfair Display', 'Didot', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c2c2c;
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+.wt-hero__name-en {
+  font-size: 13px;
+  color: #999;
+  letter-spacing: 1px;
+  margin: 0 0 12px;
+}
+.wt-hero__divider {
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, #d4b896, transparent);
+  margin: 12px 0;
+}
+.wt-hero__tagline {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.7;
+  margin: 0 0 16px;
+}
+.wt-hero__website {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #b8860b;
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+.wt-hero__website:hover { color: #8a6508; }
+
+/* 团队成员网格 */
+.wt-team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+.wt-team-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.wt-team-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.wt-team-card__avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 12px;
+  border: 2px solid rgba(212,184,150,0.3);
+}
+.wt-team-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wt-team-card__initial {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #d4b896, #c4a882);
+  color: #fff;
+  font-size: 28px;
+  font-weight: 600;
+}
+.wt-team-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c2c2c;
+  margin: 0 0 4px;
+}
+.wt-team-card__role {
+  font-size: 12px;
+  color: #b8860b;
+  letter-spacing: 0.5px;
+  margin: 0 0 8px;
+}
+.wt-team-card__desc {
+  font-size: 13px;
+  color: #777;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 服务项目 — 参照 photo-style-gallery */
+.wt-services {
+  max-width: 1100px;
+  margin: 48px auto 0;
+  padding: 0 5%;
+}
+.wt-services .cd-block__title {
+  margin-bottom: 24px;
+}
+.wt-services__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+.wt-services__group {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.wt-services__group-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c2c2c;
+  margin: 0 0 2px;
+}
+.wt-services__group-en {
+  font-size: 11px;
+  color: #bbb;
+  letter-spacing: 1px;
+  margin: 0 0 16px;
+}
+.wt-services__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.wt-services__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.wt-services__item:last-child { border-bottom: none; }
+.wt-services__check {
+  flex-shrink: 0;
+  color: #b8860b;
+  margin-top: 2px;
+}
+.wt-services__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.wt-services__label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+.wt-services__desc {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.5;
+}
+
+/* 作品集 — 参照 photo-gallery */
+.wt-portfolio {
+  max-width: 1100px;
+  margin: 48px auto 0;
+  padding: 0 5%;
+}
+.wt-portfolio .cd-block__title {
+  margin-bottom: 24px;
+}
+.wt-portfolio__wrapper {
+  position: relative;
+}
+.wt-portfolio__columns {
+  display: flex;
+  gap: 16px;
+}
+.wt-portfolio__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.wt-portfolio__item {
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+.wt-portfolio__item:hover { transform: scale(1.02); }
+.wt-portfolio__img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 3/4;
+}
+.wt-portfolio__skeleton {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f0ece6;
+  aspect-ratio: 3/4;
+}
+.wt-portfolio__skeleton-inner {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 客户评价 */
+.wt-testimonials {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+.wt-testimonial {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.wt-testimonial__text {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.8;
+  font-style: italic;
+  margin: 0 0 12px;
+}
+.wt-testimonial__couple {
+  font-size: 13px;
+  color: #b8860b;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* 媒体报道 */
+.wt-partners {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+.wt-partner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid rgba(212,184,150,0.2);
+  border-radius: 8px;
+  padding: 10px 16px;
+}
+.wt-partner__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c2c2c;
+}
+.wt-partner__role {
+  font-size: 12px;
+  color: #999;
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+  .wt-hero {
+    padding: 20px 4%;
+    min-height: auto;
+  }
+  .wt-hero__card {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .wt-hero__carousel {
+    min-height: 50vh;
+    flex: none;
+  }
+  .wt-hero__info {
+    width: 100%;
+    min-width: auto;
+    padding: 24px 20px;
+  }
+  .wt-hero__headshot {
+    width: 72px;
+    height: 72px;
+  }
+  .wt-hero__name {
+    font-size: 22px;
+  }
+  .wt-team-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .wt-team-card {
+    padding: 16px 12px;
+  }
+  .wt-team-card__avatar {
+    width: 60px;
+    height: 60px;
+  }
+  .wt-services__grid {
+    grid-template-columns: 1fr;
+  }
+  .wt-portfolio__columns {
+    gap: 10px;
+  }
+  .wt-portfolio {
+    padding: 0 3%;
+  }
 }
 

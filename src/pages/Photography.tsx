@@ -2,15 +2,29 @@ import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
-import { photographerProducts, type PhotographerProduct } from '../data/junebugPhotographers'
 import { getSelectedProducts } from '../utils/selectedProducts'
+import { proxyImage } from '../utils/imageProxy'
 import heroImg from '../assets/mariah-krafft-ayc1G5wV3aA-unsplash.jpg'
 
-const allProducts: PhotographerProduct[] = photographerProducts
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
+// 摄影师列表项（与 API 返回字段对应）
+interface PhotographerItem {
+  slug: string
+  name: string
+  nameEn: string
+  country: string
+  countryEn: string
+  photoStyles: string[]
+  tagline: string
+  cover: string
+  price?: number
+}
+
 const HERO_IMG = heroImg
 
 // 从数据中提取去重后的选项列表
-function extractUnique<T>(products: PhotographerProduct[], getter: (p: PhotographerProduct) => T | T[]): T[] {
+function extractUnique<T>(products: PhotographerItem[], getter: (p: PhotographerItem) => T | T[]): T[] {
   const set = new Set<T>()
   products.forEach(p => {
     const val = getter(p)
@@ -20,8 +34,27 @@ function extractUnique<T>(products: PhotographerProduct[], getter: (p: Photograp
   return Array.from(set).sort()
 }
 
+// 将 API 返回的 snake_case 数据转为前端 camelCase
+function mapApiItem(row: any): PhotographerItem {
+  let styles: string[] = []
+  try { styles = typeof row.photo_styles === 'string' ? JSON.parse(row.photo_styles) : (row.photo_styles || []) } catch { /* ignore */ }
+  return {
+    slug: row.slug,
+    name: row.name_cn || row.name,
+    nameEn: row.name,
+    country: row.country,
+    countryEn: row.country_en || '',
+    photoStyles: styles,
+    tagline: row.tagline || '',
+    cover: row.cover_image || '',
+    price: row.price ?? undefined,
+  }
+}
+
 export default function Photography() {
   const navigate = useNavigate()
+  const [allProducts, setAllProducts] = useState<PhotographerItem[]>([])
+  const [dataLoading, setDataLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchSubmitted, setSearchSubmitted] = useState(false)
   const [searchFilter, setSearchFilter] = useState('')
@@ -31,23 +64,28 @@ export default function Photography() {
   const filterBodyRef = useRef<HTMLDivElement>(null)
   const [selectedCountries, setSelectedCountries] = useState<Set<string>>(new Set())
   const [selectedStyles, setSelectedStyles] = useState<Set<string>>(new Set())
-  const [openGroups, setOpenGroups] = useState({ filterSection: true, country: true, style: true, sort: true })
+  const [openGroups, setOpenGroups] = useState({ country: true, style: true })
   const [expandedFilters, setExpandedFilters] = useState({ country: false, style: false })
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
-  const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc' | 'name-az'>('default')
-  const [showBackToTop, setShowBackToTop] = useState(false)
   const ITEMS_PER_PAGE = 6
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
   const [listLoading, setListLoading] = useState(false)
 
-  const sortOptions: { key: typeof sortBy; label: string }[] = [
-    { key: 'default', label: '默认排序' },
-    { key: 'price-asc', label: '价格从低到高' },
-    { key: 'price-desc', label: '价格从高到低' },
-    { key: 'name-az', label: '名称 A-Z' },
-  ]
+  // 从 API 加载摄影师数据
+  useEffect(() => {
+    setDataLoading(true)
+    fetch(`${API_BASE}/api/products/crawled-photographers`)
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && Array.isArray(res.data)) {
+          setAllProducts(res.data.map(mapApiItem))
+        }
+      })
+      .catch(err => console.error('加载摄影师列表失败:', err))
+      .finally(() => setDataLoading(false))
+  }, [])
 
   // 刷新已预定状态
   const refreshBooked = useCallback(() => {
@@ -65,8 +103,8 @@ export default function Photography() {
   }, [refreshBooked])
 
   // 从数据中动态提取筛选项
-  const allCountries = useMemo(() => extractUnique(allProducts, p => p.country), [])
-  const allStyles = useMemo(() => extractUnique(allProducts, p => p.photoStyles), [])
+  const allCountries = useMemo(() => extractUnique(allProducts, (p: PhotographerItem) => p.country), [allProducts])
+  const allStyles = useMemo(() => extractUnique(allProducts, (p: PhotographerItem) => p.photoStyles), [allProducts])
 
   const filteredList = useMemo(() => {
     let list = allProducts
@@ -86,17 +124,8 @@ export default function Photography() {
         p.photoStyles.some(s => s.toLowerCase().includes(q))
       )
     }
-    // 排序
-    const sorted = [...list]
-    if (sortBy === 'price-asc') {
-      sorted.sort((a, b) => (a.price ?? 0) - (b.price ?? 0))
-    } else if (sortBy === 'price-desc') {
-      sorted.sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
-    } else if (sortBy === 'name-az') {
-      sorted.sort((a, b) => a.nameEn.localeCompare(b.nameEn))
-    }
-    return sorted
-  }, [selectedCountries, selectedStyles, bookedSlugs, searchFilter, sortBy])
+    return list
+  }, [selectedCountries, selectedStyles, searchFilter, allProducts])
 
   // 搜索推荐条目
   const searchSuggestions = useMemo(() => {
@@ -115,7 +144,7 @@ export default function Photography() {
       }
     })
     return items.slice(0, 10)
-  }, [searchQuery, allCountries, allStyles])
+  }, [searchQuery, allCountries, allStyles, allProducts])
 
   const bookedList = useMemo(() => filteredList.filter(p => bookedSlugs.has(p.slug)), [filteredList, bookedSlugs])
   const otherList = useMemo(() => filteredList.filter(p => !bookedSlugs.has(p.slug)), [filteredList, bookedSlugs])
@@ -125,10 +154,10 @@ export default function Photography() {
   // 筛选变化时重置分页
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE)
-  }, [selectedCountries, selectedStyles, searchFilter, sortBy])
+  }, [selectedCountries, selectedStyles, searchFilter])
 
   const totalFilters = selectedCountries.size + selectedStyles.size + (searchFilter ? 1 : 0)
-  const bookedCount = allProducts.filter(p => bookedSlugs.has(p.slug)).length
+  const bookedCount = allProducts.filter((p: PhotographerItem) => bookedSlugs.has(p.slug)).length
 
   const toggleCountry = (c: string) => {
     setSelectedCountries(prev => {
@@ -153,7 +182,7 @@ export default function Photography() {
     setSearchFilter('')
   }
 
-  const toggleGroup = (key: 'filterSection' | 'country' | 'style' | 'sort') => {
+  const toggleGroup = (key: 'country' | 'style') => {
     setOpenGroups(prev => ({ ...prev, [key]: !prev[key] }))
   }
 
@@ -217,13 +246,6 @@ export default function Photography() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [hasMoreItems, listLoading])
-
-  // 回到顶部按钮显隐
-  useEffect(() => {
-    const onScroll = () => setShowBackToTop(window.scrollY > 600)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   // 回车确认搜索：匹配筛选条件则加入左侧筛选，否则按文字过滤
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
@@ -345,7 +367,7 @@ export default function Photography() {
             <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/>
             <line x1="17" y1="16" x2="23" y2="16"/>
           </svg>
-          <span>筛选排序</span>
+          <span>筛选</span>
           {totalFilters > 0 && <span className="ph-mobile-filter-btn__badge">{totalFilters}</span>}
         </button>
       </div>
@@ -356,20 +378,17 @@ export default function Photography() {
           <div className="ph-drawer" onClick={e => e.stopPropagation()}>
             {/* 头部 */}
             <div className="ph-drawer__header">
-              <h4 className="ph-drawer__title">筛选 / 排序</h4>
+              <h4 className="ph-drawer__title">筛选</h4>
               <button className="ph-drawer__close" onClick={() => setFilterDrawerOpen(false)}>✕</button>
             </div>
             {/* 筛选内容 */}
             <div className="ph-drawer__body">
               {/* 筛选分区 */}
               <div className="ph-filter-section">
-                <button type="button" className="ph-filter-section__header" onClick={() => toggleGroup('filterSection')}>
+                <div className="ph-filter-section__title">
                   <span>筛选</span>
                   <span className="ph-filter-section__en">Filter</span>
-                  <span className={`ph-filter-section__arrow${openGroups.filterSection ? ' ph-filter-section__arrow--open' : ''}`}>▾</span>
-                </button>
-                {openGroups.filterSection && (
-                <>
+                </div>
                 {/* 国家 */}
                 <div className="ph-filter-group">
                 <button type="button" className="ph-filter-group__header" onClick={() => toggleGroup('country')}>
@@ -426,28 +445,7 @@ export default function Photography() {
                   </ul>
                 )}
               </div>
-              </>
-              )}
-              </div>{/* /筛选分区 */}
-              {/* 排序分区 */}
-              <div className="ph-filter-section">
-                <button type="button" className="ph-filter-section__header" onClick={() => toggleGroup('sort')}>
-                  <span>排序</span>
-                  <span className="ph-filter-section__en">Sort</span>
-                  {sortBy !== 'default' && <span className="ph-filter-group__badge">1</span>}
-                  <span className={`ph-filter-section__arrow${openGroups.sort ? ' ph-filter-section__arrow--open' : ''}`}>▾</span>
-                </button>
-                {openGroups.sort && (
-                  <ul className="ph-filter-group__list">
-                    {sortOptions.map(opt => (
-                      <li key={opt.key} className={`ph-filter-group__item${sortBy === opt.key ? ' ph-filter-group__item--checked' : ''}`} onClick={() => setSortBy(opt.key)}>
-                        <span className="ph-filter-group__checkbox">{sortBy === opt.key ? '●' : '○'}</span>
-                        <span className="ph-filter-group__name">{opt.label}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>{/* /排序分区 */}
+              </div>
             </div>
             {/* 底部 */}
             <div className="ph-drawer__footer">
@@ -469,13 +467,10 @@ export default function Photography() {
           <div className="ph-filter__body" ref={filterBodyRef}>
             {/* 筛选分区 */}
             <div className="ph-filter-section">
-              <button type="button" className="ph-filter-section__header" onClick={() => toggleGroup('filterSection')}>
+              <div className="ph-filter-section__title">
                 <span>筛选</span>
                 <span className="ph-filter-section__en">Filter</span>
-                <span className={`ph-filter-section__arrow${openGroups.filterSection ? ' ph-filter-section__arrow--open' : ''}`}>▾</span>
-              </button>
-              {openGroups.filterSection && (
-              <>
+              </div>
               {/* 国家 */}
               <div className="ph-filter-group">
             <button
@@ -561,28 +556,7 @@ export default function Photography() {
               </ul>
             )}
               </div>
-              </>
-              )}
-            </div>{/* /筛选分区 */}
-            {/* 排序分区 */}
-            <div className="ph-filter-section">
-              <button type="button" className="ph-filter-section__header" onClick={() => toggleGroup('sort')}>
-                <span>排序</span>
-                <span className="ph-filter-section__en">Sort</span>
-                {sortBy !== 'default' && <span className="ph-filter-group__badge">1</span>}
-                <span className={`ph-filter-section__arrow${openGroups.sort ? ' ph-filter-section__arrow--open' : ''}`}>▾</span>
-              </button>
-              {openGroups.sort && (
-                <ul className="ph-filter-group__list">
-                  {sortOptions.map(opt => (
-                    <li key={opt.key} className={`ph-filter-group__item${sortBy === opt.key ? ' ph-filter-group__item--checked' : ''}`} onClick={() => setSortBy(opt.key)}>
-                      <span className="ph-filter-group__checkbox">{sortBy === opt.key ? '●' : '○'}</span>
-                      <span className="ph-filter-group__name">{opt.label}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>{/* /排序分区 */}
+            </div>
           </div>
         </aside>
 
@@ -606,7 +580,7 @@ export default function Photography() {
                       onClick={() => { window.__saveScrollPos?.('/photography'); navigate(`/photography/${item.slug}`) }}
                     >
                       <div className="cd-card__img-wrap">
-                        <FallbackImage src={item.cover} alt={item.name} className="cd-card__img" />
+                        <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
                         <div className="cd-card__img-overlay" />
                         <span className="cd-card__booked-badge">
                           <svg className="cd-card__booked-wreath" viewBox="0 0 80 80" width="36" height="36">
@@ -652,7 +626,7 @@ export default function Photography() {
                           onClick={() => { window.__saveScrollPos?.('/photography'); navigate(`/photography/${item.slug}`) }}
                         >
                           <div className="cd-card__img-wrap">
-                            <FallbackImage src={item.cover} alt={item.name} className="cd-card__img" />
+                            <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
                             <div className="cd-card__img-overlay" />
                             <span className="cd-card__country">{item.country}</span>
                           </div>
@@ -697,7 +671,7 @@ export default function Photography() {
                     onClick={() => { window.__saveScrollPos?.('/photography'); navigate(`/photography/${item.slug}`) }}
                   >
                     <div className="cd-card__img-wrap">
-                      <FallbackImage src={item.cover} alt={item.name} className="cd-card__img" />
+                      <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
                       <div className="cd-card__img-overlay" />
                       <span className="cd-card__country">{item.country}</span>
                     </div>
@@ -748,16 +722,6 @@ export default function Photography() {
         </div>
       </div>
 
-      {/* 回到顶部 */}
-      <button
-        className={`ph-back-to-top${showBackToTop ? ' ph-back-to-top--visible' : ''}`}
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="18 15 12 9 6 15" />
-        </svg>
-        <span>回到顶部</span>
-      </button>
     </div>
   )
 }

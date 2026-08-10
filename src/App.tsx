@@ -57,8 +57,8 @@ function ScrollRestoration() {
 
   // 路由切换时恢复滚动位置
   useEffect(() => {
-    // photography 详情页每次进入都回到顶部，不恢复滚动位置
-    if (pathname.startsWith('/photography/')) {
+    // photography / wedding-team 详情页每次进入都回到顶部，不恢复滚动位置
+    if (pathname.startsWith('/photography/') || pathname.startsWith('/wedding-team/')) {
       let attempts = 0
       const resetTop = () => {
         const nhIntro = document.querySelector('.nh-intro')

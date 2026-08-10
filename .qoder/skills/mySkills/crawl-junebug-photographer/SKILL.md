@@ -89,8 +89,9 @@ function fetchPortfolio(offset) {
     const j = await fetchPortfolio(o);
     if (!j.images || j.images.length === 0) break;
     j.images.forEach(img => {
-      const url = (img.avifUri || img.uri || '').replace(/\.avif$/, '.jpg');
-      if (url) all.push(url);
+      // 优先用 uri（无 _avif 后缀），avifUri 需去掉 _avif 才能下载
+      const raw = img.uri || (img.avifUri || '').replace(/_avif\.avif$/, '.jpg').replace(/\.avif$/, '.jpg');
+      if (raw) all.push(raw);
     });
     if (j.images.length < 9) break;
   }
@@ -106,8 +107,11 @@ function fetchPortfolio(offset) {
 - `offset`：分页偏移，每次 +9
 
 **图片格式处理**：
-- API 返回的可能是 `.avif` 格式，需统一转为 `.jpg`
-- 替换规则：`url.replace(/\.avif$/, '.jpg')`
+- API 返回的 `avifUri` 带有 `_avif` 后缀（如 `.../hash_avif.avif`），该路径**无法下载**（404 或被 Cloudflare 拦截返回 HTML）
+- **必须去掉 `_avif`**：`hash_avif.avif` → `hash.jpg`
+- 优先使用 `img.uri` 字段（本身就是不带 `_avif` 的正确路径）
+- 如果只有 `avifUri`，替换规则：`url.replace(/_avif\.avif$/, '.jpg').replace(/\.avif$/, '.jpg')`
+- **禁止**直接用 `avifUri` 只替换扩展名而保留 `_avif` 路径段，那样下载到的不是图片
 
 ### Step 3：通过 AJAX API 抓取视频
 
@@ -132,10 +136,10 @@ req.end();
 返回 JSON 中包含视频列表，取第一个视频的 URL。
 
 **视频来源支持**：
-- **YouTube**：直接写入 `videoUrl`，如 `https://www.youtube.com/watch?v=xxx`
-- **Vimeo**：同样直接写入 `videoUrl`，如 `https://vimeo.com/202038149`
-- 前端通过 `src/utils/videoEmbed.ts` 通用解析器自动识别来源并生成正确的嵌入 URL
-- 如果 API 返回 0 个视频，则不设置 `videoUrl` 字段
+- **YouTube**：**直接舍弃，不写入 `videoUrl`**。前端对 YouTube 视频不做展示，会降级为轮播图模式，因此无需写入
+- **Vimeo**：直接写入 `videoUrl`，如 `https://vimeo.com/202038149`
+- 前端通过 `src/utils/videoEmbed.ts` 中的 `detectVideoProvider()` 判断来源，YouTube 自动跳过，Vimeo 走视频背景三态逻辑
+- 如果 API 返回 0 个视频或只有 YouTube 视频，则不设置 `videoUrl` 字段
 
 ### Step 4：整理图片顺序
 
@@ -171,7 +175,7 @@ export interface PhotographerProduct {
   style?: { title: string; items: { label: string; desc?: string }[] }[]
   cover: string          // 封面图 URL
   images: string[]       // 所有图片 URL 数组
-  videoUrl?: string      // YouTube 视频 URL（可选）
+  videoUrl?: string      // Vimeo 视频 URL（可选，YouTube 视频不写入）
   headshot?: string      // 头像 URL（可选，不设则用默认头像）
   price?: number         // 起步价（€）
   website?: string       // 个人网站
@@ -217,7 +221,7 @@ export interface PhotographerProduct {
     `${IMG}/xx/xx/xxxxxxxx.jpg`,
     // ... 更多图片
   ],
-  // videoUrl: 'https://www.youtube.com/watch?v={videoId}',  // 有视频时添加
+  // videoUrl: 'https://vimeo.com/{videoId}',  // 仅 Vimeo 视频写入，YouTube 视频舍弃
   // headshot: 'https://static.junebugweddings.com/hotlists/acct{id}/headshot/{Slug}-headshot-{date}-{hash}.jpg',  // 有头像时添加，否则用默认头像
   website: '{摄影师个人网站}',
   source: { name: 'Junebug Weddings', url: '{Junebug 页面 URL}' },
@@ -285,12 +289,12 @@ Hero 区域（三态：骨架屏 → 视频背景 / 轮播图）
 ### Hero 区域三态逻辑（核心）
 
 ```
-有 videoUrl？
+有 videoUrl 且非 YouTube？（通过 detectVideoProvider 判断）
 ├── 是 → 开始加载视频
 │   ├── 加载中（0-3s）→ 骨架屏 shimmer 铺满卡片，信息面板居中叠在上方
-│   ├── 加载成功（<3s）→ 视频背景播放（YouTube iframe autoplay）
+│   ├── 加载成功（<3s）→ 视频背景播放（Vimeo iframe autoplay）
 │   └── 超时（>3s）→ timedOut=true → 切换为轮播模式
-└── 否 → 直接轮播模式
+└── 否（无视频 / YouTube / 超时）→ 直接轮播模式
 ```
 
 **视频加载技术细节**：
@@ -361,7 +365,7 @@ Hero 区域（三态：骨架屏 → 视频背景 / 轮播图）
 1. **不需要 puppeteer**：Junebug 的 AJAX API 可直接获取完整作品集和视频，用 Node.js `https` 模块即可
 2. **图片格式**：API 返回的可能是 `.avif`，需统一转 `.jpg`
 3. **图片顺序**：前 3 张必须是页面静态 vendor 展示照（封面质量），后面接 API 作品集
-4. **视频 URL**：通过 `/ajax/vendor/videos` API 获取，返回的是 YouTube 完整 URL
+4. **视频 URL**：通过 `/ajax/vendor/videos` API 获取。**YouTube 视频直接舍弃不写入**，仅保留 Vimeo 等非 YouTube 视频
 5. **账号 ID 获取**：从页面 HTML 中提取 `acct{数字}` 格式，API 调用时去掉 `acct` 前缀
 
 ### 数据
@@ -396,6 +400,10 @@ Hero 区域（三态：骨架屏 → 视频背景 / 轮播图）
 ### 页面静态图片只有 3 张
 Junebug 页面 HTML 只包含 3 张 vendor 展示照，其余作品集通过 JS 动态加载。`curl` 无法获取完整作品集，必须使用 AJAX API。
 
+### AJAX API 返回的 avifUri 带 _avif 后缀无法下载
+**问题**：API 返回的 `avifUri` 形如 `.../hash_avif.avif`，仅替换扩展名为 `.jpg` 后变成 `.../hash_avif.jpg`，该路径不存在（404）或被 Cloudflare 拦截返回 HTML 页面而非图片。之前成功的下载是因为数据文件中的 URL 本身就不带 `_avif`。
+**解决**：优先使用 `img.uri` 字段（不带 `_avif`）；若只有 `avifUri`，必须同时去掉 `_avif` 路径段：`url.replace(/_avif\.avif$/, '.jpg')`。
+
 ---
 
 ## 完整爬取流程（Checklist）
@@ -405,7 +413,7 @@ Junebug 页面 HTML 只包含 3 张 vendor 展示照，其余作品集通过 JS 
 2. [ ] curl 页面 HTML → 提取 vendorAccountId、3 张 vendor 展示照、名称、描述、网站
 3. [ ] curl 检查 static.junebugweddings.com → 提取 headshot/logo（必须！）
 4. [ ] 调用 /ajax/vendor/portfolio API → 获取全部作品集图片（avif→jpg）
-5. [ ] 调用 /ajax/vendor/videos API → 获取视频 URL（可选，支持 YouTube + Vimeo）
+5. [ ] 调用 /ajax/vendor/videos API → 获取视频 URL（YouTube 舍弃，仅保留 Vimeo）
 6. [ ] 整理图片顺序：3 张 vendor 照 + N 张作品集
 7. [ ] 如果是新国家 → 更新 PhotoCategory 类型 + photoCategoryList
 8. [ ] 按模板写入 PhotographerProduct 数据到 junebugPhotographers.ts

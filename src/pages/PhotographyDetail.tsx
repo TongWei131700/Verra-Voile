@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
-import { parseVideoUrl } from '../utils/videoEmbed'
-import { photographerProducts } from '../data/junebugPhotographers'
+import { parseVideoUrl, detectVideoProvider } from '../utils/videoEmbed'
+import { proxyImage } from '../utils/imageProxy'
 import ewLogo from '../assets/europewedding-logo.png'
 import defaultHeadshot from '../assets/default-photographer-headshot.jpg'
 
@@ -14,9 +14,58 @@ function isLoggedIn() {
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
+// 摄影师详情（与前端渲染字段对应）
+interface PhotographerDetail {
+  slug: string
+  name: string
+  nameEn: string
+  categoryCn: string
+  tagline: string
+  desc: string
+  photoStyles: string[]
+  highlights: string[]
+  style?: { title: string; items: { label: string; desc?: string }[] }[]
+  cover: string
+  images: string[]
+  videoUrl?: string
+  headshot?: string
+  price?: number
+  website?: string
+  source: { name: string; url: string }
+}
+
+// 将 API 返回的 snake_case 映射为前端 camelCase
+function mapApiDetail(row: any): PhotographerDetail {
+  const parseJSON = (val: any, fallback: any = []) => {
+    if (!val) return fallback
+    if (typeof val === 'string') { try { return JSON.parse(val) } catch { return fallback } }
+    return val
+  }
+  return {
+    slug: row.slug,
+    name: row.name_cn || row.name,
+    nameEn: row.name,
+    categoryCn: row.category_cn || '',
+    tagline: row.tagline || '',
+    desc: row.description || '',
+    photoStyles: parseJSON(row.photo_styles),
+    highlights: parseJSON(row.highlights),
+    style: parseJSON(row.style, undefined),
+    cover: row.cover_image || '',
+    images: parseJSON(row.images),
+    videoUrl: row.video_url || undefined,
+    headshot: row.headshot || undefined,
+    price: row.price ?? undefined,
+    website: row.website || undefined,
+    source: { name: row.source_name || '', url: row.source_url || '' },
+  }
+}
+
 export default function PhotographyDetail() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
+  const [detail, setDetail] = useState<PhotographerDetail | null>(null)
+  const [dataLoading, setDataLoading] = useState(true)
   const [scrollY, setScrollY] = useState(0)
   const [showBar, setShowBar] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
@@ -32,14 +81,31 @@ export default function PhotographyDetail() {
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
   const [isBooking, setIsBooking] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
-  const [videoLoaded, setVideoLoaded] = useState(false)   // iframe onLoad 确认
-  const [timedOut, setTimedOut] = useState(false)          // 3s 超时回退
+  const [videoLoaded, setVideoLoaded] = useState(false)
+  const [timedOut, setTimedOut] = useState(false)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const aboutRef = useRef<HTMLElement>(null)
   const videoIframeRef = useRef<HTMLIFrameElement>(null)
   const videoLoadedRef = useRef(false)
 
-  const detail = photographerProducts.find(p => p.slug === slug) || null
+  // 从 API 加载摄影师详情
+  useEffect(() => {
+    if (!slug) return
+    setDataLoading(true)
+    setDetail(null)
+    fetch(`${API_BASE}/api/products/crawled-photographers/${slug}`)
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && res.data) {
+          setDetail(mapApiDetail(res.data))
+        }
+      })
+      .catch(err => console.error('加载摄影师详情失败:', err))
+      .finally(() => setDataLoading(false))
+  }, [slug])
+
+  // YouTube 视频不展示，其他视频保留
+  const showVideo = !!(detail?.videoUrl && detectVideoProvider(detail.videoUrl) !== 'youtube')
 
   // 检查是否已预定
   useEffect(() => {
@@ -59,7 +125,7 @@ export default function PhotographyDetail() {
 
   // 视频 3s 加载超时 → 回退到轮播
   useEffect(() => {
-    if (!detail?.videoUrl) {
+    if (!showVideo) {
       setVideoLoaded(false)
       setTimedOut(false)
       videoLoadedRef.current = false
@@ -72,17 +138,14 @@ export default function PhotographyDetail() {
       if (!videoLoadedRef.current) setTimedOut(true)
     }, 3000)
     return () => clearTimeout(timer)
-  }, [detail?.videoUrl, slug])
+  }, [showVideo, slug])
 
-  // 页面重新可见时恢复视频播放（不重新开始）
+  // 页面重新可见时恢复视频播放
   useEffect(() => {
-    if (!detail?.videoUrl) return
+    if (!showVideo) return
     const resumeVideo = () => {
       const iframe = videoIframeRef.current
       if (iframe?.contentWindow) {
-        // YouTube: 通过 postMessage 发送播放命令
-        iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*')
-        // Vimeo: 通过 postMessage 发送播放命令
         iframe.contentWindow.postMessage(JSON.stringify({ method: 'play' }), '*')
       }
     }
@@ -98,7 +161,7 @@ export default function PhotographyDetail() {
       document.removeEventListener('visibilitychange', handleVisibility)
       window.removeEventListener('pageshow', handlePageShow)
     }
-  }, [detail?.videoUrl])
+  }, [showVideo])
 
   // 预定/取消预定
   const handleBook = useCallback(() => {
@@ -209,6 +272,15 @@ export default function PhotographyDetail() {
     return () => observer.disconnect()
   }, [detail])
 
+  if (dataLoading) {
+    return (
+      <div className="cd-page">
+        <button className="cd-back" onClick={() => navigate('/photography')}>← 返回列表</button>
+        <div className="cd-loading"><p>加载中…</p></div>
+      </div>
+    )
+  }
+
   if (!detail) {
     return (
       <div className="cd-page">
@@ -222,16 +294,16 @@ export default function PhotographyDetail() {
     <div className="cd-page">
       {/* ===== 1. Hero 区域 ===== */}
       <section className="photo-hero">
-        <div className={`photo-hero__card${detail.videoUrl && videoLoaded ? ' photo-hero__card--video' : ''}${detail.videoUrl && !timedOut && !videoLoaded ? ' photo-hero__card--loading' : ''}`}>
-          {/* 视频加载中：骨架屏铺满卡片，文字居中叠在上方 */}
-          {detail.videoUrl && !timedOut && !videoLoaded && (
+        <div className={`photo-hero__card${showVideo && videoLoaded ? ' photo-hero__card--video' : ''}${showVideo && !timedOut && !videoLoaded ? ' photo-hero__card--loading' : ''}`}>
+          {/* 视频加载中：骨架屏 */}
+          {showVideo && !timedOut && !videoLoaded && (
             <div className="photo-hero__skeleton">
               <div className="photo-hero__skeleton-shimmer" />
             </div>
           )}
 
-          {/* 有视频：隐藏的 iframe 在后台加载 */}
-          {detail.videoUrl && !timedOut && (() => {
+          {/* 非 YouTube 视频：后台加载 iframe */}
+          {showVideo && !timedOut && (() => {
             const parsed = parseVideoUrl(detail.videoUrl!)
             if (!parsed) return null
             return (
@@ -252,8 +324,8 @@ export default function PhotographyDetail() {
             )
           })()}
 
-          {/* 无视频 或 视频超时未加载：左侧轮播 */}
-          {(!detail.videoUrl || timedOut) && (
+          {/* 无视频 / YouTube / 视频超时：轮播 */}
+          {(!showVideo || timedOut) && (
             <>
               <div className="photo-hero__carousel">
             {detail.images.slice(0, 3).map((img, i) => (
@@ -261,7 +333,7 @@ export default function PhotographyDetail() {
                 key={i}
                 className={`photo-hero__slide${i === heroSlide ? ' photo-hero__slide--active' : ''}${i === heroPrev ? ' photo-hero__slide--prev' : ''}`}
               >
-                <FallbackImage src={img} alt={`${detail.nameEn} 作品 ${i + 1}`} className="photo-hero__img" onClick={() => setHeroLightbox(true)} style={{ cursor: 'zoom-in' }} />
+                <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${i + 1}`} className="photo-hero__img" onClick={() => setHeroLightbox(true)} style={{ cursor: 'zoom-in' }} />
               </div>
             ))}
             <button className="photo-hero__arrow photo-hero__arrow--left" onClick={() => goHeroSlide((heroSlide - 1 + 3) % 3)}>
@@ -290,7 +362,7 @@ export default function PhotographyDetail() {
               <button className="photo-hero__lightbox-arrow photo-hero__lightbox-arrow--left" onClick={e => { e.stopPropagation(); goHeroSlide((heroSlide - 1 + 3) % 3) }}>
                 <svg width="28" height="28" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="#fff" strokeWidth="2" fill="none" /></svg>
               </button>
-              <img src={detail.images[heroSlide]} alt="" className="photo-hero__lightbox-img" onClick={e => e.stopPropagation()} />
+              <img src={proxyImage(detail.images[heroSlide])} alt="" className="photo-hero__lightbox-img" onClick={e => e.stopPropagation()} />
               <button className="photo-hero__lightbox-arrow photo-hero__lightbox-arrow--right" onClick={e => { e.stopPropagation(); goHeroSlide((heroSlide + 1) % 3) }}>
                 <svg width="28" height="28" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="#fff" strokeWidth="2" fill="none" /></svg>
               </button>
@@ -337,7 +409,7 @@ export default function PhotographyDetail() {
           )}
           <BackButton to="/photography" />
           <div className="photo-hero__headshot">
-            <FallbackImage src={detail.headshot || defaultHeadshot} alt={detail.nameEn} className="photo-hero__headshot-img" />
+            <FallbackImage src={proxyImage(detail.headshot || defaultHeadshot)} alt={detail.nameEn} className="photo-hero__headshot-img" />
           </div>
           <div className="photo-hero__meta">
             <span className="photo-hero__badge">{detail.categoryCn}</span>
@@ -355,8 +427,8 @@ export default function PhotographyDetail() {
               </a>
             )}
           </div>
-          </div>
         </div>
+      </div>
       </section>
 
       {/* ===== 内容区 ===== */}
@@ -399,9 +471,9 @@ export default function PhotographyDetail() {
           {/* 分隔线 */}
           <div className="photo-style-gallery__divider" />
 
-          {/* 作品展 — 视频播放中时前3张也纳入作品集 */}
+          {/* 作品展 */}
           {(() => {
-            const galleryStart = (detail.videoUrl && !timedOut) ? 0 : 3
+            const galleryStart = (showVideo && !timedOut) ? 0 : 3
             const galleryImages = detail.images.slice(galleryStart)
             if (galleryImages.length === 0) return null
             const perPage = 6
@@ -429,7 +501,7 @@ export default function PhotographyDetail() {
                         const origIdx = idx * 2
                         return (
                           <div key={origIdx} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
-                            <FallbackImage src={img} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
+                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
                           </div>
                         )
                       })}
@@ -443,7 +515,7 @@ export default function PhotographyDetail() {
                         const origIdx = idx * 2 + 1
                         return (
                           <div key={origIdx} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
-                            <FallbackImage src={img} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
+                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
                           </div>
                         )
                       })}
@@ -468,7 +540,7 @@ export default function PhotographyDetail() {
 
         {/* 作品展 Lightbox */}
         {galleryLightbox !== null && (() => {
-          const galleryStart = (detail.videoUrl && !timedOut) ? 0 : 3
+          const galleryStart = (showVideo && !timedOut) ? 0 : 3
           const galleryImages = detail.images.slice(galleryStart)
           const total = galleryImages.length
           const currentIdx = galleryLightbox
@@ -483,7 +555,7 @@ export default function PhotographyDetail() {
               <button className="photo-hero__lightbox-arrow photo-hero__lightbox-arrow--left" onClick={e => { e.stopPropagation(); goPrev() }}>
                 <svg width="28" height="28" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="#fff" strokeWidth="2" fill="none" /></svg>
               </button>
-              <img src={galleryImages[currentIdx]} alt={`作品 ${currentIdx + 1}`} className="photo-hero__lightbox-img" onClick={e => e.stopPropagation()} />
+              <img src={proxyImage(galleryImages[currentIdx])} alt={`作品 ${currentIdx + 1}`} className="photo-hero__lightbox-img" onClick={e => e.stopPropagation()} />
               <button className="photo-hero__lightbox-arrow photo-hero__lightbox-arrow--right" onClick={e => { e.stopPropagation(); goNext() }}>
                 <svg width="28" height="28" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="#fff" strokeWidth="2" fill="none" /></svg>
               </button>

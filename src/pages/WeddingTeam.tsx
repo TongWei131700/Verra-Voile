@@ -1,115 +1,243 @@
-import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
+import { weddingTeamCompanies, type WeddingTeamCompany } from '../data/weddingTeamCompanies'
+import { getSelectedProducts } from '../utils/selectedProducts'
+import { proxyImage } from '../utils/imageProxy'
 import heroImg from '../assets/wedding-team-hero.png'
 
-const API_BASE = import.meta.env.VITE_API_URL || ''
+const allCompanies: WeddingTeamCompany[] = weddingTeamCompanies
+const HERO_IMG = heroImg
 
-const imgUrl = (src: string) => {
-  if (!src) return ''
-  if (src.startsWith('/uploads/') || src.startsWith('/uploads')) return `${API_BASE}${src}`
-  return src
-}
-
-interface TeamCompany {
-  id: number
-  slug: string
-  name: string
-  name_cn: string
-  country_cn: string
-  city_cn: string
-  tagline: string
-  description_preview: string
-  founded_year: number
-  team_members: { name: string; name_cn: string; role: string; role_cn: string }[]
-  services: { name: string; name_cn: string }[]
-  service_areas: { name: string; name_cn: string }[]
-  cover_image: string
+// 从数据中提取去重后的选项列表
+function extractUnique<T>(companies: WeddingTeamCompany[], getter: (c: WeddingTeamCompany) => T | T[]): T[] {
+  const set = new Set<T>()
+  companies.forEach(c => {
+    const val = getter(c)
+    if (Array.isArray(val)) val.forEach(v => set.add(v))
+    else if (val !== undefined && val !== '') set.add(val)
+  })
+  return Array.from(set).sort()
 }
 
 export default function WeddingTeam() {
   const navigate = useNavigate()
-  const [list, setList] = useState<TeamCompany[]>([])
-  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [visibleCount, setVisibleCount] = useState(6)
-  const [loadingMore, setLoadingMore] = useState(false)
-  const sentinelRef = useRef<HTMLDivElement>(null)
+  const [searchSubmitted, setSearchSubmitted] = useState(false)
+  const [searchFilter, setSearchFilter] = useState('')
+  const [searchFocused, setSearchFocused] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const filterBodyRef = useRef<HTMLDivElement>(null)
+  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(new Set())
+  const [selectedSpecialties, setSelectedSpecialties] = useState<Set<string>>(new Set())
+  const [openGroups, setOpenGroups] = useState({ country: true, specialty: true })
+  const [expandedFilters, setExpandedFilters] = useState({ country: false, specialty: false })
+  const MAX_VISIBLE_FILTERS = 6
+  const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
+  const ITEMS_PER_PAGE = 6
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
+  const [listLoading, setListLoading] = useState(false)
 
-  useEffect(() => {
-    fetch(`${API_BASE}/api/products/crawled-wedding-teams`)
-      .then(r => r.json())
-      .then(res => {
-        if (res.success && res.data) setList(res.data)
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
+  // 刷新已预定状态
+  const refreshBooked = useCallback(() => {
+    const items = getSelectedProducts().filter(i => i.categoryId === 'wedding-team')
+    setBookedSlugs(new Set(items.map(i => i.productId)))
   }, [])
 
-  const filteredList = useMemo(() => {
-    if (!searchQuery.trim()) return list
-    const q = searchQuery.trim().toLowerCase()
-    return list.filter(item =>
-      item.name_cn?.toLowerCase().includes(q) ||
-      item.name?.toLowerCase().includes(q) ||
-      item.country_cn?.toLowerCase().includes(q) ||
-      item.city_cn?.toLowerCase().includes(q) ||
-      item.tagline?.toLowerCase().includes(q) ||
-      item.description_preview?.toLowerCase().includes(q) ||
-      item.services?.some((s: any) => s.name_cn?.toLowerCase().includes(q)) ||
-      item.team_members?.some((m: any) => m.name_cn?.toLowerCase().includes(q) || m.role_cn?.toLowerCase().includes(q))
-    )
-  }, [list, searchQuery])
-
-  const displayList = useMemo(() => filteredList.slice(0, visibleCount), [filteredList, visibleCount])
-  const hasMore = visibleCount < filteredList.length
-
-  const handleLoadMore = useCallback(() => {
-    if (loadingMore) return
-    setLoadingMore(true)
-    setTimeout(() => {
-      setVisibleCount(prev => prev + 6)
-      setLoadingMore(false)
-    }, 300)
-  }, [loadingMore])
-
-  useEffect(() => { setVisibleCount(6) }, [searchQuery])
-
   useEffect(() => {
-    const sentinel = sentinelRef.current
-    if (!sentinel || loadingMore) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) handleLoadMore()
-      },
-      { rootMargin: '100px' }
-    )
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [hasMore, handleLoadMore, loadingMore])
+    refreshBooked()
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') refreshBooked()
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
+  }, [refreshBooked])
 
-  if (loading) {
-    return (
-      <div className="cd-page">
-        <div className="cd-loading">
-          <div className="cd-spinner" />
-          <p>加载婚礼团队数据…</p>
-        </div>
-      </div>
-    )
+  // 从数据中动态提取筛选项
+  const allCountries = useMemo(() => extractUnique(allCompanies, c => c.country), [])
+  const allSpecialties = useMemo(() => extractUnique(allCompanies, c => c.specialties), [])
+
+  const filteredList = useMemo(() => {
+    let list = allCompanies
+    if (selectedCountries.size > 0) {
+      list = list.filter(c => selectedCountries.has(c.country))
+    }
+    if (selectedSpecialties.size > 0) {
+      list = list.filter(c => c.specialties.some(s => selectedSpecialties.has(s)))
+    }
+    if (searchFilter) {
+      const q = searchFilter.toLowerCase()
+      list = list.filter(c =>
+        c.name.toLowerCase().includes(q) ||
+        c.nameEn.toLowerCase().includes(q) ||
+        c.country.toLowerCase().includes(q) ||
+        c.countryEn.toLowerCase().includes(q) ||
+        c.specialties.some(s => s.toLowerCase().includes(q)) ||
+        c.tagline.toLowerCase().includes(q)
+      )
+    }
+    return list
+  }, [selectedCountries, selectedSpecialties, searchFilter])
+
+  // 搜索推荐条目
+  const searchSuggestions = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase()
+    if (!q) return []
+    const items: { type: 'country' | 'specialty' | 'company'; label: string; sub?: string; slug?: string }[] = []
+    allCountries.forEach(c => {
+      if (c.toLowerCase().includes(q)) items.push({ type: 'country', label: c })
+    })
+    allSpecialties.forEach(s => {
+      if (s.toLowerCase().includes(q)) items.push({ type: 'specialty', label: s })
+    })
+    allCompanies.forEach(c => {
+      if (c.name.toLowerCase().includes(q) || c.nameEn.toLowerCase().includes(q)) {
+        items.push({ type: 'company', label: c.nameEn, sub: c.country, slug: c.slug })
+      }
+    })
+    return items.slice(0, 10)
+  }, [searchQuery, allCountries, allSpecialties])
+
+  const bookedList = useMemo(() => filteredList.filter(c => bookedSlugs.has(c.slug)), [filteredList, bookedSlugs])
+  const otherList = useMemo(() => filteredList.filter(c => !bookedSlugs.has(c.slug)), [filteredList, bookedSlugs])
+  const visibleOtherList = useMemo(() => otherList.slice(0, visibleCount), [otherList, visibleCount])
+  const hasMoreItems = visibleCount < otherList.length
+
+  // 筛选变化时重置分页
+  useEffect(() => {
+    setVisibleCount(ITEMS_PER_PAGE)
+  }, [selectedCountries, selectedSpecialties, searchFilter])
+
+  const totalFilters = selectedCountries.size + selectedSpecialties.size + (searchFilter ? 1 : 0)
+
+  const toggleCountry = (c: string) => {
+    setSelectedCountries(prev => {
+      const next = new Set(prev)
+      next.has(c) ? next.delete(c) : next.add(c)
+      return next
+    })
+  }
+
+  const toggleSpecialty = (s: string) => {
+    setSelectedSpecialties(prev => {
+      const next = new Set(prev)
+      next.has(s) ? next.delete(s) : next.add(s)
+      return next
+    })
+  }
+
+  const clearAllFilters = () => {
+    setSelectedCountries(new Set())
+    setSelectedSpecialties(new Set())
+    setSearchQuery('')
+    setSearchFilter('')
+  }
+
+  const toggleGroup = (key: 'country' | 'specialty') => {
+    setOpenGroups(prev => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  const toggleExpandFilter = (key: 'country' | 'specialty') => {
+    setExpandedFilters(prev => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  // 点击搜索推荐项
+  const handleSuggestionClick = (item: { type: 'country' | 'specialty' | 'company'; label: string; slug?: string }) => {
+    if (item.type === 'country') {
+      setSelectedCountries(prev => { const n = new Set(prev); n.add(item.label); return n })
+    } else if (item.type === 'specialty') {
+      setSelectedSpecialties(prev => { const n = new Set(prev); n.add(item.label); return n })
+    } else if (item.type === 'company' && item.slug) {
+      navigate(`/wedding-team/${item.slug}`)
+    }
+    setSearchQuery('')
+    setSearchSubmitted(false)
+    setSearchFilter('')
+  }
+
+  // 点击外部关闭搜索下拉
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchSubmitted(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // 筛选栏内滚动时不带动页面
+  useEffect(() => {
+    const el = filterBodyRef.current
+    if (!el) return
+    const preventScroll = (e: WheelEvent) => {
+      const { scrollTop, scrollHeight, clientHeight } = el
+      const atTop = scrollTop === 0 && e.deltaY < 0
+      const atBottom = scrollTop + clientHeight >= scrollHeight && e.deltaY > 0
+      if (atTop || atBottom) e.preventDefault()
+    }
+    el.addEventListener('wheel', preventScroll, { passive: false })
+    return () => el.removeEventListener('wheel', preventScroll)
+  }, [])
+
+  // 无限滚动
+  useEffect(() => {
+    const onScroll = () => {
+      if (listLoading || !hasMoreItems) return
+      const scrollBottom = window.innerHeight + window.scrollY
+      const docHeight = document.documentElement.scrollHeight
+      if (scrollBottom >= docHeight - 400) {
+        setListLoading(true)
+        setTimeout(() => {
+          setVisibleCount(prev => prev + ITEMS_PER_PAGE)
+          setListLoading(false)
+        }, 400)
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [hasMoreItems, listLoading])
+
+  // 回车确认搜索
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase()
+      let matched = false
+      allCountries.forEach(c => {
+        if (c.toLowerCase().includes(q)) {
+          setSelectedCountries(prev => { const n = new Set(prev); n.add(c); return n })
+          matched = true
+        }
+      })
+      allSpecialties.forEach(s => {
+        if (s.toLowerCase().includes(q)) {
+          setSelectedSpecialties(prev => { const n = new Set(prev); n.add(s); return n })
+          matched = true
+        }
+      })
+      if (matched) {
+        setSearchQuery('')
+        setSearchFilter('')
+      } else {
+        setSearchFilter(searchQuery.trim())
+      }
+      setSearchSubmitted(false)
+      searchInputRef.current?.blur()
+    }
   }
 
   return (
     <div className="cd-page">
       {/* 首屏 */}
       <section className="cd-list-hero">
-        <img
-          className="cd-list-hero__bg"
-          src={heroImg}
-          alt=""
-          style={{ filter: 'brightness(0.7)' }}
-        />
+        <div className="cd-list-hero__bg" style={{
+          backgroundImage: `url(${HERO_IMG})`,
+          backgroundSize: 'cover', backgroundPosition: 'center',
+          width: '100%', height: '100%'
+        }} />
         <div className="cd-list-hero__overlay" />
         <BackButton />
         <div className="cd-list-hero__content">
@@ -117,96 +245,388 @@ export default function WeddingTeam() {
           <h1 className="cd-list-hero__title">婚礼团队</h1>
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
-            {list.length > 0 ? `共收录 ${list.length} 家专业婚礼策划公司` : '专业婚礼策划公司，为您打造完美婚礼'}
+            {allCompanies.length > 0 ? `共收录 ${allCompanies.length} 家专业婚礼策划公司` : '专业婚礼策划公司，为您打造完美婚礼'}
           </p>
         </div>
       </section>
 
       {/* 搜索框 */}
-      <div className="cd-search-bar">
+      <div className="cd-search-bar" ref={searchRef}>
         <div className="cd-search-bar__inner">
           <svg className="cd-search-bar__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
           <input
+            ref={searchInputRef}
             className="cd-search-bar__input"
             type="text"
-            placeholder="搜索公司名称、服务、地区…"
+            placeholder="搜索公司名称、国家、服务特色…"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+            onKeyDown={handleSearchKeyDown}
           />
           {searchQuery && (
-            <button className="cd-search-bar__clear" onClick={() => setSearchQuery('')}>✕</button>
+            <button className="cd-search-bar__clear" onClick={() => { setSearchQuery(''); setSearchSubmitted(false); setSearchFilter('') }}>✕</button>
           )}
         </div>
+        {/* 搜索推荐下拉 */}
+        {searchFocused && searchQuery.trim() && searchSuggestions.length > 0 && (
+          <div className="cd-search-dropdown">
+            {searchSuggestions.map((item, i) => (
+              <div key={`${item.type}-${i}`} className="cd-search-dropdown__item" onClick={() => handleSuggestionClick(item)}>
+                <span className={`cd-search-dropdown__icon cd-search-dropdown__icon--${item.type}`}>
+                  {item.type === 'country' ? '🌍' : item.type === 'specialty' ? '✨' : '💒'}
+                </span>
+                <div className="cd-search-dropdown__text">
+                  <span className="cd-search-dropdown__label">{item.label}</span>
+                  {item.sub && <span className="cd-search-dropdown__sub">{item.sub}</span>}
+                </div>
+                <span className="cd-search-dropdown__tag">
+                  {item.type === 'country' ? '国家' : item.type === 'specialty' ? '特色' : '公司'}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+        {searchFocused && searchQuery.trim() && searchSuggestions.length === 0 && (
+          <div className="cd-search-dropdown">
+            <div className="cd-search-dropdown__empty">无匹配结果</div>
+          </div>
+        )}
       </div>
 
-      {/* 卡片列表 */}
-      <div className="cd-filter-layout" style={{ display: 'block' }}>
+      {/* 移动端筛选栏 */}
+      <div className="ph-mobile-filter-bar">
+        <span className="ph-mobile-filter-bar__count">
+          共 <strong>{filteredList.length}</strong> 家策划公司
+        </span>
+        <button
+          type="button"
+          className="ph-mobile-filter-btn"
+          onClick={() => setFilterDrawerOpen(true)}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+            <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+            <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/>
+            <line x1="17" y1="16" x2="23" y2="16"/>
+          </svg>
+          <span>筛选</span>
+          {totalFilters > 0 && <span className="ph-mobile-filter-btn__badge">{totalFilters}</span>}
+        </button>
+      </div>
+
+      {/* 移动端筛选抽屉 */}
+      {filterDrawerOpen && (
+        <div className="ph-drawer-overlay" onClick={() => setFilterDrawerOpen(false)}>
+          <div className="ph-drawer" onClick={e => e.stopPropagation()}>
+            <div className="ph-drawer__header">
+              <h4 className="ph-drawer__title">筛选</h4>
+              <button className="ph-drawer__close" onClick={() => setFilterDrawerOpen(false)}>✕</button>
+            </div>
+            <div className="ph-drawer__body">
+              <div className="ph-filter-section">
+                <div className="ph-filter-section__title">
+                  <span>筛选</span>
+                  <span className="ph-filter-section__en">Filter</span>
+                </div>
+                {/* 国家 */}
+                <div className="ph-filter-group">
+                  <button type="button" className="ph-filter-group__header" onClick={() => toggleGroup('country')}>
+                    <span className="ph-filter-group__label">国家</span>
+                    <span className="ph-filter-group__en">Country</span>
+                    {selectedCountries.size > 0 && <span className="ph-filter-group__badge">{selectedCountries.size}</span>}
+                    <span className={`ph-filter-group__arrow${openGroups.country ? ' ph-filter-group__arrow--open' : ''}`}>▾</span>
+                  </button>
+                  {openGroups.country && (
+                    <ul className="ph-filter-group__list">
+                      {(expandedFilters.country ? allCountries : allCountries.slice(0, MAX_VISIBLE_FILTERS)).map(c => {
+                        const count = allCompanies.filter(co => co.country === c).length
+                        return (
+                          <li key={c} className={`ph-filter-group__item${selectedCountries.has(c) ? ' ph-filter-group__item--checked' : ''}`} onClick={() => toggleCountry(c)}>
+                            <span className="ph-filter-group__checkbox">{selectedCountries.has(c) ? '☑' : '☐'}</span>
+                            <span className="ph-filter-group__name">{c}</span>
+                            <span className="ph-filter-group__count">{count}</span>
+                          </li>
+                        )
+                      })}
+                      {allCountries.length > MAX_VISIBLE_FILTERS && (
+                        <li className="ph-filter-group__item ph-filter-group__item--more" onClick={() => toggleExpandFilter('country')}>
+                          {expandedFilters.country ? '收起' : `更多 (${allCountries.length - MAX_VISIBLE_FILTERS})`}
+                        </li>
+                      )}
+                    </ul>
+                  )}
+                </div>
+                {/* 服务特色 */}
+                <div className="ph-filter-group">
+                  <button type="button" className="ph-filter-group__header" onClick={() => toggleGroup('specialty')}>
+                    <span className="ph-filter-group__label">服务特色</span>
+                    <span className="ph-filter-group__en">Specialty</span>
+                    {selectedSpecialties.size > 0 && <span className="ph-filter-group__badge">{selectedSpecialties.size}</span>}
+                    <span className={`ph-filter-group__arrow${openGroups.specialty ? ' ph-filter-group__arrow--open' : ''}`}>▾</span>
+                  </button>
+                  {openGroups.specialty && (
+                    <ul className="ph-filter-group__list">
+                      {(expandedFilters.specialty ? allSpecialties : allSpecialties.slice(0, MAX_VISIBLE_FILTERS)).map(s => {
+                        const count = allCompanies.filter(co => co.specialties.includes(s)).length
+                        return (
+                          <li key={s} className={`ph-filter-group__item${selectedSpecialties.has(s) ? ' ph-filter-group__item--checked' : ''}`} onClick={() => toggleSpecialty(s)}>
+                            <span className="ph-filter-group__checkbox">{selectedSpecialties.has(s) ? '☑' : '☐'}</span>
+                            <span className="ph-filter-group__name">{s}</span>
+                            <span className="ph-filter-group__count">{count}</span>
+                          </li>
+                        )
+                      })}
+                      {allSpecialties.length > MAX_VISIBLE_FILTERS && (
+                        <li className="ph-filter-group__item ph-filter-group__item--more" onClick={() => toggleExpandFilter('specialty')}>
+                          {expandedFilters.specialty ? '收起' : `更多 (${allSpecialties.length - MAX_VISIBLE_FILTERS})`}
+                        </li>
+                      )}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="ph-drawer__footer">
+              {totalFilters > 0 && (
+                <button className="ph-drawer__clear" onClick={clearAllFilters}>清除全部</button>
+              )}
+              <button className="ph-drawer__confirm" onClick={() => setFilterDrawerOpen(false)}>
+                查看 {filteredList.length} 家策划公司
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 筛选 + 卡片布局 */}
+      <div className="cd-filter-layout">
+        {/* 左侧筛选栏 */}
+        <aside className="ph-filter">
+          <div className="ph-filter__body" ref={filterBodyRef}>
+            <div className="ph-filter-section">
+              <div className="ph-filter-section__title">
+                <span>筛选</span>
+                <span className="ph-filter-section__en">Filter</span>
+              </div>
+              {/* 国家 */}
+              <div className="ph-filter-group">
+                <button type="button" className="ph-filter-group__header" onClick={() => toggleGroup('country')}>
+                  <span className="ph-filter-group__label">国家</span>
+                  <span className="ph-filter-group__en">Country</span>
+                  {selectedCountries.size > 0 && <span className="ph-filter-group__badge">{selectedCountries.size}</span>}
+                  <span className={`ph-filter-group__arrow${openGroups.country ? ' ph-filter-group__arrow--open' : ''}`}>▾</span>
+                </button>
+                {openGroups.country && (
+                  <ul className="ph-filter-group__list">
+                    {allCountries.length > 0 ? (expandedFilters.country ? allCountries : allCountries.slice(0, MAX_VISIBLE_FILTERS)).map(c => {
+                      const count = allCompanies.filter(co => co.country === c).length
+                      return (
+                        <li key={c} className={`ph-filter-group__item${selectedCountries.has(c) ? ' ph-filter-group__item--checked' : ''}`} onClick={() => toggleCountry(c)}>
+                          <span className="ph-filter-group__checkbox">{selectedCountries.has(c) ? '☑' : '☐'}</span>
+                          <span className="ph-filter-group__name">{c}</span>
+                          <span className="ph-filter-group__count">{count}</span>
+                        </li>
+                      )
+                    }) : (
+                      <li className="ph-filter-group__item ph-filter-group__item--empty">暂无数据</li>
+                    )}
+                    {allCountries.length > MAX_VISIBLE_FILTERS && (
+                      <li className="ph-filter-group__item ph-filter-group__item--more" onClick={() => toggleExpandFilter('country')}>
+                        {expandedFilters.country ? '收起' : `更多 (${allCountries.length - MAX_VISIBLE_FILTERS})`}
+                      </li>
+                    )}
+                  </ul>
+                )}
+              </div>
+              {/* 服务特色 */}
+              <div className="ph-filter-group">
+                <button type="button" className="ph-filter-group__header" onClick={() => toggleGroup('specialty')}>
+                  <span className="ph-filter-group__label">服务特色</span>
+                  <span className="ph-filter-group__en">Specialty</span>
+                  {selectedSpecialties.size > 0 && <span className="ph-filter-group__badge">{selectedSpecialties.size}</span>}
+                  <span className={`ph-filter-group__arrow${openGroups.specialty ? ' ph-filter-group__arrow--open' : ''}`}>▾</span>
+                </button>
+                {openGroups.specialty && (
+                  <ul className="ph-filter-group__list">
+                    {allSpecialties.length > 0 ? (expandedFilters.specialty ? allSpecialties : allSpecialties.slice(0, MAX_VISIBLE_FILTERS)).map(s => {
+                      const count = allCompanies.filter(co => co.specialties.includes(s)).length
+                      return (
+                        <li key={s} className={`ph-filter-group__item${selectedSpecialties.has(s) ? ' ph-filter-group__item--checked' : ''}`} onClick={() => toggleSpecialty(s)}>
+                          <span className="ph-filter-group__checkbox">{selectedSpecialties.has(s) ? '☑' : '☐'}</span>
+                          <span className="ph-filter-group__name">{s}</span>
+                          <span className="ph-filter-group__count">{count}</span>
+                        </li>
+                      )
+                    }) : (
+                      <li className="ph-filter-group__item ph-filter-group__item--empty">暂无数据</li>
+                    )}
+                    {allSpecialties.length > MAX_VISIBLE_FILTERS && (
+                      <li className="ph-filter-group__item ph-filter-group__item--more" onClick={() => toggleExpandFilter('specialty')}>
+                        {expandedFilters.specialty ? '收起' : `更多 (${allSpecialties.length - MAX_VISIBLE_FILTERS})`}
+                      </li>
+                    )}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* 右侧卡片列表 */}
         <div className="cd-list">
-          {displayList.length > 0 ? (
+          {filteredList.length > 0 ? (
             <>
-              {displayList.map(item => {
-                const memberCount = item.team_members?.length || 0
-                const serviceCount = item.services?.length || 0
-                return (
-                  <div key={item.id} className="cd-card cd-card--team" onClick={() => navigate(`/wedding-team/${item.slug}`)}>
+              {bookedList.length > 0 ? (
+                <>
+                  {/* 已预定区域 */}
+                  <div className="cd-section-label">
+                    <span className="cd-section-label__icon">✦</span>
+                    <span>意向单</span>
+                    <span className="cd-section-label__count">{bookedList.length}</span>
+                  </div>
+                  {bookedList.map(item => (
+                    <div
+                      key={item.slug}
+                      className="cd-card cd-card--booked"
+                      onClick={() => { window.__saveScrollPos?.('/wedding-team'); navigate(`/wedding-team/${item.slug}`) }}
+                    >
+                      <div className="cd-card__img-wrap">
+                        <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
+                        <div className="cd-card__img-overlay" />
+                        <span className="cd-card__booked-badge">
+                          <svg className="cd-card__booked-wreath" viewBox="0 0 80 80" width="36" height="36">
+                            <path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                            <path d="M60 62 C72 52, 76 38, 68 24 C64 17, 58 12, 50 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                            <ellipse cx="11" cy="44" rx="3" ry="1.5" transform="rotate(-30 11 44)" fill="currentColor" opacity="0.2"/>
+                            <ellipse cx="9" cy="35" rx="2.5" ry="1.3" transform="rotate(-15 9 35)" fill="currentColor" opacity="0.2"/>
+                            <ellipse cx="69" cy="44" rx="3" ry="1.5" transform="rotate(30 69 44)" fill="currentColor" opacity="0.2"/>
+                            <ellipse cx="71" cy="35" rx="2.5" ry="1.3" transform="rotate(15 71 35)" fill="currentColor" opacity="0.2"/>
+                            <circle cx="40" cy="8" r="1.5" fill="currentColor" opacity="0.3"/>
+                            <polyline points="30 42 38 50 52 32" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </span>
+                      </div>
+                      <div className="cd-card__body">
+                        <h3 className="cd-card__name">{item.name}</h3>
+                        <p className="cd-card__tagline">{item.tagline}</p>
+                        <div className="cd-card__styles">
+                          {item.specialties.slice(0, 3).map(s => (
+                            <span key={s} className="cd-card__style-tag">{s}</span>
+                          ))}
+                        </div>
+                        <div className="cd-card__footer">
+                          <span className="cd-card__price">{item.price ? `€${item.price.toLocaleString()}起` : '需咨询'}</span>
+                          <span className="cd-card__arrow">查看详情 →</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* 其他区域 */}
+                  {otherList.length > 0 && (
+                    <>
+                      <div className="cd-section-label cd-section-label--rest">
+                        <span className="cd-section-label__icon">✦</span>
+                        <span>其他</span>
+                        <span className="cd-section-label__count">{otherList.length}</span>
+                      </div>
+                      {visibleOtherList.map(item => (
+                        <div
+                          key={item.slug}
+                          className="cd-card"
+                          onClick={() => { window.__saveScrollPos?.('/wedding-team'); navigate(`/wedding-team/${item.slug}`) }}
+                        >
+                          <div className="cd-card__img-wrap">
+                            <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
+                            <div className="cd-card__img-overlay" />
+                            <span className="cd-card__country">{item.country}</span>
+                          </div>
+                          <div className="cd-card__body">
+                            <h3 className="cd-card__name">{item.name}</h3>
+                            <p className="cd-card__tagline">{item.tagline}</p>
+                            <div className="cd-card__styles">
+                              {item.specialties.slice(0, 3).map(s => (
+                                <span key={s} className="cd-card__style-tag">{s}</span>
+                              ))}
+                            </div>
+                            <div className="cd-card__footer">
+                              <span className="cd-card__price">{item.price ? `€${item.price.toLocaleString()}起` : '需咨询'}</span>
+                              <span className="cd-card__arrow">查看详情 →</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {listLoading && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+                        <div key={`skel-${i}`} className="cd-card cd-card--skeleton">
+                          <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
+                          <div className="cd-card__body">
+                            <div className="cd-skeleton__line cd-skeleton__title" />
+                            <div className="cd-skeleton__line cd-skeleton__tagline" />
+                            <div className="cd-skeleton__line cd-skeleton__text--short" />
+                            <div className="cd-skeleton__line cd-skeleton__price" />
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </>
+              ) : (
+                visibleOtherList.map(item => (
+                  <div
+                    key={item.slug}
+                    className="cd-card"
+                    onClick={() => { window.__saveScrollPos?.('/wedding-team'); navigate(`/wedding-team/${item.slug}`) }}
+                  >
                     <div className="cd-card__img-wrap">
-                      <FallbackImage src={imgUrl(item.cover_image)} alt={item.name_cn || item.name} className="cd-card__img" />
+                      <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
                       <div className="cd-card__img-overlay" />
-                      <span className="cd-card__country">{item.country_cn}</span>
+                      <span className="cd-card__country">{item.country}</span>
                     </div>
                     <div className="cd-card__body">
-                      <h3 className="cd-card__name">{item.name_cn || item.name}</h3>
+                      <h3 className="cd-card__name">{item.name}</h3>
                       <p className="cd-card__tagline">{item.tagline}</p>
-                      <p className="cd-card__preview">{item.description_preview}…</p>
+                      <div className="cd-card__styles">
+                        {item.specialties.slice(0, 3).map(s => (
+                          <span key={s} className="cd-card__style-tag">{s}</span>
+                        ))}
+                      </div>
                       <div className="cd-card__footer">
-                        {memberCount > 0 && (
-                          <span className="cd-card__stat">✦ {memberCount} 位成员</span>
-                        )}
-                        {serviceCount > 0 && (
-                          <span className="cd-card__stat">✦ {serviceCount} 项服务</span>
-                        )}
+                        <span className="cd-card__price">{item.price ? `€${item.price.toLocaleString()}起` : '需咨询'}</span>
                         <span className="cd-card__arrow">查看详情 →</span>
                       </div>
                     </div>
                   </div>
-                )
-              })}
-              {hasMore && (
-                <>
-                  {loadingMore ? (
-                    Array.from({ length: 6 }).map((_, i) => (
-                      <div key={`skeleton-${i}`} className="cd-card cd-card--skeleton">
-                        <div className="cd-card__img-wrap cd-skeleton__img" />
-                        <div className="cd-card__body">
-                          <div className="cd-skeleton__line cd-skeleton__title" />
-                          <div className="cd-skeleton__line cd-skeleton__tagline" />
-                          <div className="cd-skeleton__line cd-skeleton__text" />
-                          <div className="cd-skeleton__line cd-skeleton__text cd-skeleton__text--short" />
-                          <div className="cd-card__footer">
-                            <div className="cd-skeleton__line cd-skeleton__stat" />
-                            <div className="cd-skeleton__line cd-skeleton__price" />
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div ref={sentinelRef} className="cd-load-sentinel" />
-                  )}
-                </>
+                ))
+              )}
+
+              {listLoading && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+                <div key={`skel-b-${i}`} className="cd-card cd-card--skeleton">
+                  <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
+                  <div className="cd-card__body">
+                    <div className="cd-skeleton__line cd-skeleton__title" />
+                    <div className="cd-skeleton__line cd-skeleton__tagline" />
+                    <div className="cd-skeleton__line cd-skeleton__text--short" />
+                    <div className="cd-skeleton__line cd-skeleton__price" />
+                  </div>
+                </div>
+              ))}
+
+              {!hasMoreItems && !listLoading && (
+                <div className="cd-load-end">
+                  <span>— 已展示全部 {filteredList.length} 家策划公司 —</span>
+                </div>
               )}
             </>
           ) : (
             <div className="cd-filter__empty" style={{ gridColumn: '1 / -1' }}>
               <span className="cd-filter__empty-icon">✦</span>
-              <p>{searchQuery ? '当前搜索条件下无婚礼策划公司' : '暂无婚礼策划公司，敬请期待'}</p>
-            </div>
-          )}
-          {!hasMore && displayList.length > 0 && (
-            <div className="cd-load-end">
-              <span>— 已展示全部 {filteredList.length} 家公司 —</span>
+              <p>{totalFilters > 0 || searchFilter ? '当前筛选条件下无策划公司，请调整筛选' : '暂无婚礼策划公司数据'}</p>
             </div>
           )}
         </div>

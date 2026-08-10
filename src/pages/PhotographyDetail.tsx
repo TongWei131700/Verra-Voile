@@ -116,16 +116,41 @@ export default function PhotographyDetail() {
     }
   }, [gallerySuppressUntil, galleryLoading])
 
-  // 监听滚动：滑过作品区域底部才显示“查看更多”
+  // 监听滚动 + 尺寸变化：图片全部加载后，滑过作品底部才显示“查看更多”
   useEffect(() => {
+    if (!detail || !galleryWrapperRef.current) return
+    const totalGalleryImages = detail.images.slice(3).length
+    const visibleCount = Math.min(galleryPage * 6, totalGalleryImages)
+    if (visibleCount === 0) return
+
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null
+    let imagesReady = false
+
+    // 用 ResizeObserver 检测图片加载完成（高度不再变化）
+    const observer = new ResizeObserver(() => {
+      if (resizeTimer) clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(() => {
+        imagesReady = true
+        // 尺寸稳定后立刻检测一次
+        if (galleryWrapperRef.current) {
+          const rect = galleryWrapperRef.current.getBoundingClientRect()
+          setGalleryScrolledToEnd(rect.bottom <= window.innerHeight + 100)
+        }
+      }, 300)
+    })
+    observer.observe(galleryWrapperRef.current)
+
     const handleScroll = () => {
-      if (!galleryWrapperRef.current) return
+      if (!imagesReady || !galleryWrapperRef.current) return
       const rect = galleryWrapperRef.current.getBoundingClientRect()
-      // 作品区域底部已进入视口（距视口底部 100px 以内）
       setGalleryScrolledToEnd(rect.bottom <= window.innerHeight + 100)
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    return () => {
+      observer.disconnect()
+      if (resizeTimer) clearTimeout(resizeTimer)
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [galleryPage, detail])
 
 

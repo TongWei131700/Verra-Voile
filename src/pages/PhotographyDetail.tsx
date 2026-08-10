@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
-import { parseVideoUrl, detectVideoProvider } from '../utils/videoEmbed'
 import { proxyImage } from '../utils/imageProxy'
 import ewLogo from '../assets/europewedding-logo.png'
 import defaultHeadshot from '../assets/default-photographer-headshot.jpg'
@@ -27,7 +26,6 @@ interface PhotographerDetail {
   style?: { title: string; items: { label: string; desc?: string }[] }[]
   cover: string
   images: string[]
-  videoUrl?: string
   headshot?: string
   price?: number
   website?: string
@@ -53,7 +51,6 @@ function mapApiDetail(row: any): PhotographerDetail {
     style: parseJSON(row.style, undefined),
     cover: row.cover_image || '',
     images: parseJSON(row.images),
-    videoUrl: row.video_url || undefined,
     headshot: row.headshot || undefined,
     price: row.price ?? undefined,
     website: row.website || undefined,
@@ -79,14 +76,12 @@ export default function PhotographyDetail() {
   const [gallerySuppressUntil, setGallerySuppressUntil] = useState(0)
   const [galleryTick, setGalleryTick] = useState(0) // 用于 1s 后触发重渲染
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
+  const [galleryScrolledToEnd, setGalleryScrolledToEnd] = useState(false)
   const [isBooking, setIsBooking] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
-  const [videoLoaded, setVideoLoaded] = useState(false)
-  const [timedOut, setTimedOut] = useState(false)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const aboutRef = useRef<HTMLElement>(null)
-  const videoIframeRef = useRef<HTMLIFrameElement>(null)
-  const videoLoadedRef = useRef(false)
+  const gallerySentinelRef = useRef<HTMLDivElement>(null)
 
   // 从 API 加载摄影师详情
   useEffect(() => {
@@ -104,8 +99,6 @@ export default function PhotographyDetail() {
       .finally(() => setDataLoading(false))
   }, [slug])
 
-  // YouTube 视频不展示，其他视频保留
-  const showVideo = !!(detail?.videoUrl && detectVideoProvider(detail.videoUrl) !== 'youtube')
 
   // 检查是否已预定
   useEffect(() => {
@@ -123,45 +116,17 @@ export default function PhotographyDetail() {
     }
   }, [gallerySuppressUntil, galleryLoading])
 
-  // 视频 3s 加载超时 → 回退到轮播
+  // 监听作品区域底部哨兵，滑到底才显示“查看更多”
   useEffect(() => {
-    if (!showVideo) {
-      setVideoLoaded(false)
-      setTimedOut(false)
-      videoLoadedRef.current = false
-      return
-    }
-    setVideoLoaded(false)
-    setTimedOut(false)
-    videoLoadedRef.current = false
-    const timer = setTimeout(() => {
-      if (!videoLoadedRef.current) setTimedOut(true)
-    }, 3000)
-    return () => clearTimeout(timer)
-  }, [showVideo, slug])
+    if (!gallerySentinelRef.current) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setGalleryScrolledToEnd(entry.isIntersecting),
+      { threshold: 0 }
+    )
+    observer.observe(gallerySentinelRef.current)
+    return () => observer.disconnect()
+  }, [galleryPage, detail])
 
-  // 页面重新可见时恢复视频播放
-  useEffect(() => {
-    if (!showVideo) return
-    const resumeVideo = () => {
-      const iframe = videoIframeRef.current
-      if (iframe?.contentWindow) {
-        iframe.contentWindow.postMessage(JSON.stringify({ method: 'play' }), '*')
-      }
-    }
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') resumeVideo()
-    }
-    const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) resumeVideo()
-    }
-    document.addEventListener('visibilitychange', handleVisibility)
-    window.addEventListener('pageshow', handlePageShow)
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibility)
-      window.removeEventListener('pageshow', handlePageShow)
-    }
-  }, [showVideo])
 
   // 预定/取消预定
   const handleBook = useCallback(() => {
@@ -275,8 +240,32 @@ export default function PhotographyDetail() {
   if (dataLoading) {
     return (
       <div className="cd-page">
-        <button className="cd-back" onClick={() => navigate('/photography')}>← 返回列表</button>
-        <div className="cd-loading"><p>加载中…</p></div>
+        <section className="photo-hero">
+          <div className="photo-hero__card">
+            {/* 左侧：轮播区占位 */}
+            <div className="photo-hero__carousel">
+              <div className="photo-hero__slide photo-hero__slide--active">
+                <div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} />
+              </div>
+            </div>
+            {/* 右侧：信息面板占位 */}
+            <div className="photo-hero__info" style={{ position: 'relative' }}>
+              <div className="photo-hero__skeleton" style={{ zIndex: 0 }}>
+                <div className="photo-hero__skeleton-shimmer" />
+              </div>
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div className="photo-hero__headshot">
+                  <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
+                </div>
+                <div className="photo-hero__meta">
+                  <div style={{ height: 18, width: '40%', borderRadius: 4, marginBottom: 14, background: 'rgba(255,255,255,0.04)' }} />
+                  <div style={{ height: 14, width: '70%', borderRadius: 4, marginBottom: 10, background: 'rgba(255,255,255,0.04)' }} />
+                  <div style={{ height: 14, width: '45%', borderRadius: 4, background: 'rgba(255,255,255,0.04)' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     )
   }
@@ -294,40 +283,8 @@ export default function PhotographyDetail() {
     <div className="cd-page">
       {/* ===== 1. Hero 区域 ===== */}
       <section className="photo-hero">
-        <div className={`photo-hero__card${showVideo && videoLoaded ? ' photo-hero__card--video' : ''}${showVideo && !timedOut && !videoLoaded ? ' photo-hero__card--loading' : ''}`}>
-          {/* 视频加载中：骨架屏 */}
-          {showVideo && !timedOut && !videoLoaded && (
-            <div className="photo-hero__skeleton">
-              <div className="photo-hero__skeleton-shimmer" />
-            </div>
-          )}
-
-          {/* 非 YouTube 视频：后台加载 iframe */}
-          {showVideo && !timedOut && (() => {
-            const parsed = parseVideoUrl(detail.videoUrl!)
-            if (!parsed) return null
-            return (
-            <div className={`photo-hero__video-bg${videoLoaded ? '' : ' photo-hero__video-bg--hidden'}`}>
-              <iframe
-                ref={videoIframeRef}
-                src={parsed.embedUrl}
-                title={`${detail.nameEn} video`}
-                allow="autoplay; encrypted-media"
-                allowFullScreen={false}
-                onLoad={() => {
-                  setVideoLoaded(true)
-                  videoLoadedRef.current = true
-                }}
-              />
-              {videoLoaded && <div className="photo-hero__video-overlay" />}
-            </div>
-            )
-          })()}
-
-          {/* 无视频 / YouTube / 视频超时：轮播 */}
-          {(!showVideo || timedOut) && (
-            <>
-              <div className="photo-hero__carousel">
+        <div className="photo-hero__card">
+          <div className="photo-hero__carousel">
             {detail.images.slice(0, 3).map((img, i) => (
               <div
                 key={i}
@@ -368,8 +325,6 @@ export default function PhotographyDetail() {
               </button>
               <div className="photo-hero__lightbox-counter">{heroSlide + 1} / 3</div>
             </div>
-          )}
-            </>
           )}
 
         {/* 右侧：摄影师信息 */}
@@ -473,7 +428,7 @@ export default function PhotographyDetail() {
 
           {/* 作品展 */}
           {(() => {
-            const galleryStart = (showVideo && !timedOut) ? 0 : 3
+            const galleryStart = 3
             const galleryImages = detail.images.slice(galleryStart)
             if (galleryImages.length === 0) return null
             const perPage = 6
@@ -524,7 +479,9 @@ export default function PhotographyDetail() {
                       ))}
                     </div>
                   </div>
-                  {hasMore && !galleryLoading && Date.now() >= gallerySuppressUntil && (galleryTick || true) && (
+                  {/* 哨兵：滑到此处才显示“查看更多” */}
+                  {hasMore && <div ref={gallerySentinelRef} style={{ height: 1 }} />}
+                  {hasMore && galleryScrolledToEnd && !galleryLoading && (
                     <>
                       <div className="photo-gallery__fade" />
                       <button className="photo-gallery__more" onClick={loadMore}>
@@ -540,7 +497,7 @@ export default function PhotographyDetail() {
 
         {/* 作品展 Lightbox */}
         {galleryLightbox !== null && (() => {
-          const galleryStart = (showVideo && !timedOut) ? 0 : 3
+          const galleryStart = 3
           const galleryImages = detail.images.slice(galleryStart)
           const total = galleryImages.length
           const currentIdx = galleryLightbox

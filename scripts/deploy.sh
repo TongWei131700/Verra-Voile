@@ -21,9 +21,10 @@ DB_PASS="VerraVoile2024!"
 API_BASE="http://${SERVER_IP}"
 # ----------------------------
 
-SSH_OPTS="-o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=5 -o ConnectTimeout=10"
+SSH_COMMON_OPTS="-o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=5 -o ConnectTimeout=10"
+SSH_OPTS="${SSH_COMMON_OPTS} -p 59222"
 SSH_CMD="sshpass -p '${SERVER_PASS}' ssh ${SSH_OPTS} ${SERVER_USER}@${SERVER_IP}"
-SCP_CMD="sshpass -p '${SERVER_PASS}' scp ${SSH_OPTS}"
+SCP_CMD="sshpass -p '${SERVER_PASS}' scp ${SSH_COMMON_OPTS} -P 59222"
 
 run_remote() {
   eval "${SSH_CMD} \"$1\""

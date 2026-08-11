@@ -72,14 +72,13 @@ export default function PhotographyDetail() {
   const [heroPaused, setHeroPaused] = useState(false)
   const [heroLightbox, setHeroLightbox] = useState(false)
   const [galleryPage, setGalleryPage] = useState(1)
-  const [galleryLoading, setGalleryLoading] = useState(false)
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
-  const [galleryScrolledToEnd, setGalleryScrolledToEnd] = useState(false)
+  const [galleryCols, setGalleryCols] = useState(3)
   const [isBooking, setIsBooking] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const heroTouchX = useRef<number | null>(null)
   const aboutRef = useRef<HTMLElement>(null)
-  const lastImageRef = useRef<HTMLDivElement>(null)
 
   // 从 API 加载摄影师详情
   useEffect(() => {
@@ -103,16 +102,13 @@ export default function PhotographyDetail() {
     if (detail) setIsBooked(isProductSelected('photography', detail.slug))
   }, [detail])
 
-  // 监听最后一张图：可见时显示"查看更多"
+  // 响应列数：宽屏 3 列，窄屏 2 列，手机 1 列
   useEffect(() => {
-    if (!lastImageRef.current) return
-    const observer = new IntersectionObserver(
-      ([entry]) => setGalleryScrolledToEnd(entry.isIntersecting),
-      { threshold: 0 }
-    )
-    observer.observe(lastImageRef.current)
-    return () => observer.disconnect()
-  }, [galleryPage, detail])
+    const update = () => setGalleryCols(window.innerWidth >= 1100 ? 3 : window.innerWidth >= 500 ? 2 : 1)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
 
   // 预定/取消预定
@@ -211,6 +207,20 @@ export default function PhotographyDetail() {
     return () => { if (heroTimerRef.current) clearTimeout(heroTimerRef.current) }
   }, [])
 
+  // 触摸滑动支持
+  const onCarouselTouchStart = (e: React.TouchEvent) => {
+    heroTouchX.current = e.touches[0].clientX
+  }
+  const onCarouselTouchEnd = (e: React.TouchEvent) => {
+    if (heroTouchX.current === null || !detail) return
+    const diff = e.changedTouches[0].clientX - heroTouchX.current
+    heroTouchX.current = null
+    if (Math.abs(diff) < 40) return
+    const total = Math.min(detail.images.length, 3)
+    if (diff < 0) goHeroSlide((heroSlide + 1) % total)
+    else goHeroSlide((heroSlide - 1 + total) % total)
+  }
+
   useEffect(() => {
     if (!aboutRef.current) return
     const observer = new IntersectionObserver(
@@ -271,7 +281,7 @@ export default function PhotographyDetail() {
       {/* ===== 1. Hero 区域 ===== */}
       <section className="photo-hero">
         <div className="photo-hero__card">
-          <div className="photo-hero__carousel">
+          <div className="photo-hero__carousel" onTouchStart={onCarouselTouchStart} onTouchEnd={onCarouselTouchEnd}>
             {detail.images.slice(0, 3).map((img, i) => (
               <div
                 key={i}
@@ -383,104 +393,82 @@ export default function PhotographyDetail() {
           <p className="photo-about__text">{detail.desc}</p>
         </section>
 
-        {/* ===== 3. 摄影风格 + 作品展 ===== */}
-        <section className="photo-style-gallery">
-          {/* 摄影风格 */}
-          {detail.style && detail.style.length > 0 && (
-            <div className="photo-style-gallery__style">
-              <h2 className="cd-block__title">摄影风格</h2>
-              <div className="photo-style__grid">
-                {detail.style.map((group, gi) => (
-                  <div key={gi} className="photo-style__group">
-                    <h3 className="photo-style__group-title">{group.title}</h3>
-                    <ul className="photo-style__list">
-                      {group.items.map((item, ii) => (
-                        <li key={ii} className="photo-style__item">
-                          <svg className="photo-style__check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                          <span className="photo-style__content">
-                            <span className="photo-style__label">{item.label}</span>
-                            {item.desc && <span className="photo-style__desc">{item.desc}</span>}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+        {/* ===== 3. 摄影风格 + 作品集 ===== */}
+        {(() => {
+          const hasStyle = detail.style && detail.style.length > 0
+          const galleryStart = 3
+          const galleryImages = detail.images.slice(galleryStart)
+          const hasGallery = galleryImages.length > 0
+          if (!hasStyle && !hasGallery) return null
+          const perPage = 9
+          const visibleCount = galleryPage * perPage
+          const hasMore = visibleCount < galleryImages.length
+          const visibleImages = galleryImages.slice(0, visibleCount)
+
+          const loadMore = () => {
+            const scrollPos = window.scrollY
+            setGalleryPage((prev: number) => prev + 1)
+            requestAnimationFrame(() => window.scrollTo({ top: scrollPos }))
+          }
+
+          return (
+            <section className="photo-combined-card">
+              {hasStyle && (
+                <>
+                  <h2 className="cd-block__title">摄影风格</h2>
+                  <div className="photo-style__grid">
+                    {detail.style.map((group: { title: string; items: { label: string; desc?: string }[] }, gi: number) => (
+                      <div key={gi} className="photo-style__group">
+                        <h3 className="photo-style__group-title">{group.title}</h3>
+                        <ul className="photo-style__list">
+                          {group.items.map((item: { label: string; desc?: string }, ii: number) => (
+                            <li key={ii} className="photo-style__item">
+                              <svg className="photo-style__check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                              <span className="photo-style__content">
+                                <span className="photo-style__label">{item.label}</span>
+                                {item.desc && <span className="photo-style__desc">{item.desc}</span>}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 分隔线 */}
-          <div className="photo-style-gallery__divider" />
-
-          {/* 作品展 */}
-          {(() => {
-            const galleryStart = 3
-            const galleryImages = detail.images.slice(galleryStart)
-            if (galleryImages.length === 0) return null
-            const perPage = 6
-            const visibleCount = galleryPage * perPage
-            const hasMore = visibleCount < galleryImages.length
-            const visibleImages = galleryImages.slice(0, visibleCount)
-
-            const loadMore = () => {
-              setGalleryScrolledToEnd(false)
-              setGalleryLoading(true)
-              setTimeout(() => {
-                setGalleryPage(prev => prev + 1)
-                setGalleryLoading(false)
-              }, 600)
-            }
-
-            return (
-              <div className="photo-style-gallery__gallery">
-                <h2 className="cd-block__title">作品展</h2>
-                <div className="photo-gallery__wrapper">
-                  <div className="photo-gallery__columns">
-                    {/* 左列 */}
-                    <div className="photo-gallery__col">
-                      {visibleImages.filter((_, i) => i % 2 === 0).map((img, idx) => {
-                        const origIdx = idx * 2
-                        const isLast = origIdx === visibleImages.length - 1
-                        return (
-                          <div key={origIdx} ref={isLast ? lastImageRef : undefined} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
-                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
-                          </div>
-                        )
-                      })}
-                      {galleryLoading && Array.from({ length: 3 }).map((_, i) => (
-                        <div key={`s-l-${i}`} className="photo-gallery__skeleton"><div className="photo-gallery__skeleton-inner" /></div>
+                </>
+              )}
+              {hasGallery && (
+                <>
+                  {hasStyle && <div className="photo-combined-card__divider" />}
+                  <h2 className="cd-block__title">作品展</h2>
+                  <div className="photo-gallery__wrapper">
+                    <div className="photo-gallery__columns">
+                      {Array.from({ length: galleryCols }).map((_, colIdx) => (
+                        <div key={colIdx} className="photo-gallery__col">
+                          {visibleImages.filter((_: string, i: number) => i % galleryCols === colIdx).map((img: string, idx: number) => {
+                            const origIdx = idx * galleryCols + colIdx
+                            return (
+                              <div key={origIdx} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
+                                <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
+                              </div>
+                            )
+                          })}
+                        </div>
                       ))}
                     </div>
-                    {/* 右列 */}
-                    <div className="photo-gallery__col">
-                      {visibleImages.filter((_, i) => i % 2 === 1).map((img, idx) => {
-                        const origIdx = idx * 2 + 1
-                        const isLast = origIdx === visibleImages.length - 1
-                        return (
-                          <div key={origIdx} ref={isLast ? lastImageRef : undefined} className="photo-gallery__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
-                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="photo-gallery__img" />
-                          </div>
-                        )
-                      })}
-                      {galleryLoading && Array.from({ length: 3 }).map((_, i) => (
-                        <div key={`s-r-${i}`} className="photo-gallery__skeleton"><div className="photo-gallery__skeleton-inner" /></div>
-                      ))}
-                    </div>
+                    {hasMore && (
+                      <>
+                        <div className="photo-gallery__fade" />
+                        <button className="photo-gallery__more" onClick={loadMore}>
+                          查看更多
+                        </button>
+                      </>
+                    )}
                   </div>
-                  {hasMore && galleryScrolledToEnd && !galleryLoading && (
-                    <>
-                      <div className="photo-gallery__fade" />
-                      <button className="photo-gallery__more" onClick={loadMore}>
-                        查看更多
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            )
-          })()}
-        </section>
+                </>
+              )}
+            </section>
+          )
+        })()}
 
         {/* 作品展 Lightbox */}
         {galleryLightbox !== null && (() => {

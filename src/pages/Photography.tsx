@@ -23,6 +23,22 @@ interface PhotographerItem {
 
 const HERO_IMG = heroImg
 
+// 国家名 → 国旗 emoji
+const countryFlag: Record<string, string> = {
+  '法国': '🇫🇷', '西班牙': '🇪🇸', '新西兰': '🇳🇿',
+  '英国': '🇬🇧', '意大利': '🇮🇹', '爱尔兰': '🇮🇪',
+  '葡萄牙': '🇵🇹', '希腊': '🇬🇷', '奥地利': '🇦🇹',
+  '德国': '🇩🇪', '瑞士': '🇨🇭', '荷兰': '🇳🇱',
+  '比利时': '🇧🇪', '丹麦': '🇩🇰', '瑞典': '🇸🇪',
+  '挪威': '🇳🇴', '匈牙利': '🇭🇺', '捷克': '🇨🇿',
+  '克罗地亚': '🇭🇷', '波兰': '🇵🇱', '土耳其': '🇹🇷',
+  '美国': '🇺🇸', '加拿大': '🇨🇦', '墨西哥': '🇲🇽',
+  '巴西': '🇧🇷', '阿根廷': '🇦🇷', '智利': '🇨🇱',
+  '澳大利亚': '🇦🇺', '南非': '🇿🇦', '摩洛哥': '🇲🇦',
+  '日本': '🇯🇵', '韩国': '🇰🇷', '泰国': '🇹🇭',
+  '印度': '🇮🇳', '中国': '🇨🇳',
+}
+
 // 模块级缓存：从详情返回列表页时复用，避免重复请求
 let _cachedProducts: PhotographerItem[] | null = null
 
@@ -592,6 +608,7 @@ export default function Photography() {
                       <div className="cd-card__img-wrap">
                         <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
                         <div className="cd-card__img-overlay" />
+                        {countryFlag[item.country] && <span className="cd-card__flag"><span className="cd-card__flag-emoji">{countryFlag[item.country]}</span>{item.country}</span>}
                         <span className="cd-card__booked-badge">
                           <svg className="cd-card__booked-wreath" viewBox="0 0 80 80" width="36" height="36">
                             <path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -638,7 +655,7 @@ export default function Photography() {
                           <div className="cd-card__img-wrap">
                             <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
                             <div className="cd-card__img-overlay" />
-                            <span className="cd-card__country">{item.country}</span>
+                            {countryFlag[item.country] && <span className="cd-card__flag"><span className="cd-card__flag-emoji">{countryFlag[item.country]}</span>{item.country}</span>}
                           </div>
                           <div className="cd-card__body">
                             <h3 className="cd-card__name">{item.name}</h3>
@@ -683,7 +700,7 @@ export default function Photography() {
                     <div className="cd-card__img-wrap">
                       <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
                       <div className="cd-card__img-overlay" />
-                      <span className="cd-card__country">{item.country}</span>
+                      {countryFlag[item.country] && <span className="cd-card__flag"><span className="cd-card__flag-emoji">{countryFlag[item.country]}</span>{item.country}</span>}
                     </div>
                     <div className="cd-card__body">
                       <h3 className="cd-card__name">{item.name}</h3>

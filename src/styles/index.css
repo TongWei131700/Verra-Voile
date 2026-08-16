@@ -7258,11 +7258,12 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   box-shadow: none;
 }
 @media (max-width: 480px) {
-  .cd-book-bar__inner { padding: 14px 18px; gap: 16px; }
-  .cd-book-bar__price-value { font-size: 18px; }
-  .cd-book-bar__price-value--gold { font-size: 18px; }
-  .cd-book-bar__consult { padding: 8px 16px; font-size: 11px; }
-  .cd-book-bar__book { padding: 9px 20px; font-size: 11px; letter-spacing: 1.5px; }
+  .cd-book-bar__inner { padding: 12px 14px; gap: 10px; }
+  .cd-book-bar__price-label { font-size: 8px; letter-spacing: 2px; }
+  .cd-book-bar__price-value { font-size: 14px; }
+  .cd-book-bar__price-value--gold { font-size: 14px; }
+  .cd-book-bar__consult { padding: 7px 12px; font-size: 10px; gap: 4px; }
+  .cd-book-bar__book { padding: 7px 16px; font-size: 10px; letter-spacing: 1px; }
 }
 
 /* ── 试验页国家 Tab ── */

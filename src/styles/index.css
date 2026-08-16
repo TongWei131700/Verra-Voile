@@ -6576,7 +6576,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 
 /* ===== 内容区 ===== */
 .cd-content {
-  max-width: 1400px; margin: 0 auto; padding: 0 24px 80px;
+  margin: 0 auto; padding: 0 5% 80px;
 }
 
 @media (max-width: 700px) {
@@ -9112,7 +9112,6 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .photo-hero__card {
   display: flex;
   width: 100%;
-  max-width: 1400px;
   background: #1a1714;
   border-radius: 16px;
   overflow: hidden;
@@ -9125,7 +9124,8 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   position: relative;
   flex: 1;
   min-width: 0;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
+  min-height: 400px;
   overflow: hidden;
 }
 
@@ -9533,7 +9533,9 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   }
 
   .photo-hero__carousel {
-    min-height: 50vh;
+    height: 50vh;
+    min-height: 300px;
+    max-height: none;
     flex: none;
   }
 
@@ -9668,7 +9670,6 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 
 /* ========== 摄影风格 + 作品展 — 合并卡片 ========== */
 .photo-combined-card {
-  max-width: 1400px;
   margin: 48px auto 0;
   background: #fff;
   border: 1px solid rgba(212, 184, 150, 0.2);

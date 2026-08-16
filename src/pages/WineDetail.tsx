@@ -188,7 +188,7 @@ export default function WineDetail() {
           <div className="cd-book-bar__price">
             <span className="cd-book-bar__price-label">价格</span>
             {detail.price > 0 ? (
-              <span className={`cd-book-bar__price-value cd-book-bar__price-value--red${(`€${detail.price.toLocaleString()}${detail.unit && detail.unit !== '€' ? detail.unit : ''}`).length > 5 ? ' cd-book-bar__price-value--sm' : ''}`}>€{detail.price.toLocaleString()}{detail.unit && detail.unit !== '€' ? detail.unit : ''}</span>
+              <span className="cd-book-bar__price-value cd-book-bar__price-value--red cd-book-bar__price-value--sm">€{detail.price.toLocaleString()}{detail.unit && detail.unit !== '€' ? detail.unit : ''}</span>
             ) : (
               <span className="cd-book-bar__price-value cd-book-bar__price-value--red">需咨询</span>
             )}

@@ -304,7 +304,7 @@ export default function CrawledVenueDetail() {
         <div className="cd-book-bar__inner">
           <div className="cd-book-bar__price">
             <span className="cd-book-bar__price-label">起步价</span>
-            <span className={`cd-book-bar__price-value cd-book-bar__price-value--red${lowestBudget && lowestBudget.min > 0 && (`€${lowestBudget.min.toLocaleString()}`).length > 5 ? ' cd-book-bar__price-value--sm' : ''}`}>{lowestBudget && lowestBudget.min > 0 ? `€${lowestBudget.min.toLocaleString()}` : '？'}</span>
+            <span className="cd-book-bar__price-value cd-book-bar__price-value--red cd-book-bar__price-value--sm">{lowestBudget && lowestBudget.min > 0 ? `€${lowestBudget.min.toLocaleString()}` : '？'}</span>
           </div>
           <div className="cd-book-bar__actions">
             <button className="cd-book-bar__consult" onClick={handleConsult}>

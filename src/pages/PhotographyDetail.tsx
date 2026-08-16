@@ -506,7 +506,7 @@ export default function PhotographyDetail() {
           <div className="cd-book-bar__price">
             <span className="cd-book-bar__price-label">价格</span>
             {(detail.price ?? 0) > 0 ? (
-              <span className={`cd-book-bar__price-value cd-book-bar__price-value--gold${(`€${(detail.price ?? 0).toLocaleString()}起`).length > 5 ? ' cd-book-bar__price-value--sm' : ''}`}>€{(detail.price ?? 0).toLocaleString()}起</span>
+              <span className="cd-book-bar__price-value cd-book-bar__price-value--gold cd-book-bar__price-value--sm">€{(detail.price ?? 0).toLocaleString()}起</span>
             ) : (
               <span className="cd-book-bar__price-value cd-book-bar__price-value--gold">需咨询</span>
             )}

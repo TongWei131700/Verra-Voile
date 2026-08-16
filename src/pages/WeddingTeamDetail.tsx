@@ -622,7 +622,7 @@ export default function WeddingTeamDetail() {
           <div className="cd-book-bar__price">
             <span className="cd-book-bar__price-label">起步价</span>
             {(detail!.price ?? 0) > 0 ? (
-              <span className="cd-book-bar__price-value cd-book-bar__price-value--gold">{getCurrencySymbol(detail!.country)}{(detail!.price ?? 0).toLocaleString()}起</span>
+              <span className={`cd-book-bar__price-value cd-book-bar__price-value--gold${(`${getCurrencySymbol(detail!.country)}${(detail!.price ?? 0).toLocaleString()}起`).length > 5 ? ' cd-book-bar__price-value--sm' : ''}`}>{getCurrencySymbol(detail!.country)}{(detail!.price ?? 0).toLocaleString()}起</span>
             ) : (
               <span className="cd-book-bar__price-value cd-book-bar__price-value--gold">需咨询</span>
             )}

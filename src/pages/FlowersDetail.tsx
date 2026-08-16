@@ -661,7 +661,7 @@ export default function FlowersDetail() {
                   <span className="cd-book-bar__price-label">已选 {selectedFlowers.length} 件</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: showFlowerList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
-                <span className="cd-book-bar__price-value cd-book-bar__price-value--gold">£{selectedFlowers.reduce((sum, f) => sum + f.price * f.qty, 0).toLocaleString()}</span>
+                <span className={`cd-book-bar__price-value cd-book-bar__price-value--gold${(`£${selectedFlowers.reduce((sum, f) => sum + f.price * f.qty, 0).toLocaleString()}`).length > 5 ? ' cd-book-bar__price-value--sm' : ''}`}>£{selectedFlowers.reduce((sum, f) => sum + f.price * f.qty, 0).toLocaleString()}</span>
               </>
             ) : (
               <>
@@ -672,7 +672,7 @@ export default function FlowersDetail() {
                   const minP = prices.length > 0 ? Math.min(...prices) : 0
                   const displayPrice = (detail.price ?? 0) > 0 ? (detail.price as number) : minP
                   return displayPrice > 0 ? (
-                    <span className="cd-book-bar__price-value cd-book-bar__price-value--gold">£{displayPrice.toLocaleString()}起</span>
+                    <span className={`cd-book-bar__price-value cd-book-bar__price-value--gold${(`£${displayPrice.toLocaleString()}起`).length > 5 ? ' cd-book-bar__price-value--sm' : ''}`}>£{displayPrice.toLocaleString()}起</span>
                   ) : (
                     <span className="cd-book-bar__price-value cd-book-bar__price-value--gold">需咨询</span>
                   )

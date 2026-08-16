@@ -173,7 +173,7 @@ export default function DressesDetail() {
           <div className="cd-book-bar__price">
             <span className="cd-book-bar__price-label">起步价</span>
             {detail.price ? (
-              <span className="cd-book-bar__price-value cd-book-bar__price-value--red">€{detail.price.toFixed(2)}</span>
+              <span className={`cd-book-bar__price-value cd-book-bar__price-value--red${(`€${detail.price.toFixed(2)}`).length > 5 ? ' cd-book-bar__price-value--sm' : ''}`}>€{detail.price.toFixed(2)}</span>
             ) : (
               <span className="cd-book-bar__price-value cd-book-bar__price-value--red">？</span>
             )}

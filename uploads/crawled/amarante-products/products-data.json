@@ -1,0 +1,388 @@
+{
+  "freshFlowerProducts": [
+    {
+      "slug": "soleil",
+      "name": "Soleil",
+      "name_cn": "日光",
+      "price": 105,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/soleil.jpg"
+    },
+    {
+      "slug": "riviera",
+      "name": "Riviera",
+      "name_cn": "里维埃拉",
+      "price": 125,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/riviera.jpg"
+    },
+    {
+      "slug": "electra",
+      "name": "Electra",
+      "name_cn": "艾蕾克特拉",
+      "price": 95,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/electra.jpg"
+    },
+    {
+      "slug": "sienna",
+      "name": "Sienna",
+      "name_cn": "锡耶纳",
+      "price": 90,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/sienna.jpg"
+    },
+    {
+      "slug": "eden",
+      "name": "Eden",
+      "name_cn": "伊甸",
+      "price": 90,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/eden.jpg"
+    },
+    {
+      "slug": "beloved",
+      "name": "Beloved",
+      "name_cn": "挚爱",
+      "price": 115,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/beloved.jpg"
+    },
+    {
+      "slug": "rosa",
+      "name": "Rosa",
+      "name_cn": "罗莎",
+      "price": 130,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/rosa.jpg"
+    },
+    {
+      "slug": "selene",
+      "name": "Selene",
+      "name_cn": "塞勒涅",
+      "price": 95,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/selene.jpg"
+    },
+    {
+      "slug": "aurora",
+      "name": "Aurora",
+      "name_cn": "极光",
+      "price": 90,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/aurora.jpg"
+    },
+    {
+      "slug": "hera",
+      "name": "Hera",
+      "name_cn": "赫拉",
+      "price": 90,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/hera.jpg"
+    },
+    {
+      "slug": "velvet-initial",
+      "name": "Velvet with Initial",
+      "name_cn": "丝绒字母玫瑰",
+      "price": 225,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/velvet-initial.jpg"
+    },
+    {
+      "slug": "velvet-rose",
+      "name": "Velvet Rose",
+      "name_cn": "丝绒玫瑰",
+      "price": 90,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/velvet-rose.jpg"
+    },
+    {
+      "slug": "velvet-mixed",
+      "name": "Velvet Rose - Mixed",
+      "name_cn": "丝绒玫瑰混合",
+      "price": 90,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/velvet-mixed.jpg"
+    },
+    {
+      "slug": "velvet-pastels",
+      "name": "Velvet Rose - Pastels",
+      "name_cn": "丝绒玫瑰粉彩",
+      "price": 90,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/velvet-pastels.jpg"
+    },
+    {
+      "slug": "celeste",
+      "name": "Celeste Pink Lily",
+      "name_cn": "天蓝粉百合",
+      "price": 65,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/celeste.jpg"
+    },
+    {
+      "slug": "florist-choice",
+      "name": "Florist Choice",
+      "name_cn": "花艺师精选",
+      "price": 55,
+      "price_from": true,
+      "category": "鲜花花束",
+      "image": "/uploads/crawled/amarante-products/florist-choice.jpg"
+    }
+  ],
+  "infinityRoseProducts": [
+    {
+      "slug": "ir-deluxe-black-sq",
+      "name": "80-100 Roses Deluxe Square Black",
+      "name_cn": "80-100支豪华黑色方盒",
+      "price": 625,
+      "image": "/uploads/crawled/amarante-products/ir-deluxe-black-sq.jpg"
+    },
+    {
+      "slug": "ir-super-deluxe-black-rd",
+      "name": "85-100 Roses Super Deluxe Round Black",
+      "name_cn": "85-100支超级豪华黑色圆盒",
+      "price": 825,
+      "image": "/uploads/crawled/amarante-products/ir-super-deluxe-black-rd.jpg"
+    },
+    {
+      "slug": "ir-xl-black-rd",
+      "name": "Extra Large Round Black",
+      "name_cn": "特大黑色圆盒",
+      "price": 295,
+      "image": "/uploads/crawled/amarante-products/ir-xl-black-rd.jpg"
+    },
+    {
+      "slug": "ir-large-white-rd",
+      "name": "Large White Round Matte",
+      "name_cn": "大号白色圆盒",
+      "price": 195,
+      "image": "/uploads/crawled/amarante-products/ir-large-white-rd.jpg"
+    },
+    {
+      "slug": "ir-large-grey-rd",
+      "name": "Large Round Grey Suede",
+      "name_cn": "大号灰色圆盒",
+      "price": 225,
+      "image": "/uploads/crawled/amarante-products/ir-large-grey-rd.jpg"
+    },
+    {
+      "slug": "ir-medium-white-sq",
+      "name": "Medium White Square Matte",
+      "name_cn": "中号白色方盒",
+      "price": 95,
+      "image": "/uploads/crawled/amarante-products/ir-medium-white-sq.jpg"
+    },
+    {
+      "slug": "ir-ultimate-deluxe-black",
+      "name": "140 Roses Ultimate Deluxe Black",
+      "name_cn": "140支至臻豪华黑色盒",
+      "price": 1295,
+      "image": "/uploads/crawled/amarante-products/ir-ultimate-deluxe-black.jpg"
+    },
+    {
+      "slug": "ir-ultimate-deluxe-white",
+      "name": "140 Roses Elegant White",
+      "name_cn": "140支优雅白色盒",
+      "price": 1295,
+      "image": "/uploads/crawled/amarante-products/ir-ultimate-deluxe-white.jpg"
+    },
+    {
+      "slug": "ir-super-deluxe-black-sq2",
+      "name": "120-150 Roses Super Deluxe Square Black",
+      "name_cn": "120-150支超级豪华黑色方盒",
+      "price": 1095,
+      "image": "/uploads/crawled/amarante-products/ir-super-deluxe-black-sq2.jpg"
+    },
+    {
+      "slug": "ir-super-deluxe-grey-sq",
+      "name": "120-150 Roses Super Deluxe Square Grey",
+      "name_cn": "120-150支超级豪华灰色方盒",
+      "price": 1095,
+      "image": "/uploads/crawled/amarante-products/ir-super-deluxe-grey-sq.jpg"
+    },
+    {
+      "slug": "ir-deluxe-grey-sq",
+      "name": "80-100 Roses Deluxe Square Grey",
+      "name_cn": "80-100支豪华灰色方盒",
+      "price": 625,
+      "image": "/uploads/crawled/amarante-products/ir-deluxe-grey-sq.jpg"
+    },
+    {
+      "slug": "ir-super-deluxe-grey-rd",
+      "name": "85-100 Roses Super Deluxe Round Grey",
+      "name_cn": "85-100支超级豪华灰色圆盒",
+      "price": 825,
+      "image": "/uploads/crawled/amarante-products/ir-super-deluxe-grey-rd.jpg"
+    },
+    {
+      "slug": "ir-deluxe-black-rd",
+      "name": "60-70 Roses Deluxe Round Black",
+      "name_cn": "60-70支豪华黑色圆盒",
+      "price": 495,
+      "image": "/uploads/crawled/amarante-products/ir-deluxe-black-rd.jpg"
+    },
+    {
+      "slug": "ir-deluxe-grey-rd",
+      "name": "60-70 Roses Deluxe Round Grey",
+      "name_cn": "60-70支豪华灰色圆盒",
+      "price": 495,
+      "image": "/uploads/crawled/amarante-products/ir-deluxe-grey-rd.jpg"
+    },
+    {
+      "slug": "ir-xl-black-sq",
+      "name": "Extra Large Black Square",
+      "name_cn": "特大黑色方盒",
+      "price": 325,
+      "image": "/uploads/crawled/amarante-products/ir-xl-black-sq.jpg"
+    },
+    {
+      "slug": "ir-xl-grey-sq",
+      "name": "Extra Large Grey Square",
+      "name_cn": "特大灰色方盒",
+      "price": 325,
+      "image": "/uploads/crawled/amarante-products/ir-xl-grey-sq.jpg"
+    },
+    {
+      "slug": "ir-large-black-sq",
+      "name": "Large Black Square Suede",
+      "name_cn": "大号黑色方盒",
+      "price": 250,
+      "image": "/uploads/crawled/amarante-products/ir-large-black-sq.jpg"
+    },
+    {
+      "slug": "ir-large-black-rd",
+      "name": "Large Black Round Suede",
+      "name_cn": "大号黑色圆盒",
+      "price": 225,
+      "image": "/uploads/crawled/amarante-products/ir-large-black-rd.jpg"
+    },
+    {
+      "slug": "ir-large-pink-rd",
+      "name": "Large Pink Round Suede",
+      "name_cn": "大号粉色圆盒",
+      "price": 225,
+      "image": "/uploads/crawled/amarante-products/ir-large-pink-rd.jpg"
+    },
+    {
+      "slug": "ir-large-beige-rd",
+      "name": "Large Beige Round Suede",
+      "name_cn": "大号米色圆盒",
+      "price": 225,
+      "image": "/uploads/crawled/amarante-products/ir-large-beige-rd.jpg"
+    },
+    {
+      "slug": "ir-medium-black-sq",
+      "name": "Medium Black Square Matte",
+      "name_cn": "中号黑色方盒",
+      "price": 95,
+      "image": "/uploads/crawled/amarante-products/ir-medium-black-sq.jpg"
+    },
+    {
+      "slug": "ir-medium-black-rd",
+      "name": "Medium Round Black Suede",
+      "name_cn": "中号黑色圆盒",
+      "price": 150,
+      "image": "/uploads/crawled/amarante-products/ir-medium-black-rd.jpg"
+    },
+    {
+      "slug": "ir-medium-white-rd",
+      "name": "Medium White Round Matte",
+      "name_cn": "中号白色圆盒",
+      "price": 125,
+      "image": "/uploads/crawled/amarante-products/ir-medium-white-rd.jpg"
+    },
+    {
+      "slug": "ir-medium-grey-rd",
+      "name": "Medium Round Grey Suede",
+      "name_cn": "中号灰色圆盒",
+      "price": 150,
+      "image": "/uploads/crawled/amarante-products/ir-medium-grey-rd.jpg"
+    },
+    {
+      "slug": "ir-medium-blue-rd",
+      "name": "Medium Round Royal Blue",
+      "name_cn": "中号宝蓝色圆盒",
+      "price": 150,
+      "image": "/uploads/crawled/amarante-products/ir-medium-blue-rd.jpg"
+    },
+    {
+      "slug": "ir-medium-pink-rd",
+      "name": "Medium Pink Round Suede",
+      "name_cn": "中号粉色圆盒",
+      "price": 150,
+      "image": "/uploads/crawled/amarante-products/ir-medium-pink-rd.jpg"
+    },
+    {
+      "slug": "ir-medium-beige",
+      "name": "Medium Beige Suede",
+      "name_cn": "中号米色盒",
+      "price": 150,
+      "image": "/uploads/crawled/amarante-products/ir-medium-beige.jpg"
+    },
+    {
+      "slug": "ir-small-black-sq",
+      "name": "Small Black Square Matte",
+      "name_cn": "小号黑色方盒",
+      "price": 75,
+      "image": "/uploads/crawled/amarante-products/ir-small-black-sq.jpg"
+    },
+    {
+      "slug": "ir-small-white-sq",
+      "name": "Small White Square Matte",
+      "name_cn": "小号白色方盒",
+      "price": 75,
+      "image": "/uploads/crawled/amarante-products/ir-small-white-sq.jpg"
+    },
+    {
+      "slug": "ir-small-black-rd",
+      "name": "Small Black Round Matte",
+      "name_cn": "小号黑色圆盒",
+      "price": 75,
+      "image": "/uploads/crawled/amarante-products/ir-small-black-rd.jpg"
+    },
+    {
+      "slug": "ir-small-white-rd",
+      "name": "Small White Round Matte",
+      "name_cn": "小号白色圆盒",
+      "price": 75,
+      "image": "/uploads/crawled/amarante-products/ir-small-white-rd.jpg"
+    },
+    {
+      "slug": "ir-small-pink-rd",
+      "name": "Small Pink Round Suede",
+      "name_cn": "小号粉色圆盒",
+      "price": 90,
+      "image": "/uploads/crawled/amarante-products/ir-small-pink-rd.jpg"
+    },
+    {
+      "slug": "ir-small-beige-rd",
+      "name": "Small Beige Round Suede",
+      "name_cn": "小号米色圆盒",
+      "price": 90,
+      "image": "/uploads/crawled/amarante-products/ir-small-beige-rd.jpg"
+    },
+    {
+      "slug": "ir-single",
+      "name": "Single Infinity Rose",
+      "name_cn": "单支永生玫瑰",
+      "price": 45,
+      "image": "/uploads/crawled/amarante-products/ir-single.jpg"
+    }
+  ]
+}

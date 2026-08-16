@@ -22,9 +22,9 @@ API_BASE="http://${SERVER_IP}"
 # ----------------------------
 
 SSH_COMMON_OPTS="-o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=5 -o ConnectTimeout=10"
-SSH_OPTS="${SSH_COMMON_OPTS} -p 59222"
+SSH_OPTS="${SSH_COMMON_OPTS} -p 22"
 SSH_CMD="sshpass -p '${SERVER_PASS}' ssh ${SSH_OPTS} ${SERVER_USER}@${SERVER_IP}"
-SCP_CMD="sshpass -p '${SERVER_PASS}' scp ${SSH_COMMON_OPTS} -P 59222"
+SCP_CMD="sshpass -p '${SERVER_PASS}' scp ${SSH_COMMON_OPTS} -P 22"
 
 run_remote() {
   eval "${SSH_CMD} \"$1\""

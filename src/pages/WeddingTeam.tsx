@@ -2,15 +2,82 @@ import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
-import { weddingTeamCompanies, type WeddingTeamCompany } from '../data/weddingTeamCompanies'
 import { getSelectedProducts } from '../utils/selectedProducts'
 import { proxyImage } from '../utils/imageProxy'
-import heroImg from '../assets/wedding-team-hero.png'
+import heroImg from '../assets/wedding-team-hero-bg.jpg'
 
-const allCompanies: WeddingTeamCompany[] = weddingTeamCompanies
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
+// 列表项（与 API 返回字段对应）
+interface WeddingTeamCompany {
+  slug: string
+  name: string
+  nameEn: string
+  country: string
+  countryEn: string
+  city: string
+  cityEn: string
+  tagline: string
+  desc: string
+  foundedYear: number
+  cover: string
+  headshot?: string
+  images: string[]
+  website: string
+  source: { name: string; url: string }
+  specialties: string[]
+  teamMembers: any[]
+  services: any[]
+  serviceAreas: { name: string; nameCn: string }[]
+  testimonials: any[]
+  partners: any[]
+  faq: any[]
+  price?: number
+}
+
+function getCurrencySymbol(country: string) {
+  return country === 'United Kingdom' ? '£' : '€'
+}
+
+// 模块级缓存：从详情返回列表页时复用，避免重复请求
+let _cachedCompanies: WeddingTeamCompany[] | null = null
+
+// 将 API 返回的 snake_case 数据转为前端 camelCase
+function mapApiItem(row: any): WeddingTeamCompany {
+  let specialties: string[] = []
+  let serviceAreas: any[] = []
+  try { specialties = typeof row.specialties === 'string' ? JSON.parse(row.specialties) : (row.specialties || []) } catch { /* ignore */ }
+  try { serviceAreas = typeof row.service_areas === 'string' ? JSON.parse(row.service_areas) : (row.service_areas || []) } catch { /* ignore */ }
+  return {
+    slug: row.slug,
+    name: row.name_cn || row.name,
+    nameEn: row.name,
+    country: row.country_cn || row.country || '',
+    countryEn: row.country || '',
+    city: row.city_cn || row.city || '',
+    cityEn: row.city || '',
+    tagline: row.tagline || '',
+    desc: row.description_preview || '',
+    foundedYear: row.founded_year || 0,
+    cover: row.cover_image || '',
+    headshot: row.headshot || '',
+    images: [],
+    website: row.website || '',
+    source: { name: row.source_url || '', url: row.source_url || '' },
+    specialties,
+    teamMembers: [],
+    services: [],
+    serviceAreas: serviceAreas.map((a: any) => ({ name: a.name, nameCn: a.name_cn })),
+    testimonials: [],
+    partners: [],
+    faq: [],
+    price: row.price ?? undefined,
+  }
+}
+
 const HERO_IMG = heroImg
 
-// 从数据中提取去重后的选项列表
+// 从数据中动态提取去重后的选项列表
 function extractUnique<T>(companies: WeddingTeamCompany[], getter: (c: WeddingTeamCompany) => T | T[]): T[] {
   const set = new Set<T>()
   companies.forEach(c => {
@@ -23,6 +90,8 @@ function extractUnique<T>(companies: WeddingTeamCompany[], getter: (c: WeddingTe
 
 export default function WeddingTeam() {
   const navigate = useNavigate()
+  const [allCompanies, setAllCompanies] = useState<WeddingTeamCompany[]>([])
+  const [dataLoading, setDataLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchSubmitted, setSearchSubmitted] = useState(false)
   const [searchFilter, setSearchFilter] = useState('')
@@ -41,6 +110,27 @@ export default function WeddingTeam() {
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
   const [listLoading, setListLoading] = useState(false)
 
+  // 从 API 加载数据（有缓存则复用）
+  useEffect(() => {
+    if (_cachedCompanies) {
+      setAllCompanies(_cachedCompanies)
+      setDataLoading(false)
+      return
+    }
+    setDataLoading(true)
+    fetch(`${API_BASE}/api/products/crawled-wedding-teams`)
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && Array.isArray(res.data)) {
+          const items = res.data.map(mapApiItem)
+          _cachedCompanies = items
+          setAllCompanies(items)
+        }
+      })
+      .catch(err => console.error('加载婚礼团队列表失败:', err))
+      .finally(() => setDataLoading(false))
+  }, [])
+
   // 刷新已预定状态
   const refreshBooked = useCallback(() => {
     const items = getSelectedProducts().filter(i => i.categoryId === 'wedding-team')
@@ -57,8 +147,8 @@ export default function WeddingTeam() {
   }, [refreshBooked])
 
   // 从数据中动态提取筛选项
-  const allCountries = useMemo(() => extractUnique(allCompanies, c => c.country), [])
-  const allSpecialties = useMemo(() => extractUnique(allCompanies, c => c.specialties), [])
+  const allCountries = useMemo(() => extractUnique(allCompanies, c => c.country), [allCompanies])
+  const allSpecialties = useMemo(() => extractUnique(allCompanies, c => c.specialties), [allCompanies])
 
   const filteredList = useMemo(() => {
     let list = allCompanies
@@ -80,7 +170,7 @@ export default function WeddingTeam() {
       )
     }
     return list
-  }, [selectedCountries, selectedSpecialties, searchFilter])
+  }, [selectedCountries, selectedSpecialties, searchFilter, allCompanies])
 
   // 搜索推荐条目
   const searchSuggestions = useMemo(() => {
@@ -249,6 +339,42 @@ export default function WeddingTeam() {
           </p>
         </div>
       </section>
+
+      {/* 骨架屏 */}
+      {dataLoading && (
+        <div className="wt-skeleton-overlay">
+          <div className="wt-skeleton-search">
+            <div className="wt-skeleton-search-bar" />
+          </div>
+          <div className="wt-skeleton-layout">
+            <aside className="wt-skeleton-sidebar">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="wt-skeleton-filter-group">
+                  <div className="wt-skeleton-filter-header" />
+                  <div className="wt-skeleton-filter-items">
+                    {Array.from({ length: 4 }).map((_, j) => (
+                      <div key={j} className="wt-skeleton-filter-item" />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </aside>
+            <div className="wt-skeleton-cards">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="cd-card cd-card--skeleton">
+                  <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
+                  <div className="cd-card__body">
+                    <div className="cd-skeleton__line cd-skeleton__title" />
+                    <div className="cd-skeleton__line cd-skeleton__tagline" />
+                    <div className="cd-skeleton__line cd-skeleton__text--short" />
+                    <div className="cd-skeleton__line cd-skeleton__price" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 搜索框 */}
       <div className="cd-search-bar" ref={searchRef}>
@@ -515,13 +641,14 @@ export default function WeddingTeam() {
                       <div className="cd-card__body">
                         <h3 className="cd-card__name">{item.name}</h3>
                         <p className="cd-card__tagline">{item.tagline}</p>
+                        <p className="cd-card__desc">{item.desc}</p>
                         <div className="cd-card__styles">
                           {item.specialties.slice(0, 3).map(s => (
                             <span key={s} className="cd-card__style-tag">{s}</span>
                           ))}
                         </div>
                         <div className="cd-card__footer">
-                          <span className="cd-card__price">{item.price ? `€${item.price.toLocaleString()}起` : '需咨询'}</span>
+                          <span className="cd-card__price">{item.price ? `${getCurrencySymbol(item.country)}${item.price.toLocaleString()}起` : '需咨询'}</span>
                           <span className="cd-card__arrow">查看详情 →</span>
                         </div>
                       </div>
@@ -550,13 +677,14 @@ export default function WeddingTeam() {
                           <div className="cd-card__body">
                             <h3 className="cd-card__name">{item.name}</h3>
                             <p className="cd-card__tagline">{item.tagline}</p>
+                            <p className="cd-card__desc">{item.desc}</p>
                             <div className="cd-card__styles">
                               {item.specialties.slice(0, 3).map(s => (
                                 <span key={s} className="cd-card__style-tag">{s}</span>
                               ))}
                             </div>
                             <div className="cd-card__footer">
-                              <span className="cd-card__price">{item.price ? `€${item.price.toLocaleString()}起` : '需咨询'}</span>
+                              <span className="cd-card__price">{item.price ? `${getCurrencySymbol(item.country)}${item.price.toLocaleString()}起` : '需咨询'}</span>
                               <span className="cd-card__arrow">查看详情 →</span>
                             </div>
                           </div>
@@ -591,13 +719,14 @@ export default function WeddingTeam() {
                     <div className="cd-card__body">
                       <h3 className="cd-card__name">{item.name}</h3>
                       <p className="cd-card__tagline">{item.tagline}</p>
+                      <p className="cd-card__desc">{item.desc}</p>
                       <div className="cd-card__styles">
                         {item.specialties.slice(0, 3).map(s => (
                           <span key={s} className="cd-card__style-tag">{s}</span>
                         ))}
                       </div>
                       <div className="cd-card__footer">
-                        <span className="cd-card__price">{item.price ? `€${item.price.toLocaleString()}起` : '需咨询'}</span>
+                        <span className="cd-card__price">{item.price ? `${getCurrencySymbol(item.country)}${item.price.toLocaleString()}起` : '需咨询'}</span>
                         <span className="cd-card__arrow">查看详情 →</span>
                       </div>
                     </div>

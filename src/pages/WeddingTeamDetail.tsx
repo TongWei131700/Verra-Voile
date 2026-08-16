@@ -3,9 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
-import { weddingTeamCompanies } from '../data/weddingTeamCompanies'
 import { proxyImage } from '../utils/imageProxy'
 import ewLogo from '../assets/europewedding-logo.png'
+import defaultHeadshot from '../assets/default-headshot.jpg'
 
 function isLoggedIn() {
   return !!localStorage.getItem('token')
@@ -13,9 +13,146 @@ function isLoggedIn() {
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
+// API 返回的详情数据
+interface ApiTeamDetail {
+  slug: string
+  name: string
+  name_cn: string
+  source_url: string
+  country: string
+  country_cn: string
+  city: string
+  city_cn: string
+  tagline: string
+  description: string
+  story: string
+  founded_year: number | null
+  team_members: any[] | string
+  services: any[] | string
+  service_areas: any[] | string
+  specialties: string[] | string
+  testimonials: any[] | string
+  faq: any[] | string
+  partners: any[] | string
+  images: string[] | string
+  cover_image: string
+  headshot: string
+  website: string
+  price: number | null
+}
+
+// 前端组件使用的格式
+interface TeamDetail {
+  slug: string
+  name: string
+  nameEn: string
+  country: string
+  countryEn: string
+  city: string
+  cityEn: string
+  tagline: string
+  desc: string
+  foundedYear: number
+  cover: string
+  headshot?: string
+  images: string[]
+  website: string
+  source: { name: string; url: string }
+  specialties: string[]
+  teamMembers: { name: string; nameCn: string; role: string; roleCn: string; description: string; descriptionCn: string; image: string; link?: string }[]
+  services: { title: string; titleCn: string; items: { label: string; labelCn: string; desc?: string; descCn?: string }[] }[]
+  serviceAreas: { name: string; nameCn: string }[]
+  testimonials: { couple: string; text: string; textCn: string }[]
+  partners: { name: string; role: string }[]
+  faq: { q: string; a: string }[]
+  price?: number
+}
+
+function getCurrencySymbol(country: string) {
+  return country === 'United Kingdom' ? '£' : '€'
+}
+
+function parseJsonField<T>(field: T | string | null): T {
+  if (!field) return [] as any
+  if (typeof field === 'string') {
+    try { return JSON.parse(field) } catch { return [] as any }
+  }
+  return field as T
+}
+
+function mapApiDetail(item: ApiTeamDetail): TeamDetail {
+  const teamMembers = parseJsonField<any[]>(item.team_members).map((m: any) => ({
+    name: m.name || '',
+    nameCn: m.name_cn || '',
+    role: m.role || '',
+    roleCn: m.role_cn || '',
+    description: m.description || '',
+    descriptionCn: m.description_cn || '',
+    image: m.image || '',
+    link: m.link || '',
+  }))
+  const services = parseJsonField<any[]>(item.services).map((g: any) => ({
+    title: g.title || '',
+    titleCn: g.title_cn || '',
+    items: (g.items || []).map((it: any) => ({
+      label: it.label || '',
+      labelCn: it.label_cn || '',
+      desc: it.desc || '',
+      descCn: it.desc_cn || '',
+    })),
+  }))
+  const serviceAreas = parseJsonField<any[]>(item.service_areas).map((a: any) => ({
+    name: a.name || '',
+    nameCn: a.name_cn || '',
+  }))
+  const testimonials = parseJsonField<any[]>(item.testimonials).map((t: any) => ({
+    couple: t.couple || '',
+    text: t.text || '',
+    textCn: t.text_cn || '',
+  }))
+  const faq = parseJsonField<any[]>(item.faq).map((f: any) => ({
+    q: f.q_cn || f.q || '',
+    a: f.a_cn || f.a || '',
+  }))
+  const partners = parseJsonField<any[]>(item.partners)
+  const images = parseJsonField<string[]>(item.images)
+  const specialties = parseJsonField<string[]>(item.specialties)
+
+  return {
+    slug: item.slug,
+    name: item.name_cn || item.name,
+    nameEn: item.name,
+    country: item.country_cn || item.country,
+    countryEn: item.country,
+    city: item.city_cn || item.city,
+    cityEn: item.city,
+    tagline: item.tagline || '',
+    desc: item.description || '',
+    foundedYear: item.founded_year || 0,
+    cover: item.cover_image || '',
+    headshot: item.headshot || '',
+    images,
+    website: item.website || '',
+    source: {
+      name: item.source_url ? item.source_url.replace(/https?:\/\/([^/]+).*/, '$1') : '',
+      url: item.source_url || '',
+    },
+    specialties,
+    teamMembers,
+    services,
+    serviceAreas,
+    testimonials,
+    partners,
+    faq,
+    price: item.price ?? undefined,
+  }
+}
+
 export default function WeddingTeamDetail() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
+  const [detail, setDetail] = useState<TeamDetail | null>(null)
+  const [dataLoading, setDataLoading] = useState(true)
   const [scrollY, setScrollY] = useState(0)
   const [showBar, setShowBar] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
@@ -23,24 +160,58 @@ export default function WeddingTeamDetail() {
   const [heroSlide, setHeroSlide] = useState(0)
   const [heroPrev, setHeroPrev] = useState<number | null>(null)
   const [heroPaused, setHeroPaused] = useState(false)
-  const [heroLightbox, setHeroLightbox] = useState(false)
   const [galleryPage, setGalleryPage] = useState(1)
   const [galleryLoading, setGalleryLoading] = useState(false)
   const [gallerySuppressUntil, setGallerySuppressUntil] = useState(0)
   const [galleryTick, setGalleryTick] = useState(0)
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
+  const [galleryCols, setGalleryCols] = useState(3)
   const [isBooking, setIsBooking] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
   const [openFaq, setOpenFaq] = useState<Set<number>>(new Set())
+  const [showAllMembers, setShowAllMembers] = useState(false)
+  const [showAllServices, setShowAllServices] = useState(false)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const observerRef = useRef<IntersectionObserver | null>(null)
   const aboutRef = useRef<HTMLElement>(null)
+  const heroRef = useRef<HTMLElement>(null)
 
-  const detail = weddingTeamCompanies.find(c => c.slug === slug) || null
+
+  // 从 API 获取详情数据
+  useEffect(() => {
+    if (!slug) return
+    let cancelled = false
+    setDataLoading(true)
+    fetch(`${API_BASE}/api/products/crawled-wedding-teams/${slug}`)
+      .then(res => res.json())
+      .then(json => {
+        if (cancelled) return
+        if (json.success && json.data) {
+          setDetail(mapApiDetail(json.data))
+        } else {
+          setDetail(null)
+        }
+      })
+      .catch(err => {
+        console.error('获取婚礼团队详情失败:', err)
+        if (!cancelled) setDetail(null)
+      })
+      .finally(() => { if (!cancelled) setDataLoading(false) })
+    return () => { cancelled = true }
+  }, [slug])
 
   // 检查是否已预定
   useEffect(() => {
     if (detail) setIsBooked(isProductSelected('wedding-team', detail.slug))
   }, [detail])
+
+  // 响应列数：宽屏 3 列，窄屏 2 列，手机 1 列
+  useEffect(() => {
+    const update = () => setGalleryCols(window.innerWidth >= 1100 ? 3 : window.innerWidth >= 500 ? 2 : 1)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
   // "查看更多"点击后延迟出现
   useEffect(() => {
@@ -74,7 +245,7 @@ export default function WeddingTeamDetail() {
           name: detail.name,
           nameEn: detail.nameEn,
           price: detail.price || 0,
-          unit: '€',
+          unit: getCurrencySymbol(detail.country),
           image: detail.cover,
         })
         setIsBooked(true)
@@ -96,7 +267,7 @@ export default function WeddingTeamDetail() {
         name: detail.name,
         nameEn: detail.nameEn,
         price: detail.price || 0,
-        unit: '€',
+        unit: getCurrencySymbol(detail.country),
         image: detail.cover,
       })
     }
@@ -164,6 +335,15 @@ export default function WeddingTeamDetail() {
     })
   }
 
+  if (dataLoading) {
+    return (
+      <div className="cd-page">
+        <button className="cd-back" onClick={() => navigate('/wedding-team')}>← 返回列表</button>
+        <div className="cd-loading"><p>加载中…</p></div>
+      </div>
+    )
+  }
+
   if (!detail) {
     return (
       <div className="cd-page">
@@ -175,191 +355,194 @@ export default function WeddingTeamDetail() {
 
   return (
     <div className="cd-page">
-      {/* ===== 1. Hero 区域 ===== */}
-      <section className="wt-hero">
-        <div className="wt-hero__card">
-          {/* 左侧：作品轮播 */}
-          <div className="wt-hero__carousel">
-            {detail.images.slice(0, 3).map((img, i) => (
-              <div
-                key={i}
-                className={`wt-hero__slide${i === heroSlide ? ' wt-hero__slide--active' : ''}${i === heroPrev ? ' wt-hero__slide--prev' : ''}`}
-              >
-                <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${i + 1}`} className="wt-hero__img" onClick={() => setHeroLightbox(true)} style={{ cursor: 'zoom-in' }} />
-              </div>
-            ))}
-            <button className="wt-hero__arrow wt-hero__arrow--left" onClick={() => goHeroSlide((heroSlide - 1 + 3) % 3)}>
-              <svg width="24" height="24" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
-            </button>
-            <button className="wt-hero__arrow wt-hero__arrow--right" onClick={() => goHeroSlide((heroSlide + 1) % 3)}>
-              <svg width="24" height="24" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
-            </button>
-            <div className="wt-hero__dots">
-              {detail.images.slice(0, 3).map((_, i) => (
-                <button key={i} className={`wt-hero__dot${i === heroSlide ? ' wt-hero__dot--active' : ''}`} onClick={() => goHeroSlide(i)} />
-              ))}
+      {/* ===== 1. Hero 区域：全屏图片 + 居中信息 ===== */}
+      <section className="wt-hero" ref={heroRef}>
+        {/* 全屏背景轮播 */}
+        <div className="wt-hero__bg">
+          {detail.images.slice(0, 3).map((img, i) => (
+            <div
+              key={i}
+              className={`wt-hero__slide${i === heroSlide ? ' wt-hero__slide--active' : ''}${i === heroPrev ? ' wt-hero__slide--prev' : ''}`}
+            >
+              <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${i + 1}`} className="wt-hero__img" />
             </div>
-          </div>
+          ))}
+          {/* 渐变遮罩 */}
+          <div className="wt-hero__overlay" />
 
-          {/* Lightbox */}
-          {heroLightbox && (
-            <div className="photo-hero__lightbox" onClick={() => setHeroLightbox(false)}>
-              <button className="photo-hero__lightbox-close" onClick={() => setHeroLightbox(false)}>
-                <svg width="28" height="28" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#fff" strokeWidth="2" fill="none" /></svg>
-              </button>
-              <button className="photo-hero__lightbox-arrow photo-hero__lightbox-arrow--left" onClick={e => { e.stopPropagation(); goHeroSlide((heroSlide - 1 + 3) % 3) }}>
-                <svg width="28" height="28" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="#fff" strokeWidth="2" fill="none" /></svg>
-              </button>
-              <img src={proxyImage(detail.images[heroSlide])} alt="" className="photo-hero__lightbox-img" onClick={e => e.stopPropagation()} />
-              <button className="photo-hero__lightbox-arrow photo-hero__lightbox-arrow--right" onClick={e => { e.stopPropagation(); goHeroSlide((heroSlide + 1) % 3) }}>
-                <svg width="28" height="28" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="#fff" strokeWidth="2" fill="none" /></svg>
-              </button>
-              <div className="photo-hero__lightbox-counter">{heroSlide + 1} / 3</div>
+          {/* 已加入意向单标记 */}
+          {isBooked && (
+            <div className="photo-booked-badge">
+              <svg className="photo-booked-badge__svg" viewBox="0 0 80 80" width="120" height="120">
+                <path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <path d="M14 50 C10 46, 9 40, 12 35" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
+                <path d="M60 62 C72 52, 76 38, 68 24 C64 17, 58 12, 50 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <path d="M66 50 C70 46, 71 40, 68 35" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
+                <ellipse cx="11" cy="44" rx="3" ry="1.5" transform="rotate(-30 11 44)" fill="currentColor" opacity="0.15"/>
+                <ellipse cx="69" cy="44" rx="3" ry="1.5" transform="rotate(30 69 44)" fill="currentColor" opacity="0.15"/>
+                <circle cx="40" cy="8" r="1.5" fill="currentColor" opacity="0.3"/>
+              </svg>
+              <div className="photo-booked-badge__check">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <span className="photo-booked-badge__text">已加入意向单</span>
             </div>
           )}
+        </div>
 
-          {/* 右侧：公司信息面板 */}
-          <div className={`wt-hero__info${isBooked ? ' wt-hero__info--booked' : ''}`}>
-            {isBooked && (
-              <div className="photo-booked-badge">
-                <svg className="photo-booked-badge__svg" viewBox="0 0 80 80" width="120" height="120">
-                  <path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-                  <path d="M14 50 C10 46, 9 40, 12 35" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
-                  <path d="M60 62 C72 52, 76 38, 68 24 C64 17, 58 12, 50 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-                  <path d="M66 50 C70 46, 71 40, 68 35" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
-                  <ellipse cx="11" cy="44" rx="3" ry="1.5" transform="rotate(-30 11 44)" fill="currentColor" opacity="0.15"/>
-                  <ellipse cx="69" cy="44" rx="3" ry="1.5" transform="rotate(30 69 44)" fill="currentColor" opacity="0.15"/>
-                  <circle cx="40" cy="8" r="1.5" fill="currentColor" opacity="0.3"/>
+        {/* 返回按钮 */}
+        <BackButton to="/wedding-team" />
+
+        {/* 居中信息面板 */}
+        <div className={`wt-hero__info${isBooked ? ' wt-hero__info--booked' : ''}`}>
+          <div className="wt-hero__headshot">
+            <FallbackImage src={proxyImage(detail.headshot || detail.cover)} alt={detail.nameEn} className="wt-hero__headshot-img" />
+          </div>
+          <div className="wt-hero__meta">
+            <span className="wt-hero__badge">
+              {detail.country}{detail.city ? ` · ${detail.city}` : ''}
+              {detail.foundedYear ? ` · 成立于${detail.foundedYear}` : ''}
+            </span>
+            <h1 className="wt-hero__name">{detail.name}</h1>
+            <p className="wt-hero__name-en">{detail.nameEn}</p>
+            <div className="wt-hero__divider" />
+            <p className="wt-hero__tagline">{detail.tagline}</p>
+            {detail.website && (
+              <a href={detail.website} target="_blank" rel="noreferrer" className="wt-hero__website">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z" />
                 </svg>
-                <div className="photo-booked-badge__check">
-                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <span className="photo-booked-badge__text">已加入意向单</span>
-              </div>
+                Visit Website
+              </a>
             )}
-            <BackButton to="/wedding-team" />
-            <div className="wt-hero__headshot">
-              <FallbackImage src={proxyImage(detail.headshot || detail.cover)} alt={detail.nameEn} className="wt-hero__headshot-img" />
-            </div>
-            <div className="wt-hero__meta">
-              <span className="wt-hero__badge">
-                {detail.country}{detail.city ? ` · ${detail.city}` : ''}
-                {detail.foundedYear ? ` · 成立于${detail.foundedYear}` : ''}
-              </span>
-              <h1 className="wt-hero__name">{detail.name}</h1>
-              <p className="wt-hero__name-en">{detail.nameEn}</p>
-              <div className="wt-hero__divider" />
-              <p className="wt-hero__tagline">{detail.tagline}</p>
-              {detail.website && (
-                <a href={detail.website} target="_blank" rel="noreferrer" className="wt-hero__website">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z" />
-                  </svg>
-                  Visit Website
-                </a>
-              )}
-            </div>
           </div>
         </div>
+
+        {/* 向下引导线 */}
+        <div className="wt-hero__scroll-hint">
+          <div className="wt-hero__scroll-line" />
+          <span className="wt-hero__scroll-text">Scroll</span>
+        </div>
+
+        {/* 预定/取消加载动画 */}
+        {(isBooking || isCanceling) && (
+          <div className="photo-booking-overlay">
+            <div className="photo-booking-gift">
+              <div className="photo-booking-gift__lid" />
+              <div className="photo-booking-gift__box">
+                <img src={ewLogo} alt="" className="photo-booking-gift__logo" />
+              </div>
+              <div className="photo-booking-gift__sparkles">
+                <span /><span /><span /><span /><span /><span />
+              </div>
+            </div>
+            <p className="photo-booking-text">{isCanceling ? '正在移出意向单…' : '正在加入意向单…'}</p>
+          </div>
+        )}
       </section>
 
       {/* ===== 内容区 ===== */}
       <div className="cd-content">
 
-        {/* 2. 公司介绍 */}
-        <section className="cd-about wt-about" ref={aboutRef}>
+        {/* 2. 关于我们 */}
+        <section className="cd-about photo-about" ref={aboutRef}>
           <h2 className="cd-about__title">关于我们</h2>
           <div className="cd-about__divider" />
-          <div className="cd-about__body">
-            {detail.desc.split('\n\n').map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-          </div>
+          <p className="photo-about__text">{detail.desc}</p>
         </section>
 
-        {/* 3. 品牌故事 */}
-        {detail.story && (
-          <section className="cd-block cd-block--alt">
-            <h2 className="cd-block__title">品牌故事</h2>
-            <div className="cd-about__body">
-              {detail.story.split('\n\n').map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </div>
-          </section>
-        )}
-
         {/* 4. 团队成员 */}
-        {detail.teamMembers?.length > 0 && (
-          <section className="cd-block">
+        {detail.teamMembers?.length > 0 && (() => {
+          const isNarrow = window.innerWidth <= 900
+          const visible = isNarrow && !showAllMembers ? detail.teamMembers.slice(0, 6) : detail.teamMembers
+          const hasMore = isNarrow && detail.teamMembers.length > 6
+          return (
+          <section className="cd-block wt-team-section">
             <h2 className="cd-block__title">团队成员</h2>
-            <div className="wt-team-grid">
-              {detail.teamMembers.map((m, i) => (
-                <div key={i} className="wt-team-card">
-                  <div className="wt-team-card__avatar">
-                    {m.image ? (
-                      <FallbackImage src={proxyImage(m.image)} alt={m.nameCn || m.name} className="wt-team-card__photo" />
-                    ) : (
-                      <div className="wt-team-card__initial">{(m.nameCn || m.name || '?')[0]}</div>
-                    )}
-                  </div>
-                  <h3 className="wt-team-card__name">{m.nameCn || m.name}</h3>
-                  <p className="wt-team-card__role">{m.roleCn || m.role}</p>
-                  <p className="wt-team-card__desc">{m.description}</p>
-                </div>
-              ))}
+            <div className="wt-team-wrapper">
+              <div className="wt-team-grid">
+                {visible.map((m, i) => {
+                  const memberLink = m.link || detail.source.url || '#'
+                  return (
+                    <div key={i} className="wt-team-card">
+                      <a href={memberLink} target="_blank" rel="noopener noreferrer" className="wt-team-card__avatar-link">
+                        <div className="wt-team-card__avatar">
+                          <FallbackImage src={m.image ? proxyImage(m.image) : defaultHeadshot} alt={m.nameCn || m.name} className="wt-team-card__photo" />
+                        </div>
+                      </a>
+                      <h3 className="wt-team-card__name">{m.nameCn || m.name}</h3>
+                      <p className="wt-team-card__role">{m.roleCn || m.role}</p>
+                      <p className="wt-team-card__desc">{m.descriptionCn || m.description}</p>
+                      <a className="wt-team-card__link" href={memberLink} target="_blank" rel="noopener noreferrer">
+                        查看主页
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </a>
+                    </div>
+                  )
+                })}
+              </div>
+              {hasMore && !showAllMembers && (
+                <>
+                  <div className="photo-gallery__fade" />
+                  <button className="wt-team-card__more" onClick={() => setShowAllMembers(true)}>查看更多</button>
+                </>
+              )}
             </div>
           </section>
-        )}
+          )
+        })()}
 
         {/* 5. 服务项目 */}
-        {detail.services?.length > 0 && (
+        {detail.services?.length > 0 && (() => {
+          const isNarrow = window.innerWidth <= 900
+          const visibleServices = isNarrow && !showAllServices ? detail.services.slice(0, 2) : detail.services
+          const hasMoreServices = isNarrow && detail.services.length > 2
+          return (
           <section className="wt-services">
             <h2 className="cd-block__title">服务项目</h2>
-            <div className="wt-services__grid">
-              {detail.services.map((group, gi) => (
-                <div key={gi} className="wt-services__group">
-                  <h3 className="wt-services__group-title">{group.titleCn}</h3>
-                  <p className="wt-services__group-en">{group.title}</p>
-                  <ul className="wt-services__list">
-                    {group.items.map((item, ii) => (
-                      <li key={ii} className="wt-services__item">
-                        <svg className="wt-services__check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                        <span className="wt-services__content">
-                          <span className="wt-services__label">{item.labelCn}</span>
-                          {item.desc && <span className="wt-services__desc">{item.desc}</span>}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            <div className="wt-services__wrapper">
+              <div className="wt-services__grid">
+                {visibleServices.map((group, gi) => (
+                  <div key={gi} className="wt-services__group">
+                    <h3 className="wt-services__group-title">{group.titleCn}</h3>
+                    <p className="wt-services__group-en">{group.title}</p>
+                    <ul className="wt-services__list">
+                      {group.items.map((item, ii) => (
+                        <li key={ii} className="wt-services__item">
+                          <svg className="wt-services__check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                          <span className="wt-services__content">
+                            <span className="wt-services__label">{item.labelCn}</span>
+                            {item.desc && <span className="wt-services__desc">{item.descCn || item.desc}</span>}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              {hasMoreServices && !showAllServices && (
+                <>
+                  <div className="photo-gallery__fade" />
+                  <button className="wt-team-card__more" onClick={() => setShowAllServices(true)}>查看更多</button>
+                </>
+              )}
             </div>
           </section>
-        )}
-
-        {/* 6. 服务地区 */}
-        {detail.serviceAreas?.length > 0 && (
-          <section className="cd-block">
-            <h2 className="cd-block__title">服务地区</h2>
-            <div className="cd-chips">
-              {detail.serviceAreas.map((a, i) => (
-                <span key={i} className="cd-chip cd-chip--location">
-                  {a.nameCn}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
+          )
+        })()}
 
         {/* 7. 作品集 */}
         {(() => {
           const galleryImages = detail.images.slice(3) // 跳过 Hero 前3张
           if (galleryImages.length === 0) return null
-          const perPage = 6
+          const perPage = galleryCols * 3
           const visibleCount = galleryPage * perPage
           const hasMore = visibleCount < galleryImages.length
           const visibleImages = galleryImages.slice(0, visibleCount)
@@ -378,32 +561,21 @@ export default function WeddingTeamDetail() {
               <h2 className="cd-block__title">作品集</h2>
               <div className="wt-portfolio__wrapper">
                 <div className="wt-portfolio__columns">
-                  <div className="wt-portfolio__col">
-                    {visibleImages.filter((_, i) => i % 2 === 0).map((img, idx) => {
-                      const origIdx = idx * 2
-                      return (
-                        <div key={origIdx} className="wt-portfolio__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
-                          <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 4}`} className="wt-portfolio__img" />
-                        </div>
-                      )
-                    })}
-                    {galleryLoading && Array.from({ length: 3 }).map((_, i) => (
-                      <div key={`s-l-${i}`} className="wt-portfolio__skeleton"><div className="wt-portfolio__skeleton-inner" /></div>
-                    ))}
-                  </div>
-                  <div className="wt-portfolio__col">
-                    {visibleImages.filter((_, i) => i % 2 === 1).map((img, idx) => {
-                      const origIdx = idx * 2 + 1
-                      return (
-                        <div key={origIdx} className="wt-portfolio__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
-                          <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 4}`} className="wt-portfolio__img" />
-                        </div>
-                      )
-                    })}
-                    {galleryLoading && Array.from({ length: 3 }).map((_, i) => (
-                      <div key={`s-r-${i}`} className="wt-portfolio__skeleton"><div className="wt-portfolio__skeleton-inner" /></div>
-                    ))}
-                  </div>
+                  {Array.from({ length: galleryCols }).map((_, colIdx) => (
+                    <div key={colIdx} className="wt-portfolio__col">
+                      {visibleImages.filter((_: string, i: number) => i % galleryCols === colIdx).map((img: string, idx: number) => {
+                        const origIdx = idx * galleryCols + colIdx
+                        return (
+                          <div key={origIdx} className="wt-portfolio__item" onClick={() => setGalleryLightbox(origIdx)} style={{ cursor: 'zoom-in' }}>
+                            <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${origIdx + 4}`} className="wt-portfolio__img" />
+                          </div>
+                        )
+                      })}
+                      {galleryLoading && Array.from({ length: 3 }).map((_, i) => (
+                        <div key={`s-${colIdx}-${i}`} className="wt-portfolio__skeleton"><div className="wt-portfolio__skeleton-inner" /></div>
+                      ))}
+                    </div>
+                  ))}
                 </div>
                 {hasMore && !galleryLoading && Date.now() >= gallerySuppressUntil && (galleryTick || true) && (
                   <>
@@ -442,72 +614,15 @@ export default function WeddingTeamDetail() {
           )
         })()}
 
-        {/* 8. 客户评价 */}
-        {detail.testimonials?.length > 0 && (
-          <section className="cd-block cd-block--alt">
-            <h2 className="cd-block__title">客户评价</h2>
-            <div className="wt-testimonials">
-              {detail.testimonials.map((t, i) => (
-                <div key={i} className="wt-testimonial">
-                  <p className="wt-testimonial__text">"{t.textCn || t.text}"</p>
-                  <p className="wt-testimonial__couple">— {t.couple}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 9. FAQ */}
-        {detail.faq?.length > 0 && (
-          <section className="cd-faq">
-            <h2 className="cd-block__title">常见问题</h2>
-            <p className="cd-faq__subtitle">{detail.name} 常见问题</p>
-            <div className="cd-faq__accordion">
-              {detail.faq.map((item, i) => (
-                <div key={i} className={`cd-faq__item${openFaq.has(i) ? ' cd-faq__item--open' : ''}`}>
-                  <button className="cd-faq__question" onClick={() => toggleFaq(i)}>
-                    <span>{item.q}</span>
-                    <svg className={`cd-faq__arrow${openFaq.has(i) ? ' cd-faq__arrow--open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
-                  </button>
-                  {openFaq.has(i) && (
-                    <div className="cd-faq__answer"><p>{item.a}</p></div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 10. 媒体报道 */}
-        {detail.partners?.length > 0 && (
-          <section className="cd-block">
-            <h2 className="cd-block__title">媒体报道</h2>
-            <div className="wt-partners">
-              {detail.partners.map((p, i) => (
-                <div key={i} className="wt-partner">
-                  <span className="wt-partner__name">{p.name}</span>
-                  <span className="wt-partner__role">{p.role}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 来源 */}
-        <section className="cd-source">
-          <p>数据来源：<a href={detail.source.url} target="_blank" rel="noreferrer">{detail.source.name}</a></p>
-        </section>
       </div>
 
       {/* ===== 底部预定栏 ===== */}
-      <div className={`cd-book-bar${showBar ? ' cd-book-bar--visible' : ''}`}>
+      {(detail?.price !== undefined) && <div className={`cd-book-bar${showBar ? ' cd-book-bar--visible' : ''}`}>
         <div className="cd-book-bar__inner">
           <div className="cd-book-bar__price">
             <span className="cd-book-bar__price-label">起步价</span>
-            {(detail.price ?? 0) > 0 ? (
-              <span className="cd-book-bar__price-value cd-book-bar__price-value--gold">€{(detail.price ?? 0).toLocaleString()}起</span>
+            {(detail!.price ?? 0) > 0 ? (
+              <span className="cd-book-bar__price-value cd-book-bar__price-value--gold">{getCurrencySymbol(detail!.country)}{(detail!.price ?? 0).toLocaleString()}起</span>
             ) : (
               <span className="cd-book-bar__price-value cd-book-bar__price-value--gold">需咨询</span>
             )}
@@ -528,7 +643,7 @@ export default function WeddingTeamDetail() {
             </button>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* 登录弹窗 */}
       {showLoginModal && (
@@ -543,21 +658,6 @@ export default function WeddingTeamDetail() {
         </>
       )}
 
-      {/* 预定/取消加载动画 */}
-      {(isBooking || isCanceling) && (
-        <div className="photo-booking-overlay">
-          <div className="photo-booking-gift">
-            <div className="photo-booking-gift__lid" />
-            <div className="photo-booking-gift__box">
-              <img src={ewLogo} alt="" className="photo-booking-gift__logo" />
-            </div>
-            <div className="photo-booking-gift__sparkles">
-              <span /><span /><span /><span /><span /><span />
-            </div>
-          </div>
-          <p className="photo-booking-text">{isCanceling ? '正在移出意向单…' : '正在加入意向单…'}</p>
-        </div>
-      )}
     </div>
   )
 }

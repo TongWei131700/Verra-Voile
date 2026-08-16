@@ -23,7 +23,6 @@ export default function BackButton({ to = '/' }: BackButtonProps) {
   }, [])
 
   const handleBack = () => {
-    // 导航前保存当前页面的滚动位置
     window.__saveScrollPos?.(location.pathname)
     navigate(to)
   }

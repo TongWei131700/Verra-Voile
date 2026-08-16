@@ -54,7 +54,36 @@ scp /tmp/verra-voile-end.tar.gz root@47.99.138.250:/tmp/
 ssh -o StrictHostKeyChecking=no root@47.99.138.250 "cd /var/www/verra-voile-end && rm -rf src package.json package-lock.json && tar -xzf /tmp/verra-voile-end.tar.gz && npm install --production 2>&1 | tail -5 && echo DEPLOY_OK"
 ```
 
-### 5. 停止服务并释放端口
+### 5. 同步爬取图片到服务器（⚠️ 必须执行！）
+
+后端打包时 `--exclude='uploads'` 会跳过图片目录，因此每次部署后必须同步本地新增的爬取图片。
+使用 `rsync -avz` 增量同步，已存在的文件会自动跳过，不会重复上传。
+
+```bash
+# 5a. 同步后端场地图片（Verra-Voile-End/uploads/crawled/ 下除 photographers 外的所有目录）
+rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" \
+  --exclude='photographers' --exclude='._*' \
+  /Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/ \
+  root@47.99.138.250:/var/www/verra-voile-end/uploads/crawled/
+
+# 5b. 同步前端摄影师图片（Verra-Voile/uploads/crawled/photographers/）
+rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" \
+  --exclude='._*' \
+  /Users/hongli/WorkSpace/Verra-Voile/uploads/crawled/photographers/ \
+  root@47.99.138.250:/var/www/verra-voile-end/uploads/crawled/photographers/
+```
+
+> **说明**：rsync 会自动对比文件大小和时间戳，已有文件全部跳过（显示 `skipping`），仅传输新增/变更的文件。首次同步可能较慢，后续增量同步通常只需几秒。
+>
+> **⚠️ 如果 rsync 不可用或网络不稳定**，改用打包方案：
+> ```bash
+> # 本地打包 → 上传 → 服务器解压
+> tar -czf /tmp/venue-images.tar.gz -C /Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled . --exclude='photographers' --exclude='._*'
+> scp /tmp/venue-images.tar.gz root@47.99.138.250:/tmp/
+> ssh root@47.99.138.250 "cd /var/www/verra-voile-end/uploads/crawled && tar -xzf /tmp/venue-images.tar.gz"
+> ```
+
+### 6. 停止服务并释放端口
 
 **必须先杀端口再重启**，否则旧进程占用端口 3000 会导致 EADDRINUSE 错误，服务陷入崩溃循环：
 
@@ -62,7 +91,7 @@ ssh -o StrictHostKeyChecking=no root@47.99.138.250 "cd /var/www/verra-voile-end 
 ssh -o StrictHostKeyChecking=no root@47.99.138.250 "pm2 stop verra-voile-api 2>/dev/null; sleep 1; fuser -k 3000/tcp 2>/dev/null; sleep 2 && echo PORT_CLEARED"
 ```
 
-### 6. 启动服务
+### 7. 启动服务
 
 端口释放后再启动，避免端口冲突：
 
@@ -70,7 +99,7 @@ ssh -o StrictHostKeyChecking=no root@47.99.138.250 "pm2 stop verra-voile-api 2>/
 ssh -o StrictHostKeyChecking=no root@47.99.138.250 "pm2 restart verra-voile-api && sleep 3 && curl -s http://localhost:3000/health"
 ```
 
-### 7. 同步本地数据库到服务器
+### 8. 同步本地数据库到服务器
 
 将本地 `verra_voile` 数据库的**全量业务表**导出并导入服务器，确保线上数据与本地一致：
 
@@ -122,7 +151,7 @@ ssh -o StrictHostKeyChecking=no root@47.99.138.250 "mysql -h 127.0.0.1 -P 3306 -
 >
 > **⚠️ 踩坑记录**：数据库导出和前端上传不要放在同一个 Bash 命令中用 `&&` 串联，否则前端上传耗时过长时数据库导出可能被静默跳过。必须作为独立步骤分别执行。
 
-### 8. 检查 Nginx 配置清洁度
+### 9. 检查 Nginx 配置清洁度
 
 **⚠️ 必须执行！** 每次部署前后都要检查 `sites-enabled/` 下是否有冲突的配置文件（如 `.bak` 文件），否则会导致前端页面无法访问。
 
@@ -136,7 +165,7 @@ ssh -o StrictHostKeyChecking=no root@47.99.138.250 "rm -f /etc/nginx/sites-enabl
 
 > **踩坑记录**：`sites-enabled/` 下同时存在 `verra-voile` 和 `verra-voile.bak` 两个文件，两者监听相同端口和 server_name，导致 Nginx 路由冲突，前端页面返回 404。
 
-### 9. 验证部署
+### 10. 验证部署
 
 **必须验证所有关键 API 端点**，不能只检查 health：
 
@@ -156,7 +185,7 @@ ssh -o StrictHostKeyChecking=no root@47.99.138.250 "tail -10 /root/.pm2/logs/ver
 
 确认所有端点返回 200，且 PM2 错误日志无新增 `ER_NO_SUCH_TABLE` 等数据库错误。
 
-### 10. Git 版本控制（部署完成后执行）
+### 11. Git 版本控制（部署完成后执行）
 
 部署成功后，将所有改动（包括部署过程中产生的新文件）提交并切换新分支：
 
@@ -212,6 +241,7 @@ cd /var/www/verra-voile-end && pm2 start src/index.js --name verra-voile-api && 
 | 3 | 数据库导出静默失败 | 和前端上传用 `&&` 串联，上传耗时导致导出被跳过 | 每个操作**独立执行**，不要用 `&&` 串联长时间命令 |
 | 4 | SSH 命令使用 expect 但服务器已启用密钥认证 | 旧模板未更新 | 后端 SSH 直接用 `ssh/scp`，无需 expect |
 | 5 | PM2 进程名写错（`verra-api` vs `verra-voile-api`） | 命令中进程名与实际不一致 | 统一使用 `verra-voile-api`，操作前先 `pm2 list` 确认 |
+| 6 | 部署后图片 404（摄影师/场地图片缺失） | 后端打包 `--exclude='uploads'` 跳过了图片目录，新增的图片未上传到服务器 | 每次部署后用 **rsync 增量同步** `uploads/crawled/` 目录（步骤 5），已有文件自动跳过不会重复上传 |
 
 ## 输出
 
@@ -222,4 +252,5 @@ cd /var/www/verra-voile-end && pm2 start src/index.js --name verra-voile-api && 
 - 健康检查 HTTP 响应
 - 数据库同步结果（记录条数对比）
 - PM2 进程状态
+- 图片同步结果（rsync 增量同步，新增文件数）
 - Nginx 配置清洁度检查结果

@@ -10132,6 +10132,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   width: 100%;
   min-height: 110vh;
   min-height: 110svh;
+  min-height: calc(var(--vh, 1vh) * 110);
 }
 .wt-hero__bg {
   position: absolute;
@@ -10257,6 +10258,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .wt-hero__scroll-hint {
   position: absolute;
   bottom: calc(10svh + 40px);
+  bottom: calc(var(--vh, 1vh) * 10 + 40px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
@@ -10674,6 +10676,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 @media (max-width: 900px) {
   .wt-hero {
     min-height: 110svh;
+    min-height: calc(var(--vh, 1vh) * 110);
   }
   .wt-hero__info {
     width: 92%;

@@ -8801,6 +8801,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 /* 骨架屏容器：复用 nh-intro 布局但不可滚动 */
 .nh-skeleton-intro {
   height: 100vh;
+  height: 100dvh;
   height: 100svh;
   overflow-x: hidden;
   overflow-y: hidden;
@@ -8812,6 +8813,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 /* 主体容器：滚动吸附，每行占满整屏 */
 .nh-intro {
   height: 100vh;
+  height: 100dvh;
   height: 100svh;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
@@ -8827,6 +8829,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 /* 桌面端：每屏三块面板并排，整行占满全屏 */
 .nh-desktop-only {
   height: 100vh;
+  height: 100dvh;
   height: 100svh;
   width: 100%;
   display: flex;
@@ -8837,6 +8840,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .nh-item {
   flex: 1;
   height: 100vh;
+  height: 100dvh;
   height: 100svh;
   display: flex;
   flex-direction: column;
@@ -8902,6 +8906,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .nh-mobile-only {
   position: relative;
   height: 100vh;
+  height: 100dvh;
   height: 100svh;
   width: 100%;
   display: none;

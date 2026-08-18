@@ -6137,21 +6137,10 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 /* ===== 列表卡片 ===== */
 .cd-list {
   flex: 1; min-width: 0;
-  display: flex; flex-wrap: wrap; gap: 28px;
   display: grid; grid-template-columns: 1fr; gap: 28px;
 }
-.cd-list > * { flex: 1 1 280px; }
-.cd-list > .cd-section-label,
-.cd-list > .cd-filter__empty,
-.cd-list > .cd-load-sentinel,
-.cd-list > .cd-load-end { flex-basis: 100%; max-width: 100%; }
 @media (min-width: 640px) {
   .cd-list { grid-template-columns: repeat(2, 1fr); }
-  .cd-list > * { flex-basis: calc(50% - 14px); max-width: calc(50% - 14px); }
-  .cd-list > .cd-section-label,
-  .cd-list > .cd-filter__empty,
-  .cd-list > .cd-load-sentinel,
-  .cd-list > .cd-load-end { flex-basis: 100%; max-width: 100%; }
 }
 
 /* 分区标签 */
@@ -6316,6 +6305,41 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   grid-column: 1 / -1; text-align: center; padding: 32px 20px;
   color: var(--muted); font-size: 13px; letter-spacing: 2px;
   opacity: 0.7;
+}
+
+/* 旧浏览器降级：不支持 CSS Grid 时用 inline-block 多列布局 */
+@supports not (display: grid) {
+  .cd-list {
+    display: block; font-size: 0; text-align: justify;
+    margin: -14px; padding: 0;
+  }
+  .cd-list > * {
+    display: inline-block; vertical-align: top;
+    width: 100%; font-size: 16px; text-align: left;
+    margin: 14px; box-sizing: border-box;
+  }
+  .cd-list > .cd-section-label,
+  .cd-list > .cd-filter__empty,
+  .cd-list > .cd-load-sentinel,
+  .cd-list > .cd-load-end {
+    display: block; width: 100%; margin: 14px 14px 0;
+  }
+  .cd-list > .cd-load-sentinel { margin: 14px 14px 0; height: 1px; }
+  @media (min-width: 640px) {
+    .cd-list > .cd-card,
+    .cd-list > .cd-section-label,
+    .cd-list > .cd-filter__empty,
+    .cd-list > .cd-load-sentinel,
+    .cd-list > .cd-load-end {
+      width: calc(50% - 28px);
+    }
+    .cd-list > .cd-section-label,
+    .cd-list > .cd-filter__empty,
+    .cd-list > .cd-load-sentinel,
+    .cd-list > .cd-load-end {
+      width: 100%; display: block;
+    }
+  }
 }
 
 /* ===== 回到顶部按钮 ===== */
@@ -6616,14 +6640,27 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 
 /* 并排布局 */
 .cd-duo {
-  display: flex; flex-wrap: wrap; gap: 40px;
   display: grid; grid-template-columns: 1fr; gap: 40px;
   padding: 50px 0; border-top: 1px solid #eee;
 }
-.cd-duo > * { flex: 1 1 280px; }
 @media (min-width: 640px) {
   .cd-duo { grid-template-columns: 1fr 1fr; }
-  .cd-duo > * { flex-basis: calc(50% - 20px); max-width: calc(50% - 20px); }
+}
+
+/* 旧浏览器降级 */
+@supports not (display: grid) {
+  .cd-duo {
+    display: block; font-size: 0; text-align: justify;
+    margin: -20px; padding: 50px 0;
+  }
+  .cd-duo > * {
+    display: inline-block; vertical-align: top;
+    width: 100%; font-size: 16px; text-align: left;
+    margin: 20px; box-sizing: border-box;
+  }
+  @media (min-width: 640px) {
+    .cd-duo > * { width: calc(50% - 40px); }
+  }
 }
 
 /* 亮点列表 */

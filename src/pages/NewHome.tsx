@@ -49,6 +49,16 @@ export default function NewHome() {
   const [userAccount, setUserAccount] = useState('')
   const mainRef = useRef<HTMLElement>(null)
 
+  // 兼容旧浏览器：JS 动态设置 --vh 变量（解决 dvh/svh 不支持的问题）
+  useEffect(() => {
+    const setVh = () => {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`)
+    }
+    setVh()
+    window.addEventListener('resize', setVh)
+    return () => window.removeEventListener('resize', setVh)
+  }, [])
+
   // 首页滚动位置记忆：持续追踪并保存到 sessionStorage
   useEffect(() => {
     const el = mainRef.current

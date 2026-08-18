@@ -90,6 +90,16 @@ function ScrollRestoration() {
 }
 
 export default function App() {
+  // 全局兼容旧浏览器：JS 动态设置 --vh 变量（解决 100vh 在某些浏览器不准确的问题）
+  useEffect(() => {
+    const setVh = () => {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`)
+    }
+    setVh()
+    window.addEventListener('resize', setVh)
+    return () => window.removeEventListener('resize', setVh)
+  }, [])
+
   return (
     <>
       <ScrollRestoration />

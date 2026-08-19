@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
-import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
+import { setSelectedItem, removeSelectedProduct } from '../utils/selectedProducts'
 import { proxyImage } from '../utils/imageProxy'
 import ewLogo from '../assets/europewedding-logo.png'
 import defaultHeadshot from '../assets/default-headshot.jpg'
@@ -39,7 +39,6 @@ interface FloristDetail {
   pricingComparison: { service: string; traditional: string; amarante: string }[]
   weddingVenues: { name: string; nameCn: string; image: string }[]
   weddingStories: { venue: string; venueCn: string; tagline: string; taglineCn: string; image: string }[]
-  freshFlowerProducts: { slug: string; name: string; nameCn: string; price: number; priceFrom: boolean; category: string; image: string; desc: string; descCn: string }[]
   infinityRoseProducts: { slug: string; name: string; nameCn: string; price: number; image: string; desc: string; descCn: string }[]
   testimonials: { couple: string; text: string; textCn: string }[]
   faq: { q: string; a: string }[]
@@ -79,11 +78,6 @@ function mapApiDetail(item: any): FloristDetail {
   const weddingStories = parseJsonField<any[]>(item.wededing_stories || item.wedding_stories).map((s: any) => ({
     venue: s.venue || '', venueCn: s.venue_cn || '',
     tagline: s.tagline || '', taglineCn: s.tagline_cn || '', image: s.image || '',
-  }))
-  const freshFlowerProducts = parseJsonField<any[]>(item.fresh_flower_products).map((p: any) => ({
-    slug: p.slug || '', name: p.name || '', nameCn: p.name_cn || '',
-    price: p.price || 0, priceFrom: !!p.price_from, category: p.category || '',
-    image: p.image || '', desc: p.desc || '', descCn: p.desc_cn || '',
   }))
   const infinityRoseProducts = parseJsonField<any[]>(item.infinity_rose_products).map((p: any) => ({
     slug: p.slug || '', name: p.name || '', nameCn: p.name_cn || '', price: p.price || 0,
@@ -128,7 +122,6 @@ function mapApiDetail(item: any): FloristDetail {
     pricingComparison,
     weddingVenues,
     weddingStories,
-    freshFlowerProducts,
     infinityRoseProducts,
     testimonials,
     faq,
@@ -147,7 +140,9 @@ export default function FlowersDetail() {
   const [scrollY, setScrollY] = useState(0)
   const [showBar, setShowBar] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
-  const [isBooked, setIsBooked] = useState(false)
+  const [isBooked, setIsBooked] = useState(() => {
+    return sessionStorage.getItem(`flower_wishlist_${slug}`) !== null
+  })
   const [heroSlide, setHeroSlide] = useState(0)
   const [heroPrev, setHeroPrev] = useState<number | null>(null)
   const [heroPaused, setHeroPaused] = useState(false)
@@ -165,17 +160,22 @@ export default function FlowersDetail() {
   const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set())
   const [modalProduct, setModalProduct] = useState<{ nameCn: string; name: string; price: number; priceFrom?: boolean; image: string; desc: string; descCn: string; category?: string } | null>(null)
   const [modalQty, setModalQty] = useState(1)
-  const [selectedFlowers, setSelectedFlowers] = useState<{ nameCn: string; name: string; price: number; qty: number; image: string }[]>([])
+  const [selectedFlowers, setSelectedFlowers] = useState<{ nameCn: string; name: string; price: number; qty: number; image: string }[]>(() => {
+    try {
+      const raw = sessionStorage.getItem(`selected_flowers_${slug}`)
+      return raw ? JSON.parse(raw) : []
+    } catch { return [] }
+  })
   const [showFlowerList, setShowFlowerList] = useState(false)
   const [zoomImage, setZoomImage] = useState<string | null>(null)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // 已选花朵清空时同步移出意向单状态
+  // 已选花朵变化时持久化到 sessionStorage
   useEffect(() => {
-    if (selectedFlowers.length === 0 && isBooked) {
-      setIsBooked(false)
+    if (slug) {
+      sessionStorage.setItem(`selected_flowers_${slug}`, JSON.stringify(selectedFlowers))
     }
-  }, [selectedFlowers, isBooked])
+  }, [selectedFlowers, slug])
 
   // 弹窗打开时锁定背景滚动
   useEffect(() => {
@@ -210,10 +210,12 @@ export default function FlowersDetail() {
     return () => { cancelled = true }
   }, [slug])
 
-  // 检查是否已预定
+  // 检查是否已预定（从 sessionStorage 意向单读取）
   useEffect(() => {
-    if (detail) setIsBooked(isProductSelected('floral', detail.slug))
-  }, [detail])
+    if (detail && slug) {
+      setIsBooked(sessionStorage.getItem(`flower_wishlist_${slug}`) !== null)
+    }
+  }, [detail, slug])
 
   // 响应列数
   useEffect(() => {
@@ -242,6 +244,11 @@ export default function FlowersDetail() {
       window.scrollTo({ top: 0, behavior: 'smooth' })
       setTimeout(() => {
         removeSelectedProduct('floral', detail.slug)
+        setSelectedFlowers([])
+        if (detail.slug) {
+          sessionStorage.removeItem(`selected_flowers_${detail.slug}`)
+          sessionStorage.removeItem(`flower_wishlist_${detail.slug}`)
+        }
         setIsBooked(false)
         setIsCanceling(false)
       }, 1200)
@@ -258,6 +265,19 @@ export default function FlowersDetail() {
           unit: '£',
           image: detail.cover,
         })
+        // 存储到统一意向单格式
+        if (detail.slug) {
+          const wishlistItem = {
+            slug: detail.slug,
+            name: detail.nameEn,
+            nameCn: detail.name,
+            image: detail.cover,
+            type: 'service' as const,
+            price: detail.price || 0,
+            addedAt: Date.now()
+          }
+          sessionStorage.setItem(`flower_wishlist_${detail.slug}`, JSON.stringify(wishlistItem))
+        }
         setIsBooked(true)
         setIsBooking(false)
       }, 1500)
@@ -502,72 +522,51 @@ export default function FlowersDetail() {
 
 
 
-        {/* 9. 鲜花产品（含永生玫瑰） */}
+        {/* 9. 永生玫瑰产品 */}
         {(() => {
-          const hasProducts = detail.freshFlowerProducts?.length > 0 || detail.infinityRoseProducts?.length > 0
-          if (!hasProducts) return null
-          // 按品类分组：鲜花产品 + 永生玫瑰
-          const categoryMap = new Map<string, { nameCn: string; name: string; price: number; priceFrom?: boolean; image: string; desc: string; descCn: string }[]>()
-          detail.freshFlowerProducts?.forEach(p => {
-            const cat = p.category || '其他'
-            if (cat === '定制') return
-            if (!categoryMap.has(cat)) categoryMap.set(cat, [])
-            categoryMap.get(cat)!.push(p)
-          })
-          if (detail.infinityRoseProducts?.length > 0) {
-            categoryMap.set('永生玫瑰', detail.infinityRoseProducts.map(p => ({ ...p, priceFrom: false })))
-          }
-          const categories = Array.from(categoryMap.entries())
-          // 检查某产品是否已选中
+          if (!detail.infinityRoseProducts?.length) return null
           const isSelected = (nameCn: string) => selectedFlowers.some(f => f.nameCn === nameCn)
-          // 排序：已选中的排前面
-          const sortProducts = (products: typeof categories[0][1]) => {
-            return [...products].sort((a, b) => {
-              const aS = isSelected(a.nameCn) ? 0 : 1
-              const bS = isSelected(b.nameCn) ? 0 : 1
-              return aS - bS
-            })
-          }
+          const sorted = [...detail.infinityRoseProducts].sort((a, b) => {
+            const aS = isSelected(a.nameCn) ? 0 : 1
+            const bS = isSelected(b.nameCn) ? 0 : 1
+            return aS - bS
+          })
           return (
           <section className="cd-block" style={{ marginTop: '2rem' }}>
-            <h2 className="cd-block__title">鲜花花束系列</h2>
-            <p style={{ textAlign: 'center', fontSize: '0.85rem', opacity: 0.6, marginBottom: '2rem' }}>伦敦全区当日手工送达 · 当季鲜花精心扎制</p>
-            {categories.map(([cat, products], ci) => {
-              const sorted = sortProducts(products)
-              return (
-              <div key={ci} className="floral-category">
-                <h3 className="floral-category__title">{cat}</h3>
-                <div className="floral-scroll-row">
-                  {sorted.map((p, i) => {
-                    const selected = isSelected(p.nameCn)
-                    const selItem = selectedFlowers.find(f => f.nameCn === p.nameCn)
-                    return (
-                    <div key={i} className={`floral-scroll-card${selected ? ' floral-scroll-card--selected' : ''}`} onClick={() => { setModalProduct(p); setModalQty(selItem?.qty || 1) }}>
-                      {selected && (
-                        <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 2, background: '#a07c3a', color: '#fff', fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 3, boxShadow: '0 2px 8px rgba(160,124,58,0.3)' }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                          ×{selItem?.qty}
-                        </div>
-                      )}
-                      {p.image && (
-                        <div className="floral-scroll-card__img">
-                          <img src={p.image} alt={p.nameCn} loading="lazy" />
-                        </div>
-                      )}
-                      <div className="floral-scroll-card__body">
-                        <p className="floral-scroll-card__name">{p.nameCn}</p>
-                        <p className="floral-scroll-card__name-en">{p.name}</p>
-                        <hr className="floral-scroll-card__divider" />
-                        <p className="floral-scroll-card__price">
-                          £{p.price}{p.priceFrom && <small> 起</small>}
-                        </p>
+            <h2 className="cd-block__title">永生玫瑰系列</h2>
+            <div className="floral-scroll-row">
+              {sorted.map((p, i) => {
+                const selected = isSelected(p.nameCn)
+                const selItem = selectedFlowers.find(f => f.nameCn === p.nameCn)
+                return (
+                  <div key={i} className={`floral-scroll-card${selected ? ' floral-scroll-card--selected' : ''}`} onClick={() => { setModalProduct(p); setModalQty(selItem?.qty || 1) }}>
+                    {selected && (
+                      <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 2, background: '#a07c3a', color: '#fff', fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 3, boxShadow: '0 2px 8px rgba(160,124,58,0.3)' }}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
+                        ×{selItem?.qty}
                       </div>
+                    )}
+                    {p.image && (
+                      <div className="floral-scroll-card__img">
+                        <img src={p.image} alt={p.nameCn} loading="lazy" />
+                      </div>
+                    )}
+                    <div className="floral-scroll-card__body">
+                      <p className="floral-scroll-card__name">{p.nameCn}</p>
+                      <p className="floral-scroll-card__name-en">{p.name}</p>
+                      <hr className="floral-scroll-card__divider" />
+                      <p className="floral-scroll-card__price">
+                        {selected && selItem ? (
+                          <>£{(p.price * selItem.qty).toLocaleString()}</>
+                        ) : (
+                          <>£{p.price}</>
+                        )}
+                      </p>
                     </div>
-                  )})}
-                </div>
-              </div>
-              )
-            })}
+                  </div>
+                )
+              })}
+            </div>
           </section>
           )
         })()}
@@ -667,10 +666,7 @@ export default function FlowersDetail() {
               <>
                 <span className="cd-book-bar__price-label">起步价</span>
                 {(() => {
-                  const allProds = [...(detail.freshFlowerProducts || []), ...(detail.infinityRoseProducts || [])]
-                  const prices = allProds.map(p => p.price).filter(p => p > 0)
-                  const minP = prices.length > 0 ? Math.min(...prices) : 0
-                  const displayPrice = (detail.price ?? 0) > 0 ? (detail.price as number) : minP
+                  const displayPrice = detail.price ?? 0
                   return displayPrice > 0 ? (
                     <span className="cd-book-bar__price-value cd-book-bar__price-value--gold cd-book-bar__price-value--sm">£{displayPrice.toLocaleString()}起</span>
                   ) : (
@@ -753,7 +749,7 @@ export default function FlowersDetail() {
       {modalProduct && (
         <>
           <div className="product-modal-backdrop" onClick={() => setModalProduct(null)} />
-          <div className="product-modal">
+          <div className="product-modal" onClick={(e) => e.stopPropagation()}>
             <button className="product-modal__close" onClick={() => setModalProduct(null)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>

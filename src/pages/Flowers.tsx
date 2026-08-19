@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { getSelectedProducts } from '../utils/selectedProducts'
@@ -63,6 +63,7 @@ function extractUnique<T>(items: FloristCompany[], getter: (c: FloristCompany) =
 
 export default function Flowers() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [allCompanies, setAllCompanies] = useState<FloristCompany[]>([])
   const [dataLoading, setDataLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -79,22 +80,23 @@ export default function Flowers() {
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
-  const ITEMS_PER_PAGE = 6
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
-  const [listLoading, setListLoading] = useState(false)
+  const ITEMS_PER_SECTION = 6 // 每个模块初始显示数量（3行×2列）
+  const [serviceVisibleCount, setServiceVisibleCount] = useState(ITEMS_PER_SECTION)
+  const [productVisibleCount, setProductVisibleCount] = useState(ITEMS_PER_SECTION)
 
   // 从 API 加载数据
   useEffect(() => {
     setDataLoading(true)
-    fetch(`${API_BASE}/api/products/crawled-florists`)
-      .then(r => r.json())
-      .then(res => {
-        if (res.success && Array.isArray(res.data)) {
-          setAllCompanies(res.data.map(mapApiItem))
-        }
-      })
-      .catch(err => console.error('加载花店列表失败:', err))
-      .finally(() => setDataLoading(false))
+    Promise.all([
+      fetch(`${API_BASE}/api/products/crawled-florists?type=service`).then(r => r.json()),
+      fetch(`${API_BASE}/api/products/crawled-florists?type=product`).then(r => r.json()),
+    ]).then(([serviceRes, productRes]) => {
+      const serviceCompanies = serviceRes.success && Array.isArray(serviceRes.data) ? serviceRes.data.map(mapApiItem) : []
+      const productCompanies = productRes.success && Array.isArray(productRes.data) ? productRes.data.map(mapApiItem) : []
+      setAllCompanies([...serviceCompanies, ...productCompanies])
+    })
+    .catch(err => console.error('加载花店列表失败:', err))
+    .finally(() => setDataLoading(false))
   }, [])
 
   // 刷新已预定状态
@@ -138,6 +140,94 @@ export default function Flowers() {
     return list
   }, [selectedCountries, selectedSpecialties, searchFilter, allCompanies])
 
+  // 按类型分组
+  const serviceList = useMemo(() => filteredList.filter(c => !c.slug.includes('florajet')), [filteredList])
+  const productList = useMemo(() => filteredList.filter(c => c.slug.includes('florajet')), [filteredList])
+
+  // Florajet 商品列表（从 API 动态获取）
+  const [florajetProducts, setFlorajetProducts] = useState<any[]>([])
+  // 跟踪已加入意向单的商品
+  const [bookedProducts, setBookedProducts] = useState<Set<string>>(() => {
+    const booked = new Set<string>()
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i)
+      if (key?.startsWith('flower_wishlist_')) {
+        const slug = key.replace('flower_wishlist_', '')
+        booked.add(slug)
+      }
+    }
+    return booked
+  })
+  // 意向单商品详细数据
+  const [wishlistItems, setWishlistItems] = useState<any[]>(() => {
+    const items: any[] = []
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i)
+      if (key?.startsWith('flower_wishlist_')) {
+        try {
+          items.push(JSON.parse(sessionStorage.getItem(key)!))
+        } catch {}
+      }
+    }
+    return items
+  })
+  
+  useEffect(() => {
+    fetch(`${API_BASE}/api/products/crawled-florists/florajet`)
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && res.data) {
+          const products = res.data.fresh_flower_products || []
+          const parsed = typeof products === 'string' ? JSON.parse(products) : products
+          setFlorajetProducts(parsed)
+        }
+      })
+      .catch(err => console.error('加载 Florajet 商品失败:', err))
+  }, [])
+
+  // 监听页面可见性变化和浏览器返回，从详情页返回时刷新意向单状态
+  useEffect(() => {
+    const refreshBooked = () => {
+      const booked = new Set<string>()
+      const items: any[] = []
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i)
+        if (key?.startsWith('flower_wishlist_')) {
+          const slug = key.replace('flower_wishlist_', '')
+          booked.add(slug)
+          try { items.push(JSON.parse(sessionStorage.getItem(key)!)) } catch {}
+        }
+      }
+      setBookedProducts(booked)
+      setWishlistItems(items)
+    }
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') refreshBooked()
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('popstate', refreshBooked)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('popstate', refreshBooked)
+    }
+  }, [])
+
+  // 路由变化时刷新意向单状态（从详情页 navigate 返回时触发）
+  useEffect(() => {
+    const booked = new Set<string>()
+    const items: any[] = []
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i)
+      if (key?.startsWith('flower_wishlist_')) {
+        const slug = key.replace('flower_wishlist_', '')
+        booked.add(slug)
+        try { items.push(JSON.parse(sessionStorage.getItem(key)!)) } catch {}
+      }
+    }
+    setBookedProducts(booked)
+    setWishlistItems(items)
+  }, [location.pathname])
+
   // 搜索推荐条目
   const searchSuggestions = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
@@ -157,14 +247,10 @@ export default function Flowers() {
     return items.slice(0, 10)
   }, [searchQuery, allCountries, allSpecialties])
 
-  const bookedList = useMemo(() => filteredList.filter(c => bookedSlugs.has(c.slug)), [filteredList, bookedSlugs])
-  const otherList = useMemo(() => filteredList.filter(c => !bookedSlugs.has(c.slug)), [filteredList, bookedSlugs])
-  const visibleOtherList = useMemo(() => otherList.slice(0, visibleCount), [otherList, visibleCount])
-  const hasMoreItems = visibleCount < otherList.length
-
-  // 筛选变化时重置分页
+  // 筛选变化时重置各模块显示数量
   useEffect(() => {
-    setVisibleCount(ITEMS_PER_PAGE)
+    setServiceVisibleCount(ITEMS_PER_SECTION)
+    setProductVisibleCount(ITEMS_PER_SECTION)
   }, [selectedCountries, selectedSpecialties, searchFilter])
 
   const totalFilters = selectedCountries.size + selectedSpecialties.size + (searchFilter ? 1 : 0)
@@ -238,24 +324,6 @@ export default function Flowers() {
     el.addEventListener('wheel', preventScroll, { passive: false })
     return () => el.removeEventListener('wheel', preventScroll)
   }, [])
-
-  // 无限滚动
-  useEffect(() => {
-    const onScroll = () => {
-      if (listLoading || !hasMoreItems) return
-      const scrollBottom = window.innerHeight + window.scrollY
-      const docHeight = document.documentElement.scrollHeight
-      if (scrollBottom >= docHeight - 400) {
-        setListLoading(true)
-        setTimeout(() => {
-          setVisibleCount(prev => prev + ITEMS_PER_PAGE)
-          setListLoading(false)
-        }, 400)
-      }
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [hasMoreItems, listLoading])
 
   // 回车确认搜索
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
@@ -574,35 +642,80 @@ export default function Flowers() {
         <div className="cd-list">
           {filteredList.length > 0 ? (
             <>
-              {bookedList.length > 0 ? (
+              {/* 意向单栏目 */}
+              {wishlistItems.length > 0 && (
                 <>
-                  {/* 已预定区域 */}
+                  <div className="cd-section-label">
+                    <span className="cd-section-label__icon">♡</span>
+                    <span>我的意向单</span>
+                    <span className="cd-section-label__count">{wishlistItems.length}</span>
+                  </div>
+                  <div className="cd-wishlist-grid">
+                    {wishlistItems.map((item) => (
+                      <div
+                        key={item.slug}
+                        className="cd-card cd-card--booked"
+                        onClick={() => navigate(item.type === 'service' ? `/flowers/${item.slug}` : `/flowers/product/${item.slug}`)}
+                      >
+                        <div className="cd-card__img-wrap">
+                          <FallbackImage
+                            src={item.image?.startsWith('/') ? `${API_BASE}${item.image}` : (item.image?.startsWith('http') ? item.image : `${API_BASE}${item.image}`)}
+                            alt={item.nameCn}
+                            className="cd-card__img"
+                          />
+                          <div className="cd-card__img-overlay" />
+                          <div className="cd-card__booked-badge">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          </div>
+                        </div>
+                        <div className="cd-card__body">
+                          <h3 className="cd-card__name">{item.nameCn}</h3>
+                          <p className="cd-card__tagline">{item.name}</p>
+                          {item.type === 'product' && item.formules && (
+                            <p className="cd-card__desc" style={{ fontSize: '0.78rem', color: '#888' }}>
+                              {Object.values(item.formules).map((f: any) => `${f.name} ×${f.qty}`).join('、')}
+                            </p>
+                          )}
+                          <div className="cd-card__footer">
+                            <span className="cd-card__price">
+                              {item.type === 'service' 
+                                ? (item.price ? `£${item.price.toLocaleString()}起` : '需咨询')
+                                : `€${(item.totalPrice || 0).toFixed(2)}`
+                              }
+                            </span>
+                            <span className="cd-card__arrow">查看 →</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Section 1: 花艺服务团队 - 过滤已加入意向单的商品 */}
+              {(() => {
+                const allServices = serviceList.filter(item => !bookedProducts.has(item.slug))
+                const hasMore = serviceVisibleCount < allServices.length
+                const visibleServices = allServices.slice(0, serviceVisibleCount)
+                return visibleServices.length > 0 ? (
+                <>
                   <div className="cd-section-label">
                     <span className="cd-section-label__icon">✦</span>
-                    <span>意向单</span>
-                    <span className="cd-section-label__count">{bookedList.length}</span>
+                    <span>花艺服务团队</span>
+                    <span className="cd-section-label__count">{allServices.length}</span>
                   </div>
-                  {bookedList.map(item => (
+                  {visibleServices.map(item => (
                     <div
                       key={item.slug}
-                      className="cd-card cd-card--booked"
+                      className="cd-card"
                       onClick={() => { window.__saveScrollPos?.('/flowers'); navigate(`/flowers/${item.slug}`) }}
                     >
                       <div className="cd-card__img-wrap">
                         <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
                         <div className="cd-card__img-overlay" />
-                        <span className="cd-card__booked-badge">
-                          <svg className="cd-card__booked-wreath" viewBox="0 0 80 80" width="36" height="36">
-                            <path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                            <path d="M60 62 C72 52, 76 38, 68 24 C64 17, 58 12, 50 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                            <ellipse cx="11" cy="44" rx="3" ry="1.5" transform="rotate(-30 11 44)" fill="currentColor" opacity="0.2"/>
-                            <ellipse cx="9" cy="35" rx="2.5" ry="1.3" transform="rotate(-15 9 35)" fill="currentColor" opacity="0.2"/>
-                            <ellipse cx="69" cy="44" rx="3" ry="1.5" transform="rotate(30 69 44)" fill="currentColor" opacity="0.2"/>
-                            <ellipse cx="71" cy="35" rx="2.5" ry="1.3" transform="rotate(15 71 35)" fill="currentColor" opacity="0.2"/>
-                            <circle cx="40" cy="8" r="1.5" fill="currentColor" opacity="0.3"/>
-                            <polyline points="30 42 38 50 52 32" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </span>
+                        <span className="cd-card__country">{item.country}</span>
                       </div>
                       <div className="cd-card__body">
                         <h3 className="cd-card__name">{item.name}</h3>
@@ -620,103 +733,61 @@ export default function Flowers() {
                       </div>
                     </div>
                   ))}
-
-                  {/* 其他区域 */}
-                  {otherList.length > 0 && (
-                    <>
-                      <div className="cd-section-label cd-section-label--rest">
-                        <span className="cd-section-label__icon">✦</span>
-                        <span>其他</span>
-                        <span className="cd-section-label__count">{otherList.length}</span>
-                      </div>
-                      {visibleOtherList.map(item => (
-                        <div
-                          key={item.slug}
-                          className="cd-card"
-                          onClick={() => { window.__saveScrollPos?.('/flowers'); navigate(`/flowers/${item.slug}`) }}
-                        >
-                          <div className="cd-card__img-wrap">
-                            <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
-                            <div className="cd-card__img-overlay" />
-                            <span className="cd-card__country">{item.country}</span>
-                          </div>
-                          <div className="cd-card__body">
-                            <h3 className="cd-card__name">{item.name}</h3>
-                            <p className="cd-card__tagline">{item.tagline}</p>
-                            <p className="cd-card__desc">{item.desc}</p>
-                            <div className="cd-card__styles">
-                              {item.specialties.slice(0, 3).map(s => (
-                                <span key={s} className="cd-card__style-tag">{s}</span>
-                              ))}
-                            </div>
-                            <div className="cd-card__footer">
-                              <span className="cd-card__price">{item.price ? `£${item.price.toLocaleString()}起` : '需咨询'}</span>
-                              <span className="cd-card__arrow">查看详情 →</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {listLoading && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-                        <div key={`skel-${i}`} className="cd-card cd-card--skeleton">
-                          <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
-                          <div className="cd-card__body">
-                            <div className="cd-skeleton__line cd-skeleton__title" />
-                            <div className="cd-skeleton__line cd-skeleton__tagline" />
-                            <div className="cd-skeleton__line cd-skeleton__text--short" />
-                            <div className="cd-skeleton__line cd-skeleton__price" />
-                          </div>
-                        </div>
-                      ))}
-                    </>
+                  {hasMore && (
+                    <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
+                      <button className="cd-section-more__btn" onClick={() => setServiceVisibleCount(prev => prev + ITEMS_PER_SECTION)}>查看更多</button>
+                    </div>
                   )}
                 </>
-              ) : (
-                visibleOtherList.map(item => (
-                  <div
-                    key={item.slug}
-                    className="cd-card"
-                    onClick={() => { window.__saveScrollPos?.('/flowers'); navigate(`/flowers/${item.slug}`) }}
-                  >
-                    <div className="cd-card__img-wrap">
-                      <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
-                      <div className="cd-card__img-overlay" />
-                      <span className="cd-card__country">{item.country}</span>
-                    </div>
-                    <div className="cd-card__body">
-                      <h3 className="cd-card__name">{item.name}</h3>
-                      <p className="cd-card__tagline">{item.tagline}</p>
-                      <p className="cd-card__desc">{item.desc}</p>
-                      <div className="cd-card__styles">
-                        {item.specialties.slice(0, 3).map(s => (
-                          <span key={s} className="cd-card__style-tag">{s}</span>
-                        ))}
-                      </div>
-                      <div className="cd-card__footer">
-                        <span className="cd-card__price">{item.price ? `£${item.price.toLocaleString()}起` : '需咨询'}</span>
-                        <span className="cd-card__arrow">查看详情 →</span>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
+                ) : null
+              })()}
 
-              {listLoading && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-                <div key={`skel-b-${i}`} className="cd-card cd-card--skeleton">
-                  <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
-                  <div className="cd-card__body">
-                    <div className="cd-skeleton__line cd-skeleton__title" />
-                    <div className="cd-skeleton__line cd-skeleton__tagline" />
-                    <div className="cd-skeleton__line cd-skeleton__text--short" />
-                    <div className="cd-skeleton__line cd-skeleton__price" />
+              {/* Section 2: 鲜花花束系列 - 过滤已加入意向单的商品 */}
+              {(() => {
+                const allProducts = florajetProducts.filter(p => !bookedProducts.has(p.slug))
+                const hasMore = productVisibleCount < allProducts.length
+                const visibleProducts = allProducts.slice(0, productVisibleCount)
+                return visibleProducts.length > 0 ? (
+                <>
+                  <div className="cd-section-label">
+                    <span className="cd-section-label__icon">✦</span>
+                    <span>鲜花花束系列</span>
+                    <span className="cd-section-label__count">{allProducts.length}</span>
                   </div>
-                </div>
-              ))}
-
-              {!hasMoreItems && !listLoading && (
-                <div className="cd-load-end">
-                  <span>— 已展示全部 {filteredList.length} 家花艺工作室 —</span>
-                </div>
-              )}
+                  {visibleProducts.map((product, idx) => (
+                    <div
+                      key={idx}
+                      className="cd-card"
+                      onClick={() => navigate(`/flowers/product/${product.slug}`)}
+                    >
+                      <div className="cd-card__img-wrap">
+                        <FallbackImage
+                          src={product.image?.startsWith('/') ? `${API_BASE}${product.image}` : (product.image || '')}
+                          alt={product.name_cn || product.name}
+                          className="cd-card__img"
+                        />
+                        <div className="cd-card__img-overlay" />
+                        <span className="cd-card__country">法国</span>
+                      </div>
+                      <div className="cd-card__body">
+                        <h3 className="cd-card__name">{product.name_cn || product.name}</h3>
+                        <p className="cd-card__tagline">{product.name}</p>
+                        <p className="cd-card__desc">{product.desc_cn || product.desc || ''}</p>
+                        <div className="cd-card__footer">
+                          <span className="cd-card__price">€{product.price}{product.price_from ? '起' : ''}</span>
+                          <span className="cd-card__arrow">查看详情 →</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {hasMore && (
+                    <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
+                      <button className="cd-section-more__btn" onClick={() => setProductVisibleCount(prev => prev + ITEMS_PER_SECTION)}>查看更多</button>
+                    </div>
+                  )}
+                </>
+                ) : null
+              })()}
             </>
           ) : (
             <div className="cd-filter__empty" style={{ gridColumn: '1 / -1' }}>

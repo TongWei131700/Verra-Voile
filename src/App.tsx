@@ -20,6 +20,7 @@ import PhotographyDetail from './pages/PhotographyDetail'
 import NewHome from './pages/NewHome'
 import Wine from './pages/Wine'
 import WineDetail from './pages/WineDetail'
+import FlowerProductDetail from './pages/FlowerProductDetail'
 
 const scrollCache: Record<string, number> = {}
 
@@ -127,6 +128,7 @@ export default function App() {
         <Route path="/crawled-portugal" element={<Navigate to="/europe/portugal" replace />} />
         <Route path="/destinations" element={<Destinations />} />
         <Route path="/flowers" element={<Flowers />} />
+        <Route path="/flowers/product/:slug" element={<FlowerProductDetail />} />
         <Route path="/flowers/:slug" element={<FlowersDetail />} />
         <Route path="/dresses" element={<Dresses />} />
         <Route path="/dresses/:slug" element={<DressesDetail />} />

@@ -334,7 +334,7 @@ export default function DestinationsDetail() {
         {/* 居中信息面板 */}
         <div className={`wt-hero__info${booked ? ' wt-hero__info--booked' : ''}`}>
           <div className="wt-hero__headshot">
-            <FallbackImage src={proxyImage(venue.coverImage)} alt={venue.nameEn} className="wt-hero__headshot-img" />
+            <FallbackImage src={proxyImage(venue.galleryImages[2] || venue.galleryImages[1] || venue.coverImage)} alt={venue.nameEn} className="wt-hero__headshot-img" />
           </div>
           <div className="wt-hero__meta">
             <span className="wt-hero__badge">

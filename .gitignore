@@ -32,3 +32,5 @@ npm-debug.log*
 # But track project assets
 !src/assets/
 !src/assets/**
+!public/images/alicdn/
+!public/images/alicdn/**

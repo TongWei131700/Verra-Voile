@@ -31,7 +31,7 @@ export const scheduleData: ScheduleItem[] = [
       { label: '司仪致辞', value: '庄园伯爵代为引领入席' },
       { label: '伴礼乐章', value: '巴黎国立歌剧院首席弦乐四重奏' },
     ],
-    visualImg: 'https://img.alicdn.com/imgextra/i4/O1CN01rdvklH22anrtr1QEo_!!6000000007137-0-tps-1200-800.jpg',
+    visualImg: '/images/alicdn/schedule-01.jpg',
     visualLabel: 'Bienvenue',
   },
   {
@@ -49,7 +49,7 @@ export const scheduleData: ScheduleItem[] = [
       { label: '戒指见证', value: '梵蒂冈祝圣之 Harry Winston 钻戒' },
       { label: '誓言文本', value: '拉丁文古典婚约 · 双语对照' },
     ],
-    visualImg: 'https://img.alicdn.com/imgextra/i3/O1CN01bKIDlN1WcZhC9Ve2K_!!6000000002809-0-tps-1200-800.jpg',
+    visualImg: '/images/alicdn/schedule-02.jpg',
     visualLabel: 'Sacré',
   },
   {
@@ -67,7 +67,7 @@ export const scheduleData: ScheduleItem[] = [
       { label: '民俗祝词', value: '法兰西吟游诗人 Jean-Luc 即兴献唱' },
       { label: '纪念礼物', value: '每位宾客获赠手工蜂蜜与橄榄油' },
     ],
-    visualImg: 'https://img.alicdn.com/imgextra/i1/O1CN01HnYbod1rvuLTm7smB_!!6000000005694-0-tps-1200-800.jpg',
+    visualImg: '/images/alicdn/grid-span-2.jpg',
     visualLabel: 'Bénédiction',
   },
   {
@@ -94,7 +94,7 @@ export const scheduleData: ScheduleItem[] = [
         { label: '佐酒', value: 'Dom Pérignon P2 Vintage' },
       ],
     ],
-    visualImg: 'https://img.alicdn.com/imgextra/i3/O1CN01Xs0o741yQUUHStfUs_!!6000000006573-0-tps-1200-800.jpg',
+    visualImg: '/images/alicdn/schedule-03.jpg',
     visualLabel: 'Festin Royal',
   },
   {
@@ -111,7 +111,7 @@ export const scheduleData: ScheduleItem[] = [
       { label: '开场之舞', value: '《蓝色多瑙河》圆舞曲' },
       { label: '舞池规格', value: '意大利雕花水晶 · 600 平方米' },
     ],
-    visualImg: 'https://img.alicdn.com/imgextra/i1/O1CN01QSWxHj1UA3o1XLhod_!!6000000002476-0-tps-1200-800.jpg',
+    visualImg: '/images/alicdn/schedule-04.jpg',
     visualLabel: 'Valse Royale',
   },
   {
@@ -129,7 +129,7 @@ export const scheduleData: ScheduleItem[] = [
       { label: '香槟塔', value: 'Cristal Roederer 七层水晶塔' },
       { label: '派对延续', value: '至次日清晨日出仪式' },
     ],
-    visualImg: 'https://img.alicdn.com/imgextra/i2/O1CN01Xrjn3p1l7dAlsB6rc_!!6000000004772-0-tps-1200-800.jpg',
+    visualImg: '/images/alicdn/schedule-05.jpg',
     visualLabel: 'Étoiles',
   },
 ]

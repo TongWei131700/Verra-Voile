@@ -42,7 +42,7 @@ export default function Hero() {
         muted
         loop
         playsInline
-        poster="https://img.alicdn.com/imgextra/i4/O1CN01fSe7hK22EMSeTwZiu_!!6000000007088-0-tps-2400-1596.jpg"
+        poster="/images/alicdn/hero-video-poster.jpg"
       >
         <source src="https://cdn.pixabay.com/video/2023/02/13/150707-797784454_large.mp4" type="video/mp4" />
         <source src="https://cdn.pixabay.com/video/2020/05/25/40130-424888181_large.mp4" type="video/mp4" />

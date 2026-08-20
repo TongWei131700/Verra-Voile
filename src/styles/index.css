@@ -296,7 +296,7 @@ nav ul a:hover::after { width: 100%; }
 }
 .hero-bg {
   position: absolute; inset: 0;
-  background-image: url('https://img.alicdn.com/imgextra/i4/O1CN01fSe7hK22EMSeTwZiu_!!6000000007088-0-tps-2400-1596.jpg');
+  background-image: url('/images/alicdn/hero-video-poster.jpg');
   background-size: cover; background-position: center center;
   animation: kenBurns 28s ease-in-out infinite alternate; z-index: 0;
 }
@@ -394,7 +394,7 @@ section { padding: 120px 60px; }
 }
 .story-image {
   height: 540px;
-  background: url('https://img.alicdn.com/imgextra/i4/O1CN01HE6bQy1GDoQhSYJxX_!!6000000000589-0-tps-1200-800.jpg') center/cover;
+  background: url('/images/alicdn/css-bg-01.jpg') center/cover;
   box-shadow: 30px 30px 0 var(--champagne); position: relative;
 }
 
@@ -718,7 +718,7 @@ section { padding: 120px 60px; }
   filter: brightness(0.95) saturate(0.9); cursor: pointer;
 }
 .gallery-grid div:hover { transform: scale(1.02); filter: brightness(1.05) saturate(1.1); }
-.g1 { grid-column: span 2; grid-row: span 2; background-image: url('https://img.alicdn.com/imgextra/i1/O1CN01HnYbod1rvuLTm7smB_!!6000000005694-0-tps-1200-800.jpg'); }
+.g1 { grid-column: span 2; grid-row: span 2; background-image: url('/images/alicdn/grid-span-2.jpg'); }
 .g2 { background-image: url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80'); }
 .g3 { background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80'); }
 .g4 { background-image: url('https://images.unsplash.com/photo-1525772764200-be829a350797?w=800&q=80'); }

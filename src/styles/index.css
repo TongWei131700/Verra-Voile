@@ -6146,13 +6146,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   display: grid; grid-template-columns: 1fr; gap: 28px;
 }
 @media (min-width: 640px) {
-  .cd-list { grid-template-columns: repeat(2, 1fr); }
-}
-@media (min-width: 1000px) {
-  .cd-list { grid-template-columns: repeat(3, 1fr); }
-}
-@media (min-width: 1400px) {
-  .cd-list { grid-template-columns: repeat(4, 1fr); }
+  .cd-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 }
 
 /* 意向单网格 */
@@ -6161,13 +6155,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   display: grid; grid-template-columns: 1fr; gap: 28px;
 }
 @media (min-width: 640px) {
-  .cd-wishlist-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (min-width: 1000px) {
-  .cd-wishlist-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (min-width: 1400px) {
-  .cd-wishlist-grid { grid-template-columns: repeat(4, 1fr); }
+  .cd-wishlist-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 }
 
 /* 分区标签 */

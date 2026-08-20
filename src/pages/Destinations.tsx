@@ -4,7 +4,7 @@ import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { getSelectedProducts } from '../utils/selectedProducts'
 import { proxyImage } from '../utils/imageProxy'
-import coverDest from '../assets/taisha-ellison-6asCAiJ7fSY-unsplash.jpg'
+import coverDest from '../assets/destinations-cover.jpg'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 

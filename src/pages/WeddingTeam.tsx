@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
+import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
@@ -196,9 +196,55 @@ export default function WeddingTeam() {
   const visibleOtherList = useMemo(() => otherList.slice(0, visibleCount), [otherList, visibleCount])
   const hasMoreItems = visibleCount < otherList.length
 
+  // 按国家分组（保持首次出现顺序）
+  const visibleGroupedByCountry = useMemo(() => {
+    const groups: { country: string; countryEn: string; items: WeddingTeamCompany[] }[] = []
+    const map = new Map<string, { country: string; countryEn: string; items: WeddingTeamCompany[] }>()
+    visibleOtherList.forEach(item => {
+      if (!map.has(item.country)) {
+        const group = { country: item.country, countryEn: item.countryEn, items: [] }
+        map.set(item.country, group)
+        groups.push(group)
+      }
+      map.get(item.country)!.items.push(item)
+    })
+    return groups
+  }, [visibleOtherList])
+
+  // 每个国家分组默认显示两行，超出显示"查看更多"
+  const [expandedCountries, setExpandedCountries] = useState<Set<string>>(new Set())
+  const colsPerRow = useMemo(() => {
+    if (typeof window === 'undefined') return 3
+    const w = window.innerWidth
+    if (w < 640) return 1
+    if (w < 1000) return 2
+    if (w < 1400) return 3
+    return 4
+  }, [])
+  const MAX_COUNTRY_ITEMS = colsPerRow * 2
+  const groupedWithVisibility = useMemo(() => {
+    return visibleGroupedByCountry.map(group => ({
+      ...group,
+      visibleItems: expandedCountries.has(group.country)
+        ? group.items
+        : group.items.slice(0, MAX_COUNTRY_ITEMS),
+      hasMore: group.items.length > MAX_COUNTRY_ITEMS && !expandedCountries.has(group.country),
+      hiddenCount: group.items.length - MAX_COUNTRY_ITEMS,
+    }))
+  }, [visibleGroupedByCountry, expandedCountries, MAX_COUNTRY_ITEMS])
+
+  const toggleCountryExpand = (country: string) => {
+    setExpandedCountries(prev => {
+      const next = new Set(prev)
+      next.has(country) ? next.delete(country) : next.add(country)
+      return next
+    })
+  }
+
   // 筛选变化时重置分页
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE)
+    setExpandedCountries(new Set())
   }, [selectedCountries, selectedSpecialties, searchFilter])
 
   const totalFilters = selectedCountries.size + selectedSpecialties.size + (searchFilter ? 1 : 0)
@@ -663,34 +709,48 @@ export default function WeddingTeam() {
                         <span>其他</span>
                         <span className="cd-section-label__count">{otherList.length}</span>
                       </div>
-                      {visibleOtherList.map(item => (
-                        <div
-                          key={item.slug}
-                          className="cd-card"
-                          onClick={() => { window.__saveScrollPos?.('/wedding-team'); navigate(`/wedding-team/${item.slug}`) }}
-                        >
-                          <div className="cd-card__img-wrap">
-                            <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
-                            <div className="cd-card__img-overlay" />
-                            <span className="cd-card__country">{item.country}</span>
+                      {groupedWithVisibility.map((group, gi) => (
+                        <Fragment key={group.country}>
+                          <div className="cd-country-header" style={{ gridColumn: '1 / -1' }}>
+                            <h2 className="cd-country-header__title">{group.country}</h2>
+                            <span className="cd-country-header__en">{group.countryEn}</span>
+                            <div className="cd-country-header__line" />
+                            <span className="cd-country-header__count">{group.items.length} 家团队</span>
                           </div>
-                          <div className="cd-card__body">
-                            <h3 className="cd-card__name">{item.name}</h3>
-                            <p className="cd-card__tagline">{item.tagline}</p>
-                            <p className="cd-card__desc">{item.desc}</p>
-                            <div className="cd-card__styles">
-                              {item.specialties.slice(0, 3).map(s => (
-                                <span key={s} className="cd-card__style-tag">{s}</span>
-                              ))}
+                          {group.visibleItems.map(item => (
+                            <div
+                              key={item.slug}
+                              className="cd-card"
+                              onClick={() => { window.__saveScrollPos?.('/wedding-team'); navigate(`/wedding-team/${item.slug}`) }}
+                            >
+                              <div className="cd-card__img-wrap">
+                                <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
+                                <div className="cd-card__img-overlay" />
+                              </div>
+                              <div className="cd-card__body">
+                                <h3 className="cd-card__name">{item.name}</h3>
+                                <p className="cd-card__tagline">{item.tagline}</p>
+                                <p className="cd-card__desc">{item.desc}</p>
+                                <div className="cd-card__styles">
+                                  {item.specialties.slice(0, 3).map(s => (
+                                    <span key={s} className="cd-card__style-tag">{s}</span>
+                                  ))}
+                                </div>
+                                <div className="cd-card__footer">
+                                  <span className="cd-card__price">{item.price ? `${getCurrencySymbol(item.country)}${item.price.toLocaleString()}起` : '需咨询'}</span>
+                                  <span className="cd-card__arrow">查看详情 →</span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="cd-card__footer">
-                              <span className="cd-card__price">{item.price ? `${getCurrencySymbol(item.country)}${item.price.toLocaleString()}起` : '需咨询'}</span>
-                              <span className="cd-card__arrow">查看详情 →</span>
+                          ))}
+                          {group.hasMore && (
+                            <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
+                              <button className="cd-section-more__btn" onClick={() => toggleCountryExpand(group.country)}>
+                                查看更多 ({group.hiddenCount})
+                              </button>
                             </div>
-                          </div>
-                        </div>
-                      ))}
-                      {listLoading && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+                          )}
+                          {listLoading && gi === visibleGroupedByCountry.length - 1 && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                         <div key={`skel-${i}`} className="cd-card cd-card--skeleton">
                           <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
                           <div className="cd-card__body">
@@ -701,50 +761,67 @@ export default function WeddingTeam() {
                           </div>
                         </div>
                       ))}
+                        </Fragment>
+                      ))}
                     </>
                   )}
                 </>
               ) : (
-                visibleOtherList.map(item => (
-                  <div
-                    key={item.slug}
-                    className="cd-card"
-                    onClick={() => { window.__saveScrollPos?.('/wedding-team'); navigate(`/wedding-team/${item.slug}`) }}
-                  >
-                    <div className="cd-card__img-wrap">
-                      <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
-                      <div className="cd-card__img-overlay" />
-                      <span className="cd-card__country">{item.country}</span>
+                groupedWithVisibility.map((group, gi) => (
+                  <Fragment key={group.country}>
+                    <div className="cd-country-header" style={{ gridColumn: '1 / -1' }}>
+                      <h2 className="cd-country-header__title">{group.country}</h2>
+                      <span className="cd-country-header__en">{group.countryEn}</span>
+                      <div className="cd-country-header__line" />
+                      <span className="cd-country-header__count">{group.items.length} 家团队</span>
                     </div>
-                    <div className="cd-card__body">
-                      <h3 className="cd-card__name">{item.name}</h3>
-                      <p className="cd-card__tagline">{item.tagline}</p>
-                      <p className="cd-card__desc">{item.desc}</p>
-                      <div className="cd-card__styles">
-                        {item.specialties.slice(0, 3).map(s => (
-                          <span key={s} className="cd-card__style-tag">{s}</span>
-                        ))}
+                    {group.visibleItems.map(item => (
+                      <div
+                        key={item.slug}
+                        className="cd-card"
+                        onClick={() => { window.__saveScrollPos?.('/wedding-team'); navigate(`/wedding-team/${item.slug}`) }}
+                      >
+                        <div className="cd-card__img-wrap">
+                          <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
+                          <div className="cd-card__img-overlay" />
+                        </div>
+                        <div className="cd-card__body">
+                          <h3 className="cd-card__name">{item.name}</h3>
+                          <p className="cd-card__tagline">{item.tagline}</p>
+                          <p className="cd-card__desc">{item.desc}</p>
+                          <div className="cd-card__styles">
+                            {item.specialties.slice(0, 3).map(s => (
+                              <span key={s} className="cd-card__style-tag">{s}</span>
+                            ))}
+                          </div>
+                          <div className="cd-card__footer">
+                            <span className="cd-card__price">{item.price ? `${getCurrencySymbol(item.country)}${item.price.toLocaleString()}起` : '需咨询'}</span>
+                            <span className="cd-card__arrow">查看详情 →</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="cd-card__footer">
-                        <span className="cd-card__price">{item.price ? `${getCurrencySymbol(item.country)}${item.price.toLocaleString()}起` : '需咨询'}</span>
-                        <span className="cd-card__arrow">查看详情 →</span>
+                    ))}
+                    {group.hasMore && (
+                      <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
+                        <button className="cd-section-more__btn" onClick={() => toggleCountryExpand(group.country)}>
+                          查看更多 ({group.hiddenCount})
+                        </button>
                       </div>
-                    </div>
-                  </div>
+                    )}
+                    {listLoading && gi === visibleGroupedByCountry.length - 1 && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+                      <div key={`skel-${i}`} className="cd-card cd-card--skeleton">
+                        <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
+                        <div className="cd-card__body">
+                          <div className="cd-skeleton__line cd-skeleton__title" />
+                          <div className="cd-skeleton__line cd-skeleton__tagline" />
+                          <div className="cd-skeleton__line cd-skeleton__text--short" />
+                          <div className="cd-skeleton__line cd-skeleton__price" />
+                        </div>
+                      </div>
+                    ))}
+                  </Fragment>
                 ))
               )}
-
-              {listLoading && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-                <div key={`skel-b-${i}`} className="cd-card cd-card--skeleton">
-                  <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
-                  <div className="cd-card__body">
-                    <div className="cd-skeleton__line cd-skeleton__title" />
-                    <div className="cd-skeleton__line cd-skeleton__tagline" />
-                    <div className="cd-skeleton__line cd-skeleton__text--short" />
-                    <div className="cd-skeleton__line cd-skeleton__price" />
-                  </div>
-                </div>
-              ))}
 
               {!hasMoreItems && !listLoading && (
                 <div className="cd-load-end">

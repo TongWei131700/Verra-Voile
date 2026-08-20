@@ -1,25 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import sirv from 'sirv'
-import { resolve } from 'path'
 
-// 本地开发时直接提供 uploads/ 静态文件，无需启动后端
-const serveUploads = () => ({
-  name: 'serve-uploads',
-  configureServer(server) {
-    server.middlewares.use('/uploads', sirv(resolve('uploads'), { dev: true }))
-  },
-})
-
+// 所有 /uploads 和 /api 请求均代理到后端，前端不存任何数据
 export default defineConfig({
-  plugins: [react(), serveUploads()],
+  plugins: [react()],
   server: {
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
       },
-      // /uploads 已由 serveUploads 中间件处理，仅在后端有其他 /uploads 路由时生效
+      '/uploads': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
       '/socket.io': {
         target: 'http://localhost:3000',
         ws: true,

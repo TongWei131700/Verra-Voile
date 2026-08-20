@@ -9,6 +9,7 @@ import OrderDetail from './pages/OrderDetail'
 import CrawledCountries from './pages/CrawledCountries'
 import CrawledVenueDetail from './pages/CrawledVenueDetail'
 import Destinations from './pages/Destinations'
+import DestinationsDetail from './pages/DestinationsDetail'
 import WeddingTeam from './pages/WeddingTeam'
 import WeddingTeamDetail from './pages/WeddingTeamDetail'
 import Flowers from './pages/Flowers'
@@ -127,6 +128,7 @@ export default function App() {
         <Route path="/crawled-greece" element={<Navigate to="/europe/greece" replace />} />
         <Route path="/crawled-portugal" element={<Navigate to="/europe/portugal" replace />} />
         <Route path="/destinations" element={<Destinations />} />
+        <Route path="/destinations/:slug" element={<DestinationsDetail />} />
         <Route path="/flowers" element={<Flowers />} />
         <Route path="/flowers/product/:slug" element={<FlowerProductDetail />} />
         <Route path="/flowers/:slug" element={<FlowersDetail />} />

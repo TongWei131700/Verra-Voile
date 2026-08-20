@@ -1,462 +1,342 @@
-# 爬取婚礼场地并生成商品
+# 爬取婚礼场地详情
 
 ## 概述
-从 WeddingWire/mariages.net/hitched.co.uk 爬取婚礼场地数据，本地入库翻译，前端渲染为高质量场地详情页。
+用户提供两个 URL：
+- **URL A**（信息来源）：从 WeddingWire 等平台提取场地文字信息（关于我们、场地特色、地点）
+- **URL B**（图片来源）：从场地官网下载高清图到本地后端
 
-## 适用场景
-- 用户提供 WeddingWire URL，需要爬取并展示
-- 批量爬取某国场地，生成"测试 XX 国"测试数据
-- 优化现有场地详情页布局
+数据写入 `crawled_venues` 单表，前端通过 `DestinationsDetail.tsx` 渲染。
 
 ## 前置条件
-- 后端项目 `/Users/hongli/WorkSpace/Verra-Voile-End` 可访问本地数据库
-- Node.js 环境，已安装 `cheerio`、`mysql2`、`dotenv`
-- 批量爬取时额外需要 `puppeteer-core`（本地使用 Chrome）
+- 后端项目 `/Users/hongli/WorkSpace/Verra-Voile-End`
+- 前端项目 `/Users/hongli/WorkSpace/Verra-Voile`
+- Puppeteer 已安装在前端项目（`/Users/hongli/WorkSpace/Verra-Voile/node_modules/puppeteer`）
+- 数据库：localhost, root, 无密码, verra_voile
 
-## ⛔ 爬取环境限制
-
-**所有爬取操作只能在本地执行，严禁在 47.99.138.250 服务器上爬取。**
-
-- 禁止在服务器上安装 puppeteer-core、chromium、chrome 等浏览器
-- 禁止通过服务器 API 触发爬取任务
-- 禁止在服务器上运行 `node scripts/crawl-*.cjs`
-- 服务器仅用于部署后端 API 和前端静态文件，不承担爬取负载
-- 原因：服务器资源有限，爬取会导致内存/CPU 飙升影响正常服务
-
-## 数据库连接（本地）
-- host=localhost, port=3306, user=root, password=(空), database=verra_voile
+## ⛔ 爬取只能在本地执行，严禁在服务器上操作
 
 ---
 
-## 第一部分：爬取流程
+## 第一步：从 URL A 抓取文字信息
 
-### 方式 A：单场地快速爬取（cheerio）
+用 Browser Agent 访问 URL A，提取以下三项内容：
 
-```bash
-cd /Users/hongli/WorkSpace/Verra-Voile-End
-node scripts/crawl-venue-detail.cjs [URL]
+### 1. 关于我们（description + description_cn）
+
+**格式要求**：描述必须以场地原名称开头，后接破折号和正文内容。
+
+```
+Vila Alba Resort — Your wedding is one of those unforgettable days...
 ```
 
-**脚本功能**：请求页面 → 提取数据 → 过滤图片 → 高清化 → 入库（按 slug 去重）
+中文版本同理，地点名称保持原文不翻译：
 
-**失败时（0图片/乱码/描述为空）**：立即用 Browser Agent 访问目标 URL 提取真实数据，手动构建 SQL 更新。
-
-### 方式 B：批量爬取某国场地（puppeteer + 硬编码 URL）
-
-**适用**：用户说"爬取 XX 国场地"并提供 WeddingWire 搜索 URL。
-
-#### B1. 提取场地 URL 列表
-
-用 Browser Agent 打开搜索页，逐页提取所有场地详情页链接：
 ```
-https://www.weddingwire.com/destination-wedding/destination/xxx--eXXXXXXX
+Vila Alba Resort — 您的婚礼是一生中最难忘的日子...
+度假村坐落于 Algarve 中心地带，俯瞰 Praia da Albandeira 的天然海蚀拱门...
 ```
 
-> **⚠️ 不要尝试自动化翻页**：WeddingWire 分页由 JS 拦截，puppeteer 自动翻页不可靠。用 Browser Agent 手动逐页提取 URL 后硬编码。
+**注意**：
+- `description` 存英文原文，`description_cn` 存中文翻译
+- 中文描述中地名、场地名等专有名词保持原文（如 Algarve、Praia da Albandeira）
+- 精简为 3-5 段，每段 2-4 句
 
-#### B2. 生成爬取脚本
+### 2. 场地特色（amenities）
 
-参考模板 `/Users/hongli/WorkSpace/Verra-Voile-End/scripts/crawl-uk-puppeteer.cjs`，修改配置：
+按类别分组（如：婚礼场地、住宿、餐饮与服务、休闲设施），每组包含中英文标题和条目。
 
-```javascript
-const COUNTRY = '英文名称'        // 如 'Spain'（测试数据加 Test 前缀：'Test Spain'）
-const COUNTRY_CN = '测试XX国'     // 如 '测试西班牙'
-const VENUES = [
-  { name: 'Venue Name', url: 'https://www.weddingwire.com/...' },
-  // ... 硬编码的场地列表
-]
-```
-
-脚本命名：`crawl-{country}-puppeteer.cjs`，放在 `scripts/` 目录。
-
-#### B3. 本地执行
-
-```bash
-cd /Users/hongli/WorkSpace/Verra-Voile-End
-node scripts/crawl-{country}-puppeteer.cjs
-```
-
-#### B4. 前端配置（让"测试 XX 国"出现在 destinations 页面）
-
-**CrawledCountries.tsx** — 添加国家配置：
-```typescript
-'test-{country}': { code: '测试XX国', label: '测试XX国', en: 'Test XX', sub: '...' },
-```
-
-**Destinations.tsx** — 在 `test-dest-list` 末尾添加卡片，跳转 `/europe/test-{country}`。
-
-### 反爬措施（puppeteer）
-1. 先访问 WeddingWire 首页建立会话
-2. 设置真实 User-Agent
-3. 场地间随机延时 1.5-2.5 秒
-
-### 数据提取规则
-
-**⚠️ "Read more" 展开内容**：
-页面中描述、特色、FAQ 等区域可能有 "Read more" / "Voir plus" 折叠按钮，cheerio 只能拿到截断内容。必须：
-- 用 Browser Agent 访问页面，点击所有 "Read more" 展开完整内容后再提取
-- 或确保爬取的数据是完整版本，而非截断预览
-
-**图片**：
-- CDN 域名：`cdn0.weddingwire.com`、`cdn0.mariages.net`、`cdn0.hitched.co.uk`
-- 只保留 vendor 图片，过滤婚纱/模板图
-- 上限 24 张，高清化：`/960/` → `/1920/`
-- 头图选宽幅全景/航拍
-
-```javascript
-const hd = src.replace(/(\/vendor\/\d+\/\d+_\d+)\/\d+(\/)/, '$1/1920$2').replace(/\?.*$/, '')
-```
-
-**其他字段**：
-- 标题：`h1` 或 JSON-LD `name`
-- 描述：`.storefrontDescription__content` 或 JSON-LD `description`，按 `\n\n` 分段
-- 评分：JSON-LD `aggregateRating` 或文本 `X.X out of 5`，只存数字
-- 评论数：`(\d+)\s+reviews?`
-- 位置：`.storefrontHeadingLocation__label` 或 JSON-LD `address`
-- 场地类型：面包屑解析（Mansion/Garden/Hotel 等）
-
----
-
-## 第二部分：数据库写入
-
-### 按国家分表架构
-
-每个国家独立建表，彻底隔离数据：
-
-| 表命名 | 用途 | 示例 |
-|---|---|---|
-| `cv_{suffix}` | 完整场地详情 | cv_uk, cv_france, cv_test_uk |
-| `cd_{suffix}` | 前端列表页 | cd_uk, cd_france, cd_test_uk |
-| `products` | 商品化管理（共用） | product_id=slug |
-
-**国家后缀映射**：
-- 英国→uk, 法国→france, 西班牙→spain, 希腊→greece, 葡萄牙→portugal, 意大利→italy
-- 测试英国→test_uk（新增测试国家时创建新表，如 test_france）
-
-**新增国家时**：
-```sql
-CREATE TABLE `cv_{suffix}` LIKE crawled_venues;
-CREATE TABLE `cd_{suffix}` LIKE crawled_destinations;
-```
-
-### 写入示例
-
-```javascript
-// 写入对应国家的 cv_ 和 cd_ 表
-const vt = `cv_${suffix}`  // 如 cv_test_uk
-const dt = `cd_${suffix}`  // 如 cd_test_uk
-
-await pool.execute(
-  `INSERT INTO \`${vt}\` (slug,name,...) VALUES (?,...)`,
-  [slug, name, ...]
-)
-await pool.execute(
-  `INSERT INTO \`${dt}\` (slug,name,...) VALUES (?,...)`,
-  [slug, name, ...]
-)
-// 写入 products
-await pool.execute(
-  'INSERT INTO products (...) VALUES (...)',
-  ['destination', slug, nameCn, ...]
-)
-```
-
-### 表结构（cv_ / cd_ 通用）
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | INT AUTO | 主键 |
-| slug | VARCHAR(100) | URL标识，表内唯一 |
-| name / name_cn | VARCHAR(300) | 英文/中文名 |
-| country / country_cn | VARCHAR(100) | 国家英文/中文 |
-| source_url | VARCHAR(500) | 来源URL |
-| tagline / tagline_cn | VARCHAR(500) | 宣传语 |
-| description / description_cn | TEXT | 描述 |
-| features | JSON | 特色亮点（中文，每条≤25字） |
-| venue_types | JSON | 场地类型（含 name + name_en） |
-| towns | JSON | 位置（含 name + name_cn） |
-| images | JSON | 图片URL数组（最多24张） |
-| budget_ranges | JSON | 预算区间 |
-| guest_capacities | JSON | 宾客规模 |
-| faq | JSON | FAQ数组（q + a） |
-| cover_image | VARCHAR(500) | 封面图 |
-| rating | VARCHAR(10) | 评分（仅 cv_ 表） |
-| review_count | VARCHAR(20) | 评论数（仅 cv_ 表） |
-| location | VARCHAR(500) | 地址（仅 cv_ 表） |
-
-#### products（商品）
-
-| 字段 | 说明 |
-|------|------|
-| category_id | 固定 'destination' |
-| product_id | 同 slug |
-| name / name_en | 中文/英文名 |
-| description | 简短描述 |
-| image | 封面图 |
-| price | 0（无价格） |
-| unit | € |
-| highlight | 亮点标签 |
-
----
-
-## 第三部分：翻译
-
-爬取数据默认英文/法文，需翻译为中文写入 `_cn` 后缀字段或 JSON 字段内。
-
-**必须翻译**：name_cn、tagline_cn（≤30字）、description_cn（按 `\n\n` 分段）、features（每条≤25字）、venue_types（name_cn）、towns（name_cn）、location
-
-### 翻译流程（推荐：文件导出 → 翻译 → 导入）
-
-**步骤1：导出待翻译文本**
-```bash
-cd /Users/hongli/WorkSpace/Verra-Voile-End
-node scripts/export-for-translate.cjs --country={country}
-# 输出: scripts/translate-pending-{country}.json
-```
-
-**步骤2：批量翻译文件**
-```bash
-node scripts/batch-translate-file.cjs --country={country}
-# 使用 Google Translate gtx 端点，免费无限制
-# 支持断点续翻：已有 name_cn 的条目自动跳过
-# 每5条自动保存进度
-```
-
-**步骤3：导入翻译结果**
-```bash
-node scripts/import-translated.cjs --country={country}
-# 根据 slug 标识更新 cv_、cd_ 表
-```
-
-### 翻译 API
-
-使用 Google Translate `gtx` 端点（免费，无需 API Key）：
-```
-https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-CN&dt=t&q={text}
-```
-
-> **注意**：MyMemory API 有每日5000词限额，Google 官方 API 需要付费 Key。gtx 端点是目前最稳定的免费方案。
-
-### 翻译脚本模板（手动翻译模式）
-
-少量场地或需要精确翻译时，可手动编写翻译脚本：
-
-```javascript
-// scripts/translate-{country}.cjs
-require('dotenv').config()
-const mysql = require('mysql2/promise')
-
-const translations = [
+**数据结构**（必须严格匹配前端格式）：
+```json
+[
   {
-    slug: 'venue-slug',
-    name_cn: '中文名称',
-    tagline_cn: '中文宣传语（≤30字）',
-    description_cn: `中文描述（按段落组织）`,
-    features: ['特色1', '特色2', ...],  // 每条≤25字
-    venue_types: [
-      { name: 'Country House', name_cn: '乡村庄园' }
-    ],
-    towns: [
-      { name: 'Somerset', name_cn: '萨默塞特郡' }
+    "titleCn": "婚礼场地",
+    "title": "Wedding Venues",
+    "items": [
+      { "labelCn": "悬崖露台仪式区", "label": "Cliffside Terrace Ceremony" },
+      { "labelCn": "海景仪式台", "label": "Sea View Ceremony Platform" }
     ]
   },
-  // ... 更多场地
+  {
+    "titleCn": "住宿",
+    "title": "Accommodation",
+    "items": [
+      { "labelCn": "高级海景套房", "label": "Premium Suite Sea View" }
+    ]
+  }
 ]
+```
 
-async function main() {
-  const pool = mysql.createPool({
+**⚠️ 字段名必须用 `titleCn` / `title` / `labelCn` / `label`**，不能用 `group` / `group_en` / 字符串数组等其他格式，否则前端无法渲染。
+
+写入时使用 `CAST(? AS JSON)` 避免 JSON 双重编码：
+```javascript
+await conn.query(
+  'UPDATE crawled_venues SET amenities = CAST(? AS JSON) WHERE slug = ?',
+  [JSON.stringify(amenities), slug]
+);
+```
+
+### 3. 地点（address + coordinates）
+- 提取地址、经纬度
+- 写入 `address`、`latitude`、`longitude` 字段
+
+### 其他字段
+- `name_cn`：中文名称
+- `tagline` / `tagline_cn`：中英文宣传语（≤30字）
+- `phone`：联系电话（可选）
+- `price_unit`：使用货币符号（`€`、`$`、`£`），不用货币代码（EUR、USD、GBP）
+
+### 插入数据库
+写一个 Node.js 脚本 `scripts/insert-{venue-slug}.cjs`：
+```javascript
+const mysql = require('mysql2/promise');
+require('dotenv').config();
+(async () => {
+  const conn = await mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'verra_voile'
-  })
+  });
+  await conn.query(
+    `INSERT INTO crawled_venues
+     (slug, name, name_cn, country, country_cn, region, city, city_cn,
+      address, postal_code, latitude, longitude,
+      tagline, tagline_cn, description, description_cn,
+      cover_image, gallery_images, venue_types, amenities,
+      capacity, phone, website, source_url, source_name,
+      price, price_unit, sort_order)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [slug, name, name_cn, country, country_cn, region, city, city_cn,
+     address, postal_code, lat, lng, tagline, tagline_cn, desc, desc_cn,
+     coverImage, JSON.stringify(galleryImages), JSON.stringify(venueTypes),
+     JSON.stringify(amenities), capacity, phone, website, sourceUrl, sourceName,
+     price, priceUnit, sortOrder]
+  );
+  await conn.end();
+})();
+```
 
-  for (const t of translations) {
-    // 更新 cv_ 表
-    await pool.execute(
-      `UPDATE cv_{suffix} SET name_cn=?, tagline_cn=?, description_cn=?, features=?, venue_types=?, towns=? WHERE slug=?`,
-      [t.name_cn, t.tagline_cn, t.description_cn, JSON.stringify(t.features), JSON.stringify(t.venue_types), JSON.stringify(t.towns), t.slug]
-    )
-    // 更新 cd_ 表
-    await pool.execute(
-      `UPDATE cd_{suffix} SET name_cn=?, tagline_cn=?, description_cn=? WHERE slug=?`,
-      [t.name_cn, t.tagline_cn, t.description_cn, t.slug]
-    )
-  }
+**⚠️ JSON 字段（gallery_images, venue_types, amenities）必须用 `CAST(? AS JSON)` 写入**，否则 mysql2 会双重编码导致前端 `JSON.parse()` 失败。
 
-  await pool.end()
-  console.log('All translations done!')
+---
+
+## 第二步：从 URL B 下载高清图
+
+### 2.1 用 Browser Agent 抓取图片 URL
+访问 URL B（官网），遍历首页、Gallery、Weddings 等页面，提取所有高清图片 URL。
+
+**不同网站的图片 CDN 域名不同**：
+- Squarespace 站点：`images.squarespace-cdn.com`，加 `?w=2500` 获取高分辨率
+- GuestCentric 站点：`static.guestcentric.net` 或 `secure.guestcentric.net`
+- WordPress 站点：`wp-content/uploads/` 路径
+- 其他：直接从页面 `<img>` 标签和 CSS 背景中提取
+
+### 2.2 下载图片到后端
+
+**无 CDN 防盗链的站点**：直接用 Node.js https 模块下载（更快更简单）：
+```javascript
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+const SAVE_DIR = '/Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/{venue-slug}/';
+const PREFIX = 'var'; // 图片前缀，如 var-000.jpg
+
+function download(url, filepath) {
+  return new Promise((resolve, reject) => {
+    fs.mkdirSync(path.dirname(filepath), { recursive: true });
+    const req = https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        return download(res.headers.location, filepath).then(resolve).catch(reject);
+      }
+      if (res.statusCode !== 200) {
+        res.resume();
+        return reject(new Error(`HTTP ${res.statusCode}: ${url}`));
+      }
+      const ws = fs.createWriteStream(filepath);
+      res.pipe(ws);
+      ws.on('finish', () => { ws.close(); resolve(filepath); });
+    });
+    req.on('error', reject);
+    req.setTimeout(15000, () => { req.destroy(); reject(new Error('timeout')); });
+  });
 }
-
-main().catch(e => { console.error(e.message); process.exit(1) })
 ```
 
-### 翻译注意事项
-
-1. **JSON 字段翻译**：features/venue_types/towns 是 JSON 列，不是独立的 _cn 列。翻译时直接更新原字段，将中文内容写入 JSON 的 name_cn 属性或替换为中文数组
-2. **tagline_cn 长度限制**：VARCHAR(500)，超长描述会报 "Data too long" 错误。保持简洁，≤30字
-3. **description_cn 格式**：按 `\n\n` 分段，保留场地介绍、设施列表等结构
-4. **翻译时机**：爬取完成后立即翻译，避免遗漏
-5. **同步更新 cv_ 和 cd_ 表**：两个表的 name_cn/tagline_cn/description_cn 需保持一致
-
----
-
-## 第四部分：后端 API
-
-| 接口 | 说明 |
-|------|------|
-| `GET /api/products/crawled-destinations` | 场地列表（UNION ALL 所有 cd_ 表） |
-| `GET /api/products/crawled-destinations/:slug` | 场地详情（逐表查找） |
-| `GET /api/products/crawled-venues/:slug` | 场地详情（逐表查找 cv_ 表，含 rating） |
-
-实现：`/Users/hongli/WorkSpace/Verra-Voile-End/src/routes/products.js`
-
-**核心逻辑**：API 动态发现所有 `cd_` / `cv_` 表，UNION ALL 查询列表，逐表查找详情。无需手动维护合并逻辑，新增国家表后自动生效。
-
----
-
-## 第五部分：前端渲染规范
-
-### 路由
-- 详情页：`/venue/:slug` → CrawledVenueDetail
-- 国家列表：`/europe/:country` → CrawledCountries
-- Destinations：`/destinations` → Destinations
-
-### 详情页模块顺序
-
-```
-全屏首图 Hero（国家标签 / 名称 / 宣传语 / 评分）
-    ↓
-图片画廊 GalleryCarousel（最多20张高清大图）
-    ↓
-场地描述「关于这里」（正文≥16px，行高≥1.8，max-width 720px 居中）
-    ↓
-特色亮点（左） + 场地类型/位置 tags（右）  ← 并排布局
-    ↓
-预算参考（最低价 Tag，无价格显示「？」） + 宾客规模 tags
-    ↓
-FAQ 手风琴（有数据时展示）
-    ↓
-数据来源链接
+**有 CDN 防盗链的站点**（WeddingWire、Squarespace 等）：用 Puppeteer 绕过：
+```javascript
+const puppeteer = require('/Users/hongli/WorkSpace/Verra-Voile/node_modules/puppeteer');
+// 从前段项目目录运行
+cd /Users/hongli/WorkSpace/Verra-Voile
+node /tmp/download-{venue}-images.cjs
 ```
 
-### 底部预定栏
-- 滚动到「关于这里」可见时滑入
-- 左侧：最低价格（红色），无价格显示「？」
-- 右侧：「咨询」+「立即预定」按钮（复用 VenueDetail 标准样式）
-- 立即预定：添加/移除购物车切换
+### 2.3 格式转换与质量过滤
 
-### 渲染要点
-- **中文优先**：`description_cn || description`，`tagline_cn || tagline`
-- **图片质量第一**：最低 1200px，推荐 1920px+，宁少勿糊
-- **所有图片用 FallbackImage 组件**
-- **Hero 不显示评论条数**，仅显示评分
-- **不提供 mock 数据**：无数据则不展示该模块
-- **响应式**：移动端单列，tag 自动换行
+下载后必须执行两步处理：
+
+**① 转换非 JPEG 格式**（WebP 等）：
+```bash
+for f in /path/to/dir/*.webp; do
+  sips -s format jpeg "$f" --out "${f%.webp}.jpg"
+  rm "$f"
+done
+```
+
+**② 过滤小图**（宽度 < 500px 的缩略图）：
+```bash
+for f in /path/to/dir/*.jpg; do
+  w=$(sips -g pixelWidth "$f" 2>/dev/null | grep pixelWidth | awk '{print $2}')
+  if [ "$w" -lt 500 ] 2>/dev/null; then
+    echo "Deleting: $f (${w}px)"
+    rm -f "$f"
+  fi
+done
+```
+
+**⚠️ 不要以下载数量为准**，官网可能返回大量缩略图。必须按实际像素尺寸过滤后，再更新数据库 gallery_images 数组。
+
+### 2.4 更新数据库图片路径
+```javascript
+// 根据实际保留的文件生成路径数组
+const files = fs.readdirSync(SAVE_DIR).filter(f => f.endsWith('.jpg')).sort();
+const galleryImages = files.map(f => `/uploads/crawled/{venue-slug}/${f}`);
+
+await conn.query(
+  `UPDATE crawled_venues SET cover_image=?, gallery_images=CAST(? AS JSON) WHERE slug=?`,
+  [galleryImages[0], JSON.stringify(galleryImages), slug]
+);
+```
+
+### 2.5 清理旧图片
+删除该场地目录下所有不再使用的旧图片文件。
 
 ---
 
-## 第六部分：数据字段与 AI 处理汇总
+## 第三步：前端渲染
 
-| 模块 | 字段 | AI 处理 |
-|------|------|---------|
-| 描述 | description | 翻译为中文 |
-| 特色 | features | AI 精简每条 ≤25 字 |
-| 图片 | images | 无，使用原图链接 |
-| 场地类型 | venue_types | 翻译为中文 |
-| 位置 | towns | 翻译为中文 |
-| 预算 | budget_ranges | 取最低价，无价格显示「？」 |
-| 宾客规模 | guest_capacities | 无 |
-| FAQ | faq | 翻译为中文 |
-| 评分 | rating | 无，仅数字 |
-| 地址 | location | 翻译为中文 |
+### 详情页结构（DestinationsDetail.tsx）
+```
+Hero 轮播（前 3 张图）
+  ↓
+cd-content 容器
+  ├── 关于我们（cd-about photo-about 样式：标题 + 分割线 + 正文）
+  ├── 场地特色（wt-services 样式：分组标题 + 打勾列表）
+  ├── 地点（dest-detail__location：地址信息）
+  └── 图集（wt-portfolio__columns：瀑布流，跳过前 3 张）
+```
+
+### 列表页卡片（Destinations.tsx）
+```typescript
+// mapApiItem 映射
+name: row.name_cn || row.name
+country: row.country_cn || row.country
+city: row.city_cn || row.city
+tagline: row.tagline_cn || row.tagline || ''
+desc: row.description_preview || ''  // API 已优先返回 description_cn
+```
+
+### 数据映射（mapApiDetail）
+```typescript
+tagline: row.tagline_cn || row.tagline || ''   // ⚠️ 必须优先 tagline_cn
+description: row.description_cn || row.description || ''
+
+// amenities 解析：兼容字符串数组和对象数组两种格式
+const rawAmenities = typeof row.amenities === 'string' ? JSON.parse(row.amenities) : (row.amenities || [])
+amenities = rawAmenities.map((g: any) => ({
+  titleCn: g.titleCn || g.title_cn || g.title || '',
+  title: g.title || '',
+  items: (g.items || []).map((item: any) =>
+    typeof item === 'string' ? { labelCn: item, label: item } : item
+  ),
+}))
+```
+
+### 要点
+- 中文优先：`description_cn || description`、`tagline_cn || tagline`
+- 图集从第 4 张开始（前 3 张用于 Hero 轮播）
+- 图集图片保持原始尺寸（`height: auto`），不强制固定比例
+- 底部预定栏复用 `cd-book-bar` 标准组件
+- 所有图片通过 `/uploads/` 代理到后端
 
 ---
 
-## 注意事项
+## 数据库表结构（crawled_venues）
 
-### 爬取
-1. **严禁在 47.99.138.250 服务器上执行任何爬取操作**，所有爬取只能在本地运行
-2. 只提取 vendor 图片，过滤非场地图
-3. 图片 CDN 三域名都需支持
-4. 图片上限 24 张，使用原图链接不下载本地
-5. 数据写入对应国家的 cv_/cd_ 表，不同国家数据完全隔离
-6. 批量爬取先查已有 slug，跳过已存在的
-7. 测试数据用独立表（如 cv_test_uk），绝不写入正式表（cv_uk）
-8. JS 渲染页面 cheerio 失败时立即用 Browser Agent
-
-### 数据库
-8. 每个国家独立 cv_/cd_ 表，新增国家时先建表
-9. 只增不覆盖，不删除现有数据
-10. country_cn 值必须与 CrawledCountries.tsx COUNTRIES 配置一致
-
-### 渲染
-11. 全中文展示，优先 `_cn` 字段
-12. 画廊紧跟头图
-13. 预算只展示最低价
-14. 位置用 tag 形式（附近城市 + 国家）
-15. FAQ 按需展示
-16. 底部栏复用标准样式，禁止自定义
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| slug | VARCHAR(150) | URL 标识 |
+| name / name_cn | VARCHAR(200) | 英文/中文名 |
+| country / country_cn | VARCHAR(100) | 国家 |
+| region | VARCHAR(100) | 地区（如 Algarve） |
+| city / city_cn | VARCHAR(100) | 城市 |
+| tagline / tagline_cn | VARCHAR(500) | 中英文宣传语 |
+| description | TEXT | 英文描述 |
+| description_cn | TEXT | 中文描述（以场地名称开头） |
+| amenities | JSON | 场地特色（titleCn/title/items 分组结构） |
+| address | VARCHAR(500) | 地址 |
+| postal_code | VARCHAR(20) | 邮编 |
+| latitude / longitude | DECIMAL(10,6) | 坐标 |
+| cover_image | VARCHAR(500) | 封面图路径 |
+| gallery_images | JSON | 图集路径数组 |
+| venue_types | JSON | 场地类型（name/name_cn 对象数组） |
+| capacity | VARCHAR(100) | 宾客容量 |
+| website | VARCHAR(500) | 官网 URL |
+| phone | VARCHAR(50) | 联系电话 |
+| price | INT | 起步价 |
+| price_unit | VARCHAR(20) | 货币符号（€、$、£） |
+| source_url | VARCHAR(500) | 数据来源 URL |
+| source_name | VARCHAR(200) | 来源平台名 |
 
 ---
 
 ## 踩坑记录
 
-### 搜索页分页无法自动化
-WeddingWire 分页由 JS 拦截，puppeteer 自动翻页不可靠。**解决**：用 Browser Agent 手动提取 URL 后硬编码到脚本。
+### CDN 防盗链导致图片下载 403
+Squarespace CDN、WeddingWire CDN（cdn0.bodas.net / cdn0.weddingwire.com）有 Akamai bot 防护，Node.js 直接请求返回 403。
+**解决**：用 Puppeteer 打开图片 URL，通过 canvas 提取 base64 数据。无防盗链的站点直接用 https 模块下载。
 
-### 共享表导致测试数据污染正式数据
-旧架构用共享表 crawled_venues/crawled_destinations，测试数据和正式数据混在一起，互相影响。**解决**：按国家分表（cv_uk, cv_test_uk），彻底隔离。
+### Puppeteer 必须从前段项目运行
+puppeteer 安装在 `/Users/hongli/WorkSpace/Verra-Voile/node_modules/`，从 `/tmp` 或后端目录运行会找不到模块。
+**解决**：`require('/Users/hongli/WorkSpace/Verra-Voile/node_modules/puppeteer')`
 
-### slug 去重跨国影响
-旧架构 `WHERE slug=?` 不限定国家，导致不同国家同 slug 互相跳过。**解决**：分表后每个国家独立表，不存在跨国冲突。
+### 图片必须存储在后端目录
+之前图片存在前端 `uploads/crawled/`，后端通过符号链接引用。前端目录被清空后符号链接断裂，390 张图片全部 404。
+**解决**：图片全部下载到后端 `uploads/crawled/`，禁止使用符号链接。
 
-### 翻译字段类型混淆
-features/venue_types/towns 是 JSON 列，没有独立的 _cn 后缀列。直接 UPDATE 这些字段时，需将整个 JSON 数组替换为中文内容（features）或包含 name_cn 的对象（venue_types/towns）。
+### WebP 格式伪装为 JPEG
+WeddingWire CDN 和部分官网返回的图片实际是 WebP 格式但保存为 .jpg 扩展名，前端无法渲染。
+**解决**：下载后用 `sips -s format jpeg` 批量转换所有非 JPEG 文件。
 
-### budget_ranges 和 guest_capacities 也是英文
-爬取时 budget_ranges.label（如 "Winter from £8,889"）和 guest_capacities（如 "Up to 180 guests"）都是英文。翻译时需一并处理：
-- budget_ranges.label：翻译为中文（如"冬季起价 £8,889"）
-- guest_capacities：翻译为中文（如"最多180位宾客"）
+### MySQL JSON 列双重编码
+对 JSON 类型列通过 `?` 占位符传入 `JSON.stringify()` 结果会导致双重编码，存为逗号分隔字符串而非 JSON 数组，前端 `JSON.parse()` 静默失败。
+**解决**：SQL 中使用 `CAST(? AS JSON)` 确保正确存储为 JSON 数组。
 
-### cd_ 表 venue_types 结构不同
-`cv_` 表的 venue_types 包含 `name` + `name_cn`，但 `cd_` 表可能是 `name` + `name_en` 结构。翻译时需同时更新两个表的 venue_types，确保都有 `name_cn` 字段。
+### amenities 字段名必须匹配前端
+前端期望 `{ titleCn, title, items: [{ labelCn, label }] }`，使用 `group` / `group_en` 等其他字段名会导致渲染空白。
+**解决**：严格按前端接口格式组装数据。
 
-### venue_types 前端渲染英文
-前端渲染 venue_types 时使用了 `v.name`（英文），应改为 `v.name_cn || v.name`。TypeScript 类型定义也需同步更新为 `{ name: string; name_cn?: string }[]`。
+### 官网图片大量缩略图混入
+官网通常提供多种分辨率（缩略图、中图、大图），不加过滤全部下载会导致画廊充斥小图。
+**解决**：下载后用 `sips -g pixelWidth` 检查每张图实际尺寸，删除宽度 < 500px 的图片。
 
-**涉及文件**：
-- CrawledVenueDetail.tsx：详情页场地类型渲染
-- CrawledCountries.tsx：列表页筛选栏场地类型显示
+### 列表 API description_preview 未翻译
+原查询 `LEFT(description, 200)` 只取英文描述，卡片显示英文。
+**解决**：改为 `LEFT(COALESCE(NULLIF(description_cn, ''), description), 200)` 优先中文。
 
-### tagline_cn 超长报错
-VARCHAR(500) 的 tagline_cn 字段，写入过长描述会报 "Data too long for column 'tagline_cn'"。tagline 应保持简洁，≤30字，完整描述放 description_cn。
+### price_unit 使用符号而非代码
+`price_unit` 存 "EUR" 会显示 "EUR5,000"，不直观。
+**解决**：存货币符号 `€`、`$`、`£`，显示为 "€5,000起"。
 
-### 爬取后翻译字段为空
-cheerio/puppeteer 爬取只写入英文原文，_cn 后缀字段和 JSON 中的中文内容全部为空。必须在爬取完成后立即运行翻译脚本，将 name_cn/tagline_cn/description_cn/features/venue_types/towns 全部翻译写入。
+### 图集图片被强制裁剪
+`wt-portfolio__img` 样式设置了 `aspect-ratio: 3/4` + `object-fit: cover`，所有图片被裁成固定比例。
+**解决**：改为 `height: auto` 保持图片原始尺寸，与 Photography 作品展一致。
 
----
+### tagline_cn 未优先显示
+详情页 `mapApiDetail` 中 `tagline` 字段使用了 `row.tagline || ''`，导致显示英文原文而非中文翻译。
+**解决**：改为 `row.tagline_cn || row.tagline || ''`，与列表页 `mapApiItem` 保持一致。所有中文优先字段都应按此模式处理。
 
-## 相关文件
-
-### 爬取与翻译
-- 批量爬取：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/crawl-batch.cjs`
-- 单场地爬取：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/crawl-venue-detail.cjs`
-- puppeteer 模板：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/crawl-uk-puppeteer.cjs`
-- 翻译导出：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/export-for-translate.cjs`
-- 批量翻译：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/batch-translate-file.cjs`
-- 翻译导入：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/import-translated.cjs`
-- 翻译示例：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/translate-test-uk.cjs`
-
-### 后端
-- API 路由：`/Users/hongli/WorkSpace/Verra-Voile-End/src/routes/products.js`
-- 数据库：`/Users/hongli/WorkSpace/Verra-Voile-End/src/db.js`
-
-### 前端
-- 详情页：`/Users/hongli/WorkSpace/Verra-Voile/src/pages/CrawledVenueDetail.tsx`
-- 国家列表：`/Users/hongli/WorkSpace/Verra-Voile/src/pages/CrawledCountries.tsx`
-- Destinations：`/Users/hongli/WorkSpace/Verra-Voile/src/pages/Destinations.tsx`
-- 画廊组件：`/Users/hongli/WorkSpace/Verra-Voile/src/components/common/GalleryCarousel.tsx`
-- 图片组件：`/Users/hongli/WorkSpace/Verra-Voile/src/components/common/FallbackImage.tsx`
-- 路由配置：`/Users/hongli/WorkSpace/Verra-Voile/src/App.tsx`
+### amenities items 为字符串数组时渲染空白
+插入数据时 amenities 的 items 存为字符串数组 `["玻璃幕墙宴会厅", ...]`，但前端渲染访问 `item.labelCn` 属性（期望对象格式），导致场地特色区域显示空白。
+**解决**：在 `mapApiDetail` 中增加自动转换逻辑——`typeof item === 'string' ? { labelCn: item, label: item } : item`，兼容两种数据格式。插入新数据时仍应尽量使用标准对象格式。

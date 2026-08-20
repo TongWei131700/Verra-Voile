@@ -39,7 +39,6 @@ interface FloristDetail {
   pricingComparison: { service: string; traditional: string; amarante: string }[]
   weddingVenues: { name: string; nameCn: string; image: string }[]
   weddingStories: { venue: string; venueCn: string; tagline: string; taglineCn: string; image: string }[]
-  infinityRoseProducts: { slug: string; name: string; nameCn: string; price: number; image: string; desc: string; descCn: string }[]
   testimonials: { couple: string; text: string; textCn: string }[]
   faq: { q: string; a: string }[]
   portfolioImages: string[]
@@ -78,10 +77,6 @@ function mapApiDetail(item: any): FloristDetail {
   const weddingStories = parseJsonField<any[]>(item.wededing_stories || item.wedding_stories).map((s: any) => ({
     venue: s.venue || '', venueCn: s.venue_cn || '',
     tagline: s.tagline || '', taglineCn: s.tagline_cn || '', image: s.image || '',
-  }))
-  const infinityRoseProducts = parseJsonField<any[]>(item.infinity_rose_products).map((p: any) => ({
-    slug: p.slug || '', name: p.name || '', nameCn: p.name_cn || '', price: p.price || 0,
-    image: p.image || '', desc: p.desc || '', descCn: p.desc_cn || '',
   }))
   const testimonials = parseJsonField<any[]>(item.testimonials).map((t: any) => ({
     couple: t.couple || '', text: t.text || '', textCn: t.text_cn || '',
@@ -122,7 +117,6 @@ function mapApiDetail(item: any): FloristDetail {
     pricingComparison,
     weddingVenues,
     weddingStories,
-    infinityRoseProducts,
     testimonials,
     faq,
     portfolioImages,
@@ -522,54 +516,6 @@ export default function FlowersDetail() {
 
 
 
-        {/* 9. 永生玫瑰产品 */}
-        {(() => {
-          if (!detail.infinityRoseProducts?.length) return null
-          const isSelected = (nameCn: string) => selectedFlowers.some(f => f.nameCn === nameCn)
-          const sorted = [...detail.infinityRoseProducts].sort((a, b) => {
-            const aS = isSelected(a.nameCn) ? 0 : 1
-            const bS = isSelected(b.nameCn) ? 0 : 1
-            return aS - bS
-          })
-          return (
-          <section className="cd-block" style={{ marginTop: '2rem' }}>
-            <h2 className="cd-block__title">永生玫瑰系列</h2>
-            <div className="floral-scroll-row">
-              {sorted.map((p, i) => {
-                const selected = isSelected(p.nameCn)
-                const selItem = selectedFlowers.find(f => f.nameCn === p.nameCn)
-                return (
-                  <div key={i} className={`floral-scroll-card${selected ? ' floral-scroll-card--selected' : ''}`} onClick={() => { setModalProduct(p); setModalQty(selItem?.qty || 1) }}>
-                    {selected && (
-                      <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 2, background: '#a07c3a', color: '#fff', fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 3, boxShadow: '0 2px 8px rgba(160,124,58,0.3)' }}>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                        ×{selItem?.qty}
-                      </div>
-                    )}
-                    {p.image && (
-                      <div className="floral-scroll-card__img">
-                        <img src={p.image} alt={p.nameCn} loading="lazy" />
-                      </div>
-                    )}
-                    <div className="floral-scroll-card__body">
-                      <p className="floral-scroll-card__name">{p.nameCn}</p>
-                      <p className="floral-scroll-card__name-en">{p.name}</p>
-                      <hr className="floral-scroll-card__divider" />
-                      <p className="floral-scroll-card__price">
-                        {selected && selItem ? (
-                          <>£{(p.price * selItem.qty).toLocaleString()}</>
-                        ) : (
-                          <>£{p.price}</>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-          )
-        })()}
 
         {/* 11. 作品集 */}
         {(() => {

@@ -188,9 +188,10 @@ export default function DressesDetail() {
     setVideoReady(false)
     videoReadyRef.current = false
     setVideoTimedOut(false)
+    // 2s 后检测视频是否真正在播放（微信等浏览器 canplay 会触发但 autoplay 被阻止）
     const timer = setTimeout(() => {
       if (!videoReadyRef.current) setVideoTimedOut(true)
-    }, 3000)
+    }, 2000)
     return () => clearTimeout(timer)
   }, [detail?.video])
 
@@ -255,7 +256,7 @@ export default function DressesDetail() {
               className={`wt-hero__video${videoReady ? ' wt-hero__video--ready' : ''}`}
               src={detail.video}
               autoPlay muted loop playsInline
-              onCanPlay={() => { videoReadyRef.current = true; setVideoReady(true) }}
+              onPlaying={() => { videoReadyRef.current = true; setVideoReady(true) }}
             />
           ) : (
             detail.images.map((img, i) => (

@@ -141,7 +141,7 @@ export default function Dresses() {
       list = list.filter(p => p.name.toLowerCase().includes(q) || p.nameEn.toLowerCase().includes(q) || p.categoryCn.toLowerCase().includes(q) || p.tagline.toLowerCase().includes(q))
     }
     return list
-  }, [selectedSeries, selectedStyles, searchFilter])
+  }, [allProducts, selectedSeries, selectedStyles, searchFilter])
 
   // 搜索推荐
   const searchSuggestions = useMemo(() => {

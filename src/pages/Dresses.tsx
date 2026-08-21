@@ -128,8 +128,8 @@ export default function Dresses() {
   // 筛选项
   const allSeries = useMemo(() =>
     dressCategoryList.filter(c => c.key !== 'all').map(c => c.label).filter(l => allProducts.some(p => p.categoryCn === l))
-  , [])
-  const allStyles = useMemo(() => extractStyleKeywords(allProducts), [])
+  , [allProducts])
+  const allStyles = useMemo(() => extractStyleKeywords(allProducts), [allProducts])
 
   // 筛选逻辑
   const filteredList = useMemo(() => {

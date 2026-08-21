@@ -131,7 +131,7 @@ export const wonaProducts: DressProduct[] = [
     category: 'atelier',
     categoryCn: 'Atelier 系列',
     tagline: 'Atelier La Femme Edition',
-    desc: 'Eira 礼服是一款大胆、超现代的新娘套装，由上衣和裙子两个独立元素组成，专为热爱时尚前卫设计的新娘而设计。上衣采用精致的正面垂坠设计和系带背面设计，兼具结构性和可调节性。上衣和裙子均饰有柔软的荷叶边和花卉细节，增添质感、动感，并与现代廓形形成浪漫对比。裙子轻盈、飘逸、透明，营造出轻盈飘逸的效果，而短裙则提供遮盖和舒适感。Eira 礼服清新、艺术且轻松时尚，非常适合想要独特、现代和令人难忘的新娘造型的新娘。',
+    desc: 'Eira 礼服是一款大胆、超现代的新娘臻配系列，由上衣和裙子两个独立元素组成，专为热爱时尚前卫设计的新娘而设计。上衣采用精致的正面垂坠设计和系带背面设计，兼具结构性和可调节性。上衣和裙子均饰有柔软的荷叶边和花卉细节，增添质感、动感，并与现代廓形形成浪漫对比。裙子轻盈、飘逸、透明，营造出轻盈飘逸的效果，而短裙则提供遮盖和舒适感。Eira 礼服清新、艺术且轻松时尚，非常适合想要独特、现代和令人难忘的新娘造型的新娘。',
     highlights: ['Atelier La Femme Edition'],
     cover: '/uploads/crawled/dresses/wona-eira/images/00.jpg',
     images: ['/uploads/crawled/dresses/wona-eira/images/00.jpg', '/uploads/crawled/dresses/wona-eira/images/01.jpg', '/uploads/crawled/dresses/wona-eira/images/02.jpg'],
@@ -701,7 +701,7 @@ export const wonaProducts: DressProduct[] = [
     category: 'amore-in-fiore',
     categoryCn: 'Amore in Fiore',
     tagline: 'Amore in Fiore · 现代 · 浪漫',
-    desc: 'Erato 礼服采用优雅的 A 字廓形，将轻盈感与现代优雅融为一体。设计的核心是分层紧身胸衣概念。底部紧身胸衣是透明的，并在背面系带，提供带有一丝诱惑力的结构。在它上面，可以添加可拆卸的透明蕾丝紧身胸衣，打造更细致、浪漫的外观——它也可以系带，可以轻松拆卸或调整，以改变新娘的风格。垂坠缎面罩杯增添柔软感和立体感。裙子采用飘逸的阿玛尼丝绸制成，赋予其飘逸的动感和柔软丝滑的光泽。温柔的裙裾为造型增添了轻松的浪漫气息。 Erato 连衣裙非常适合那些想要在一套轻盈、令人惊叹的套装中兼具极简主义和艺术细节的新娘。',
+    desc: 'Erato 礼服采用优雅的 A 字廓形，将轻盈感与现代优雅融为一体。设计的核心是分层紧身胸衣概念。底部紧身胸衣是透明的，并在背面系带，提供带有一丝诱惑力的结构。在它上面，可以添加可拆卸的透明蕾丝紧身胸衣，打造更细致、浪漫的外观——它也可以系带，可以轻松拆卸或调整，以改变新娘的风格。垂坠缎面罩杯增添柔软感和立体感。裙子采用飘逸的阿玛尼丝绸制成，赋予其飘逸的动感和柔软丝滑的光泽。温柔的裙裾为造型增添了轻松的浪漫气息。 Erato 连衣裙非常适合那些想要在一套轻盈、令人惊叹的臻配系列中兼具极简主义和艺术细节的新娘。',
     highlights: ['A 字 · 直筒廓形', '心形领 · 抹胸', '落地长裙'],
     cover: '/uploads/crawled/dresses/wona-erato/images/00.jpg',
     images: ['/uploads/crawled/dresses/wona-erato/images/00.jpg', '/uploads/crawled/dresses/wona-erato/images/01.jpg', '/uploads/crawled/dresses/wona-erato/images/02.jpg', '/uploads/crawled/dresses/wona-erato/images/03.jpg', '/uploads/crawled/dresses/wona-erato/images/04.jpg', '/uploads/crawled/dresses/wona-erato/images/05.jpg'],
@@ -776,7 +776,7 @@ export const wonaProducts: DressProduct[] = [
     category: 'amore-in-fiore',
     categoryCn: 'Amore in Fiore',
     tagline: 'Amore in Fiore · 现代 · 性感',
-    desc: '大胆而原创的设计，第一眼就令人着迷。 Nemesis 礼服由两个主要元素组成：结构感十足的连体衣和飘逸的罩裙，裙摆以醒目的蝴蝶结优雅地系在腰间。连体衣和裙子均采用褶皱尚蒂伊蕾丝制成。这款连体衣正面饰有优雅的垂坠感，增加了深度和质感。紧身胸衣在后面系带，提供可调节的贴合度和浪漫的细节。裙子采用尚蒂伊蕾丝制成，具有精美的褶皱纹理，并延伸成引人注目的拖地裙裾。腿部大胆的高开衩为这款精致的套装增添了引人注目的时尚前卫气息，使 Nemesis 成为想要彰显个性的新娘的完美选择。',
+    desc: '大胆而原创的设计，第一眼就令人着迷。 Nemesis 礼服由两个主要元素组成：结构感十足的连体衣和飘逸的罩裙，裙摆以醒目的蝴蝶结优雅地系在腰间。连体衣和裙子均采用褶皱尚蒂伊蕾丝制成。这款连体衣正面饰有优雅的垂坠感，增加了深度和质感。紧身胸衣在后面系带，提供可调节的贴合度和浪漫的细节。裙子采用尚蒂伊蕾丝制成，具有精美的褶皱纹理，并延伸成引人注目的拖地裙裾。腿部大胆的高开衩为这款精致的臻配系列增添了引人注目的时尚前卫气息，使 Nemesis 成为想要彰显个性的新娘的完美选择。',
     highlights: ['A 字廓形', '心形领 · 抹胸', '落地长裙'],
     cover: '/uploads/crawled/dresses/wona-nemesis/images/00.jpg',
     images: ['/uploads/crawled/dresses/wona-nemesis/images/00.jpg', '/uploads/crawled/dresses/wona-nemesis/images/01.jpg', '/uploads/crawled/dresses/wona-nemesis/images/02.jpg'],
@@ -1886,7 +1886,7 @@ export const wonaProducts: DressProduct[] = [
     category: 'white',
     categoryCn: 'White 系列',
     tagline: 'White Swan · 现代',
-    desc: '精致套装，简约短款上衣，柔软波浪领口和挺括紧身胸衣。这款半身裙采用合身腰围，呈现出轻盈的 A 字廓形。',
+    desc: '精致臻配系列，简约短款上衣，柔软波浪领口和挺括紧身胸衣。这款半身裙采用合身腰围，呈现出轻盈的 A 字廓形。',
     highlights: ['A 字廓形', '方领', '落地长裙'],
     cover: '/uploads/crawled/dresses/wona-phyllis/images/00.jpg',
     images: ['/uploads/crawled/dresses/wona-phyllis/images/00.jpg', '/uploads/crawled/dresses/wona-phyllis/images/01.jpg', '/uploads/crawled/dresses/wona-phyllis/images/02.jpg', '/uploads/crawled/dresses/wona-phyllis/images/03.jpg'],
@@ -2316,7 +2316,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-adi',
-    name: '阿迪套装 Adi SET',
+    name: '阿迪臻配系列 Adi SET',
     nameEn: 'Adi SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2346,7 +2346,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-artizia',
-    name: '阿里兹亚套装 Aritzia SET',
+    name: '阿里兹亚臻配系列 Aritzia SET',
     nameEn: 'Aritzia SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2361,7 +2361,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-brylee',
-    name: '布莱利套装 Brylee SET',
+    name: '布莱利臻配系列 Brylee SET',
     nameEn: 'Brylee SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2376,7 +2376,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-cami',
-    name: '吊带背心套装 Cami SET',
+    name: '吊带背心臻配系列 Cami SET',
     nameEn: 'Cami SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2391,7 +2391,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-berkley',
-    name: '伯克利套装 Berkley SET',
+    name: '伯克利臻配系列 Berkley SET',
     nameEn: 'Berkley SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2406,7 +2406,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-catarsis',
-    name: '泻药套装 Catarsis SET',
+    name: '泻药臻配系列 Catarsis SET',
     nameEn: 'Catarsis SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2421,7 +2421,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-dune',
-    name: '沙丘套装 Dune SET',
+    name: '沙丘臻配系列 Dune SET',
     nameEn: 'Dune SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2436,7 +2436,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-harvest',
-    name: '收获套装 Harvest SET',
+    name: '收获臻配系列 Harvest SET',
     nameEn: 'Harvest SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2466,7 +2466,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-fleur',
-    name: '芙蓉套装 Fleur SET',
+    name: '芙蓉臻配系列 Fleur SET',
     nameEn: 'Fleur SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2481,7 +2481,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-hunter',
-    name: '猎人套装 Hunter SET',
+    name: '猎人臻配系列 Hunter SET',
     nameEn: 'Hunter SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2511,7 +2511,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-kailani',
-    name: '凯拉尼套装 Kailani SET',
+    name: '凯拉尼臻配系列 Kailani SET',
     nameEn: 'Kailani SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2526,7 +2526,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-kennedy',
-    name: '肯尼迪套装 Kennedy SET',
+    name: '肯尼迪臻配系列 Kennedy SET',
     nameEn: 'Kennedy SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2541,7 +2541,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-miller',
-    name: '米勒套装 Miller SET',
+    name: '米勒臻配系列 Miller SET',
     nameEn: 'Miller SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2556,7 +2556,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-mars',
-    name: '火星套装 Mars SET',
+    name: '火星臻配系列 Mars SET',
     nameEn: 'Mars SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2571,7 +2571,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-narice',
-    name: '纳里斯套装 Narice SET',
+    name: '纳里斯臻配系列 Narice SET',
     nameEn: 'Narice SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2586,7 +2586,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-piper',
-    name: '派珀套装 Piper SET',
+    name: '派珀臻配系列 Piper SET',
     nameEn: 'Piper SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2616,7 +2616,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-attika',
-    name: '阿提卡套装 Attika SET',
+    name: '阿提卡臻配系列 Attika SET',
     nameEn: 'Attika SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2631,7 +2631,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-troia',
-    name: '特罗亚套装 Troia SET',
+    name: '特罗亚臻配系列 Troia SET',
     nameEn: 'Troia SET',
     category: 'couture',
     categoryCn: 'Couture 高定系列',
@@ -2645,7 +2645,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-bronx',
-    name: '布朗克斯套装 Bronx SET',
+    name: '布朗克斯臻配系列 Bronx SET',
     nameEn: 'Bronx SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2660,7 +2660,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-chara',
-    name: '夏拉套装 Chara SET',
+    name: '夏拉臻配系列 Chara SET',
     nameEn: 'Chara SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2705,7 +2705,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-demetria',
-    name: '德米特里亚套装 Demetria SET',
+    name: '德米特里亚臻配系列 Demetria SET',
     nameEn: 'Demetria SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2720,7 +2720,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-dove',
-    name: '鸽子套装 Dove SET',
+    name: '鸽子臻配系列 Dove SET',
     nameEn: 'Dove SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2735,7 +2735,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-etta',
-    name: '埃塔套装 Etta SET',
+    name: '埃塔臻配系列 Etta SET',
     nameEn: 'Etta SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2765,7 +2765,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-genesis',
-    name: '创世套装 Genesis SET',
+    name: '创世臻配系列 Genesis SET',
     nameEn: 'Genesis SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2795,7 +2795,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-hildred',
-    name: '希尔德雷德套装 Hildred SET',
+    name: '希尔德雷德臻配系列 Hildred SET',
     nameEn: 'Hildred SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2810,7 +2810,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-katniss',
-    name: '凯特尼斯套装 Katniss SET',
+    name: '凯特尼斯臻配系列 Katniss SET',
     nameEn: 'Katniss SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2825,7 +2825,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-leonie',
-    name: '莱奥妮套装 Leonie SET',
+    name: '莱奥妮臻配系列 Leonie SET',
     nameEn: 'Leonie SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2840,7 +2840,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-legend',
-    name: '传奇套装 Legend SET',
+    name: '传奇臻配系列 Legend SET',
     nameEn: 'Legend SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2855,7 +2855,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-lolita',
-    name: '洛丽塔套装 Lolita SET',
+    name: '洛丽塔臻配系列 Lolita SET',
     nameEn: 'Lolita SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2870,7 +2870,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-marlowe',
-    name: '马洛套装 Marlowe SET',
+    name: '马洛臻配系列 Marlowe SET',
     nameEn: 'Marlowe SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2915,7 +2915,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-megara',
-    name: '麦加拉套装 Megara SET',
+    name: '麦加拉臻配系列 Megara SET',
     nameEn: 'Megara SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2930,7 +2930,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-nicoline',
-    name: '尼古丁套装 Nicoline SET',
+    name: '尼古丁臻配系列 Nicoline SET',
     nameEn: 'Nicoline SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2945,7 +2945,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-mendosa',
-    name: '门多萨套装 Mendosa SET',
+    name: '门多萨臻配系列 Mendosa SET',
     nameEn: 'Mendosa SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -2990,7 +2990,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-rodeo',
-    name: '牛仔竞技套装 Rodeo SET',
+    name: '牛仔竞技臻配系列 Rodeo SET',
     nameEn: 'Rodeo SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3020,7 +3020,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-sequoia',
-    name: '红杉套装 Sequoia SET',
+    name: '红杉臻配系列 Sequoia SET',
     nameEn: 'Sequoia SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3035,7 +3035,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-sabotage',
-    name: '破坏套装 Sabotage SET',
+    name: '破坏臻配系列 Sabotage SET',
     nameEn: 'Sabotage SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3050,7 +3050,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-safari',
-    name: '狩猎套装 Safari SET',
+    name: '狩猎臻配系列 Safari SET',
     nameEn: 'Safari SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3065,7 +3065,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-sergine',
-    name: '瑟吉娜套装 Sergine SET',
+    name: '瑟吉娜臻配系列 Sergine SET',
     nameEn: 'Sergine SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3080,7 +3080,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-sophia',
-    name: '索菲亚套装 Sophia SET',
+    name: '索菲亚臻配系列 Sophia SET',
     nameEn: 'Sophia SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3095,7 +3095,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-solaris',
-    name: '索拉里斯套装 Solaris SET',
+    name: '索拉里斯臻配系列 Solaris SET',
     nameEn: 'Solaris SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3110,7 +3110,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-shanti',
-    name: '香提套装 Shanti SET',
+    name: '香提臻配系列 Shanti SET',
     nameEn: 'Shanti SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3125,7 +3125,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-stone',
-    name: '石材套装 Stone SET',
+    name: '石材臻配系列 Stone SET',
     nameEn: 'Stone SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3140,7 +3140,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-palmer',
-    name: '帕尔默套装 Palmer SET',
+    name: '帕尔默臻配系列 Palmer SET',
     nameEn: 'Palmer SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3170,7 +3170,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-tali',
-    name: '塔利套装 Tali SET',
+    name: '塔利臻配系列 Tali SET',
     nameEn: 'Tali SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3185,7 +3185,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-venette',
-    name: '维内特套装 Venette SET',
+    name: '维内特臻配系列 Venette SET',
     nameEn: 'Venette SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3200,7 +3200,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-verona',
-    name: '维罗纳套装 Verona SET',
+    name: '维罗纳臻配系列 Verona SET',
     nameEn: 'Verona SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3215,7 +3215,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-wilda',
-    name: '维尔达套装 Wilda SET',
+    name: '维尔达臻配系列 Wilda SET',
     nameEn: 'Wilda SET',
     category: 'gemini',
     categoryCn: 'Gemini Collection',
@@ -3336,7 +3336,7 @@ export const wonaProducts: DressProduct[] = [
     category: 'atelier',
     categoryCn: 'Atelier 系列',
     tagline: 'Atelier Signature Edition · 经典',
-    desc: '这款 A 字形薄纱婚纱是经典浪漫的缩影，蕾丝珠饰紧身胸衣增添了永恒的优雅气息。露肩领口给人一种优雅和精致的感觉。为了使造型更加完整，它还配有可拆卸的斗篷和配套的头纱，使其成为寻求传统魅力和现代多功能性的新娘的梦想套装。',
+    desc: '这款 A 字形薄纱婚纱是经典浪漫的缩影，蕾丝珠饰紧身胸衣增添了永恒的优雅气息。露肩领口给人一种优雅和精致的感觉。为了使造型更加完整，它还配有可拆卸的斗篷和配套的头纱，使其成为寻求传统魅力和现代多功能性的新娘的梦想臻配系列。',
     highlights: ['A 字廓形', '落地长裙'],
     cover: '/uploads/crawled/dresses/wona-katania/images/00.jpg',
     images: ['/uploads/crawled/dresses/wona-katania/images/00.jpg', '/uploads/crawled/dresses/wona-katania/images/01.jpg', '/uploads/crawled/dresses/wona-katania/images/02.jpg', '/uploads/crawled/dresses/wona-katania/images/03.jpg', '/uploads/crawled/dresses/wona-katania/images/04.jpg', '/uploads/crawled/dresses/wona-katania/images/05.jpg'],
@@ -3379,7 +3379,7 @@ export const wonaProducts: DressProduct[] = [
     category: 'atelier',
     categoryCn: 'Atelier 系列',
     tagline: 'Atelier Signature Edition · 浪漫',
-    desc: '这款 A 字形蕾丝婚纱充满魅力，紧身胸衣饰有精致的 3D 花卉细节，一直延伸到裙子的顶部。鸡心领增添了一抹永恒的魅力，而可拆卸的薄纱短上衣和宽松的袖子完美融合了浪漫和多功能性，使其成为寻求真正独特外观的新娘的梦想套装。',
+    desc: '这款 A 字形蕾丝婚纱充满魅力，紧身胸衣饰有精致的 3D 花卉细节，一直延伸到裙子的顶部。鸡心领增添了一抹永恒的魅力，而可拆卸的薄纱短上衣和宽松的袖子完美融合了浪漫和多功能性，使其成为寻求真正独特外观的新娘的梦想臻配系列。',
     highlights: ['A 字廓形', '抹胸', '落地长裙'],
     cover: '/uploads/crawled/dresses/wona-noah/images/00.jpg',
     images: ['/uploads/crawled/dresses/wona-noah/images/00.jpg', '/uploads/crawled/dresses/wona-noah/images/01.jpg', '/uploads/crawled/dresses/wona-noah/images/02.jpg', '/uploads/crawled/dresses/wona-noah/images/03.jpg', '/uploads/crawled/dresses/wona-noah/images/04.jpg'],
@@ -3529,7 +3529,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-birdy',
-    name: '鸟人套装 Birdy SET',
+    name: '鸟人臻配系列 Birdy SET',
     nameEn: 'Birdy SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3544,7 +3544,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-demia',
-    name: '德米亚套装 Demia SET',
+    name: '德米亚臻配系列 Demia SET',
     nameEn: 'Demia SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3558,7 +3558,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-callisto',
-    name: '木卫四套装 Callisto SET',
+    name: '木卫四臻配系列 Callisto SET',
     nameEn: 'Callisto SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3617,7 +3617,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-enola',
-    name: '伊诺拉套装 Enola SET',
+    name: '伊诺拉臻配系列 Enola SET',
     nameEn: 'Enola SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3647,7 +3647,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-electra',
-    name: '伊莱克特拉套装 Electra SET',
+    name: '伊莱克特拉臻配系列 Electra SET',
     nameEn: 'Electra SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3667,7 +3667,7 @@ export const wonaProducts: DressProduct[] = [
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
     tagline: 'Alma de Oro · 性感',
-    desc: '隆重推出我们令人惊叹的两件式婚纱，现代与传统的完美融合。这款精致的套装由短 A 字连衣裙和梦幻薄纱罩裙组成，让您轻松从仪式过渡到招待会。紧身胸衣饰有优雅的垂坠，增添了一丝精致和浪漫。鸡心领口完美勾勒出你的颈下三角区，增强你的自然美。为了增加多功能性，这款连衣裙配有可拆卸袖子，让您可以自由定制自己的造型，并在遮盖力和魅力之间实现完美平衡。短款连衣裙展现双腿的优雅与魅力，薄纱罩裙随着你的一举一动轻轻飘逸，增添一丝空灵魅惑。',
+    desc: '隆重推出我们令人惊叹的两件式婚纱，现代与传统的完美融合。这款精致的臻配系列由短 A 字连衣裙和梦幻薄纱罩裙组成，让您轻松从仪式过渡到招待会。紧身胸衣饰有优雅的垂坠，增添了一丝精致和浪漫。鸡心领口完美勾勒出你的颈下三角区，增强你的自然美。为了增加多功能性，这款连衣裙配有可拆卸袖子，让您可以自由定制自己的造型，并在遮盖力和魅力之间实现完美平衡。短款连衣裙展现双腿的优雅与魅力，薄纱罩裙随着你的一举一动轻轻飘逸，增添一丝空灵魅惑。',
     highlights: ['A 字廓形', '心形领', '落地长裙'],
     cover: '/uploads/crawled/dresses/wona-havanna/images/00.jpg',
     images: ['/uploads/crawled/dresses/wona-havanna/images/00.jpg', '/uploads/crawled/dresses/wona-havanna/images/01.jpg', '/uploads/crawled/dresses/wona-havanna/images/02.jpg'],
@@ -3676,7 +3676,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-jackie',
-    name: '杰基套装 Jackie SET',
+    name: '杰基臻配系列 Jackie SET',
     nameEn: 'Jackie SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3691,7 +3691,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-keira',
-    name: '凯拉套装 Keira SET',
+    name: '凯拉臻配系列 Keira SET',
     nameEn: 'Keira SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3736,7 +3736,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-hazel',
-    name: '榛子套装 Hazel SET',
+    name: '榛子臻配系列 Hazel SET',
     nameEn: 'Hazel SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3765,7 +3765,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-lotus',
-    name: '莲花套装 Lotus SET',
+    name: '莲花臻配系列 Lotus SET',
     nameEn: 'Lotus SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3795,7 +3795,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-mellina',
-    name: '梅利纳套装 Mellina SET',
+    name: '梅利纳臻配系列 Mellina SET',
     nameEn: 'Mellina SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3840,7 +3840,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-mindy',
-    name: '明迪套装 Mindy SET',
+    name: '明迪臻配系列 Mindy SET',
     nameEn: 'Mindy SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3854,7 +3854,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-odette',
-    name: '奥黛特套装 Odette SET',
+    name: '奥黛特臻配系列 Odette SET',
     nameEn: 'Odette SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3869,7 +3869,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-peony',
-    name: '牡丹套装 Peony SET',
+    name: '牡丹臻配系列 Peony SET',
     nameEn: 'Peony SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3899,7 +3899,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-preston',
-    name: '普雷斯顿套装 Preston SET',
+    name: '普雷斯顿臻配系列 Preston SET',
     nameEn: 'Preston SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3914,7 +3914,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-priya',
-    name: '普里亚套装 Priya SET',
+    name: '普里亚臻配系列 Priya SET',
     nameEn: 'Priya SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3944,7 +3944,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-santafe',
-    name: '圣达菲套装 Santafe SET',
+    name: '圣达菲臻配系列 Santafe SET',
     nameEn: 'Santafe SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3959,7 +3959,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-sapho',
-    name: '萨福套装 Sapho SET',
+    name: '萨福臻配系列 Sapho SET',
     nameEn: 'Sapho SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -3973,12 +3973,12 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-satie',
-    name: '萨蒂套装 Satie SET',
+    name: '萨蒂臻配系列 Satie SET',
     nameEn: 'Satie SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
     tagline: 'Alma de Oro · 现代',
-    desc: '看看我们精美的美人鱼婚纱，这是一件充满魅力和精致的杰作。这件礼服采用光泽面料精心制作而成，散发出光芒四射的光芒，让每个人都惊叹不已。方领口增添了一丝现代优雅气息，而透明垂坠长袖则散发着空灵魅力。为了提升您的新娘造型，可拆卸斗篷采用相同面料制成，从腰间优雅垂落，增添了一种富丽堂皇的感觉。在这个迷人的套装中拥抱您的特殊日子的魅力。',
+    desc: '看看我们精美的美人鱼婚纱，这是一件充满魅力和精致的杰作。这件礼服采用光泽面料精心制作而成，散发出光芒四射的光芒，让每个人都惊叹不已。方领口增添了一丝现代优雅气息，而透明垂坠长袖则散发着空灵魅力。为了提升您的新娘造型，可拆卸斗篷采用相同面料制成，从腰间优雅垂落，增添了一种富丽堂皇的感觉。在这个迷人的臻配系列中拥抱您的特殊日子的魅力。',
     highlights: ['直筒廓形', '方领', '落地长裙'],
     cover: '/uploads/crawled/dresses/wona-satie/images/00.jpg',
     images: ['/uploads/crawled/dresses/wona-satie/images/00.jpg', '/uploads/crawled/dresses/wona-satie/images/01.jpg', '/uploads/crawled/dresses/wona-satie/images/02.jpg', '/uploads/crawled/dresses/wona-satie/images/03.jpg'],
@@ -3987,7 +3987,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-sevil',
-    name: '塞维尔套装 Sevil SET',
+    name: '塞维尔臻配系列 Sevil SET',
     nameEn: 'Sevil SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -4015,7 +4015,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-valdes',
-    name: '瓦尔德斯套装 Valdes SET',
+    name: '瓦尔德斯臻配系列 Valdes SET',
     nameEn: 'Valdes SET',
     category: 'alma-de-oro',
     categoryCn: 'Alma de Oro',
@@ -4044,7 +4044,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-alaska',
-    name: '阿拉斯加套装 Alaska SET',
+    name: '阿拉斯加臻配系列 Alaska SET',
     nameEn: 'Alaska SET',
     category: 'miami-bliss',
     categoryCn: 'Miami Bliss',
@@ -4058,7 +4058,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-arizona-set',
-    name: '亚利桑那套装 Arizona SET',
+    name: '亚利桑那臻配系列 Arizona SET',
     nameEn: 'Arizona SET',
     category: 'miami-bliss',
     categoryCn: 'Miami Bliss',
@@ -4088,7 +4088,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-colorado-set',
-    name: '科罗拉多套装 Colorado SET',
+    name: '科罗拉多臻配系列 Colorado SET',
     nameEn: 'Colorado SET',
     category: 'miami-bliss',
     categoryCn: 'Miami Bliss',
@@ -4102,7 +4102,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-dakota',
-    name: '达科他套装 Dakota SET',
+    name: '达科他臻配系列 Dakota SET',
     nameEn: 'Dakota SET',
     category: 'miami-bliss',
     categoryCn: 'Miami Bliss',
@@ -4203,7 +4203,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-memphis',
-    name: '孟菲斯套装 Memphis SET',
+    name: '孟菲斯臻配系列 Memphis SET',
     nameEn: 'Memphis SET',
     category: 'miami-bliss',
     categoryCn: 'Miami Bliss',
@@ -4217,7 +4217,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-montana',
-    name: '蒙大拿州套装 Montana SET',
+    name: '蒙大拿州臻配系列 Montana SET',
     nameEn: 'Montana SET',
     category: 'miami-bliss',
     categoryCn: 'Miami Bliss',
@@ -4245,7 +4245,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-tennessee',
-    name: '田纳西州套装 Tennessee SET',
+    name: '田纳西州臻配系列 Tennessee SET',
     nameEn: 'Tennessee SET',
     category: 'miami-bliss',
     categoryCn: 'Miami Bliss',
@@ -4289,7 +4289,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-vermont',
-    name: '佛蒙特州套装 Vermont SET',
+    name: '佛蒙特州臻配系列 Vermont SET',
     nameEn: 'Vermont SET',
     category: 'miami-bliss',
     categoryCn: 'Miami Bliss',
@@ -4597,7 +4597,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-alma',
-    name: '阿尔玛套装 Alma SET',
+    name: '阿尔玛臻配系列 Alma SET',
     nameEn: 'Alma SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4627,7 +4627,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-astra',
-    name: '阿斯特拉套装 Astra SET',
+    name: '阿斯特拉臻配系列 Astra SET',
     nameEn: 'Astra SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4657,7 +4657,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-barbie',
-    name: '芭比套装 Barbie SET',
+    name: '芭比臻配系列 Barbie SET',
     nameEn: 'Barbie SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4672,7 +4672,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-bellini',
-    name: '贝里尼套装 Bellini SET',
+    name: '贝里尼臻配系列 Bellini SET',
     nameEn: 'Bellini SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4686,7 +4686,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-bordo',
-    name: '波尔多套装 Bordo SET',
+    name: '波尔多臻配系列 Bordo SET',
     nameEn: 'Bordo SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4716,7 +4716,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-brava',
-    name: '布拉瓦套装 Brava SET',
+    name: '布拉瓦臻配系列 Brava SET',
     nameEn: 'Brava SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4760,7 +4760,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-bronte',
-    name: '勃朗特套装 Bronte SET',
+    name: '勃朗特臻配系列 Bronte SET',
     nameEn: 'Bronte SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4804,7 +4804,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-cassandra',
-    name: '卡桑德拉套装 Cassandra SET',
+    name: '卡桑德拉臻配系列 Cassandra SET',
     nameEn: 'Cassandra SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4848,7 +4848,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-clary',
-    name: '克拉丽套装 Clary SET',
+    name: '克拉丽臻配系列 Clary SET',
     nameEn: 'Clary SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4877,7 +4877,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-clio',
-    name: '克里奥套装 Clio SET',
+    name: '克里奥臻配系列 Clio SET',
     nameEn: 'Clio SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4892,7 +4892,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-clode',
-    name: '克洛德套装 Clode SET',
+    name: '克洛德臻配系列 Clode SET',
     nameEn: 'Clode SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4906,7 +4906,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-coco',
-    name: '可可套装 Coco SET',
+    name: '可可臻配系列 Coco SET',
     nameEn: 'Coco SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4921,7 +4921,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-cole',
-    name: '科尔套装 Cole SET',
+    name: '科尔臻配系列 Cole SET',
     nameEn: 'Cole SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4965,7 +4965,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-cornelia',
-    name: '科妮莉亚套装 Cornelia SET',
+    name: '科妮莉亚臻配系列 Cornelia SET',
     nameEn: 'Cornelia SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4980,7 +4980,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-dara',
-    name: '达拉套装 Dara SET',
+    name: '达拉臻配系列 Dara SET',
     nameEn: 'Dara SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -4995,7 +4995,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-devi',
-    name: '黛维套装 Devi SET',
+    name: '黛维臻配系列 Devi SET',
     nameEn: 'Devi SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5025,7 +5025,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-diaz',
-    name: '迪亚兹套装 Diaz SET',
+    name: '迪亚兹臻配系列 Diaz SET',
     nameEn: 'Diaz SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5069,7 +5069,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-esperaza',
-    name: '埃斯佩拉萨套装 Esperaza SET',
+    name: '埃斯佩拉萨臻配系列 Esperaza SET',
     nameEn: 'Esperaza SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5098,7 +5098,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-fresia',
-    name: '小苍兰套装 Fresia SET',
+    name: '小苍兰臻配系列 Fresia SET',
     nameEn: 'Fresia SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5113,7 +5113,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-goddess',
-    name: '女神套装 Goddess SET',
+    name: '女神臻配系列 Goddess SET',
     nameEn: 'Goddess SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5173,7 +5173,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-hermosa',
-    name: '赫莫莎套装 Hermosa SET',
+    name: '赫莫莎臻配系列 Hermosa SET',
     nameEn: 'Hermosa SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5188,7 +5188,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-kara',
-    name: '卡拉套装 Kara SET',
+    name: '卡拉臻配系列 Kara SET',
     nameEn: 'Kara SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5217,7 +5217,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-linnie',
-    name: '林妮套装 Linnie SET',
+    name: '林妮臻配系列 Linnie SET',
     nameEn: 'Linnie SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5246,7 +5246,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-lovely',
-    name: '可爱套装 Lovely SET',
+    name: '可爱臻配系列 Lovely SET',
     nameEn: 'Lovely SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5261,7 +5261,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-keltie',
-    name: '凯尔蒂套装 Keltie SET',
+    name: '凯尔蒂臻配系列 Keltie SET',
     nameEn: 'Keltie SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5290,7 +5290,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-lucette',
-    name: '卢塞特套装 Lucette SET',
+    name: '卢塞特臻配系列 Lucette SET',
     nameEn: 'Lucette SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5320,7 +5320,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-mercy',
-    name: '慈悲套装 Mercy SET',
+    name: '慈悲臻配系列 Mercy SET',
     nameEn: 'Mercy SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5335,7 +5335,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-lucia',
-    name: '露西亚套装 Lucia SET',
+    name: '露西亚臻配系列 Lucia SET',
     nameEn: 'Lucia SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5380,7 +5380,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-morris',
-    name: '莫里斯套装 Morris SET',
+    name: '莫里斯臻配系列 Morris SET',
     nameEn: 'Morris SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',
@@ -5395,7 +5395,7 @@ export const wonaProducts: DressProduct[] = [
   },
   {
     slug: 'wona-moore',
-    name: '摩尔套装 Moore SET',
+    name: '摩尔臻配系列 Moore SET',
     nameEn: 'Moore SET',
     category: 'endless-styles',
     categoryCn: 'Endless Styles',

@@ -53,14 +53,33 @@ Visit https://wonaconcept.com/{slug}/ and extract ALL product information:
 Return the complete organized list of URLs.
 ```
 
-### Step 3：提取信息整理
+### Step 3：翻译为中文
+
+爬取到的英文数据**必须立即翻译**后再入库，所有面向用户的字段都使用中文：
+
+| 字段 | 翻译规则 | 示例 |
+|------|----------|------|
+| `name` | `中文名 英文名` 格式 | `阿诺 Aveline` |
+| `name_en` | 保留英文原名 | `Aveline` |
+| `tagline` | 翻译系列名 | `工坊传承系列`（原 Atelier Heritage Edition） |
+| `description` | 整段翻译为流畅中文 | 塔夫绸、缎面与蕾丝交织出… |
+| `highlights` | 每个标签翻译 | `["美人鱼廓形", "波西米亚风格", "及地长裙"]` |
+
+**翻译要点**：
+- 廓形术语：Mermaid→美人鱼廓形、A-line→A字廓形、Ball gown→蓬蓬裙
+- 领口术语：Sweetheart→心形领、Strapless→抹胸、Asymmetric→不对称
+- 面料术语：Taffeta→塔夫绸、Satin→缎面、Lace→蕾丝、Tulle→薄纱
+- 风格术语：Boho→波西米亚风格、Romantic→浪漫风格、Minimalist→极简风格
+- 裙长术语：Floor length→及地长裙、Tea length→中长裙、Mini→迷你短裙
+
+### Step 4：提取信息整理
 
 | 字段 | 说明 | 示例 |
 |------|------|------|
-| 名称 | 中文名 + 英文名 | `克拉 Carat` / `Carat` |
+| 名称 | 中文名 + 英文名（已翻译） | `阿诺 Aveline` / `Aveline` |
 | 系列 | 所属产品线 | `Atelier Heritage Edition` |
-| 描述 | 翻译为中文的完整描述 | A 字廓形、心形领… |
-| 亮点 | 4-6 个关键词标签 | `['A 字廓形', '心形领 · 抹胸', '落地长裙']` |
+| 描述 | **已翻译为中文**的完整描述 | 塔夫绸、缎面与蕾丝交织出… |
+| 亮点 | 4-6 个**已翻译**关键词标签 | `['美人鱼廓形', '波西米亚风格', '及地长裙']` |
 | 图片 | 全部高清 JPG URL | 通常 5-9 张 |
 | 视频 | MP4/WebM URL（可选） | 部分商品有 |
 | 分类 | 对应前端 DressCategory | `maison-blanche` / `atelier` / `veils` 等 |
@@ -128,6 +147,11 @@ wait
 
 ## 第三部分：数据库插入
 
+### ⚠️ 入库前必须确认翻译
+
+所有面向用户字段（name、tagline、description、highlights）**必须是中文**，不可将英文原文直接入库。
+翻译工作在爬取完成后、数据库插入前完成。
+
 ### 表结构（crawled_dresses）
 
 ```sql
@@ -178,9 +202,27 @@ await conn.execute(
 - 视频：`/uploads/crawled/dresses/{slug}/videos/video.mp4`
 
 ### 价格规范
-- 单位：€（欧元）
-- 范围：€100 ~ €500（礼服），€100 ~ €300（配饰/头纱）
-- 根据品牌定位和系列定价
+- **所有礼服必须有价格**，禁止留空或设为 NULL
+- 单位：€（欧元），显示格式 `€{price} 起`
+- 范围：€100 ~ €400（礼服），€100 ~ €300（配饰/头纱）
+- 定价策略：在对应系列的价格区间内随机取值，参考各系列均价：
+
+| 系列 | 均价 | 区间 |
+|------|------|------|
+| Atelier 系列 | ~€250 | €100 ~ €400 |
+| Maison Blanche | ~€220 | €100 ~ €320 |
+| Couture 高定 | ~€240 | €100 ~ €400 |
+| White 系列 | ~€240 | €100 ~ €380 |
+| Bridal Alchemy | ~€255 | €100 ~ €400 |
+| Miami Bliss | ~€290 | €100 ~ €400 |
+| Endless Styles | ~€250 | €100 ~ €400 |
+| Gemini Collection | ~€250 | €100 ~ €400 |
+| Alma de Oro | ~€250 | €100 ~ €390 |
+| Amore in Fiore | ~€220 | €100 ~ €400 |
+| Veils 头纱 | ~€180 | €150 ~ €200 |
+
+- 新商品入库时，根据其所属系列，在该系列均价附近随机取值（±€50）
+- 底部预定栏始终显示价格，不做条件判断
 
 ---
 
@@ -334,14 +376,15 @@ const filteredList = useMemo(() => { ... }, [allProducts, selectedSeries, select
 ```
 1. [ ] 检查商品是否已存在（数据库查询）
 2. [ ] 使用 Browser Agent 爬取页面（名称、描述、图片URL、视频URL、系列）
-3. [ ] 下载图片/视频到本地后端目录
+3. [ ] 翻译所有英文内容为中文（name、tagline、description、highlights）
+4. [ ] 下载图片/视频到本地后端目录
      mkdir -p uploads/crawled/dresses/{slug}/images videos/
      curl 下载到本地
-4. [ ] 插入数据库（INSERT INTO crawled_dresses）
-5. [ ] rsync 图片到服务器（逐个目录，不要多源）
-6. [ ] 验证 API 返回：curl http://localhost:3000/api/products/crawled-dresses/{slug}
-7. [ ] 验证图片可访问：curl -I https://www.europewedding.cn/uploads/crawled/dresses/{slug}/images/00.jpg
-8. [ ] 刷新前端页面查看效果（无需重新构建部署前端！）
+5. [ ] 插入本地数据库（INSERT INTO crawled_dresses，使用翻译后的中文数据，必须包含 price）
+6. [ ] 本地预览确认（刷新 localhost:5173/dresses 查看效果）
+7. [ ] 用户确认后：rsync 图片到服务器 + 插入服务器数据库
+8. [ ] 验证 API 返回：curl https://www.europewedding.cn/api/products/crawled-dresses/{slug}
+9. [ ] 验证图片可访问：curl -I https://www.europewedding.cn/uploads/.../{slug}/images/00.jpg
 ```
 
 ### 验证示例
@@ -373,6 +416,7 @@ curl -sI https://www.europewedding.cn/uploads/crawled/dresses/wona-carat/images/
 7. **JSON 字段**：`highlights` 和 `images` 是 JSON 列，插入时 `JSON.stringify()`
 8. **mysql2 自动解析**：API 返回时 JSON 列已自动解析为数组
 9. **sort_order**：控制列表排序，新商品追加到末尾即可
+10. **price 必填**：所有礼服必须有价格（€100~€400），禁止 NULL 或 0，否则前端显示“需咨询”
 
 ### 前端
 10. **零改动**：新增商品只需数据库插入 + rsync 图片，前端自动显示

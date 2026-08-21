@@ -24,7 +24,7 @@ export default function BackButton({ to = '/' }: BackButtonProps) {
 
   const handleBack = () => {
     window.__saveScrollPos?.(location.pathname)
-    navigate(to)
+    navigate(to, { replace: true })
   }
 
   return (

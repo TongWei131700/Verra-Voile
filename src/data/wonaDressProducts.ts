@@ -15,7 +15,8 @@ export const wonaProducts: DressProduct[] = [
     highlights: ['A 字廓形', '心形领 · 抹胸', '落地长裙'],
     cover: 'https://wonaconcept.com/upload/catalog/6300/6292/wona_maison_blanche_adagio_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6300/6292/wona_maison_blanche_adagio_1.jpg', 'https://wonaconcept.com/upload/catalog/6300/6292/wona_maison_blanche_adagio_2.jpg', 'https://wonaconcept.com/upload/catalog/6300/6292/wona_maison_blanche_adagio_3.jpg', 'https://wonaconcept.com/upload/catalog/6300/6292/wona_maison_blanche_adagio_4.jpg'],
-    video: 'https://wonaconcept.com/upload/catalog/6300/6292/wona_maison_blanche_video_adagio.webm',
+    video: undefined,
+    price: 100,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/adagio-set/' },
   },
   {
@@ -29,7 +30,8 @@ export const wonaProducts: DressProduct[] = [
     highlights: ['心形领 · 抹胸', '落地长裙', '无袖'],
     cover: 'https://wonaconcept.com/upload/catalog/6300/6287/wona_maison_blanche_arabesque_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6300/6287/wona_maison_blanche_arabesque_1.jpg', 'https://wonaconcept.com/upload/catalog/6300/6287/wona_maison_blanche_arabesque_2.jpg', 'https://wonaconcept.com/upload/catalog/6300/6287/wona_maison_blanche_arabesque_3.jpg', 'https://wonaconcept.com/upload/catalog/6300/6287/wona_maison_blanche_arabesque_4.jpg'],
-    video: 'https://wonaconcept.com/upload/catalog/6300/6287/wona_maison_blanche_video_arabesque.webm',
+    video: undefined,
+    price: 257,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/arabesque-set/' },
   },
   {
@@ -43,7 +45,8 @@ export const wonaProducts: DressProduct[] = [
     highlights: ['蓬裙廓形', '抹胸', '落地长裙', '无袖'],
     cover: 'https://wonaconcept.com/upload/catalog/6300/6283/wona_maison_blanche_aster_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6300/6283/wona_maison_blanche_aster_1.jpg', 'https://wonaconcept.com/upload/catalog/6300/6283/wona_maison_blanche_aster_2.jpg', 'https://wonaconcept.com/upload/catalog/6300/6283/wona_maison_blanche_aster_3.jpg', 'https://wonaconcept.com/upload/catalog/6300/6283/wona_maison_blanche_aster_4.jpg', 'https://wonaconcept.com/upload/catalog/6300/6283/wona_maison_blanche_aster_5.jpg'],
-    video: 'https://wonaconcept.com/upload/catalog/6300/6283/wona_maison_blanche_video_aster.webm',
+    video: undefined,
+    price: 321,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/aster-set/' },
   },
   {
@@ -57,7 +60,8 @@ export const wonaProducts: DressProduct[] = [
     highlights: ['直筒廓形', '抹胸', '落地长裙', '无袖'],
     cover: 'https://wonaconcept.com/upload/catalog/6300/6281/wona_maison_blanche_charleen_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6300/6281/wona_maison_blanche_charleen_1.jpg', 'https://wonaconcept.com/upload/catalog/6300/6281/wona_maison_blanche_charleen_2.jpg', 'https://wonaconcept.com/upload/catalog/6300/6281/wona_maison_blanche_charleen_3.jpg', 'https://wonaconcept.com/upload/catalog/6300/6281/wona_maison_blanche_charleen_4.jpg', 'https://wonaconcept.com/upload/catalog/6300/6281/wona_maison_blanche_charleen_5.jpg'],
-    video: 'https://wonaconcept.com/upload/catalog/6300/6281/wona_maison_blanche_video_charleen.webm',
+    video: undefined,
+    price: 179,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/charleen-set/' },
   },
   {
@@ -71,7 +75,8 @@ export const wonaProducts: DressProduct[] = [
     highlights: ['鱼尾廓形', '抹胸', '落地长裙'],
     cover: 'https://wonaconcept.com/upload/catalog/6300/6289/wona_maison_blanche_amarant_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6300/6289/wona_maison_blanche_amarant_1.jpg', 'https://wonaconcept.com/upload/catalog/6300/6289/wona_maison_blanche_amarant_2.jpg', 'https://wonaconcept.com/upload/catalog/6300/6289/wona_maison_blanche_amarant_3.jpg', 'https://wonaconcept.com/upload/catalog/6300/6289/wona_maison_blanche_amarant_4.jpg', 'https://wonaconcept.com/upload/catalog/6300/6289/wona_maison_blanche_amarant_5.jpg', 'https://wonaconcept.com/upload/catalog/6300/6289/wona_maison_blanche_amarant_6.jpg'],
-    video: 'https://wonaconcept.com/upload/catalog/6300/6289/wona_maison_blanche_video_amarant.webm',
+    video: undefined,
+    price: 213,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/amarant-set/' },
   },
   {
@@ -85,7 +90,8 @@ export const wonaProducts: DressProduct[] = [
     highlights: ['蓬裙 · 直筒廓形', '抹胸', '落地长裙'],
     cover: 'https://wonaconcept.com/upload/catalog/6300/6277/wona_maison_blanche_code_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6300/6277/wona_maison_blanche_code_1.jpg', 'https://wonaconcept.com/upload/catalog/6300/6277/wona_maison_blanche_code_2.jpg', 'https://wonaconcept.com/upload/catalog/6300/6277/wona_maison_blanche_code_3.jpg', 'https://wonaconcept.com/upload/catalog/6300/6277/wona_maison_blanche_code_4.jpeg', 'https://wonaconcept.com/upload/catalog/6300/6277/wona_maison_blanche_code_5.jpg'],
-    video: 'https://wonaconcept.com/upload/catalog/6300/6277/wona_maison_blanche_video_code.webm',
+    video: undefined,
+    price: 159,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/code-set/' },
   },
   {
@@ -100,6 +106,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6161/wona_atelier_la_femme_edition_armin_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6161/wona_atelier_la_femme_edition_armin_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6161/wona_atelier_la_femme_edition_armin_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6161/wona_atelier_la_femme_edition_armin_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6161/armin_.mp4',
+    price: 393,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/armin/' },
   },
   {
@@ -114,6 +121,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6158/wona_atelier_la_femme_edition_carvel_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6158/wona_atelier_la_femme_edition_carvel_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6158/wona_atelier_la_femme_edition_carvel_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6158/wona_atelier_la_femme_edition_carvel_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6158/carvel_.mp4',
+    price: 254,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/carvel/' },
   },
   {
@@ -128,6 +136,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6156/wona_atelier_la_femme_edition_eira_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6156/wona_atelier_la_femme_edition_eira_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6156/wona_atelier_la_femme_edition_eira_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6156/wona_atelier_la_femme_edition_eira_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6156/eira_.mp4',
+    price: 259,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/eira/' },
   },
   {
@@ -142,6 +151,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6115/wona_white_edit_collection_arno_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6115/wona_white_edit_collection_arno_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6115/wona_white_edit_collection_arno_5.jpg', 'https://wonaconcept.com/upload/catalog/6200/6115/wona_white_edit_collection_arno_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6115/wona_white_edit_collection_arno_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6115/wona_white_edit_collection_arno.webm',
+    price: 177,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/arno/' },
   },
   {
@@ -156,6 +166,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6109/wona_white_edit_collection_crown_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6109/wona_white_edit_collection_crown_3.jpg', 'https://wonaconcept.com/upload/catalog/6200/6109/wona_white_edit_collection_crown_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6109/wona_white_edit_collection_crown_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6109/wona_white_edit_collection_crown_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6109/wona_white_edit_collection_crown.webm',
+    price: 132,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/crown/' },
   },
   {
@@ -170,6 +181,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6108/wona_white_edit_collection_ducat_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6108/wona_white_edit_collection_ducat_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6108/wona_white_edit_collection_ducat_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6108/wona_white_edit_collection_ducat_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6108/wona_white_edit_collection_ducat.webm',
+    price: 345,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ducat/' },
   },
   {
@@ -184,6 +196,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6107/wona_white_edit_collection_evangeline_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6107/wona_white_edit_collection_evangeline_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6107/wona_white_edit_collection_evangeline_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6107/wona_white_edit_collection_evangeline_3.jpg', 'https://wonaconcept.com/upload/catalog/6200/6107/wona_white_edit_collection_evangeline_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6107/wona_white_edit_collection_evangeline.webm',
+    price: 371,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/evangeline/' },
   },
   {
@@ -198,6 +211,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6110/wona_white_edit_collection_beryl_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6110/wona_white_edit_collection_beryl_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6110/wona_white_edit_collection_beryl_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6110/wona_white_edit_collection_beryl_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6110/wona_white_edit_collection_beryl.webm',
+    price: 236,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/beryl/' },
   },
   {
@@ -212,6 +226,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6103/wona_white_edit_collection_horizon_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6103/wona_white_edit_collection_horizon_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6103/wona_white_edit_collection_horizon_3.jpg', 'https://wonaconcept.com/upload/catalog/6200/6103/wona_white_edit_collection_horizon_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6103/wona_white_edit_collection_horizon.webm',
+    price: 173,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/horizon/' },
   },
   {
@@ -226,6 +241,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6099/wona_white_edit_collection_kerrigan_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6099/wona_white_edit_collection_kerrigan_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6099/wona_white_edit_collection_kerrigan_3.jpg', 'https://wonaconcept.com/upload/catalog/6100/6099/wona_white_edit_collection_kerrigan_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6099/wona_white_edit_collection_kerrigan.webm',
+    price: 174,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kerrigan/' },
   },
   {
@@ -240,6 +256,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6096/wona_white_edit_collection_lizett_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6096/wona_white_edit_collection_lizett_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6096/wona_white_edit_collection_lizett_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6096/wona_white_edit_collection_lizett_3.jpg', 'https://wonaconcept.com/upload/catalog/6100/6096/wona_white_edit_collection_lizett_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6096/wona_white_edit_collection_lizett.webm',
+    price: 156,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/lizett/' },
   },
   {
@@ -254,6 +271,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6104/wona_white_edit_collection_fern_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6104/wona_white_edit_collection_fern_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6104/wona_white_edit_collection_fern_3.jpg', 'https://wonaconcept.com/upload/catalog/6200/6104/wona_white_edit_collection_fern_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6104/wona_white_edit_collection_fern_4.jpg', 'https://wonaconcept.com/upload/catalog/6200/6104/wona_white_edit_collection_fern_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6104/wona_white_edit_collection_fern.webm',
+    price: 197,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/fern/' },
   },
   {
@@ -268,6 +286,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6086/wona_white_edit_collection_mondial_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6086/wona_white_edit_collection_mondial_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6086/wona_white_edit_collection_mondial_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6086/wona_white_edit_collection_mondial_3.jpg', 'https://wonaconcept.com/upload/catalog/6100/6086/wona_white_edit_collection_mondial_6.jpg', 'https://wonaconcept.com/upload/catalog/6100/6086/wona_white_edit_collection_mondial_5.jpg', 'https://wonaconcept.com/upload/catalog/6100/6086/wona_white_edit_collection_mondial_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6086/wona_white_edit_collection_mondial.webm',
+    price: 131,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/mondial/' },
   },
   {
@@ -282,6 +301,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6080/wona_white_edit_collection_oliveira_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6080/wona_white_edit_collection_oliveira_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6080/wona_white_edit_collection_oliveira_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6080/wona_white_edit_collection_oliveira_3.jpg', 'https://wonaconcept.com/upload/catalog/6100/6080/wona_white_edit_collection_oliveira_5.jpg', 'https://wonaconcept.com/upload/catalog/6100/6080/wona_white_edit_collection_oliveira_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6080/wona_white_edit_collection_oliveira.webm',
+    price: 343,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/oliveira/' },
   },
   {
@@ -296,6 +316,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6079/wona_white_edit_collection_opium_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6079/wona_white_edit_collection_opium_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6079/wona_white_edit_collection_opium_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6079/wona_white_edit_collection_opium_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6079/wona_white_edit_collection_opium.webm',
+    price: 260,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/opium/' },
   },
   {
@@ -310,6 +331,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6075/wona_white_edit_collection_prestige_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6075/wona_white_edit_collection_prestige_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6075/wona_white_edit_collection_prestige_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6075/wona_white_edit_collection_prestige_4.jpg', 'https://wonaconcept.com/upload/catalog/6100/6075/wona_white_edit_collection_prestige_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6075/wona_white_edit_collection_prestige.webm',
+    price: 354,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/prestige/' },
   },
   {
@@ -324,6 +346,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6072/wona_white_edit_collection_randall_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6072/wona_white_edit_collection_randall_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6072/wona_white_edit_collection_randall_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6072/wona_white_edit_collection_randall_3.jpg', 'https://wonaconcept.com/upload/catalog/6100/6072/wona_white_edit_collection_randall_4.jpg', 'https://wonaconcept.com/upload/catalog/6100/6072/wona_white_edit_collection_randall_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6072/wona_white_edit_collection_randall.webm',
+    price: 321,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/randall/' },
   },
   {
@@ -338,6 +361,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6068/wona_white_edit_collection_ruiz_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6068/wona_white_edit_collection_ruiz_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6068/wona_white_edit_collection_ruiz_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6068/wona_white_edit_collection_ruiz_4.jpg', 'https://wonaconcept.com/upload/catalog/6100/6068/wona_white_edit_collection_ruiz_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6068/wona_white_edit_collection_ruiz.webm',
+    price: 123,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ruiz/' },
   },
   {
@@ -352,6 +376,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6066/wona_white_edit_collection_runa_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6066/wona_white_edit_collection_runa_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6066/wona_white_edit_collection_runa_3.jpg', 'https://wonaconcept.com/upload/catalog/6100/6066/wona_white_edit_collection_runa_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6066/wona_white_edit_collection_runa_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6066/wona_white_edit_collection_runa.webm',
+    price: 262,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/runa/' },
   },
   {
@@ -366,6 +391,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6067/wona_white_edit_collection_rummy_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6067/wona_white_edit_collection_rummy_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6067/wona_white_edit_collection_rummy_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6067/wona_white_edit_collection_rummy_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6067/wona_white_edit_collection_rummy.webm',
+    price: 139,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/rummy/' },
   },
   {
@@ -380,6 +406,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6058/wona_white_edit_collection_yanis_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6058/wona_white_edit_collection_yanis_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6058/wona_white_edit_collection_yanis_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6058/wona_white_edit_collection_yanis_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6058/wona_white_edit_collection_yanis.webm',
+    price: 359,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/yanis/' },
   },
   {
@@ -394,6 +421,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6000/5919/wona_concept_amore_in_fiore_aphrodite_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6000/5919/wona_concept_amore_in_fiore_aphrodite_1.jpg', 'https://wonaconcept.com/upload/catalog/6000/5919/wona_concept_amore_in_fiore_aphrodite_2.jpg', 'https://wonaconcept.com/upload/catalog/6000/5919/wona_concept_amore_in_fiore_aphrodite_3.jpg', 'https://wonaconcept.com/upload/catalog/6000/5919/wona_concept_amore_in_fiore_aphrodite_4.jpg', 'https://wonaconcept.com/upload/catalog/6000/5919/wona_concept_amore_in_fiore_aphrodite_5.jpg', 'https://wonaconcept.com/upload/catalog/6000/5919/wona_concept_amore_in_fiore_aphrodite_6.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6000/5919/wona_couture_amore_in_fiore_aphrodite.webm',
+    price: 239,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/aphrodite/' },
   },
   {
@@ -408,6 +436,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6061/wona_white_edit_collection_vinson_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6061/wona_white_edit_collection_vinson_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6061/wona_white_edit_collection_vinson_3.jpg', 'https://wonaconcept.com/upload/catalog/6100/6061/wona_white_edit_collection_vinson_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6061/wona_white_edit_collection_vinson_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6061/wona_white_edit_collection_vinson.webm',
+    price: 242,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/vinson/' },
   },
   {
@@ -422,6 +451,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6160/wona_atelier_la_femme_edition_atlas_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6160/wona_atelier_la_femme_edition_atlas_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6160/wona_atelier_la_femme_edition_atlas_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6160/wona_atelier_la_femme_edition_atlas_3.jpg', 'https://wonaconcept.com/upload/catalog/6200/6160/wona_atelier_la_femme_edition_atlas_4.jpg', 'https://wonaconcept.com/upload/catalog/6200/6160/wona_atelier_la_femme_edition_atlas_5.jpg', 'https://wonaconcept.com/upload/catalog/6200/6160/wona_atelier_la_femme_edition_atlas_6.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6160/atlas_.mp4',
+    price: 235,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/atlas/' },
   },
   {
@@ -436,6 +466,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6000/5909/wona_concept_amore_in_fiore_arcadia_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6000/5909/wona_concept_amore_in_fiore_arcadia_1.jpg', 'https://wonaconcept.com/upload/catalog/6000/5909/wona_concept_amore_in_fiore_arcadia_2.jpg', 'https://wonaconcept.com/upload/catalog/6000/5909/wona_concept_amore_in_fiore_arcadia_3.jpg', 'https://wonaconcept.com/upload/catalog/6000/5909/wona_concept_amore_in_fiore_arcadia_4.jpg', 'https://wonaconcept.com/upload/catalog/6000/5909/wona_concept_amore_in_fiore_arcadia_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6000/5909/wona_couture_amore_in_fiore_arcadia.webm',
+    price: 170,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/arcadia/' },
   },
   {
@@ -450,6 +481,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6151/wona_atelier_la_femme_edition_encore_11.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6151/wona_atelier_la_femme_edition_encore_11.jpg', 'https://wonaconcept.com/upload/catalog/6200/6151/wona_atelier_la_femme_edition_encore_12.jpg', 'https://wonaconcept.com/upload/catalog/6200/6151/wona_atelier_la_femme_edition_encore_13.jpg', 'https://wonaconcept.com/upload/catalog/6200/6151/wona_atelier_la_femme_edition_encore_14.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6151/encore_.mp4',
+    price: 103,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/encore/' },
   },
   {
@@ -464,6 +496,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6141/wona_atelier_la_femme_edition_kassel_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6141/wona_atelier_la_femme_edition_kassel_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6141/wona_atelier_la_femme_edition_kassel_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6141/wona_atelier_la_femme_edition_kassel_4.jpg', 'https://wonaconcept.com/upload/catalog/6200/6141/wona_atelier_la_femme_edition_kassel_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6141/kassel_.mp4',
+    price: 106,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kassel/' },
   },
   {
@@ -478,6 +511,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6126/wona_atelier_la_femme_edition_prisma_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6126/wona_atelier_la_femme_edition_prisma_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6126/wona_atelier_la_femme_edition_prisma_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6126/wona_atelier_la_femme_edition_prisma_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6126/prisma_.mp4',
+    price: 399,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/prisma/' },
   },
   {
@@ -492,6 +526,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6117/wona_atelier_la_femme_edition_veneto_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6117/wona_atelier_la_femme_edition_veneto_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6117/wona_atelier_la_femme_edition_veneto_6.jpg', 'https://wonaconcept.com/upload/catalog/6200/6117/wona_atelier_la_femme_edition_veneto_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6117/wona_atelier_la_femme_edition_veneto_3.jpg', 'https://wonaconcept.com/upload/catalog/6200/6117/wona_atelier_la_femme_edition_veneto_4.jpg', 'https://wonaconcept.com/upload/catalog/6200/6117/wona_atelier_la_femme_edition_veneto_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6117/veneto_.mp4',
+    price: 375,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/veneto-set/' },
   },
   {
@@ -506,6 +541,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6102/wona_white_edit_collection_idol_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6102/wona_white_edit_collection_idol_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6102/wona_white_edit_collection_idol_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6102/wona_white_edit_collection_idol_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6102/wona_white_edit_collection_idol.webm',
+    price: 336,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/idol/' },
   },
   {
@@ -520,6 +556,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6200/6113/wona_white_edit_collection_benson_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6200/6113/wona_white_edit_collection_benson_2.jpg', 'https://wonaconcept.com/upload/catalog/6200/6113/wona_white_edit_collection_benson_1.jpg', 'https://wonaconcept.com/upload/catalog/6200/6113/wona_white_edit_collection_benson_3.jpg', 'https://wonaconcept.com/upload/catalog/6200/6113/wona_white_edit_collection_benson_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6200/6113/wona_white_edit_collection_benson.webm',
+    price: 271,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/benson/' },
   },
   {
@@ -534,6 +571,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6092/wona_white_edit_collection_malibu_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6092/wona_white_edit_collection_malibu_3.jpg', 'https://wonaconcept.com/upload/catalog/6100/6092/wona_white_edit_collection_malibu_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6092/wona_white_edit_collection_malibu_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6092/wona_white_edit_collection_malibu_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6092/wona_white_edit_collection_malibu.webm',
+    price: 331,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/malibu/' },
   },
   {
@@ -548,6 +586,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6090/wona_white_edit_collection_millennium_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6090/wona_white_edit_collection_millennium_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6090/wona_white_edit_collection_millennium_4.jpg', 'https://wonaconcept.com/upload/catalog/6100/6090/wona_white_edit_collection_millennium_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6090/wona_white_edit_collection_millennium_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6090/wona_white_edit_collection_millennium.webm',
+    price: 287,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/millenium/' },
   },
   {
@@ -562,6 +601,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6082/wona_white_edit_collection_norton_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6082/wona_white_edit_collection_norton_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6082/wona_white_edit_collection_norton_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6082/wona_white_edit_collection_norton_3.jpg', 'https://wonaconcept.com/upload/catalog/6100/6082/wona_white_edit_collection_norton_5.jpg', 'https://wonaconcept.com/upload/catalog/6100/6082/wona_white_edit_collection_norton_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6082/wona_white_edit_collection_norton.webm',
+    price: 203,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/norton/' },
   },
   {
@@ -576,6 +616,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6100/6078/wona_white_edit_collection_orion_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6100/6078/wona_white_edit_collection_orion_2.jpg', 'https://wonaconcept.com/upload/catalog/6100/6078/wona_white_edit_collection_orion_1.jpg', 'https://wonaconcept.com/upload/catalog/6100/6078/wona_white_edit_collection_orion_3.jpg', 'https://wonaconcept.com/upload/catalog/6100/6078/wona_white_edit_collection_orion_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6100/6078/wona_white_edit_collection_orion_1.webm',
+    price: 213,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/orion/' },
   },
   {
@@ -590,6 +631,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6000/5906/wona_concept_amore_in_fiore_argos_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6000/5906/wona_concept_amore_in_fiore_argos_1.jpg', 'https://wonaconcept.com/upload/catalog/6000/5906/wona_concept_amore_in_fiore_argos_2.jpg', 'https://wonaconcept.com/upload/catalog/6000/5906/wona_concept_amore_in_fiore_argos_3.jpg', 'https://wonaconcept.com/upload/catalog/6000/5906/wona_concept_amore_in_fiore_argos_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6000/5906/wona_couture_amore_in_fiore_argos.webm',
+    price: 180,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/argos/' },
   },
   {
@@ -604,6 +646,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/6000/5904/wona_concept_amore_in_fiore_cassiopeia_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/6000/5904/wona_concept_amore_in_fiore_cassiopeia_1.jpg', 'https://wonaconcept.com/upload/catalog/6000/5904/wona_concept_amore_in_fiore_cassiopeia_2.jpg', 'https://wonaconcept.com/upload/catalog/6000/5904/wona_concept_amore_in_fiore_cassiopeia_3.jpg', 'https://wonaconcept.com/upload/catalog/6000/5904/wona_concept_amore_in_fiore_cassiopeia_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/6000/5904/wona_couture_amore_in_fiore_cassiopeia.webm',
+    price: 205,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/cassiopeia/' },
   },
   {
@@ -618,6 +661,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5900/wona_concept_amore_in_fiore_crete_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5900/wona_concept_amore_in_fiore_crete_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5900/wona_concept_amore_in_fiore_crete_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5900/wona_concept_amore_in_fiore_crete_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5900/wona_concept_amore_in_fiore_crete_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5900/wona_couture_amore_in_fiore_crete.webm',
+    price: 292,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/crete/' },
   },
   {
@@ -632,6 +676,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5896/wona_concept_amore_in_fiore_crocus_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5896/wona_concept_amore_in_fiore_crocus_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5896/wona_concept_amore_in_fiore_crocus_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5896/wona_concept_amore_in_fiore_crocus_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5896/wona_concept_amore_in_fiore_crocus_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5896/wona_couture_amore_in_fiore_crocus.webm',
+    price: 209,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/crocus/' },
   },
   {
@@ -646,6 +691,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5893/wona_concept_amore_in_fiore_epos_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5893/wona_concept_amore_in_fiore_epos_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5893/wona_concept_amore_in_fiore_epos_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5893/wona_concept_amore_in_fiore_epos_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5893/wona_concept_amore_in_fiore_epos_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5893/wona_couture_amore_in_fiore_epos.webm',
+    price: 115,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/epos/' },
   },
   {
@@ -660,6 +706,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5890/wona_concept_amore_in_fiore_erato_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5890/wona_concept_amore_in_fiore_erato_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5890/wona_concept_amore_in_fiore_erato_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5890/wona_concept_amore_in_fiore_erato_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5890/wona_concept_amore_in_fiore_erato_4.jpg', 'https://wonaconcept.com/upload/catalog/5900/5890/wona_concept_amore_in_fiore_erato_5.jpg', 'https://wonaconcept.com/upload/catalog/5900/5890/wona_concept_amore_in_fiore_erato_6.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5890/wona_couture_amore_in_fiore_erato.webm',
+    price: 259,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/erato/' },
   },
   {
@@ -674,6 +721,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5889/wona_concept_amore_in_fiore_fedra_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5889/wona_concept_amore_in_fiore_fedra_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5889/wona_concept_amore_in_fiore_fedra_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5889/wona_concept_amore_in_fiore_fedra_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5889/wona_concept_amore_in_fiore_fedra_4.jpg', 'https://wonaconcept.com/upload/catalog/5900/5889/wona_concept_amore_in_fiore_fedra_black_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5889/wona_concept_amore_in_fiore_fedra_black_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5889/wona_couture_amore_in_fiore_fedra.webm',
+    price: 147,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/fedra/' },
   },
   {
@@ -688,6 +736,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5886/wona_concept_amore_in_fiore_graal_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5886/wona_concept_amore_in_fiore_graal_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5886/wona_concept_amore_in_fiore_graal_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5886/wona_concept_amore_in_fiore_graal_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5886/wona_concept_amore_in_fiore_graal_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5886/wona_couture_amore_in_fiore_graal.webm',
+    price: 236,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/graal/' },
   },
   {
@@ -702,6 +751,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5885/wona_concept_amore_in_fiore_hecate_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5885/wona_concept_amore_in_fiore_hecate_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5885/wona_concept_amore_in_fiore_hecate_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5885/wona_concept_amore_in_fiore_hecate_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5885/wona_concept_amore_in_fiore_hecate_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5885/wona_couture_amore_in_fiore_hecate.webm',
+    price: 199,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/hecate/' },
   },
   {
@@ -716,6 +766,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5882/wona_concept_amore_in_fiore_ithaca_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5882/wona_concept_amore_in_fiore_ithaca_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5882/wona_concept_amore_in_fiore_ithaca_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5882/wona_concept_amore_in_fiore_ithaca_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5882/wona_concept_amore_in_fiore_ithaca_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5882/wona_couture_amore_in_fiore_ithaca.webm',
+    price: 158,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ithaca/' },
   },
   {
@@ -730,6 +781,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5880/wona_concept_amore_in_fiore_nemesis_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5880/wona_concept_amore_in_fiore_nemesis_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5880/wona_concept_amore_in_fiore_nemesis_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5880/wona_concept_amore_in_fiore_nemesis_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5880/wona_couture_amore_in_fiore_nemesis.webm',
+    price: 119,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/nemesis/' },
   },
   {
@@ -744,6 +796,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5878/wona_concept_amore_in_fiore_nyx_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5878/wona_concept_amore_in_fiore_nyx_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5878/wona_concept_amore_in_fiore_nyx_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5878/wona_concept_amore_in_fiore_nyx_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5878/wona_couture_amore_in_fiore_nyx.webm',
+    price: 396,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/nyx/' },
   },
   {
@@ -758,6 +811,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5874/wona_concept_amore_in_fiore_odisea_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5874/wona_concept_amore_in_fiore_odisea_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5874/wona_concept_amore_in_fiore_odisea_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5874/wona_concept_amore_in_fiore_odisea_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5874/wona_concept_amore_in_fiore_odisea_4.jpg', 'https://wonaconcept.com/upload/catalog/5900/5874/wona_concept_amore_in_fiore_odisea_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5874/wona_couture_amore_in_fiore_odisea.webm',
+    price: 264,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/odisea/' },
   },
   {
@@ -772,6 +826,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5873/wona_concept_amore_in_fiore_paphos_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5873/wona_concept_amore_in_fiore_paphos_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5873/wona_concept_amore_in_fiore_paphos_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5873/wona_concept_amore_in_fiore_paphos_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5873/wona_concept_amore_in_fiore_paphos_black_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5873/wona_concept_amore_in_fiore_paphos_black_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5873/wona_couture_amore_in_fiore_paphos.webm',
+    price: 126,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/paphos/' },
   },
   {
@@ -786,6 +841,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5871/wona_concept_amore_in_fiore_persephone_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5871/wona_concept_amore_in_fiore_persephone_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5871/wona_concept_amore_in_fiore_persephone_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5871/wona_concept_amore_in_fiore_persephone_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5871/wona_concept_amore_in_fiore_persephone_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5871/wona_couture_amore_in_fiore_persephone.webm',
+    price: 398,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/persephone/' },
   },
   {
@@ -800,6 +856,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5864/wona_concept_amore_in_fiore_tirade_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5864/wona_concept_amore_in_fiore_tirade_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5864/wona_concept_amore_in_fiore_tirade_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5864/wona_concept_amore_in_fiore_tirade_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5864/wona_concept_amore_in_fiore_tirade_4.jpg', 'https://wonaconcept.com/upload/catalog/5900/5864/wona_concept_amore_in_fiore_tirade_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5864/wona_couture_amore_in_fiore_tirade.webm',
+    price: 230,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/tirade/' },
   },
   {
@@ -814,6 +871,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5867/wona_concept_amore_in_fiore_sparta_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5867/wona_concept_amore_in_fiore_sparta_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5867/wona_concept_amore_in_fiore_sparta_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5867/wona_concept_amore_in_fiore_sparta_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5867/wona_concept_amore_in_fiore_sparta_4.jpg', 'https://wonaconcept.com/upload/catalog/5900/5867/wona_concept_amore_in_fiore_sparta_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5867/wona_couture_amore_in_fiore_sparta.webm',
+    price: 311,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sparta/' },
   },
   {
@@ -828,6 +886,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5863/wona_concept_amore_in_fiore_triumph_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5863/wona_concept_amore_in_fiore_triumph_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5863/wona_concept_amore_in_fiore_triumph_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5863/wona_concept_amore_in_fiore_triumph_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5863/wona_concept_amore_in_fiore_triumph_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5863/wona_couture_amore_in_fiore_triumph.webm',
+    price: 156,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/triumph/' },
   },
   {
@@ -842,6 +901,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5821/wona_white_bridal_alchemy_artemis_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5821/wona_white_bridal_alchemy_artemis_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5821/wona_white_bridal_alchemy_artemis_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5821/wona_white_bridal_alchemy_artemis_4.jpg', 'https://wonaconcept.com/upload/catalog/5900/5821/wona_white_bridal_alchemy_artemis_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5821/wona_white_bridal_alchemy_artemis_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5821/wona_bridal_alchemy_artemis.webm',
+    price: 263,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/artemis/' },
   },
   {
@@ -856,6 +916,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5825/wona_white_bridal_alchemy_anthea_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5825/wona_white_bridal_alchemy_anthea_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5825/wona_white_bridal_alchemy_anthea.jpg', 'https://wonaconcept.com/upload/catalog/5900/5825/wona_white_bridal_alchemy_anthea_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5825/wona_bridal_alchemy_anthea.webm',
+    price: 399,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/anthea/' },
   },
   {
@@ -870,6 +931,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5818/wona_white_bridal_alchemy_bijou_4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5818/wona_white_bridal_alchemy_bijou_4.jpg', 'https://wonaconcept.com/upload/catalog/5900/5818/wona_white_bridal_alchemy_bijou_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5818/wona_white_bridal_alchemy_bijou_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5818/wona_white_bridal_alchemy_bijou_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5818/wona_bridal_alchemy_bijou.webm',
+    price: 157,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bijou/' },
   },
   {
@@ -884,6 +946,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5817/wona_white_bridal_alchemy_birgit_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5817/wona_white_bridal_alchemy_birgit_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5817/wona_white_bridal_alchemy_birgit_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5817/wona_white_bridal_alchemy_birgit.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5817/wona_bridal_alchemy_birgit.webm',
+    price: 305,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/birgit/' },
   },
   {
@@ -898,6 +961,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5816/wona_white_bridal_alchemy_bronze_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5816/wona_white_bridal_alchemy_bronze_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5816/wona_white_bridal_alchemy_bronze.jpg', 'https://wonaconcept.com/upload/catalog/5900/5816/wona_white_bridal_alchemy_bronze_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5816/wona_bridal_alchemy_bronze.webm',
+    price: 220,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bronze/' },
   },
   {
@@ -912,6 +976,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5812/wona_white_bridal_alchemy_cava.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5812/wona_white_bridal_alchemy_cava.jpg', 'https://wonaconcept.com/upload/catalog/5900/5812/wona_white_bridal_alchemy_cava_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5812/wona_white_bridal_alchemy_cava_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5812/wona_white_bridal_alchemy_cava_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5812/wona_white_bridal_alchemy_cava_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5812/wona_bridal_alchemy_cava.webm',
+    price: 232,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/cava/' },
   },
   {
@@ -926,6 +991,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5813/wona_white_bridal_alchemy_calista_12.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5813/wona_white_bridal_alchemy_calista_12.jpg', 'https://wonaconcept.com/upload/catalog/5900/5813/wona_white_bridal_alchemy_calista_11.jpg', 'https://wonaconcept.com/upload/catalog/5900/5813/wona_white_bridal_alchemy_calista_13.jpg', 'https://wonaconcept.com/upload/catalog/5900/5813/wona_white_bridal_alchemy_calista_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5813/wona_bridal_alchemy_calista.webm',
+    price: 324,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/calista/' },
   },
   {
@@ -940,6 +1006,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5810/wona_white_bridal_alchemy_cliff_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5810/wona_white_bridal_alchemy_cliff_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5810/wona_white_bridal_alchemy_cliff_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5810/wona_white_bridal_alchemy_cliff_4.jpg', 'https://wonaconcept.com/upload/catalog/5900/5810/wona_white_bridal_alchemy_cliff_5.jpg', 'https://wonaconcept.com/upload/catalog/5900/5810/wona_white_bridal_alchemy_cliff_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5810/wona_bridal_alchemy_cliff.webm',
+    price: 153,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/cliff/' },
   },
   {
@@ -954,6 +1021,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5808/wona_white_bridal_alchemy_elite_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5808/wona_white_bridal_alchemy_elite_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5808/wona_white_bridal_alchemy_elite.jpg', 'https://wonaconcept.com/upload/catalog/5900/5808/wona_white_bridal_alchemy_elite_4.jpg', 'https://wonaconcept.com/upload/catalog/5900/5808/wona_white_bridal_alchemy_elite_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5808/wona_white_bridal_alchemy_elite_1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5808/wona_bridal_alchemy_elite.webm',
+    price: 344,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/elite/' },
   },
   {
@@ -968,6 +1036,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5806/wona_white_bridal_alchemy_fairy_4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5806/wona_white_bridal_alchemy_fairy_4.jpg', 'https://wonaconcept.com/upload/catalog/5900/5806/wona_white_bridal_alchemy_fairy_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5806/wona_white_bridal_alchemy_fairy_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5806/wona_white_bridal_alchemy_fairy_1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5806/wona_bridal_alchemy_fairy.webm',
+    price: 342,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/fairy/' },
   },
   {
@@ -982,6 +1051,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5805/wona_white_bridal_alchemy_fortuna_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5805/wona_white_bridal_alchemy_fortuna_2.jpg', 'https://wonaconcept.com/upload/catalog/5900/5805/wona_white_bridal_alchemy_fortuna_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5805/wona_white_bridal_alchemy_fortuna_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5805/wona_bridal_alchemy_fortuna.webm',
+    price: 129,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/fortuna/' },
   },
   {
@@ -996,6 +1066,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5797/wona_white_bridal_alchemy_genua.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5797/wona_white_bridal_alchemy_genua.jpg', 'https://wonaconcept.com/upload/catalog/5800/5797/wona_white_bridal_alchemy_genua_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5797/wona_white_bridal_alchemy_genua_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5797/wona_white_bridal_alchemy_genua_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5797/wona_bridal_alchemy_genua.webm',
+    price: 108,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/genua/' },
   },
   {
@@ -1010,6 +1081,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5803/wona_white_bridal_alchemy_gaia_6.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5803/wona_white_bridal_alchemy_gaia_6.jpg', 'https://wonaconcept.com/upload/catalog/5900/5803/wona_white_bridal_alchemy_gaia_5.jpg', 'https://wonaconcept.com/upload/catalog/5900/5803/wona_white_bridal_alchemy_gaia_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5803/wona_bridal_alchemy_gaia.webm',
+    price: 140,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/gaia-long/' },
   },
   {
@@ -1024,6 +1096,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5900/5801/wona_white_bridal_alchemy_gaia_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5900/5801/wona_white_bridal_alchemy_gaia_1.jpg', 'https://wonaconcept.com/upload/catalog/5900/5801/wona_white_bridal_alchemy_gaia_3.jpg', 'https://wonaconcept.com/upload/catalog/5900/5801/wona_white_bridal_alchemy_gaia.jpg', 'https://wonaconcept.com/upload/catalog/5900/5801/wona_white_bridal_alchemy_gaia_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5900/5801/wona_bridal_alchemy_gaia.webm',
+    price: 291,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/gaia-short/' },
   },
   {
@@ -1038,6 +1111,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5795/wona_white_bridal_alchemy_lalli_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5795/wona_white_bridal_alchemy_lalli_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5795/wona_white_bridal_alchemy_lalli.jpg', 'https://wonaconcept.com/upload/catalog/5800/5795/wona_white_bridal_alchemy_lalli_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5795/wona_bridal_alchemy_lalli.webm',
+    price: 214,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/lalli/' },
   },
   {
@@ -1052,6 +1126,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5791/wona_white_bridal_alchemy_malaga_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5791/wona_white_bridal_alchemy_malaga_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5791/wona_white_bridal_alchemy_malaga_4.jpg', 'https://wonaconcept.com/upload/catalog/5800/5791/wona_white_bridal_alchemy_malaga_2.jpg', 'https://wonaconcept.com/upload/catalog/5800/5791/wona_white_bridal_alchemy_malaga.jpg', 'https://wonaconcept.com/upload/catalog/5800/5791/wona_white_bridal_alchemy_malaga_1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5791/wona_bridal_alchemy_malaga.webm',
+    price: 175,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/malaga/' },
   },
   {
@@ -1066,6 +1141,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5782/wona_white_bridal_alchemy_manuel_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5782/wona_white_bridal_alchemy_manuel_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5782/wona_white_bridal_alchemy_manuel_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5782/wona_white_bridal_alchemy_manuel_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5782/wona_bridal_alchemy_manuel.webm',
+    price: 252,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/manuel/' },
   },
   {
@@ -1080,6 +1156,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5788/wona_white_bridal_alchemy_mango.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5788/wona_white_bridal_alchemy_mango.jpg', 'https://wonaconcept.com/upload/catalog/5800/5788/wona_white_bridal_alchemy_mango_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5788/wona_white_bridal_alchemy_mango_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5788/wona_bridal_alchemy_mango.webm',
+    price: 256,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/mango/' },
   },
   {
@@ -1094,6 +1171,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5775/wona_white_bridal_alchemy_novella_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5775/wona_white_bridal_alchemy_novella_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5775/wona_white_bridal_alchemy_novella_2.jpg', 'https://wonaconcept.com/upload/catalog/5800/5775/wona_white_bridal_alchemy_novella_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5775/wona_white_bridal_alchemy_novella.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5775/wona_bridal_alchemy_novella.webm',
+    price: 131,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/novella/' },
   },
   {
@@ -1108,6 +1186,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5772/wona_white_bridal_alchemy_pasqual_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5772/wona_white_bridal_alchemy_pasqual_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5772/wona_white_bridal_alchemy_pasqual.jpg', 'https://wonaconcept.com/upload/catalog/5800/5772/wona_white_bridal_alchemy_pasqual_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5772/wona_white_bridal_alchemy_pasqual_4.jpg', 'https://wonaconcept.com/upload/catalog/5800/5772/wona_white_bridal_alchemy_pasqual_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5772/wona_bridal_alchemy_pasqual.webm',
+    price: 396,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/pasqual/' },
   },
   {
@@ -1122,6 +1201,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5778/wona_white_bridal_alchemy_muscat_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5778/wona_white_bridal_alchemy_muscat_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5778/wona_white_bridal_alchemy_muscat_2.jpg', 'https://wonaconcept.com/upload/catalog/5800/5778/wona_white_bridal_alchemy_muscat_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5778/wona_bridal_alchemy_muscat.webm',
+    price: 204,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/muscat/' },
   },
   {
@@ -1136,6 +1216,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5767/wona_white_bridal_alchemy_platinium.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5767/wona_white_bridal_alchemy_platinium.jpg', 'https://wonaconcept.com/upload/catalog/5800/5767/wona_white_bridal_alchemy_platinium_2.jpg', 'https://wonaconcept.com/upload/catalog/5800/5767/wona_white_bridal_alchemy_platinium_1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5767/wona_bridal_alchemy_platinium.webm',
+    price: 331,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/platinium/' },
   },
   {
@@ -1150,6 +1231,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5770/wona_white_bridal_alchemy_piana_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5770/wona_white_bridal_alchemy_piana_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5770/wona_white_bridal_alchemy_piana_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5770/wona_white_bridal_alchemy_piana.jpg', 'https://wonaconcept.com/upload/catalog/5800/5770/wona_white_bridal_alchemy_piana_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5770/wona_bridal_alchemy_piana.webm',
+    price: 179,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/piana/' },
   },
   {
@@ -1164,6 +1246,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5761/wona_white_bridal_alchemy_renee_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5761/wona_white_bridal_alchemy_renee_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5761/wona_white_bridal_alchemy_renee_4.jpg', 'https://wonaconcept.com/upload/catalog/5800/5761/wona_white_bridal_alchemy_renee_2.jpg', 'https://wonaconcept.com/upload/catalog/5800/5761/wona_white_bridal_alchemy_renee.jpg', 'https://wonaconcept.com/upload/catalog/5800/5761/wona_white_bridal_alchemy_renee_1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5761/wona_bridal_alchemy_renee.webm',
+    price: 300,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/renee/' },
   },
   {
@@ -1178,6 +1261,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5764/wona_white_bridal_alchemy_pompei_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5764/wona_white_bridal_alchemy_pompei_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5764/wona_white_bridal_alchemy_pompei_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5764/wona_white_bridal_alchemy_pompei_4.jpg', 'https://wonaconcept.com/upload/catalog/5800/5764/wona_white_bridal_alchemy_pompei_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5764/wona_bridal_alchemy_pompei.webm',
+    price: 375,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/pompei/' },
   },
   {
@@ -1192,6 +1276,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5760/wona_white_bridal_alchemy_saturn_5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5760/wona_white_bridal_alchemy_saturn_5.jpg', 'https://wonaconcept.com/upload/catalog/5800/5760/wona_white_bridal_alchemy_saturn_2.jpg', 'https://wonaconcept.com/upload/catalog/5800/5760/wona_white_bridal_alchemy_saturn_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5760/wona_white_bridal_alchemy_saturn_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5760/wona_white_bridal_alchemy_saturn_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5760/wona_bridal_alchemy_saturn.webm',
+    price: 240,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/saturn/' },
   },
   {
@@ -1206,6 +1291,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5758/wona_white_bridal_alchemy_sera_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5758/wona_white_bridal_alchemy_sera_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5758/wona_white_bridal_alchemy_sera_2.jpg', 'https://wonaconcept.com/upload/catalog/5800/5758/wona_white_bridal_alchemy_sera_4.jpg', 'https://wonaconcept.com/upload/catalog/5800/5758/wona_white_bridal_alchemy_sera.jpg', 'https://wonaconcept.com/upload/catalog/5800/5758/wona_white_bridal_alchemy_sera_5.jpg', 'https://wonaconcept.com/upload/catalog/5800/5758/wona_white_bridal_alchemy_sera_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5758/wona_bridal_alchemy_sera.webm',
+    price: 232,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sera/' },
   },
   {
@@ -1220,6 +1306,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5757/wona_white_bridal_alchemy_sol_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5757/wona_white_bridal_alchemy_sol_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5757/wona_white_bridal_alchemy_sol.jpg', 'https://wonaconcept.com/upload/catalog/5800/5757/wona_white_bridal_alchemy_sol_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5757/wona_bridal_alchemy_sol.webm',
+    price: 377,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sol/' },
   },
   {
@@ -1234,6 +1321,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5752/wona_white_bridal_alchemy_wonder_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5752/wona_white_bridal_alchemy_wonder_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5752/wona_white_bridal_alchemy_wonder.jpg', 'https://wonaconcept.com/upload/catalog/5800/5752/wona_white_bridal_alchemy_wonder_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5752/wona_white_bridal_alchemy_wonder_6.jpg', 'https://wonaconcept.com/upload/catalog/5800/5752/wona_white_bridal_alchemy_wonder_5.jpg', 'https://wonaconcept.com/upload/catalog/5800/5752/wona_white_bridal_alchemy_wonder_2.jpg', 'https://wonaconcept.com/upload/catalog/5800/5752/wona_white_bridal_alchemy_wonder_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5752/wona_bridal_alchemy_wonder_2.webm',
+    price: 240,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/wonder/' },
   },
   {
@@ -1248,6 +1336,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5755/wona_white_bridal_alchemy_verity_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5755/wona_white_bridal_alchemy_verity_1.jpg', 'https://wonaconcept.com/upload/catalog/5800/5755/wona_white_bridal_alchemy_verity_3.jpg', 'https://wonaconcept.com/upload/catalog/5800/5755/wona_white_bridal_alchemy_verity.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5755/wona_bridal_alchemy_verity.webm',
+    price: 394,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/verity/' },
   },
   {
@@ -1262,6 +1351,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/5800/5756/wona_white_bridal_alchemy_sposa.jpg',
     images: ['https://wonaconcept.com/upload/catalog/5800/5756/wona_white_bridal_alchemy_sposa.jpg', 'https://wonaconcept.com/upload/catalog/5800/5756/wona_white_bridal_alchemy_sposa_2.jpg', 'https://wonaconcept.com/upload/catalog/5800/5756/wona_white_bridal_alchemy_sposa_1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/5800/5756/wona_bridal_alchemy_sposa.webm',
+    price: 196,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sposa/' },
   },
   {
@@ -1276,6 +1366,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4352/wona_atelier_lumiere_edition_ambition_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4352/wona_atelier_lumiere_edition_ambition_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4352/wona_atelier_lumiere_edition_ambition_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4352/wona_atelier_lumiere_edition_ambition_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4352/wona_concept_atelier_lumiere_edition_collection_ambition.webm',
+    price: 339,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ambition/' },
   },
   {
@@ -1290,6 +1381,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4349/wona_atelier_lumiere_edition_anais_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4349/wona_atelier_lumiere_edition_anais_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4349/wona_atelier_lumiere_edition_anais_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4349/wona_atelier_lumiere_edition_anais_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4349/wona_atelier_lumiere_edition_anais_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4349/wona_concept_atelier_lumiere_edition_collection_anais.webm',
+    price: 360,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/anais/' },
   },
   {
@@ -1304,6 +1396,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4345/wona_atelier_lumiere_edition_brunette_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4345/wona_atelier_lumiere_edition_brunette_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4345/wona_atelier_lumiere_edition_brunette_4.jpg', 'https://wonaconcept.com/upload/catalog/4400/4345/wona_atelier_lumiere_edition_brunette_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4345/wona_atelier_lumiere_edition_brunette_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4345/wona_atelier_lumiere_edition_brunette_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4345/wona_concept_atelier_lumiere_edition_collection_brunette.webm',
+    price: 323,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/brunette/' },
   },
   {
@@ -1318,6 +1411,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4341/wona_atelier_lumiere_edition_dominique_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4341/wona_atelier_lumiere_edition_dominique_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4341/wona_atelier_lumiere_edition_dominique_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4341/wona_atelier_lumiere_edition_dominique_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4341/wona_atelier_lumiere_edition_dominique_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4341/wona_concept_atelier_lumiere_edition_collection_dominique.webm',
+    price: 267,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/dominique/' },
   },
   {
@@ -1332,6 +1426,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4348/wona_atelier_lumiere_edition_batiste_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4348/wona_atelier_lumiere_edition_batiste_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4348/wona_atelier_lumiere_edition_batiste_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4348/wona_atelier_lumiere_edition_batiste_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4348/wona_atelier_lumiere_edition_batiste_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4348/wona_concept_atelier_lumiere_edition_collection_batiste.webm',
+    price: 348,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/batiste/' },
   },
   {
@@ -1346,6 +1441,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4340/wona_atelier_lumiere_edition_forte_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4340/wona_atelier_lumiere_edition_forte_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4340/wona_atelier_lumiere_edition_forte_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4340/wona_atelier_lumiere_edition_forte_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4340/wona_concept_atelier_lumiere_edition_collection_forte.webm',
+    price: 259,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/forte/' },
   },
   {
@@ -1360,6 +1456,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4339/wona_atelier_lumiere_edition_lauder_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4339/wona_atelier_lumiere_edition_lauder_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4339/wona_atelier_lumiere_edition_lauder_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4339/wona_atelier_lumiere_edition_lauder_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4339/wona_atelier_lumiere_edition_lauder_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4339/wona_concept_atelier_lumiere_edition_collection_lauder.webm',
+    price: 192,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/lauder/' },
   },
   {
@@ -1374,6 +1471,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4347/wona_atelier_lumiere_edition_bjork_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4347/wona_atelier_lumiere_edition_bjork_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4347/wona_atelier_lumiere_edition_bjork_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4347/wona_atelier_lumiere_edition_bjork_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4347/wona_atelier_lumiere_edition_bjork_4.jpg', 'https://wonaconcept.com/upload/catalog/4400/4347/wona_atelier_lumiere_edition_bjork_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4347/wona_concept_atelier_lumiere_edition_collection_bjork.webm',
+    price: 203,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bjork/' },
   },
   {
@@ -1388,6 +1486,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4338/wona_atelier_lumiere_edition_maxwell_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4338/wona_atelier_lumiere_edition_maxwell_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4338/wona_atelier_lumiere_edition_maxwell_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4338/wona_atelier_lumiere_edition_maxwell_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4338/wona_atelier_lumiere_edition_maxwell_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4338/wona_concept_atelier_lumiere_edition_collection_maxwell.webm',
+    price: 193,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/maxwell/' },
   },
   {
@@ -1402,6 +1501,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4335/wona_atelier_lumiere_edition_moment_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4335/wona_atelier_lumiere_edition_moment_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4335/wona_atelier_lumiere_edition_moment_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4335/wona_atelier_lumiere_edition_moment_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4335/wona_atelier_lumiere_edition_moment_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4335/wona_concept_atelier_lumiere_edition_collection_moment.webm',
+    price: 234,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/moment/' },
   },
   {
@@ -1416,6 +1516,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4329/wona_atelier_lumiere_edition_ottinia_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4329/wona_atelier_lumiere_edition_ottinia_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4329/wona_atelier_lumiere_edition_ottinia_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4329/wona_atelier_lumiere_edition_ottinia_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4329/wona_concept_atelier_lumiere_edition_collection_ottinia.webm',
+    price: 270,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ottinia/' },
   },
   {
@@ -1430,6 +1531,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4332/wona_atelier_lumiere_edition_orchestra_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4332/wona_atelier_lumiere_edition_orchestra_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4332/wona_atelier_lumiere_edition_orchestra_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4332/wona_atelier_lumiere_edition_orchestra_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4332/wona_concept_atelier_lumiere_edition_collection_orchestra.webm',
+    price: 296,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/orchestra/' },
   },
   {
@@ -1444,6 +1546,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4342/wona_atelier_lumiere_edition_farwell_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4342/wona_atelier_lumiere_edition_farwell_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4342/wona_atelier_lumiere_edition_farwell_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4342/wona_atelier_lumiere_edition_farwell_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4342/wona_concept_atelier_lumiere_edition_collection_farwell.webm',
+    price: 118,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/farwell/' },
   },
   {
@@ -1458,6 +1561,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4326/wona_atelier_lumiere_edition_pallada_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4326/wona_atelier_lumiere_edition_pallada_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4326/wona_atelier_lumiere_edition_pallada_5.jpg', 'https://wonaconcept.com/upload/catalog/4400/4326/wona_atelier_lumiere_edition_pallada_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4326/wona_atelier_lumiere_edition_pallada_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4326/wona_atelier_lumiere_edition_pallada_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4326/wona_concept_atelier_lumiere_edition_collection_pallada.webm',
+    price: 247,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/pallada/' },
   },
   {
@@ -1472,6 +1576,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4320/wona_atelier_lumiere_edition_poesia_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4320/wona_atelier_lumiere_edition_poesia_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4320/wona_atelier_lumiere_edition_poesia_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4320/wona_atelier_lumiere_edition_poesia_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4320/wona_concept_atelier_lumiere_edition_collection_poesia.webm',
+    price: 237,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/poesia/' },
   },
   {
@@ -1486,6 +1591,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4317/wona_atelier_lumiere_edition_riva_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4317/wona_atelier_lumiere_edition_riva_3.jpg', 'https://wonaconcept.com/upload/catalog/4400/4317/wona_atelier_lumiere_edition_riva_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4317/wona_atelier_lumiere_edition_riva_4.jpg', 'https://wonaconcept.com/upload/catalog/4400/4317/wona_atelier_lumiere_edition_riva_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4317/wona_atelier_lumiere_edition_riva_5.jpg', 'https://wonaconcept.com/upload/catalog/4400/4317/wona_atelier_lumiere_edition_riva_6.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4317/wona_concept_atelier_lumiere_edition_collection_riva.webm',
+    price: 102,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/riva/' },
   },
   {
@@ -1500,6 +1606,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4323/wona_atelier_lumiere_edition_planet_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4323/wona_atelier_lumiere_edition_planet_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4323/wona_atelier_lumiere_edition_planet_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4323/wona_atelier_lumiere_edition_planet_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4323/wona_concept_atelier_lumiere_edition_collection_planet.webm',
+    price: 311,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/planet/' },
   },
   {
@@ -1514,6 +1621,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4314/wona_atelier_lumiere_edition_symbol_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4314/wona_atelier_lumiere_edition_symbol_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4314/wona_atelier_lumiere_edition_symbol_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4314/wona_atelier_lumiere_edition_symbol_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4314/wona_concept_atelier_lumiere_edition_collection_symbol.webm',
+    price: 216,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/symbol/' },
   },
   {
@@ -1528,6 +1636,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4311/wona_atelier_lumiere_edition_veneris_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4311/wona_atelier_lumiere_edition_veneris_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4311/wona_atelier_lumiere_edition_veneris_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4311/wona_atelier_lumiere_edition_veneris_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4311/wona_concept_atelier_lumiere_edition_collection_veneris.webm',
+    price: 234,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/veneris/' },
   },
   {
@@ -1542,6 +1651,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4218/wona_white_swan_ayata_4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4218/wona_white_swan_ayata_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4218/wona_white_swan_ayata_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4218/wona_white_swan_ayata_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4218/wona_white_swan_ayata_5.jpg', 'https://wonaconcept.com/upload/catalog/4300/4218/wona_white_swan_ayata_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4218/ayata_reel.webm',
+    price: 381,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ayata/' },
   },
   {
@@ -1556,6 +1666,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4400/4312/wona_atelier_lumiere_edition_tabitha_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4400/4312/wona_atelier_lumiere_edition_tabitha_1.jpg', 'https://wonaconcept.com/upload/catalog/4400/4312/wona_atelier_lumiere_edition_tabitha_2.jpg', 'https://wonaconcept.com/upload/catalog/4400/4312/wona_atelier_lumiere_edition_tabitha_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4400/4312/wona_concept_atelier_lumiere_edition_collection_tabitha.webm',
+    price: 137,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/tabitha/' },
   },
   {
@@ -1570,6 +1681,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4219/wona_white_swan_bosphor_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4219/wona_white_swan_bosphor_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4219/wona_white_swan_bosphor_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4219/wona_white_swan_bosphor_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4219/wona_white_swan_bosphor_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4219/bosphor_reel.webm',
+    price: 228,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bosphor/' },
   },
   {
@@ -1584,6 +1696,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4220/wona_white_swan_bronwin_4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4220/wona_white_swan_bronwin_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4220/wona_white_swan_bronwin_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4220/wona_white_swan_bronwin_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4220/wona_white_swan_bronwin_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4220/wona_white_swan_bronwin_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4220/bronwin_reel.webm',
+    price: 188,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bronwin/' },
   },
   {
@@ -1598,6 +1711,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4243/wona_white_swan_foster_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4243/wona_white_swan_foster_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4243/wona_white_swan_foster_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4243/wona_white_swan_foster_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4243/wona_white_swan_foster_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4243/foster_reels.webm',
+    price: 223,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/foster/' },
   },
   {
@@ -1612,6 +1726,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4222/wona_white_swan_dixon_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4222/wona_white_swan_dixon_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4222/wona_white_swan_dixon_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4222/wona_white_swan_dixon_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4222/wona_white_swan_dixon_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4222/dixon_reel.webm',
+    price: 173,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/dixon/' },
   },
   {
@@ -1626,6 +1741,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4242/wona_white_swan_freedom_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4242/wona_white_swan_freedom_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4242/wona_white_swan_freedom_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4242/wona_white_swan_freedom_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4242/freedom_reel.webm',
+    price: 210,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/freedom/' },
   },
   {
@@ -1640,6 +1756,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4241/wona_white_swan_joe_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4241/wona_white_swan_joe_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4241/wona_white_swan_joe_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4241/wona_white_swan_joe_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4241/wona_white_swan_joe_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4241/joe_reel.webm',
+    price: 313,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/joe/' },
   },
   {
@@ -1654,6 +1771,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4238/wona_white_swan_louis_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4238/wona_white_swan_louis_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4238/wona_white_swan_louis_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4238/wona_white_swan_louis_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4238/wona_white_swan_louis_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4238/wona_white_swan_louis_5.jpg', 'https://wonaconcept.com/upload/catalog/4300/4238/wona_white_swan_louis_6.jpg', 'https://wonaconcept.com/upload/catalog/4300/4238/wona_white_swan_louis_bolero.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4238/louis_reel.webm',
+    price: 381,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/louis/' },
   },
   {
@@ -1668,6 +1786,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4239/wona_white_swan_kea_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4239/wona_white_swan_kea_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4239/wona_white_swan_kea_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4239/wona_white_swan_kea_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4239/wona_white_swan_kea_5.jpg', 'https://wonaconcept.com/upload/catalog/4300/4239/wona_white_swan_kea_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4239/kea_reel.webm',
+    price: 105,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kea/' },
   },
   {
@@ -1682,6 +1801,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4237/wona_white_swan_marcella_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4237/wona_white_swan_marcella_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4237/wona_white_swan_marcella_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4237/wona_white_swan_marcella_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4237/wona_white_swan_marcella_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4237/marcella_reel.webm',
+    price: 243,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/marcella/' },
   },
   {
@@ -1696,6 +1816,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4236/wona_white_swan_murray_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4236/wona_white_swan_murray_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4236/wona_white_swan_murray_1.jpeg', 'https://wonaconcept.com/upload/catalog/4300/4236/wona_white_swan_murray_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4236/murray_reel.webm',
+    price: 347,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/murray/' },
   },
   {
@@ -1710,6 +1831,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4235/wona_white_swan_namib_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4235/wona_white_swan_namib_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4235/wona_white_swan_namib_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4235/wona_white_swan_namib_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4235/wona_white_swan_namib_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4235/namib_reel.webm',
+    price: 260,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/namib/' },
   },
   {
@@ -1724,6 +1846,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4240/wona_white_swan_jordie_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4240/wona_white_swan_jordie_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4240/wona_white_swan_jordie_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4240/wona_white_swan_jordie_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4240/wona_white_swan_jordie_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4240/jordie_reel.webm',
+    price: 137,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/jordie/' },
   },
   {
@@ -1738,6 +1861,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4233/wona_white_swan_petite_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4233/wona_white_swan_petite_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4233/wona_white_swan_petite_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4233/wona_white_swan_petite_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4233/petite_reel.webm',
+    price: 220,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/petite/' },
   },
   {
@@ -1752,6 +1876,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4234/wona_white_swan_ottawa_5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4234/wona_white_swan_ottawa_5.jpg', 'https://wonaconcept.com/upload/catalog/4300/4234/wona_white_swan_ottawa_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4234/wona_white_swan_ottawa_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4234/wona_white_swan_ottawa_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4234/wona_white_swan_ottawa_6.jpg', 'https://wonaconcept.com/upload/catalog/4300/4234/wona_white_swan_ottawa_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4234/wona_white_swan_ottawa_bolero.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4234/ottawa_reel.webm',
+    price: 138,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ottawa/' },
   },
   {
@@ -1766,6 +1891,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4232/wona_white_swan_phyllis_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4232/wona_white_swan_phyllis_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4232/wona_white_swan_phyllis_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4232/wona_white_swan_phyllis_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4232/wona_white_swan_phyllis_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4232/phyllis_reel.webm',
+    price: 344,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/phyllis/' },
   },
   {
@@ -1780,6 +1906,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4231/wona_white_swan_protea_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4231/wona_white_swan_protea_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4231/wona_white_swan_protea_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4231/wona_white_swan_protea_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4231/wona_white_swan_protea_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4231/protea_reel.webm',
+    price: 217,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/protea/' },
   },
   {
@@ -1794,6 +1921,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4230/wona_white_swan_ranelle_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4230/wona_white_swan_ranelle_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4230/wona_white_swan_ranelle_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4230/wona_white_swan_ranelle_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4230/ranelle_reels.webm',
+    price: 122,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ranelle/' },
   },
   {
@@ -1808,6 +1936,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4228/wona_white_swan_ross_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4228/wona_white_swan_ross_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4228/wona_white_swan_ross_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4228/wona_white_swan_ross_5.jpg', 'https://wonaconcept.com/upload/catalog/4300/4228/wona_white_swan_ross_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4228/wona_white_swan_ross_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4228/ross_reel.webm',
+    price: 279,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ross/' },
   },
   {
@@ -1822,6 +1951,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4229/wona_white_swan_rios_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4229/wona_white_swan_rios_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4229/wona_white_swan_rios_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4229/wona_white_swan_rios_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4229/wona_white_swan_rios_5.jpg', 'https://wonaconcept.com/upload/catalog/4300/4229/wona_white_swan_rios_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4229/rios_reel.webm',
+    price: 201,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/rios/' },
   },
   {
@@ -1836,6 +1966,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4227/wona_white_swan_sweden_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4227/wona_white_swan_sweden_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4227/wona_white_swan_sweden_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4227/wona_white_swan_sweden_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4227/wona_white_swan_sweden_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4227/sweden_reels.webm',
+    price: 176,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sweden-set/' },
   },
   {
@@ -1850,6 +1981,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4226/wona_white_swan_tucker_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4226/wona_white_swan_tucker_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4226/wona_white_swan_tucker_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4226/wona_white_swan_tucker_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4226/tucker_reel.webm',
+    price: 216,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/tucker/' },
   },
   {
@@ -1864,6 +1996,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4224/wona_white_swan_vesna_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4224/wona_white_swan_vesna_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4224/wona_white_swan_vesna_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4224/wona_white_swan_vesna_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4224/vesna_reel.webm',
+    price: 194,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/vesna/' },
   },
   {
@@ -1878,6 +2011,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4223/wona_white_swan_winslow_5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4223/wona_white_swan_winslow_5.jpg', 'https://wonaconcept.com/upload/catalog/4300/4223/wona_white_swan_winslow_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4223/wona_white_swan_winslow_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4223/wona_white_swan_winslow_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4223/wona_white_swan_winslow_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4223/wona_white_swan_winslow_6.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4223/winslow_reel.webm',
+    price: 285,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/winslow/' },
   },
   {
@@ -1892,6 +2026,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4216/wona_special_edition_abra_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4216/wona_special_edition_abra_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4216/wona_special_edition_abra_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4216/wona_special_edition_abra_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4216/wona_concept_special_edition_abra.webm',
+    price: 161,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/abra/' },
   },
   {
@@ -1906,6 +2041,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4225/wona_white_swan_vernon_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4225/wona_white_swan_vernon_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4225/wona_white_swan_vernon_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4225/wona_white_swan_vernon_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4225/wona_white_swan_vernon_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4225/wona_white_swan_vernon_5.jpg', 'https://wonaconcept.com/upload/catalog/4300/4225/wona_white_swan_vernon_bolero.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4225/vernon_reel.webm',
+    price: 185,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/vernon/' },
   },
   {
@@ -1920,6 +2056,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4215/wona_special_edition_anise_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4215/wona_special_edition_anise_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4215/wona_special_edition_anise_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4215/wona_special_edition_anise_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4215/wona_concept_special_edition_anise.webm',
+    price: 397,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/anise/' },
   },
   {
@@ -1934,6 +2071,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4217/wona_special_edition_auden_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4217/wona_special_edition_auden_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4217/wona_special_edition_auden_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4217/wona_special_edition_auden_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4217/wona_concept_special_edition_auden.webm',
+    price: 159,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/auden/' },
   },
   {
@@ -1948,6 +2086,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4213/wona_special_edition_devotion_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4213/wona_special_edition_devotion_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4213/wona_special_edition_devotion_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4213/wona_special_edition_devotion_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4213/wona_concept_special_edition_devotion.webm',
+    price: 299,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/devotion/' },
   },
   {
@@ -1962,6 +2101,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4211/wona_special_edition_katana_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4211/wona_special_edition_katana_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4211/wona_special_edition_katana_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4211/wona_special_edition_katana_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4211/wona_special_edition_katana_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4211/wona_special_edition_katana_6.jpg', 'https://wonaconcept.com/upload/catalog/4300/4211/wona_special_edition_katana_7.jpg', 'https://wonaconcept.com/upload/catalog/4300/4211/wona_special_edition_katana_9.jpg', 'https://wonaconcept.com/upload/catalog/4300/4211/wona_special_edition_katana_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4211/wona_concept_special_edition_katana.webm',
+    price: 254,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/katana/' },
   },
   {
@@ -1976,6 +2116,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4214/wona_special_edition_casis_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4214/wona_special_edition_casis_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4214/wona_special_edition_casis_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4214/wona_special_edition_casis_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4214/wona_concept_special_edition_casis.webm',
+    price: 336,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/casis/' },
   },
   {
@@ -1990,6 +2131,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4212/wona_special_edition_hartley_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4212/wona_special_edition_hartley_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4212/wona_special_edition_hartley_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4212/wona_special_edition_hartley_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4212/wona_special_edition_hartley_6.jpg', 'https://wonaconcept.com/upload/catalog/4300/4212/wona_special_edition_hartley_7.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4212/wona_concept_special_edition_hartley.webm',
+    price: 138,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/hartley/' },
   },
   {
@@ -2004,6 +2146,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4210/wona_special_edition_kiomi_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4210/wona_special_edition_kiomi_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4210/wona_special_edition_kiomi_katana_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4210/wona_special_edition_kiomi_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4210/wona_special_edition_kiomi_katana_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4210/wona_special_edition_kiomi_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4210/wona_concept_special_edition_kiomi.webm',
+    price: 207,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kiomi/' },
   },
   {
@@ -2018,6 +2161,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4208/wona_special_edition_mannon_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4208/wona_special_edition_mannon_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4208/wona_special_edition_mannon_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4208/wona_special_edition_mannon_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4208/wona_concept_special_edition_mannon.webm',
+    price: 166,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/mannon/' },
   },
   {
@@ -2032,6 +2176,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4207/wona_special_edition_meteore_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4207/wona_special_edition_meteore_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4207/wona_special_edition_meteore_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4207/wona_special_edition_meteore_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4207/wona_special_edition_meteore_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4207/wona_special_edition_meteore_6.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4207/wona_concept_special_edition_meteore.webm',
+    price: 189,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/meteore/' },
   },
   {
@@ -2046,6 +2191,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4206/wona_special_edition_monet_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4206/wona_special_edition_monet_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4206/wona_special_edition_monet_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4206/wona_special_edition_monet_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4206/wona_concept_special_edition_monet.webm',
+    price: 150,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/monet/' },
   },
   {
@@ -2060,6 +2206,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4209/wona_special_edition_loyal_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4209/wona_special_edition_loyal_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4209/wona_special_edition_loyal_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4209/wona_special_edition_loyal_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4209/wona_concept_special_edition_loyal.webm',
+    price: 387,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/loyal/' },
   },
   {
@@ -2074,6 +2221,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4205/wona_special_edition_muguet_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4205/wona_special_edition_muguet_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4205/wona_special_edition_muguet_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4205/wona_special_edition_muguet_3.jpg', 'https://wonaconcept.com/upload/catalog/4300/4205/wona_special_edition_muguet_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4205/wona_concept_special_edition_muguet.webm',
+    price: 318,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/muguet/' },
   },
   {
@@ -2088,6 +2236,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4204/wona_special_edition_nirvana_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4204/wona_special_edition_nirvana_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4204/wona_special_edition_nirvana_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4204/wona_special_edition_nirvana_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4204/wona_concept_special_edition_nirvana.webm',
+    price: 277,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/nirvana/' },
   },
   {
@@ -2102,6 +2251,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4203/wona_special_edition_okinawa_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4203/wona_special_edition_okinawa_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4203/wona_special_edition_okinawa_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4203/wona_special_edition_okinawa_4.jpg', 'https://wonaconcept.com/upload/catalog/4300/4203/wona_special_edition_okinawa_hartley.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4203/wona_concept_special_edition_okinawa.webm',
+    price: 255,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/okinawa/' },
   },
   {
@@ -2116,6 +2266,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4202/wona_special_edition_saffron_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4202/wona_special_edition_saffron_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4202/wona_special_edition_saffron_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4202/wona_special_edition_saffron_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4202/wona_concept_special_edition_saffron.webm',
+    price: 247,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/saffron/' },
   },
   {
@@ -2130,6 +2281,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4200/4199/wona_special_edition_wave_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4200/4199/wona_special_edition_wave_1.jpg', 'https://wonaconcept.com/upload/catalog/4200/4199/wona_special_edition_wave_2.jpg', 'https://wonaconcept.com/upload/catalog/4200/4199/wona_special_edition_wave_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4200/4199/wona_concept_special_edition_wave.webm',
+    price: 210,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/wave/' },
   },
   {
@@ -2144,6 +2296,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4300/4201/wona_special_edition_teo_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4300/4201/wona_special_edition_teo_1.jpg', 'https://wonaconcept.com/upload/catalog/4300/4201/wona_special_edition_teo_2.jpg', 'https://wonaconcept.com/upload/catalog/4300/4201/wona_special_edition_teo_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4300/4201/wona_concept_special_edition_teo.webm',
+    price: 188,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/teo/' },
   },
   {
@@ -2158,6 +2311,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4200/4200/wona_special_edition_vivica_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4200/4200/wona_special_edition_vivica_2.jpg', 'https://wonaconcept.com/upload/catalog/4200/4200/wona_special_edition_vivica_1.jpg', 'https://wonaconcept.com/upload/catalog/4200/4200/wona_special_edition_vivica_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4200/4200/wona_concept_special_edition_vivica.webm',
+    price: 217,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/vivica/' },
   },
   {
@@ -2172,6 +2326,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3862/wona_concept_l_unico_couture_adi_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3862/wona_concept_l_unico_couture_adi_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3862/wona_concept_l_unico_couture_adi_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3862/wona_concept_l_unico_couture_adi_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3862/wona_concept_l_unico_couture_adi_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3862/wona_concept_l_unico_collection_adi.webm',
+    price: 222,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/adi/' },
   },
   {
@@ -2186,6 +2341,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4200/4198/wona_special_edition_yoko_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4200/4198/wona_special_edition_yoko_2.jpg', 'https://wonaconcept.com/upload/catalog/4200/4198/wona_special_edition_yoko_1.jpg', 'https://wonaconcept.com/upload/catalog/4200/4198/wona_special_edition_yoko_3.jpg', 'https://wonaconcept.com/upload/catalog/4200/4198/wona_special_edition_yoko_4.jpg', 'https://wonaconcept.com/upload/catalog/4200/4198/wona_special_edition_yoko_6.jpg', 'https://wonaconcept.com/upload/catalog/4200/4198/wona_special_edition_yoko_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4200/4198/wona_concept_special_edition_yoko.webm',
+    price: 229,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/yoko/' },
   },
   {
@@ -2200,6 +2356,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3863/wona_concept_l_unico_couture_artizia_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3863/wona_concept_l_unico_couture_artizia_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3863/wona_concept_l_unico_couture_artizia_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3863/wona_concept_l_unico_couture_artizia_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3863/wona_concept_l_unico_couture_artizia_5.jpg', 'https://wonaconcept.com/upload/catalog/3900/3863/wona_concept_l_unico_couture_artizia_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3863/wona_concept_l_unico_collection_artizia.webm',
+    price: 196,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/artizia/' },
   },
   {
@@ -2214,6 +2371,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3865/brylee_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3865/brylee_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3865/brylee.jpg', 'https://wonaconcept.com/upload/catalog/3900/3865/brylee_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3865/wona_concept_l_unico_collection_brylee.webm',
+    price: 206,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/brylee/' },
   },
   {
@@ -2228,6 +2386,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3866/wona_concept_l_unico_couture_cami_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3866/wona_concept_l_unico_couture_cami_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3866/wona_concept_l_unico_couture_cami_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3866/wona_concept_l_unico_couture_cami_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3866/wona_concept_l_unico_couture_cami_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3866/wona_concept_l_unico_collection_cami.webm',
+    price: 132,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/cami/' },
   },
   {
@@ -2242,6 +2401,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3864/wona_concept_l_unico_couture_berkley_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3864/wona_concept_l_unico_couture_berkley_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3864/wona_concept_l_unico_couture_berkley_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3864/wona_concept_l_unico_couture_berkley_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3864/berkley_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3864/berkley_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3864/berkley_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3864/wona_concept_l_unico_collection_berkley.webm',
+    price: 319,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/berkley/' },
   },
   {
@@ -2256,6 +2416,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3867/wona_concept_l_unico_couture_catarsis_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3867/wona_concept_l_unico_couture_catarsis_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3867/wona_concept_l_unico_couture_catarsis_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3867/wona_concept_l_unico_couture_catarsis_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3867/wona_concept_l_unico_couture_catarsis_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3867/wona_concept_l_unico_collection_catarsis.webm',
+    price: 223,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/catarsis/' },
   },
   {
@@ -2270,6 +2431,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3868/wona_concept_l_unico_couture_dune_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3868/wona_concept_l_unico_couture_dune_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3868/wona_concept_l_unico_couture_dune_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3868/wona_concept_l_unico_couture_dune_4.jpg', 'https://wonaconcept.com/upload/catalog/3900/3868/wona_concept_l_unico_couture_dune_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3868/wona_concept_l_unico_couture_dune_6.jpg', 'https://wonaconcept.com/upload/catalog/3900/3868/wona_concept_l_unico_couture_dune_5.jpg', 'https://wonaconcept.com/upload/catalog/3900/3868/dune_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3868/dune_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3868/wona_concept_l_unico_collection_dune.webm',
+    price: 103,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/dune/' },
   },
   {
@@ -2284,6 +2446,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3870/wona_concept_l_unico_couture_harvest_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3870/wona_concept_l_unico_couture_harvest_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3870/wona_concept_l_unico_couture_harvest_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3870/wona_concept_l_unico_couture_harvest_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3870/wona_concept_l_unico_collection_harvest.webm',
+    price: 205,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/harvest/' },
   },
   {
@@ -2298,6 +2461,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3871/wona_concept_l_unico_couture_herta_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3871/wona_concept_l_unico_couture_herta_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3871/wona_concept_l_unico_couture_herta_5.jpg', 'https://wonaconcept.com/upload/catalog/3900/3871/wona_concept_l_unico_couture_herta_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3871/wona_concept_l_unico_couture_herta_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3871/wona_concept_l_unico_couture_herta_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3871/wona_concept_l_unico_collection_herta.webm',
+    price: 261,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/herta/' },
   },
   {
@@ -2312,6 +2476,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3869/wona_concept_l_unico_couture_fleur_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3869/wona_concept_l_unico_couture_fleur_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3869/wona_concept_l_unico_couture_fleur_4.jpg', 'https://wonaconcept.com/upload/catalog/3900/3869/wona_concept_l_unico_couture_fleur_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3869/wona_concept_l_unico_couture_fleur_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3869/wona_concept_l_unico_collection_fleur.webm',
+    price: 157,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/fleur/' },
   },
   {
@@ -2326,6 +2491,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3872/wona_concept_l_unico_couture_hunter_4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3872/wona_concept_l_unico_couture_hunter_4.jpg', 'https://wonaconcept.com/upload/catalog/3900/3872/wona_concept_l_unico_couture_hunter_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3872/wona_concept_l_unico_couture_hunter_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3872/wona_concept_l_unico_couture_hunter_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3872/wona_concept_l_unico_collection_hunter.webm',
+    price: 361,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/hunter/' },
   },
   {
@@ -2340,6 +2506,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3873/wona_concept_l_unico_couture_jordyn_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3873/wona_concept_l_unico_couture_jordyn_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3873/wona_concept_l_unico_couture_jordyn_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3873/wona_concept_l_unico_couture_jordyn_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3873/wona_concept_l_unico_collection_jordyn.webm',
+    price: 374,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/jordyn/' },
   },
   {
@@ -2354,6 +2521,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3874/wona_concept_l_unico_couture_kailani_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3874/wona_concept_l_unico_couture_kailani_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3874/wona_concept_l_unico_couture_kailani_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3874/wona_concept_l_unico_couture_kailani_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3874/wona_concept_l_unico_collection_kailani.webm',
+    price: 390,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kailani/' },
   },
   {
@@ -2368,6 +2536,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3875/wona_concept_l_unico_couture_kennedy_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3875/wona_concept_l_unico_couture_kennedy_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3875/wona_concept_l_unico_couture_kennedy_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3875/wona_concept_l_unico_couture_kennedy_5.jpg', 'https://wonaconcept.com/upload/catalog/3900/3875/wona_concept_l_unico_couture_kennedy_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3875/wona_concept_l_unico_couture_kennedy_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3875/wona_concept_l_unico_collection_kennedy.webm',
+    price: 339,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kennedy/' },
   },
   {
@@ -2382,6 +2551,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3877/wona_concept_l_unico_couture_miller_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3877/wona_concept_l_unico_couture_miller_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3877/wona_concept_l_unico_couture_miller_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3877/wona_concept_l_unico_couture_miller_4.jpg', 'https://wonaconcept.com/upload/catalog/3900/3877/wona_concept_l_unico_couture_miller_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3877/miller_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3877/miller_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3877/miller_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3877/wona_concept_l_unico_collection_miller.webm',
+    price: 170,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/miller/' },
   },
   {
@@ -2396,6 +2566,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3876/wona_concept_l_unico_couture_mars_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3876/wona_concept_l_unico_couture_mars_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3876/wona_concept_l_unico_couture_mars_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3876/wona_concept_l_unico_couture_mars_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3876/wona_concept_l_unico_collection_mars.webm',
+    price: 253,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/mars/' },
   },
   {
@@ -2410,6 +2581,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3878/wona_concept_l_unico_couture_narice_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3878/wona_concept_l_unico_couture_narice_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3878/wona_concept_l_unico_couture_narice_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3878/wona_concept_l_unico_couture_narice_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3878/wona_concept_l_unico_collection_narice.webm',
+    price: 159,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/narice/' },
   },
   {
@@ -2424,6 +2596,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3879/wona_concept_l_unico_couture_piper_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3879/wona_concept_l_unico_couture_piper_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3879/wona_concept_l_unico_couture_piper_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3879/wona_concept_l_unico_couture_piper_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3879/wona_concept_l_unico_collection_piper.webm',
+    price: 362,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/piper/' },
   },
   {
@@ -2438,6 +2611,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3880/wona_concept_l_unico_couture_rowan_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3880/wona_concept_l_unico_couture_rowan_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3880/wona_concept_l_unico_couture_rowan_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3880/wona_concept_l_unico_couture_rowan_4.jpg', 'https://wonaconcept.com/upload/catalog/3900/3880/wona_concept_l_unico_couture_rowan_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3900/3880/wona_concept_l_unico_collection_rowan.webm',
+    price: 344,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/rowan/' },
   },
   {
@@ -2452,6 +2626,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3755/wona_concept_gemini_attika_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3755/wona_concept_gemini_attika_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3755/wona_concept_gemini_attika_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3755/wona_concept_gemini_attika_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3755/attika_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3755/attika_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3755/attika_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3755/attika.mp4',
+    price: 396,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/attika/' },
   },
   {
@@ -2466,6 +2641,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3900/3881/wona_concept_l_unico_couture_troia_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3900/3881/wona_concept_l_unico_couture_troia_1.jpg', 'https://wonaconcept.com/upload/catalog/3900/3881/wona_concept_l_unico_couture_troia_3.jpg', 'https://wonaconcept.com/upload/catalog/3900/3881/wona_concept_l_unico_couture_troia_2.jpg', 'https://wonaconcept.com/upload/catalog/3900/3881/wona_concept_l_unico_couture_troia_4.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/troia/' },
+    price: 129,
   },
   {
     slug: 'wona-bronx',
@@ -2479,6 +2655,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3757/wona_concept_gemini_bronx_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3757/wona_concept_gemini_bronx_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3757/wona_concept_gemini_bronx_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3757/wona_concept_gemini_bronx_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3757/bronx.mp4',
+    price: 203,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bronx/' },
   },
   {
@@ -2493,6 +2670,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3758/wona_concept_gemini_chara_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3758/wona_concept_gemini_chara_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3758/wona_concept_gemini_chara_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3758/wona_concept_gemini_chara_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3758/wona_concept_gemini_chara_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3758/chara.mp4',
+    price: 289,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/chara/' },
   },
   {
@@ -2507,6 +2685,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3756/wona_concept_gemini_bernice_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3756/wona_concept_gemini_bernice_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3756/wona_concept_gemini_bernice_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3756/wona_concept_gemini_bernice_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3756/wona_concept_gemini_bernice_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3756/bernice.mp4',
+    price: 303,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bernice/' },
   },
   {
@@ -2521,6 +2700,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3759/wona_concept_gemini_columbia_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3759/wona_concept_gemini_columbia_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3759/wona_concept_gemini_columbia_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3759/wona_concept_gemini_columbia_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3759/wona_concept_gemini_columbia_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3759/columbia.mp4',
+    price: 368,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/columbia/' },
   },
   {
@@ -2535,6 +2715,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3760/wona_concept_gemini_demetra_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3760/wona_concept_gemini_demetra_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3760/wona_concept_gemini_demetra_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3760/wona_concept_gemini_demetra_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3760/wona_concept_gemini_demetra_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3760/demetra.mp4',
+    price: 136,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/demetria/' },
   },
   {
@@ -2549,6 +2730,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3761/wona_concept_gemini_dove_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3761/wona_concept_gemini_dove_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3761/wona_concept_gemini_dove_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3761/wona_concept_gemini_dove_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3761/wona_concept_gemini_dove_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3761/dove.mp4',
+    price: 304,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/dove/' },
   },
   {
@@ -2563,6 +2745,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3762/wona_concept_gemini_etta_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3762/wona_concept_gemini_etta_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3762/wona_concept_gemini_etta_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3762/wona_concept_gemini_etta_5.jpg', 'https://wonaconcept.com/upload/catalog/3800/3762/wona_concept_gemini_etta_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3762/etta.mp4',
+    price: 399,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/etta/' },
   },
   {
@@ -2577,6 +2760,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4200/4150/wona_concept_gemini_gemini_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4200/4150/wona_concept_gemini_gemini_1.jpg', 'https://wonaconcept.com/upload/catalog/4200/4150/wona_concept_gemini_gemini_4.jpg', 'https://wonaconcept.com/upload/catalog/4200/4150/wona_concept_gemini_gemini_2.jpg', 'https://wonaconcept.com/upload/catalog/4200/4150/wona_concept_gemini_gemini_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4200/4150/gemini.mp4',
+    price: 393,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/gemini_dress/' },
   },
   {
@@ -2591,6 +2775,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3764/wona_concept_gemini_genesis_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3764/wona_concept_gemini_genesis_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3764/wona_concept_gemini_genesis_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3764/wona_concept_gemini_genesis_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3764/genesis.mp4',
+    price: 139,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/genesis/' },
   },
   {
@@ -2605,6 +2790,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3766/wona_concept_gemini_jimmy_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3766/wona_concept_gemini_jimmy_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3766/wona_concept_gemini_jimmy_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3766/wona_concept_gemini_jimmy_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3766/jimmy.mp4',
+    price: 211,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/jimmy/' },
   },
   {
@@ -2619,6 +2805,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3765/wona_concept_gemini_hildred_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3765/wona_concept_gemini_hildred_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3765/wona_concept_gemini_hildred_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3765/wona_concept_gemini_hildred_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3765/wona_concept_gemini_hildred_1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3765/hildred.mp4',
+    price: 112,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/hildred/' },
   },
   {
@@ -2633,6 +2820,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3768/wona_concept_gemini_katniss_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3768/wona_concept_gemini_katniss_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3768/wona_concept_gemini_katniss_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3768/wona_concept_gemini_katniss_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3768/katniss_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3768/katniss_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3768/katniss_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3768/katniss.mp4',
+    price: 263,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/katniss/' },
   },
   {
@@ -2647,6 +2835,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3770/wona_concept_gemini_leonie_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3770/wona_concept_gemini_leonie_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3770/wona_concept_gemini_leonie_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3770/wona_concept_gemini_leonie_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3770/leonie_2.mp4',
+    price: 152,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/leonie/' },
   },
   {
@@ -2661,6 +2850,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3769/wona_concept_gemini_legend_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3769/wona_concept_gemini_legend_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3769/wona_concept_gemini_legend_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3769/wona_concept_gemini_legend_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3769/wona_concept_gemini_legend_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3769/legend.mp4',
+    price: 252,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/legend/' },
   },
   {
@@ -2675,6 +2865,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3771/wona_concept_gemini_lolita_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3771/wona_concept_gemini_lolita_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3771/wona_concept_gemini_lolita_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3771/wona_concept_gemini_lolita_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3771/lolita.mp4',
+    price: 146,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/lolita/' },
   },
   {
@@ -2689,6 +2880,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3773/wona_concept_gemini_marlowe_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3773/wona_concept_gemini_marlowe_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3773/wona_concept_gemini_marlowe_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3773/wona_concept_gemini_marlowe_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3773/marlowe.mp4',
+    price: 338,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/marlowe/' },
   },
   {
@@ -2703,6 +2895,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3772/wona_concept_gemini_maeve_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3772/wona_concept_gemini_maeve_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3772/wona_concept_gemini_maeve_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3772/wona_concept_gemini_maeve_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3772/wona_concept_gemini_maeve_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3772/maeve.mp4',
+    price: 175,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/maeve/' },
   },
   {
@@ -2717,6 +2910,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3776/wona_concept_gemini_merrit_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3776/wona_concept_gemini_merrit_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3776/wona_concept_gemini_merrit_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3776/wona_concept_gemini_merrit_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3776/merrit.mp4',
+    price: 165,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/merrit/' },
   },
   {
@@ -2731,6 +2925,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3774/wona_concept_gemini_megara_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3774/wona_concept_gemini_megara_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3774/wona_concept_gemini_megara_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3774/wona_concept_gemini_megara_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3774/megara.mp4',
+    price: 201,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/megara/' },
   },
   {
@@ -2745,6 +2940,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3777/wona_concept_gemini_nicoline_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3777/wona_concept_gemini_nicoline_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3777/wona_concept_gemini_nicoline_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3777/wona_concept_gemini_nicoline_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3777/wona_concept_gemini_nicoline_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3777/wona_concept_gemini_nicoline_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3777/nicoline.mp4',
+    price: 324,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/nicoline/' },
   },
   {
@@ -2759,6 +2955,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3775/wona_concept_gemini_mendosa_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3775/wona_concept_gemini_mendosa_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3775/wona_concept_gemini_mendosa_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3775/wona_concept_gemini_mendosa_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3775/mendosa.mp4',
+    price: 224,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/mendosa/' },
   },
   {
@@ -2773,6 +2970,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3778/wona_concept_gemini_november_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3778/wona_concept_gemini_november_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3778/wona_concept_gemini_november_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3778/wona_concept_gemini_november_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3778/wona_concept_gemini_november_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3778/november_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3778/november_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3778/november_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3778/november.mp4',
+    price: 388,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/november/' },
   },
   {
@@ -2787,6 +2985,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/4200/4149/wona_concept_gemini_promise_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/4200/4149/wona_concept_gemini_promise_2.jpg', 'https://wonaconcept.com/upload/catalog/4200/4149/wona_concept_gemini_promise_4.jpg', 'https://wonaconcept.com/upload/catalog/4200/4149/wona_concept_gemini_promise_5.jpg', 'https://wonaconcept.com/upload/catalog/4200/4149/wona_concept_gemini_promise_6.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/4200/4149/promise.mp4',
+    price: 273,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/promise/' },
   },
   {
@@ -2801,6 +3000,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3783/wona_concept_gemini_rodeo_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3783/wona_concept_gemini_rodeo_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3783/wona_concept_gemini_rodeo_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3783/wona_concept_gemini_rodeo_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3783/wona_concept_gemini_rodeo_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3783/rodeo.mp4',
+    price: 236,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/rodeo/' },
   },
   {
@@ -2815,6 +3015,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3779/wona_concept_gemini_oleen_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3779/wona_concept_gemini_oleen_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3779/wona_concept_gemini_oleen_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3779/wona_concept_gemini_oleen_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3779/wona_concept_gemini_oleen_5.jpg', 'https://wonaconcept.com/upload/catalog/3800/3779/wona_concept_gemini_oleen_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3779/oleen.mp4',
+    price: 291,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/oleen/' },
   },
   {
@@ -2829,6 +3030,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3786/wona_concept_gemini_sequoia_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3786/wona_concept_gemini_sequoia_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3786/wona_concept_gemini_sequoia_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3786/wona_concept_gemini_sequoia_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3786/wona_concept_gemini_seqoia_1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3786/sequoia.mp4',
+    price: 382,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sequoia/' },
   },
   {
@@ -2843,6 +3045,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3784/wona_concept_gemini_sabotage_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3784/wona_concept_gemini_sabotage_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3784/wona_concept_gemini_sabotage_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3784/wona_concept_gemini_sabotage_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3784/sabotage.mp4',
+    price: 248,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sabotage/' },
   },
   {
@@ -2857,6 +3060,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3785/wona_concept_gemini_safari_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3785/wona_concept_gemini_safari_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3785/wona_concept_gemini_safari_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3785/wona_concept_gemini_safari_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3785/wona_concept_gemini_safari_5.jpg', 'https://wonaconcept.com/upload/catalog/3800/3785/wona_concept_gemini_safari_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3785/safari_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3785/safari_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3785/safari_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3785/safari.mp4',
+    price: 238,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/safari/' },
   },
   {
@@ -2871,6 +3075,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3787/wona_concept_gemini_sergine_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3787/wona_concept_gemini_sergine_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3787/wona_concept_gemini_sergine_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3787/wona_concept_gemini_sergine_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3787/wona_concept_gemini_sergine_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3787/sergine.mp4',
+    price: 125,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sergine/' },
   },
   {
@@ -2885,6 +3090,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3791/wona_concept_gemini_sophia_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3791/wona_concept_gemini_sophia_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3791/wona_concept_gemini_sophia_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3791/wona_concept_gemini_sophia_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3791/sophia.mp4',
+    price: 326,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sophia/' },
   },
   {
@@ -2899,6 +3105,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3790/wona_concept_gemini_solaris_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3790/wona_concept_gemini_solaris_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3790/wona_concept_gemini_solaris_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3790/wona_concept_gemini_solaris_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3790/wona_concept_gemini_solaris_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3790/wona_concept_gemini_solaris_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3790/solaris.mp4',
+    price: 145,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/solaris/' },
   },
   {
@@ -2913,6 +3120,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3789/wona_concept_gemini_shanti_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3789/wona_concept_gemini_shanti_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3789/wona_concept_gemini_shanti_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3789/wona_concept_gemini_shanti_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3789/wona_concept_gemini_shanti_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3789/shanti.mp4',
+    price: 272,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/shanti/' },
   },
   {
@@ -2927,6 +3135,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3788/wona_concept_gemini_stone_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3788/wona_concept_gemini_stone_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3788/wona_concept_gemini_stone_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3788/wona_concept_gemini_stone_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3788/stone.mp4',
+    price: 282,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/stone/' },
   },
   {
@@ -2941,6 +3150,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3780/wona_concept_gemini_palmer_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3780/wona_concept_gemini_palmer_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3780/wona_concept_gemini_palmer_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3780/wona_concept_gemini_palmer_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3780/wona_concept_gemini_palmer_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3780/palmer.mp4',
+    price: 203,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/palmer/' },
   },
   {
@@ -2955,6 +3165,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3794/wona_concept_gemini_true_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3794/wona_concept_gemini_true_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3794/wona_concept_gemini_true_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3794/wona_concept_gemini_true_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3794/wona_concept_gemini_true_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3794/wona_concept_gemini_true_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3794/true.mp4',
+    price: 217,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/true/' },
   },
   {
@@ -2969,6 +3180,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3793/wona_concept_gemini_tali_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3793/wona_concept_gemini_tali_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3793/wona_concept_gemini_tali_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3793/wona_concept_gemini_tali_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3793/tali.mp4',
+    price: 166,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/tali/' },
   },
   {
@@ -2983,6 +3195,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3796/wona_concept_gemini_venette_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3796/wona_concept_gemini_venette_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3796/wona_concept_gemini_venette_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3796/wona_concept_gemini_venette_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3796/venette.mp4',
+    price: 345,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/venette/' },
   },
   {
@@ -2997,6 +3210,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3797/wona_concept_gemini_verona_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3797/wona_concept_gemini_verona_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3797/wona_concept_gemini_verona_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3797/wona_concept_gemini_verona_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3797/wona_concept_gemini_verona_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3797/verona_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3797/verona_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3797/verona_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3797/verona.mp4',
+    price: 244,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/verona/' },
   },
   {
@@ -3011,6 +3225,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3798/wona_concept_gemini_wilda_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3798/wona_concept_gemini_wilda_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3798/wona_concept_gemini_wilda_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3798/wona_concept_gemini_wilda_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3798/wona_concept_gemini_wilda_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3798/wilda.mp4',
+    price: 295,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/wilda/' },
   },
   {
@@ -3025,6 +3240,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3393/wona-wedding-atelier-signature-ayleen-6.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3393/wona-wedding-atelier-signature-ayleen-6.jpg', 'https://wonaconcept.com/upload/catalog/3400/3393/wona-wedding-atelier-signature-ayleen-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3393/wona-wedding-atelier-signature-ayleen-9.jpg', 'https://wonaconcept.com/upload/catalog/3400/3393/wona-wedding-atelier-signature-ayleen-14.jpg', 'https://wonaconcept.com/upload/catalog/3400/3393/wona-wedding-atelier-signature-ayleen-15.jpg', 'https://wonaconcept.com/upload/catalog/3400/3393/wona-wedding-atelier-signature-ayleen-11.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ayleen/' },
+    price: 351,
   },
   {
     slug: 'wona-wisla',
@@ -3038,6 +3254,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3799/wona_concept_gemini_wisla_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3799/wona_concept_gemini_wisla_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3799/wona_concept_gemini_wisla_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3799/wona_concept_gemini_wisla_3.jpg', 'https://wonaconcept.com/upload/catalog/3800/3799/wona_concept_gemini_wisla_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3799/wisla.mp4',
+    price: 253,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/wisla/' },
   },
   {
@@ -3052,6 +3269,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3800/3795/wona_concept_gemini_tulum_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3800/3795/wona_concept_gemini_tulum_1.jpg', 'https://wonaconcept.com/upload/catalog/3800/3795/wona_concept_gemini_tulum_4.jpg', 'https://wonaconcept.com/upload/catalog/3800/3795/wona_concept_gemini_tulum_2.jpg', 'https://wonaconcept.com/upload/catalog/3800/3795/wona_concept_gemini_tulum_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3800/3795/tulum.mp4',
+    price: 117,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/tulum/' },
   },
   {
@@ -3066,6 +3284,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3395/wona-wedding-atelier-signature-bernadette-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3395/wona-wedding-atelier-signature-bernadette-5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3395/wona-wedding-atelier-signature-bernadette-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3395/wona-wedding-atelier-signature-bernadette-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3395/wona-wedding-atelier-signature-bernadette-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3395/wona-wedding-atelier-signature-bernadette-6.jpg', 'https://wonaconcept.com/upload/catalog/3400/3395/wona-wedding-atelier-signature-bernadette-4.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bernadette/' },
+    price: 385,
   },
   {
     slug: 'wona-daisy',
@@ -3079,6 +3298,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3396/wona-wedding-atelier-signature-daisy-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3396/wona-wedding-atelier-signature-daisy-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3396/wona-wedding-atelier-signature-daisy-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3396/wona-wedding-atelier-signature-daisy-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3396/wona-wedding-atelier-signature-daisy-5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3400/3396/wona_concept_atelier_signature_edition_collection_daisy.webm',
+    price: 289,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/daisy/' },
   },
   {
@@ -3093,6 +3313,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3401/wona-wedding-atelier-signature-kaas-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3401/wona-wedding-atelier-signature-kaas-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3401/wona-wedding-atelier-signature-kaas-5.jpg', 'https://wonaconcept.com/upload/catalog/3500/3401/wona-wedding-atelier-signature-kaas-4.jpg', 'https://wonaconcept.com/upload/catalog/3500/3401/wona-wedding-atelier-signature-kaas-1.jpg', 'https://wonaconcept.com/upload/catalog/3500/3401/wona-wedding-atelier-signature-kaas-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kaas/' },
+    price: 110,
   },
   {
     slug: 'wona-june',
@@ -3106,6 +3327,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3399/wona-wedding-atelier-signature-june-6.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3399/wona-wedding-atelier-signature-june-6.jpg', 'https://wonaconcept.com/upload/catalog/3400/3399/wona-wedding-atelier-signature-june-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3399/wona-wedding-atelier-signature-june-5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3399/wona-wedding-atelier-signature-june-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3399/wona-wedding-atelier-signature-june-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3399/wona-wedding-atelier-signature-june-8.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/june/' },
+    price: 103,
   },
   {
     slug: 'wona-katania',
@@ -3119,6 +3341,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3402/wona-wedding-atelier-signature-katania-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3402/wona-wedding-atelier-signature-katania-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3402/wona-wedding-atelier-signature-katania-2.jpg', 'https://wonaconcept.com/upload/catalog/3500/3402/wona-wedding-atelier-signature-katania-7.jpg', 'https://wonaconcept.com/upload/catalog/3500/3402/wona-wedding-atelier-signature-katania-1.jpg', 'https://wonaconcept.com/upload/catalog/3500/3402/wona-wedding-atelier-signature-katania-5.jpg', 'https://wonaconcept.com/upload/catalog/3500/3402/wona-wedding-atelier-signature-katania-6.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3500/3402/wona_concept_atelier_signature_edition_collection_katania.webm',
+    price: 303,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/katania/' },
   },
   {
@@ -3133,6 +3356,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3404/wona-wedding-atelier-signature-leighton-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3404/wona-wedding-atelier-signature-leighton-4.jpg', 'https://wonaconcept.com/upload/catalog/3500/3404/wona-wedding-atelier-signature-leighton-2.jpg', 'https://wonaconcept.com/upload/catalog/3500/3404/wona-wedding-atelier-signature-leighton-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3404/wona-wedding-atelier-signature-leighton-10.jpg', 'https://wonaconcept.com/upload/catalog/3500/3404/wona-wedding-atelier-signature-leighton-6.jpg', 'https://wonaconcept.com/upload/catalog/3500/3404/wona-wedding-atelier-signature-leighton-1.jpg', 'https://wonaconcept.com/upload/catalog/3500/3404/wona-wedding-atelier-signature-leighton-5.jpg', 'https://wonaconcept.com/upload/catalog/3500/3404/wona-wedding-atelier-signature-leighton-7.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/leighton/' },
+    price: 115,
   },
   {
     slug: 'wona-alaia',
@@ -3146,6 +3370,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3391/wona-wedding-atelier-signature-alaia-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3391/wona-wedding-atelier-signature-alaia-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3391/wona-wedding-atelier-signature-alaia-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3391/wona-wedding-atelier-signature-alaia-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3391/wona-wedding-atelier-signature-alaia-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/alaia/' },
+    price: 330,
   },
   {
     slug: 'wona-noah',
@@ -3159,6 +3384,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3406/wona-wedding-atelier-signature-noah-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3406/wona-wedding-atelier-signature-noah-4.jpg', 'https://wonaconcept.com/upload/catalog/3500/3406/wona-wedding-atelier-signature-noah-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3406/wona-wedding-atelier-signature-noah-2.jpg', 'https://wonaconcept.com/upload/catalog/3500/3406/wona-wedding-atelier-signature-noah-5.jpg', 'https://wonaconcept.com/upload/catalog/3500/3406/wona-wedding-atelier-signature-noah-6.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3500/3406/wona_concept_atelier_signature_edition_collection_noah.webm',
+    price: 145,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/noah/' },
   },
   {
@@ -3173,6 +3399,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3405/wona-wedding-atelier-signature-magnus-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3405/wona-wedding-atelier-signature-magnus-2.jpg', 'https://wonaconcept.com/upload/catalog/3500/3405/wona-wedding-atelier-signature-magnus-1.jpg', 'https://wonaconcept.com/upload/catalog/3500/3405/wona-wedding-atelier-signature-magnus-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3405/wona-wedding-atelier-signature-magnus-4.jpg', 'https://wonaconcept.com/upload/catalog/3500/3405/wona-wedding-atelier-signature-magnus-5.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/magnus/' },
+    price: 276,
   },
   {
     slug: 'wona-rio',
@@ -3186,6 +3413,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3410/wona-wedding-atelier-signature-rio-9.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3410/wona-wedding-atelier-signature-rio-9.jpg', 'https://wonaconcept.com/upload/catalog/3500/3410/wona-wedding-atelier-signature-rio-11.jpg', 'https://wonaconcept.com/upload/catalog/3500/3410/wona-wedding-atelier-signature-rio-4.jpg', 'https://wonaconcept.com/upload/catalog/3500/3410/wona-wedding-atelier-signature-rio-8.jpg', 'https://wonaconcept.com/upload/catalog/3500/3410/wona-wedding-atelier-signature-rio-6.jpg', 'https://wonaconcept.com/upload/catalog/3500/3410/wona-wedding-atelier-signature-rio-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3410/wona-wedding-atelier-signature-rio-1.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/rio/' },
+    price: 375,
   },
   {
     slug: 'wona-spencer',
@@ -3199,6 +3427,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3413/wona-wedding-atelier-signature-spenser-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3413/wona-wedding-atelier-signature-spenser-2.jpg', 'https://wonaconcept.com/upload/catalog/3500/3413/wona-wedding-atelier-signature-spenser-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3413/wona-wedding-atelier-signature-spenser-1.jpg', 'https://wonaconcept.com/upload/catalog/3500/3413/wona-wedding-atelier-signature-spenser-5.jpg', 'https://wonaconcept.com/upload/catalog/3500/3413/wona-wedding-atelier-signature-spenser-4.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/spencer/' },
+    price: 335,
   },
   {
     slug: 'wona-vesper',
@@ -3212,6 +3441,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3415/wona-wedding-atelier-signature-vesper-7.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3415/wona-wedding-atelier-signature-vesper-7.jpg', 'https://wonaconcept.com/upload/catalog/3500/3415/wona-wedding-atelier-signature-vesper-9.jpg', 'https://wonaconcept.com/upload/catalog/3500/3415/wona-wedding-atelier-signature-vesper-2.jpg', 'https://wonaconcept.com/upload/catalog/3500/3415/wona-wedding-atelier-signature-vesper-4.jpg', 'https://wonaconcept.com/upload/catalog/3500/3415/wona-wedding-atelier-signature-vesper-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3415/wona-wedding-atelier-signature-vesper-5.jpg', 'https://wonaconcept.com/upload/catalog/3500/3415/wona-wedding-atelier-signature-vesper-1.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/vesper/' },
+    price: 200,
   },
   {
     slug: 'wona-remy',
@@ -3225,6 +3455,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3408/wona-wedding-atelier-signature-remy-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3408/wona-wedding-atelier-signature-remy-1.jpg', 'https://wonaconcept.com/upload/catalog/3500/3408/wona-wedding-atelier-signature-remy-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3408/wona-wedding-atelier-signature-remy-2.jpg', 'https://wonaconcept.com/upload/catalog/3500/3408/wona-wedding-atelier-signature-remy-6.jpg', 'https://wonaconcept.com/upload/catalog/3500/3408/wona-wedding-atelier-signature-remy-4.jpg', 'https://wonaconcept.com/upload/catalog/3500/3408/wona-wedding-atelier-signature-remy-5.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/remy/' },
+    price: 158,
   },
   {
     slug: 'wona-sherrie',
@@ -3238,6 +3469,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3412/wona-wedding-atelier-signature-sherrie-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3412/wona-wedding-atelier-signature-sherrie-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3412/wona-wedding-atelier-signature-sherrie-5.jpg', 'https://wonaconcept.com/upload/catalog/3500/3412/wona-wedding-atelier-signature-sherrie-6.jpg', 'https://wonaconcept.com/upload/catalog/3500/3412/wona-wedding-atelier-signature-sherrie-7.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sherrie/' },
+    price: 180,
   },
   {
     slug: 'wona-viv',
@@ -3251,6 +3483,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3416/wona-wedding-atelier-signature-viv-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3416/wona-wedding-atelier-signature-viv-5.jpg', 'https://wonaconcept.com/upload/catalog/3500/3416/wona-wedding-atelier-signature-viv-2.jpg', 'https://wonaconcept.com/upload/catalog/3500/3416/wona-wedding-atelier-signature-viv-4.jpg', 'https://wonaconcept.com/upload/catalog/3500/3416/wona-wedding-atelier-signature-viv-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3416/wona-wedding-atelier-signature-viv-1.jpg', 'https://wonaconcept.com/upload/catalog/3500/3416/wona-wedding-atelier-signature-viv-6.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/viv/' },
+    price: 338,
   },
   {
     slug: 'wona-yvonne',
@@ -3264,6 +3497,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3418/wona-wedding-atelier-signature-yvonne-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3418/wona-wedding-atelier-signature-yvonne-2.jpg', 'https://wonaconcept.com/upload/catalog/3500/3418/wona-wedding-atelier-signature-yvonne-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3418/wona-wedding-atelier-signature-yvonne-4.jpg', 'https://wonaconcept.com/upload/catalog/3500/3418/wona-wedding-atelier-signature-yvonne-1.jpg', 'https://wonaconcept.com/upload/catalog/3500/3418/yvonne_1.jpg', 'https://wonaconcept.com/upload/catalog/3500/3418/yvonne_2.jpg', 'https://wonaconcept.com/upload/catalog/3500/3418/yvonne_3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/yvonne/' },
+    price: 396,
   },
   {
     slug: 'wona-zendaya',
@@ -3277,6 +3511,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3500/3419/wona-wedding-atelier-signature-zendaya-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3500/3419/wona-wedding-atelier-signature-zendaya-1.jpg', 'https://wonaconcept.com/upload/catalog/3500/3419/wona-wedding-atelier-signature-zendaya-5.jpg', 'https://wonaconcept.com/upload/catalog/3500/3419/wona-wedding-atelier-signature-zendaya-4.jpg', 'https://wonaconcept.com/upload/catalog/3500/3419/wona-wedding-atelier-signature-zendaya-3.jpg', 'https://wonaconcept.com/upload/catalog/3500/3419/wona-wedding-atelier-signature-zendaya-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/zendaya/' },
+    price: 144,
   },
   {
     slug: 'wona-bia',
@@ -3290,6 +3525,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3119/wona-alma-de-oro-bia-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3119/wona-alma-de-oro-bia-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3119/wona-alma-de-oro-bia-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3119/wona-alma-de-oro-bia-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bia/' },
+    price: 202,
   },
   {
     slug: 'wona-birdy',
@@ -3303,6 +3539,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3121/wona-alma-de-oro-birdy-6.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3121/wona-alma-de-oro-birdy-6.jpg', 'https://wonaconcept.com/upload/catalog/3200/3121/wona-alma-de-oro-birdy-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3121/wona-alma-de-oro-birdy-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3121/wona-alma-de-oro-birdy-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3121/wona-alma-de-oro-birdy-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3121/wona_concept_alma_de_oro_birdy.webm',
+    price: 341,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/birdy/' },
   },
   {
@@ -3317,6 +3554,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3125/wona-alma-de-oro-demia-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3125/wona-alma-de-oro-demia-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3125/wona-alma-de-oro-demia-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3125/wona-alma-de-oro-demia-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3125/wona-alma-de-oro-demia-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3125/wona-alma-de-oro-demia-satie.jpg', 'https://wonaconcept.com/upload/catalog/3200/3125/wona-alma-de-oro-demia-4.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/demia/' },
+    price: 110,
   },
   {
     slug: 'wona-callisto',
@@ -3330,6 +3568,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3123/wona-alma-de-oro-callisto-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3123/wona-alma-de-oro-callisto-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3123/wona-alma-de-oro-callisto-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3123/wona-alma-de-oro-callisto-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3123/wona-alma-de-oro-callisto-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/callisto/' },
+    price: 180,
   },
   {
     slug: 'wona-dorothy',
@@ -3343,6 +3582,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3129/wona-alma-de-oro-dorothy-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3129/wona-alma-de-oro-dorothy-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3129/wona-alma-de-oro-dorothy-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3129/wona-alma-de-oro-dorothy-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3129/wona_concept_alma_de_oro_dorothy.webm',
+    price: 164,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/dorothy/' },
   },
   {
@@ -3357,6 +3597,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3131/wona-alma-de-oro-eddie-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3131/wona-alma-de-oro-eddie-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3131/wona-alma-de-oro-eddie-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3131/wona-alma-de-oro-eddie-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3131/wona-alma-de-oro-eddie-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3131/wona-alma-de-oro-eddie-electra.jpg', 'https://wonaconcept.com/upload/catalog/3200/3131/wona-alma-de-oro-eddie-5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3131/wona_concept_alma_de_oro_eddie.webm',
+    price: 114,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/eddie/' },
   },
   {
@@ -3371,6 +3612,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3132/wona-alma-de-oro-edwina-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3132/wona-alma-de-oro-edwina-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3132/wona-alma-de-oro-edwina-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3132/wona-alma-de-oro-edwina-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3132/wona_concept_alma_de_oro_edwina.webm',
+    price: 238,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/edwina/' },
   },
   {
@@ -3385,6 +3627,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3134/wona-alma-de-oro-enola-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3134/wona-alma-de-oro-enola-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3134/wona-alma-de-oro-enola-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3134/wona-alma-de-oro-enola-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3134/wona-alma-de-oro-enola-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3134/wona_concept_alma_de_oro_enola.webm',
+    price: 322,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/enola/' },
   },
   {
@@ -3399,6 +3642,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3136/wona-alma-de-oro-harriet-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3136/wona-alma-de-oro-harriet-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3136/wona-alma-de-oro-harriet-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3136/wona-alma-de-oro-harriet-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3136/wona_concept_alma_de_oro_harriet.webm',
+    price: 390,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/harriet/' },
   },
   {
@@ -3413,6 +3657,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3133/wona-alma-de-oro-electra-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3133/wona-alma-de-oro-electra-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3133/wona-alma-de-oro-electra-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3133/wona-alma-de-oro-electra-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3133/wona-alma-de-oro-electra-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3133/wona-alma-de-oro-electra-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3133/wona_concept_alma_de_oro_electra.webm',
+    price: 261,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/electra/' },
   },
   {
@@ -3427,6 +3672,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3137/wona-alma-de-oro-havana-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3137/wona-alma-de-oro-havana-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3137/wona-alma-de-oro-havana-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3137/wona-alma-de-oro-havana-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/havanna/' },
+    price: 150,
   },
   {
     slug: 'wona-jackie',
@@ -3440,6 +3686,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3139/wona-alma-de-oro-jackie-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3139/wona-alma-de-oro-jackie-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3139/wona-alma-de-oro-jackie-6.jpg', 'https://wonaconcept.com/upload/catalog/3200/3139/wona-alma-de-oro-jackie-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3139/wona-alma-de-oro-jackie-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3139/wona-alma-de-oro-jackie-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3139/wona-alma-de-oro-jackie-5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3139/wona_concept_alma_de_oro_jackie.webm',
+    price: 112,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/jackie/' },
   },
   {
@@ -3454,6 +3701,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3141/wona-alma-de-oro-keira-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3141/wona-alma-de-oro-keira-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3141/wona-alma-de-oro-keira-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3141/wona-alma-de-oro-keira-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3141/wona-alma-de-oro-keira-7.jpg', 'https://wonaconcept.com/upload/catalog/3200/3141/wona-alma-de-oro-keira-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3141/wona-alma-de-oro-keira-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3141/wona-alma-de-oro-keira-6.jpg', 'https://wonaconcept.com/upload/catalog/3200/3141/wona-alma-de-oro-keira-odette.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3141/wona_concept_alma_de_oro_keira.webm',
+    price: 294,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/keira/' },
   },
   {
@@ -3468,6 +3716,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3140/wona-alma-de-oro-jill-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3140/wona-alma-de-oro-jill-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3140/wona-alma-de-oro-jill-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3140/wona-alma-de-oro-jill-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3140/wona-alma-de-oro-jill-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3140/wona-alma-de-oro-jill-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3140/wona_concept_alma_de_oro_jill.webm',
+    price: 214,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/jill/' },
   },
   {
@@ -3482,6 +3731,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3142/wona-alma-de-oro-kenya-7.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3142/wona-alma-de-oro-kenya-7.jpg', 'https://wonaconcept.com/upload/catalog/3200/3142/wona-alma-de-oro-kenya-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3142/wona-alma-de-oro-kenya-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3142/wona-alma-de-oro-kenya-6.jpg', 'https://wonaconcept.com/upload/catalog/3200/3142/wona-alma-de-oro-kenya-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3142/wona-alma-de-oro-kenya-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3142/wona_concept_alma_de_oro_kenya.webm',
+    price: 250,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kenya-set/' },
   },
   {
@@ -3496,6 +3746,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3138/wona-alma-de-oro-hazel-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3138/wona-alma-de-oro-hazel-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3138/wona-alma-de-oro-hazel-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3138/wona-alma-de-oro-hazel-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/hazel/' },
+    price: 360,
   },
   {
     slug: 'wona-lawrence',
@@ -3509,6 +3760,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3143/wona-alma-de-oro-lawrence-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3143/wona-alma-de-oro-lawrence-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3143/wona-alma-de-oro-lawrence-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3143/wona-alma-de-oro-lawrence-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3143/wona-alma-de-oro-lawrence-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3143/wona_concept_alma_de_oro_lawrence.webm',
+    price: 210,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/lawrence/' },
   },
   {
@@ -3523,6 +3775,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3144/wona-alma-de-oro-lotus-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3144/wona-alma-de-oro-lotus-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3144/wona-alma-de-oro-lotus-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3144/wona-alma-de-oro-lotus-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3144/wona-alma-de-oro-lotus-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3144/wona_concept_alma_de_oro_lotus.webm',
+    price: 214,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/lotus/' },
   },
   {
@@ -3537,6 +3790,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3146/wona-alma-de-oro-malma-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3146/wona-alma-de-oro-malma-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3146/wona-alma-de-oro-malma-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3146/wona-alma-de-oro-malma-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3146/wona_concept_alma_de_oro_malma.webm',
+    price: 354,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/malma/' },
   },
   {
@@ -3551,6 +3805,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3148/wona-alma-de-oro-mellina-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3148/wona-alma-de-oro-mellina-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3148/wona-alma-de-oro-mellina-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3148/wona-alma-de-oro-mellina-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3148/wona-alma-de-oro-mellina-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3148/wona_concept_alma_de_oro_mellina.webm',
+    price: 354,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/mellina/' },
   },
   {
@@ -3565,6 +3820,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3145/wona-alma-de-oro-mallory-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3145/wona-alma-de-oro-mallory-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3145/wona-alma-de-oro-mallory-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3145/wona-alma-de-oro-mallory-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3145/wona-alma-de-oro-mallory-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3145/wona-alma-de-oro-mallory-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3145/wona_concept_alma_de_oro_mallory.webm',
+    price: 375,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/mallory/' },
   },
   {
@@ -3579,6 +3835,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3150/wona-alma-de-oro-meredith-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3150/wona-alma-de-oro-meredith-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3150/wona-alma-de-oro-meredith-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3150/wona-alma-de-oro-meredith-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3150/wona-alma-de-oro-meredith-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3150/wona_concept_alma_de_oro_meredith.webm',
+    price: 266,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/meredith/' },
   },
   {
@@ -3593,6 +3850,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3152/wona-alma-de-oro-mindy-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3152/wona-alma-de-oro-mindy-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3152/wona-alma-de-oro-mindy-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3152/wona-alma-de-oro-mindy-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/mindy/' },
+    price: 162,
   },
   {
     slug: 'wona-odette',
@@ -3606,6 +3864,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3156/wona-alma-de-oro-odette-7.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3156/wona-alma-de-oro-odette-7.jpg', 'https://wonaconcept.com/upload/catalog/3200/3156/wona-alma-de-oro-odette-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3156/wona-alma-de-oro-odette-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3156/wona-alma-de-oro-odette-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3156/wona_concept_alma_de_oro_odette.webm',
+    price: 115,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/odette/' },
   },
   {
@@ -3620,6 +3879,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3159/wona-alma-de-oro-peony-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3159/wona-alma-de-oro-peony-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3159/wona-alma-de-oro-peony-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3159/wona-alma-de-oro-peony-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3159/wona_concept_alma_de_oro_peony.webm',
+    price: 320,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/peony/' },
   },
   {
@@ -3634,6 +3894,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3158/wona-alma-de-oro-page-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3158/wona-alma-de-oro-page-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3158/wona-alma-de-oro-page-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3158/wona-alma-de-oro-page-1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3158/wona_concept_alma_de_oro_page.webm',
+    price: 178,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/page/' },
   },
   {
@@ -3648,6 +3909,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3160/wona-alma-de-oro-preston-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3160/wona-alma-de-oro-preston-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3160/wona-alma-de-oro-preston-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3160/wona-alma-de-oro-preston-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3160/wona-alma-de-oro-preston-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3160/wona-alma-de-oro-preston-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3160/wona_concept_alma_de_oro_preston.webm',
+    price: 285,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/preston/' },
   },
   {
@@ -3662,6 +3924,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3161/wona-alma-de-oro-priya-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3161/wona-alma-de-oro-priya-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3161/wona-alma-de-oro-priya-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3161/wona-alma-de-oro-priya-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3161/wona_concept_alma_de_oro_priya.webm',
+    price: 106,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/priya/' },
   },
   {
@@ -3676,6 +3939,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3162/wona-alma-de-oro-reina-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3162/wona-alma-de-oro-reina-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3162/wona-alma-de-oro-reina-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3162/wona-alma-de-oro-reina-6.jpg', 'https://wonaconcept.com/upload/catalog/3200/3162/wona-alma-de-oro-reina-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3162/wona-alma-de-oro-reina-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3162/wona-alma-de-oro-reina-5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3162/wona_concept_alma_de_oro_reina.webm',
+    price: 241,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/reina/' },
   },
   {
@@ -3690,6 +3954,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3163/wona-alma-de-oro-santafe-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3163/wona-alma-de-oro-santafe-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3163/wona-alma-de-oro-santafe-6.jpg', 'https://wonaconcept.com/upload/catalog/3200/3163/wona-alma-de-oro-santafe-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3163/wona-alma-de-oro-santafe-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3163/wona-alma-de-oro-santafe-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3163/wona-alma-de-oro-santafe-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3200/3163/wona_concept_alma_de_oro_santafe.webm',
+    price: 291,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/santafe/' },
   },
   {
@@ -3704,6 +3969,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3164/wona-alma-de-oro-sapho-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3164/wona-alma-de-oro-sapho-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3164/wona-alma-de-oro-sapho-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3164/wona-alma-de-oro-sapho-6.jpg', 'https://wonaconcept.com/upload/catalog/3200/3164/wona-alma-de-oro-sapho-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3164/wona-alma-de-oro-sapho-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3164/wona-alma-de-oro-sapho-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sapho/' },
+    price: 375,
   },
   {
     slug: 'wona-satie',
@@ -3717,6 +3983,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3165/wona-alma-de-oro-satie-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3165/wona-alma-de-oro-satie-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3165/wona-alma-de-oro-satie-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3165/wona-alma-de-oro-satie-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3165/wona-alma-de-oro-satie-3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/satie/' },
+    price: 171,
   },
   {
     slug: 'wona-sevil',
@@ -3730,6 +3997,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3166/wona-alma-de-oro-sevil-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3166/wona-alma-de-oro-sevil-5.jpg', 'https://wonaconcept.com/upload/catalog/3200/3166/wona-alma-de-oro-sevil-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3166/wona-alma-de-oro-sevil-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3166/wona-alma-de-oro-sevil-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3166/wona-alma-de-oro-sevil-3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/sevil/' },
+    price: 380,
   },
   {
     slug: 'wona-yolanda',
@@ -3743,6 +4011,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3168/wona-alma-de-oro-yolanda-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3168/wona-alma-de-oro-yolanda-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3168/wona-alma-de-oro-yolanda-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3168/wona-alma-de-oro-yolanda-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3168/wona-alma-de-oro-yolanda-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/yolanda/' },
+    price: 381,
   },
   {
     slug: 'wona-valdes',
@@ -3756,6 +4025,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3200/3167/wona-alma-de-oro-valdes-6.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3200/3167/wona-alma-de-oro-valdes-6.jpg', 'https://wonaconcept.com/upload/catalog/3200/3167/wona-alma-de-oro-valdes-1.jpg', 'https://wonaconcept.com/upload/catalog/3200/3167/wona-alma-de-oro-valdes-2.jpg', 'https://wonaconcept.com/upload/catalog/3200/3167/wona-alma-de-oro-valdes-4.jpg', 'https://wonaconcept.com/upload/catalog/3200/3167/wona-alma-de-oro-valdes-3.jpg', 'https://wonaconcept.com/upload/catalog/3200/3167/wona-alma-de-oro-valdes-7.jpg', 'https://wonaconcept.com/upload/catalog/3200/3167/wona-alma-de-oro-valdes-9.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/valdes/' },
+    price: 192,
   },
   {
     slug: 'wona-alabama-set',
@@ -3769,6 +4039,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3292/wona_miami_bliss_alabama_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3292/wona_miami_bliss_alabama_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3292/wona_miami_bliss_alabama_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3292/wona_miami_bliss_alabama_5.jpg', 'https://wonaconcept.com/upload/catalog/3300/3292/wona_miami_bliss_alabama_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3292/wona_miami_bliss_alabama_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3292/wona_concept_miami_bliss_collection_alabama.webm',
+    price: 364,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/alabama-set/' },
   },
   {
@@ -3783,6 +4054,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3293/wona_miami_bliss_alaska_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3293/wona_miami_bliss_alaska_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3293/wona_miami_bliss_alaska_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3293/wona_miami_bliss_alaska_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3293/wona_miami_bliss_alaska_3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/alaska/' },
+    price: 289,
   },
   {
     slug: 'wona-arizona-set',
@@ -3796,6 +4068,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3294/wona_miami_bliss_arizona_5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3294/wona_miami_bliss_arizona_5.jpg', 'https://wonaconcept.com/upload/catalog/3300/3294/wona_miami_bliss_arizona_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3294/wona_miami_bliss_arizona_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3294/wona_miami_bliss_arizona_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3294/wona_miami_bliss_arizona_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3294/wona_concept_miami_bliss_collection_arizona.webm',
+    price: 201,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/arizona-set/' },
   },
   {
@@ -3810,6 +4083,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3295/wona_miami_bliss_california_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3295/wona_miami_bliss_california_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3295/wona_miami_bliss_california_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3295/wona_miami_bliss_california_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3295/wona_miami_bliss_california_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3295/wona_miami_bliss_california_41.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3295/wona_concept_miami_bliss_collection_california.webm',
+    price: 366,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/california-set/' },
   },
   {
@@ -3824,6 +4098,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3296/wona_miami_bliss_colorado_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3296/wona_miami_bliss_colorado_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3296/wona_miami_bliss_colorado_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3296/wona_miami_bliss_colorado_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3296/wona_miami_bliss_colorado_1.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/colorado-set/' },
+    price: 254,
   },
   {
     slug: 'wona-dakota',
@@ -3837,6 +4112,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3297/wona_miami_bliss_dakota_6.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3297/wona_miami_bliss_dakota_6.jpg', 'https://wonaconcept.com/upload/catalog/3300/3297/wona_miami_bliss_dakota_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3297/wona_miami_bliss_dakota_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3297/wona_miami_bliss_dakota_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3297/wona_miami_bliss_dakota_5.jpg', 'https://wonaconcept.com/upload/catalog/3300/3297/wona_miami_bliss_dakota_4.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/dakota/' },
+    price: 159,
   },
   {
     slug: 'wona-delaware',
@@ -3850,6 +4126,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3298/wona_miami_bliss_delaware_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3298/wona_miami_bliss_delaware_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3298/wona_miami_bliss_delaware_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3298/wona_miami_bliss_delaware_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3298/wona_miami_bliss_delaware_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3298/wona_concept_miami_bliss_collection_delaware.webm',
+    price: 389,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/delaware/' },
   },
   {
@@ -3864,6 +4141,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3299/wona_miami_bliss_hawaii_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3299/wona_miami_bliss_hawaii_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3299/wona_miami_bliss_hawaii_5.jpg', 'https://wonaconcept.com/upload/catalog/3300/3299/wona_miami_bliss_hawaii_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3299/wona_miami_bliss_hawaii_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3299/wona_miami_bliss_hawaii_4.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/hawai/' },
+    price: 374,
   },
   {
     slug: 'wona-indiana-set',
@@ -3877,6 +4155,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3300/wona_miami_bliss_indiana_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3300/wona_miami_bliss_indiana_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3300/wona_miami_bliss_indiana_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3300/wona_miami_bliss_indiana_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3300/wona_miami_bliss_indiana_5.jpg', 'https://wonaconcept.com/upload/catalog/3300/3300/wona_miami_bliss_indiana_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3300/wona_miami_bliss_indiana_6.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/indiana-set/' },
+    price: 200,
   },
   {
     slug: 'wona-iowa',
@@ -3890,6 +4169,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3301/wona_miami_bliss_iowa_6.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3301/wona_miami_bliss_iowa_6.jpg', 'https://wonaconcept.com/upload/catalog/3400/3301/wona_miami_bliss_iowa_1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3301/wona_miami_bliss_iowa_5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3301/wona_miami_bliss_iowa_3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3301/wona_miami_bliss_iowa_4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3301/wona_miami_bliss_iowa_2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/iowa/' },
+    price: 395,
   },
   {
     slug: 'wona-kansas-set',
@@ -3903,6 +4183,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3302/wona_miami_bliss_kansas_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3302/wona_miami_bliss_kansas_2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3302/wona_miami_bliss_kansas_1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3302/wona_miami_bliss_kansas_3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3302/wona_miami_bliss_kansas_4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3302/wona_miami_bliss_kansas_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3400/3302/wona_concept_miami_bliss_collection_kansas.webm',
+    price: 235,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kansas-set/' },
   },
   {
@@ -3917,6 +4198,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3303/wona_miami_bliss_maryland_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3303/wona_miami_bliss_maryland_1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3303/wona_miami_bliss_maryland_4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3303/wona_miami_bliss_maryland_3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3303/wona_miami_bliss_maryland_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3400/3303/wona_concept_miami_bliss_collection_maryland.webm',
+    price: 244,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/maryland/' },
   },
   {
@@ -3931,6 +4213,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3304/wona_miami_bliss_memphis_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3304/wona_miami_bliss_memphis_1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3304/wona_miami_bliss_memphis_5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3304/wona_miami_bliss_memphis_2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3304/wona_miami_bliss_memphis_4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3304/wona_miami_bliss_memphis_3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/memphis/' },
+    price: 385,
   },
   {
     slug: 'wona-montana',
@@ -3944,6 +4227,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3305/wona_miami_bliss_montana_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3305/wona_miami_bliss_montana_1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3305/wona_miami_bliss_montana_6.jpg', 'https://wonaconcept.com/upload/catalog/3400/3305/wona_miami_bliss_montana_2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3305/wona_miami_bliss_montana_8.jpg', 'https://wonaconcept.com/upload/catalog/3400/3305/wona_miami_bliss_montana_7.jpg', 'https://wonaconcept.com/upload/catalog/3400/3305/wona_miami_bliss_montana_51.jpg', 'https://wonaconcept.com/upload/catalog/3400/3305/wona_miami_bliss_montana_3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3305/wona_miami_bliss_montana_4.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/montana/' },
+    price: 380,
   },
   {
     slug: 'wona-pennsylvania-set',
@@ -3957,6 +4241,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3306/wona_miami_bliss_pennsylvania_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3306/wona_miami_bliss_pennsylvania_3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3306/wona_miami_bliss_pensylvannia_2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3306/wona_miami_bliss_pensylvannia_1.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/pennsylvania-set/' },
+    price: 115,
   },
   {
     slug: 'wona-tennessee',
@@ -3970,6 +4255,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3307/wona_miami_bliss_tennessee_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3307/wona_miami_bliss_tennessee_1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3307/wona_miami_bliss_tennessee_3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3307/wona_miami_bliss_tennessee_4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3307/wona_miami_bliss_tennessee_2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/tennessee/' },
+    price: 377,
   },
   {
     slug: 'wona-texas-set',
@@ -3983,6 +4269,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3308/wona_miami_bliss_texas_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3308/wona_miami_bliss_texas_2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3308/wona_miami_bliss_texas_1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3308/wona_miami_bliss_texas_4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3308/wona_miami_bliss_texas_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3400/3308/wona_concept_miami_bliss_collection_texas.webm',
+    price: 366,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/texas-set/' },
   },
   {
@@ -3997,6 +4284,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3309/wona_miami_bliss_utah_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3309/wona_miami_bliss_utah_2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3309/wona_miami_bliss_utah_1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3309/wona_miami_bliss_utah_4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3309/wona_miami_bliss_utah_5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3309/wona_miami_bliss_utah_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3400/3309/wona_concept_miami_bliss_collection_utah.webm',
+    price: 107,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/utah-set/' },
   },
   {
@@ -4011,6 +4299,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3310/wona_miami_bliss_vermont_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3310/wona_miami_bliss_vermont_3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3310/wona_miami_bliss_vermont_2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3310/wona_miami_bliss_vermont_1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3310/wona_miami_bliss_vermont_4.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/vermont/' },
+    price: 367,
   },
   {
     slug: 'wona-wisconsin',
@@ -4024,6 +4313,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3311/wona_miami_bliss_wisconsin_4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3311/wona_miami_bliss_wisconsin_4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3311/wona_miami_bliss_wisconsin_5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3311/wona_miami_bliss_wisconsin_1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3311/wona_miami_bliss_wisconsin_3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3311/wona_miami_bliss_wisconsin_2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/wisconsin/' },
+    price: 207,
   },
   {
     slug: 'wona-appolonia',
@@ -4037,6 +4327,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3338/wona-atelier-appolonia-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3338/wona-atelier-appolonia-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3338/wona-atelier-appolonia-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3338/wona-atelier-appolonia-3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/appolonia/' },
+    price: 131,
   },
   {
     slug: 'wona-ari',
@@ -4050,6 +4341,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3339/wona-atelier-ari-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3339/wona-atelier-ari-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3339/wona-atelier-ari-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3339/wona-atelier-ari-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3339/wona-atelier-ari-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3339/wona-atelier-ari-6.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ari/' },
+    price: 309,
   },
   {
     slug: 'wona-arwen',
@@ -4063,6 +4355,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3340/wona-atelier-arwen-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3340/wona-atelier-arwen-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3340/wona-atelier-arwen-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3340/wona-atelier-arwen-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/arwen/' },
+    price: 275,
   },
   {
     slug: 'wona-braga',
@@ -4076,6 +4369,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3341/wona-atelier-braga-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3341/wona-atelier-braga-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3341/wona-atelier-braga-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3341/wona-atelier-braga-5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3341/wona-atelier-braga-4.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/braga/' },
+    price: 173,
   },
   {
     slug: 'wona-charm',
@@ -4089,6 +4383,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3342/wona-atelier-charm-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3342/wona-atelier-charm-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3342/wona-atelier-charm-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3342/wona-atelier-charm-1.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/charm/' },
+    price: 153,
   },
   {
     slug: 'wona-delice',
@@ -4102,6 +4397,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3343/wona-atelier-delice-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3343/wona-atelier-delice-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3343/wona-atelier-delice-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3343/wona-atelier-delice-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/delice/' },
+    price: 400,
   },
   {
     slug: 'wona-effie',
@@ -4115,6 +4411,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3344/wona-atelier-effie-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3344/wona-atelier-effie-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3344/wona-atelier-effie-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3344/wona-atelier-effie-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3344/wona-atelier-effie-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/effie/' },
+    price: 192,
   },
   {
     slug: 'wona-frida',
@@ -4128,6 +4425,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3346/wona-atelier-frida-6.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3346/wona-atelier-frida-6.jpg', 'https://wonaconcept.com/upload/catalog/3400/3346/wona-atelier-frida-5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3346/wona-atelier-frida-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3346/wona-atelier-frida-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3346/wona-atelier-frida-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3346/wona-atelier-frida-3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/frida/' },
+    price: 259,
   },
   {
     slug: 'wona-honey',
@@ -4141,6 +4439,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3348/wona-atelier-honey-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3348/wona-atelier-honey-5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3348/wona-atelier-honey-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3348/wona-atelier-honey-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3348/wona-atelier-honey-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3348/wona-atelier-honey-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/honey/' },
+    price: 313,
   },
   {
     slug: 'wona-jazz',
@@ -4154,6 +4453,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3350/wona-atelier-jazz-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3350/wona-atelier-jazz-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3350/wona-atelier-jazz-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3350/wona-atelier-jazz-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3350/wona-atelier-jazz-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3350/wona-atelier-jazz-5.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/jazz/' },
+    price: 281,
   },
   {
     slug: 'wona-jeremy',
@@ -4167,6 +4467,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3352/wona-atelier-jeremy-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3352/wona-atelier-jeremy-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3352/wona-atelier-jeremy-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3352/wona-atelier-jeremy-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3352/wona-atelier-jeremy-3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/jeremy/' },
+    price: 250,
   },
   {
     slug: 'wona-karter',
@@ -4180,6 +4481,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3354/wona-atelier-karter-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3354/wona-atelier-karter-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3354/wona-atelier-karter-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3354/wona-atelier-karter-5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3354/wona-atelier-karter-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3354/wona-atelier-karter-3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/karter/' },
+    price: 213,
   },
   {
     slug: 'wona-miram',
@@ -4193,6 +4495,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3358/wona-atelier-miram-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3358/wona-atelier-miram-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3358/wona-atelier-miram-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3358/wona-atelier-miram-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3358/wona-atelier-miram-3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/miram/' },
+    price: 280,
   },
   {
     slug: 'wona-ocean',
@@ -4206,6 +4509,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3360/wona-atelier-ocean-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3360/wona-atelier-ocean-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3360/wona-atelier-ocean-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3360/wona-atelier-ocean-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ocean/' },
+    price: 197,
   },
   {
     slug: 'wona-ohara',
@@ -4219,6 +4523,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3362/wona-atelier-ohara-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3362/wona-atelier-ohara-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3362/wona-atelier-ohara-5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3362/wona-atelier-ohara-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3362/wona-atelier-ohara-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3362/wona-atelier-ohara-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ohara/' },
+    price: 318,
   },
   {
     slug: 'wona-polaris',
@@ -4232,6 +4537,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3364/wona-atelier-polaris-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3364/wona-atelier-polaris-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3364/wona-atelier-polaris-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3364/wona-atelier-polaris-5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3364/wona-atelier-polaris-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3364/wona-atelier-polaris-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/polaris/' },
+    price: 137,
   },
   {
     slug: 'wona-kiana',
@@ -4245,6 +4551,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3356/wona-atelier-kiana-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3356/wona-atelier-kiana-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3356/wona-atelier-kiana-7.jpg', 'https://wonaconcept.com/upload/catalog/3400/3356/wona-atelier-kiana-5.jpg', 'https://wonaconcept.com/upload/catalog/3400/3356/wona-atelier-kiana-4.jpg', 'https://wonaconcept.com/upload/catalog/3400/3356/wona-atelier-kiana-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3356/wona-atelier-kiana-3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kiana/' },
+    price: 259,
   },
   {
     slug: 'wona-santee',
@@ -4258,6 +4565,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3365/wona-atelier-santee-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3365/wona-atelier-santee-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3365/wona-atelier-santee-2.jpg', 'https://wonaconcept.com/upload/catalog/3400/3365/wona-atelier-santee-1.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/santee/' },
+    price: 117,
   },
   {
     slug: 'wona-voyage',
@@ -4271,6 +4579,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3400/3369/wona-atelier-voyage-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3400/3369/wona-atelier-voyage-3.jpg', 'https://wonaconcept.com/upload/catalog/3400/3369/wona-atelier-voyage-1.jpg', 'https://wonaconcept.com/upload/catalog/3400/3369/wona-atelier-voyage-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/voyage/' },
+    price: 270,
   },
   {
     slug: 'wona-aja',
@@ -4284,6 +4593,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2975/aja_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2975/aja_3.jpg', 'https://wonaconcept.com/upload/catalog/3000/2975/aja_.jpg', 'https://wonaconcept.com/upload/catalog/3000/2975/aja_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2975/aja_2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/aja/' },
+    price: 152,
   },
   {
     slug: 'wona-alma',
@@ -4297,6 +4607,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3014/wona-love-in-the-city-alma-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3014/wona-love-in-the-city-alma-1.jpg', 'https://wonaconcept.com/upload/catalog/3100/3014/wona-love-in-the-city-alma-2.jpg', 'https://wonaconcept.com/upload/catalog/3100/3014/wona-love-in-the-city-alma-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3100/3014/wona_concept_love_in_the_city_collection_alma.webm',
+    price: 111,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/alma/' },
   },
   {
@@ -4311,6 +4622,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2805/wona-personality-andrea-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2805/wona-personality-andrea-5.jpg', 'https://wonaconcept.com/upload/catalog/2900/2805/wona-personality-andrea-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2805/wona-personality-andrea-2.jpg', 'https://wonaconcept.com/upload/catalog/2900/2805/wona-personality-andrea-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2805/wona_concept_personality_andrea.webm',
+    price: 244,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/andrea/' },
   },
   {
@@ -4325,6 +4637,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2807/wona-personality-astra-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2807/wona-personality-astra-5.jpg', 'https://wonaconcept.com/upload/catalog/2900/2807/wona-personality-astra-6.jpg', 'https://wonaconcept.com/upload/catalog/2900/2807/wona-personality-astra-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2807/wona-personality-astra-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2807/wona_concept_personality_astra.webm',
+    price: 264,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/astra/' },
   },
   {
@@ -4339,6 +4652,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2910/wona_concept_wedding_palermo_azure_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2910/wona_concept_wedding_palermo_azure_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2910/wona_concept_wedding_palermo_azure_2.jpg', 'https://wonaconcept.com/upload/catalog/3000/2910/wona_concept_wedding_palermo_azure_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3000/2910/wona_concept_palermo_collection_azure.webm',
+    price: 222,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/azure/' },
   },
   {
@@ -4353,6 +4667,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2809/wona-personality-barbie-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2809/wona-personality-barbie-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2809/wona-personality-barbie-3.jpg', 'https://wonaconcept.com/upload/catalog/2900/2809/wona-personality-barbie-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2809/wona_concept_personality_barbie.webm',
+    price: 263,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/barbie/' },
   },
   {
@@ -4367,6 +4682,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3015/wona-love-in-the-city-bellini-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3015/wona-love-in-the-city-bellini-1.jpg', 'https://wonaconcept.com/upload/catalog/3100/3015/wona-love-in-the-city-bellini-3.jpg', 'https://wonaconcept.com/upload/catalog/3100/3015/wona-love-in-the-city-bellini-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bellini/' },
+    price: 300,
   },
   {
     slug: 'wona-bordo',
@@ -4380,6 +4696,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3266/wona_notte_d_opera_bordo_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3266/wona_notte_d_opera_bordo_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3266/wona_notte_d_opera_bordo_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3266/wona_notte_d_opera_bordo_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3266/wona_concept_notte_d_opera_bordo.webm',
+    price: 300,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bordo/' },
   },
   {
@@ -4394,6 +4711,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2911/wona_concept_wedding_palermo_bosco_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2911/wona_concept_wedding_palermo_bosco_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2911/wona_concept_wedding_palermo_bosco_3.jpg', 'https://wonaconcept.com/upload/catalog/3000/2911/wona_concept_wedding_palermo_bosco_4.jpg', 'https://wonaconcept.com/upload/catalog/3000/2911/wona_concept_wedding_palermo_bosco_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3000/2911/wona_concept_palermo_collection_bosco.webm',
+    price: 275,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bosco/' },
   },
   {
@@ -4408,6 +4726,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2811/wona-personality-brava-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2811/wona-personality-brava-3.jpg', 'https://wonaconcept.com/upload/catalog/2900/2811/wona-personality-brava-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2811/wona-personality-brava-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2811/wona_concept_personality_brava.webm',
+    price: 286,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/brava/' },
   },
   {
@@ -4422,6 +4741,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3267/wona_notte_d_opera_briana_4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3267/wona_notte_d_opera_briana_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3267/wona_notte_d_opera_briana_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3267/wona_notte_d_opera_briana_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3267/wona_notte_d_opera_briana_5.jpg', 'https://wonaconcept.com/upload/catalog/3300/3267/wona_notte_d_opera_briana_2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/briana/' },
+    price: 383,
   },
   {
     slug: 'wona-bristol',
@@ -4435,6 +4755,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3268/wona_notte_d_opera_bristol_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3268/wona_notte_d_opera_bristol_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3268/wona_notte_d_opera_bristol_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3268/wona_notte_d_opera_bristol_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3268/wona_notte_d_opera_bristol_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3268/wona_concept_notte_d_opera_bristol.webm',
+    price: 139,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bristol/' },
   },
   {
@@ -4449,6 +4770,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3022/wona-love-in-the-city-bronte-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3022/wona-love-in-the-city-bronte-2.jpg', 'https://wonaconcept.com/upload/catalog/3100/3022/wona_love_in_the_city_bronte_1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3100/3022/wona_concept_love_in_the_city_collection_bronte.webm',
+    price: 333,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/bronte/' },
   },
   {
@@ -4463,6 +4785,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2912/wona_concept_wedding_palermo_caffa_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2912/wona_concept_wedding_palermo_caffa_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2912/wona_concept_wedding_palermo_caffa_5.jpg', 'https://wonaconcept.com/upload/catalog/3000/2912/wona_concept_wedding_palermo_caffa_4.jpg', 'https://wonaconcept.com/upload/catalog/3000/2912/wona_concept_wedding_palermo_caffa_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3000/2912/wona_concept_palermo_collection_caffa.webm',
+    price: 342,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/caffa/' },
   },
   {
@@ -4477,6 +4800,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3221/carrie_1_.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3221/carrie_1_.jpg', 'https://wonaconcept.com/upload/catalog/3300/3221/carrie.jpg', 'https://wonaconcept.com/upload/catalog/3300/3221/carrie_11.jpg', 'https://wonaconcept.com/upload/catalog/3300/3221/carrie_31.jpg', 'https://wonaconcept.com/upload/catalog/3300/3221/carrie_21.jpg', 'https://wonaconcept.com/upload/catalog/3300/3221/carrie_palazzo_pants_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3221/carrie_pants_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3221/carrie_palazzo_pants_3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/carrie/' },
+    price: 200,
   },
   {
     slug: 'wona-cassandra',
@@ -4490,6 +4814,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2814/wona-personality-cassandra-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2814/wona-personality-cassandra-5.jpg', 'https://wonaconcept.com/upload/catalog/2900/2814/wona-personality-cassandra-6.jpg', 'https://wonaconcept.com/upload/catalog/2900/2814/wona-personality-cassandra-4.jpg', 'https://wonaconcept.com/upload/catalog/2900/2814/wona-personality-cassandra-3.jpg', 'https://wonaconcept.com/upload/catalog/2900/2814/wona-personality-cassandra-2.jpg', 'https://wonaconcept.com/upload/catalog/2900/2814/wona-personality-cassandra-1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2814/wona_concept_personality_cassandra.webm',
+    price: 392,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/cassandra/' },
   },
   {
@@ -4504,6 +4829,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3024/wona_love_in_the_city_chance_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3024/wona_love_in_the_city_chance_1.jpg', 'https://wonaconcept.com/upload/catalog/3100/3024/wona_love_in_the_city_chance_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3100/3024/wona_concept_love_in_the_city_collection_chance.webm',
+    price: 230,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/chance/' },
   },
   {
@@ -4518,6 +4844,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3222/charlotte.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3222/charlotte.jpg', 'https://wonaconcept.com/upload/catalog/3300/3222/charlotte_4_.jpg', 'https://wonaconcept.com/upload/catalog/3300/3222/charlotte_2_.jpg', 'https://wonaconcept.com/upload/catalog/3300/3222/charlotte_3_.jpg', 'https://wonaconcept.com/upload/catalog/3300/3222/charlotte_5_.jpg', 'https://wonaconcept.com/upload/catalog/3300/3222/charlotte_1_.jpg', 'https://wonaconcept.com/upload/catalog/3300/3222/veil_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3222/veil_2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/charlotte/' },
+    price: 287,
   },
   {
     slug: 'wona-clary',
@@ -4531,6 +4858,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2816/wona-personality-clary-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2816/wona-personality-clary-3.jpg', 'https://wonaconcept.com/upload/catalog/2900/2816/wona-personality-clary-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2816/wona-personality-clary-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2816/wona_concept_personality_clary.webm',
+    price: 126,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/clary/' },
   },
   {
@@ -4545,6 +4873,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2913/wona_concept_wedding_palermo_cassie_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2913/wona_concept_wedding_palermo_cassie_2.jpg', 'https://wonaconcept.com/upload/catalog/3000/2913/wona_concept_wedding_palermo_cassie_3.jpg', 'https://wonaconcept.com/upload/catalog/3000/2913/wona_concept_wedding_palermo_cassie_1.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/cassie/' },
+    price: 238,
   },
   {
     slug: 'wona-clio',
@@ -4558,6 +4887,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3025/wona-love-in-the-city-clio-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3025/wona-love-in-the-city-clio-3.jpg', 'https://wonaconcept.com/upload/catalog/3100/3025/wona_love_in_the_city_clio_1.jpg', 'https://wonaconcept.com/upload/catalog/3100/3025/wona-love-in-the-city-clio-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3100/3025/wona_concept_love_in_the_city_collection_clio.webm',
+    price: 233,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/clio/' },
   },
   {
@@ -4572,6 +4902,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3269/wona_notte_d_opera_clode_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3269/wona_notte_d_opera_clode_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3269/wona_notte_d_opera_clode_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3269/wona_notte_d_opera_clode_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3269/wona_notte_d_opera_clode_3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/clode/' },
+    price: 129,
   },
   {
     slug: 'wona-coco',
@@ -4585,6 +4916,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3270/wona_notte_d_opera_coco_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3270/wona_notte_d_opera_coco_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3270/wona_notte_d_opera_coco_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3270/wona_notte_d_opera_coco_1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3270/wona_concept_notte_d_opera_coco.webm',
+    price: 395,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/coco/' },
   },
   {
@@ -4599,6 +4931,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2818/wona-personality-cole-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2818/wona-personality-cole-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2818/wona-personality-cole-2.jpg', 'https://wonaconcept.com/upload/catalog/2900/2818/wona-personality-cole-4.jpg', 'https://wonaconcept.com/upload/catalog/2900/2818/wona-personality-cole-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2818/wona_concept_personality_cole.webm',
+    price: 391,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/cole/' },
   },
   {
@@ -4613,6 +4946,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2917/wona_concept_wedding_palermo_dakar_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2917/wona_concept_wedding_palermo_dakar_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2917/wona_concept_wedding_palermo_dakar_5.jpg', 'https://wonaconcept.com/upload/catalog/3000/2917/wona_concept_wedding_palermo_dakar_3.jpg', 'https://wonaconcept.com/upload/catalog/3000/2917/wona_concept_wedding_palermo_dakar_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3000/2917/wona_concept_palermo_collection_dakar.webm',
+    price: 221,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/dakar/' },
   },
   {
@@ -4627,6 +4961,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2915/wona_concept_wedding_palermo_daga_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2915/wona_concept_wedding_palermo_daga_2.jpg', 'https://wonaconcept.com/upload/catalog/3000/2915/wona_concept_wedding_palermo_daga_3.jpg', 'https://wonaconcept.com/upload/catalog/3000/2915/wona_concept_wedding_palermo_daga_4.jpg', 'https://wonaconcept.com/upload/catalog/3000/2915/wona_concept_wedding_palermo_daga_1.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/daga/' },
+    price: 142,
   },
   {
     slug: 'wona-cornelia',
@@ -4640,6 +4975,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2820/wona-personality-cornelia-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2820/wona-personality-cornelia-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2820/wona-personality-cornelia-2.jpg', 'https://wonaconcept.com/upload/catalog/2900/2820/wona-personality-cornelia-5.jpg', 'https://wonaconcept.com/upload/catalog/2900/2820/wona-personality-cornelia-3.jpg', 'https://wonaconcept.com/upload/catalog/2900/2820/wona-personality-cornelia-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2820/wona_concept_personality_cornelia.webm',
+    price: 199,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/cornelia/' },
   },
   {
@@ -4654,6 +4990,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3027/wona-love-in-the-city-dara-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3027/wona-love-in-the-city-dara-2.jpg', 'https://wonaconcept.com/upload/catalog/3100/3027/wona-love-in-the-city-dara-3.jpg', 'https://wonaconcept.com/upload/catalog/3100/3027/wona-love-in-the-city-dara-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3100/3027/wona_concept_love_in_the_city_collection_dara.webm',
+    price: 398,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/dara/' },
   },
   {
@@ -4668,6 +5005,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3271/wona_notte_d_opera_devi_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3271/wona_notte_d_opera_devi_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3271/wona_notte_d_opera_devi_5.jpg', 'https://wonaconcept.com/upload/catalog/3300/3271/wona_notte_d_opera_devi_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3271/wona_notte_d_opera_devi_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3271/wona_notte_d_opera_devi_4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3271/wona_concept_notte_d_opera_devi.webm',
+    price: 339,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/devi/' },
   },
   {
@@ -4682,6 +5020,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2822/wona-personality-essen-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2822/wona-personality-essen-3.jpg', 'https://wonaconcept.com/upload/catalog/2900/2822/wona-personality-essen-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2822/wona-personality-essen-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2822/wona_concept_personality_essen.webm',
+    price: 212,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/essen/' },
   },
   {
@@ -4696,6 +5035,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3272/wona_notte_d_opera_diaz_4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3272/wona_notte_d_opera_diaz_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3272/wona_notte_d_opera_diaz_6.jpg', 'https://wonaconcept.com/upload/catalog/3300/3272/wona_notte_d_opera_diaz_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3272/wona_notte_d_opera_diaz_5.jpg', 'https://wonaconcept.com/upload/catalog/3300/3272/wona_notte_d_opera_diaz_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3272/wona_notte_d_opera_diaz_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3272/wona_concept_notte_d_opera_diaz.webm',
+    price: 192,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/diaz/' },
   },
   {
@@ -4710,6 +5050,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2921/wona_concept_wedding_palermo_ezra_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2921/wona_concept_wedding_palermo_ezra_3.jpg', 'https://wonaconcept.com/upload/catalog/3000/2921/wona_concept_wedding_palermo_ezra_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2921/wona_concept_wedding_palermo_ezra_2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/ezra/' },
+    price: 266,
   },
   {
     slug: 'wona-everly',
@@ -4723,6 +5064,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2919/wona_concept_wedding_palermo_everly_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2919/wona_concept_wedding_palermo_everly_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2919/wona_concept_wedding_palermo_everly_3.jpg', 'https://wonaconcept.com/upload/catalog/3000/2919/wona_concept_wedding_palermo_everly_5.jpg', 'https://wonaconcept.com/upload/catalog/3000/2919/wona_concept_wedding_palermo_everly_4.jpg', 'https://wonaconcept.com/upload/catalog/3000/2919/wona_concept_wedding_palermo_everly_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3000/2919/wona_concept_palermo_collection_everly.webm',
+    price: 121,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/everly/' },
   },
   {
@@ -4737,6 +5079,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3028/wona-love-in-the-city-esperaza-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3028/wona-love-in-the-city-esperaza-1.jpg', 'https://wonaconcept.com/upload/catalog/3100/3028/wona-love-in-the-city-esperaza-2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/esperaza/' },
+    price: 129,
   },
   {
     slug: 'wona-francesca',
@@ -4750,6 +5093,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3273/wona_notte_d_opera_francesca_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3273/wona_notte_d_opera_francesca_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3273/wona_notte_d_opera_francesca_6.jpg', 'https://wonaconcept.com/upload/catalog/3300/3273/wona_notte_d_opera_francesca_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3273/wona_notte_d_opera_francesca_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3273/wona_concept_notte_d_opera_francesca.webm',
+    price: 379,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/francesca/' },
   },
   {
@@ -4764,6 +5108,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2824/wona-personality-fresia-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2824/wona-personality-fresia-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2824/wona-personality-fresia-3.jpg', 'https://wonaconcept.com/upload/catalog/2900/2824/wona-personality-fresia-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2824/wona_concept_personality_fresia.webm',
+    price: 289,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/fresia/' },
   },
   {
@@ -4778,6 +5123,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3030/wona-love-in-the-city-goddess-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3030/wona-love-in-the-city-goddess-3.jpg', 'https://wonaconcept.com/upload/catalog/3100/3030/wona-love-in-the-city-goddess-esperaza-2.jpg', 'https://wonaconcept.com/upload/catalog/3100/3030/wona-love-in-the-city-goddess-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3100/3030/wona_concept_love_in_the_city_collection_esperaza_goddess.webm',
+    price: 377,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/goddess/' },
   },
   {
@@ -4792,6 +5138,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2923/wona_concept_wedding_palermo_goldie_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2923/wona_concept_wedding_palermo_goldie_2.jpg', 'https://wonaconcept.com/upload/catalog/3000/2923/wona_concept_wedding_palermo_goldie_4.jpg', 'https://wonaconcept.com/upload/catalog/3000/2923/wona_concept_wedding_palermo_goldie_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2923/wona_concept_wedding_palermo_goldie_3.jpg', 'https://wonaconcept.com/upload/catalog/3000/2923/wona_concept_wedding_palermo_goldie_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3000/2923/wona_concept_palermo_collection_goldie.webm',
+    price: 323,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/goldie/' },
   },
   {
@@ -4806,6 +5153,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2825/wona-personality-judy-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2825/wona-personality-judy-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2825/wona-personality-judy-2.jpg', 'https://wonaconcept.com/upload/catalog/2900/2825/wona-personality-judy-4.jpg', 'https://wonaconcept.com/upload/catalog/2900/2825/wona-personality-judy-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2825/wona_concept_personality_judy.webm',
+    price: 356,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/judy/' },
   },
   {
@@ -4820,6 +5168,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3275/wona_notte_d_opera_iman_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3275/wona_notte_d_opera_iman_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3275/wona_notte_d_opera_iman_5.jpg', 'https://wonaconcept.com/upload/catalog/3300/3275/wona_notte_d_opera_iman_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3275/wona_notte_d_opera_iman_4.jpg', 'https://wonaconcept.com/upload/catalog/3300/3275/wona_notte_d_opera_iman_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3275/wona_concept_notte_d_opera_iman.webm',
+    price: 144,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/iman/' },
   },
   {
@@ -4834,6 +5183,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3274/wona_notte_d_opera_hermosa_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3274/wona_notte_d_opera_hermosa_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3274/wona_notte_d_opera_hermosa_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3274/wona_notte_d_opera_hermosa_2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3300/3274/wona_concept_notte_d_opera_hermosa.webm',
+    price: 243,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/hermosa/' },
   },
   {
@@ -4848,6 +5198,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3036/wona-love-in-the-city-kara-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3036/wona-love-in-the-city-kara-2.jpg', 'https://wonaconcept.com/upload/catalog/3100/3036/wona-love-in-the-city-kara-3.jpg', 'https://wonaconcept.com/upload/catalog/3100/3036/wona-love-in-the-city-kara-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3100/3036/wona_concept_love_in_the_city_collection_kara.webm',
+    price: 117,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/kara/' },
   },
   {
@@ -4862,6 +5213,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3300/3226/katy_2_.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3300/3226/katy_2_.jpg', 'https://wonaconcept.com/upload/catalog/3300/3226/katy.jpg', 'https://wonaconcept.com/upload/catalog/3300/3226/katy_1_.jpg', 'https://wonaconcept.com/upload/catalog/3300/3226/katy_corset_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3226/katy_corset_2.jpg', 'https://wonaconcept.com/upload/catalog/3300/3226/katy_maxi_skirt_1.jpg', 'https://wonaconcept.com/upload/catalog/3300/3226/katy_corset_3.jpg', 'https://wonaconcept.com/upload/catalog/3300/3226/katy_maxi_skirt_2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/katy/' },
+    price: 145,
   },
   {
     slug: 'wona-linnie',
@@ -4875,6 +5227,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2827/wona-personality-linnie-4.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2827/wona-personality-linnie-4.jpg', 'https://wonaconcept.com/upload/catalog/2900/2827/wona-personality-linnie-2.jpg', 'https://wonaconcept.com/upload/catalog/2900/2827/wona-personality-linnie-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2827/wona-personality-linnie-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2827/wona_concept_personality_linnie.webm',
+    price: 189,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/linnie/' },
   },
   {
@@ -4889,6 +5242,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2925/wona_concept_wedding_palermo_lina_3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2925/wona_concept_wedding_palermo_lina_3.jpg', 'https://wonaconcept.com/upload/catalog/3000/2925/wona_concept_wedding_palermo_lina_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2925/wona_concept_wedding_palermo_lina_4.jpg', 'https://wonaconcept.com/upload/catalog/3000/2925/wona_concept_wedding_palermo_lina_2.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/lina/' },
+    price: 230,
   },
   {
     slug: 'wona-lovely',
@@ -4902,6 +5256,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3043/wona-love-in-the-city-lovely-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3043/wona-love-in-the-city-lovely-2.jpg', 'https://wonaconcept.com/upload/catalog/3100/3043/wona-love-in-the-city-lovely-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3100/3043/wona_concept_love_in_the_city_collection_lovely.webm',
+    price: 175,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/lovely/' },
   },
   {
@@ -4916,6 +5271,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2826/wona-personality-keltie-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2826/wona-personality-keltie-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2826/wona-personality-keltie-4.jpg', 'https://wonaconcept.com/upload/catalog/2900/2826/wona-personality-keltie-3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2826/wona_concept_personality_keltie.webm',
+    price: 228,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/keltie/' },
   },
   {
@@ -4930,6 +5286,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3100/3041/wona-love-in-the-city-liz-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3100/3041/wona-love-in-the-city-liz-2.jpg', 'https://wonaconcept.com/upload/catalog/3100/3041/wona-love-in-the-city-liz-3.jpg'],
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/liz/' },
+    price: 168,
   },
   {
     slug: 'wona-lucette',
@@ -4943,6 +5300,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2828/wona-personality-lucette-3.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2828/wona-personality-lucette-3.jpg', 'https://wonaconcept.com/upload/catalog/2900/2828/wona-personality-lucette-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2828/wona-personality-lucette-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2828/wona_concept_personality_lucette.webm',
+    price: 320,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/lucette/' },
   },
   {
@@ -4957,6 +5315,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2929/wona_concept_wedding_palermo_marigold_2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2929/wona_concept_wedding_palermo_marigold_2.jpg', 'https://wonaconcept.com/upload/catalog/3000/2929/wona_concept_wedding_palermo_marigold_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2929/wona_concept_wedding_palermo_marigold_3.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3000/2929/wona_concept_palermo_collection_marigold.webm',
+    price: 317,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/marigold/' },
   },
   {
@@ -4971,6 +5330,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2830/wona-personality-mercy-2.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2830/wona-personality-mercy-2.jpg', 'https://wonaconcept.com/upload/catalog/2900/2830/wona-personality-mercy-3.jpg', 'https://wonaconcept.com/upload/catalog/2900/2830/wona-personality-mercy-1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2830/wona_concept_personality_mercy.webm',
+    price: 172,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/mercy/' },
   },
   {
@@ -4985,6 +5345,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2829/wona-personality-lucia-5.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2829/wona-personality-lucia-5.jpg', 'https://wonaconcept.com/upload/catalog/2900/2829/wona-personality-lucia-7.jpg', 'https://wonaconcept.com/upload/catalog/2900/2829/wona-personality-lucia-6.jpg', 'https://wonaconcept.com/upload/catalog/2900/2829/wona-personality-lucia-4.jpg', 'https://wonaconcept.com/upload/catalog/2900/2829/wona-personality-lucia-3.jpg', 'https://wonaconcept.com/upload/catalog/2900/2829/wona-personality-lucia-2.jpg', 'https://wonaconcept.com/upload/catalog/2900/2829/wona-personality-lucia-1.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2829/wona_concept_personality_lucia.webm',
+    price: 229,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/lucia/' },
   },
   {
@@ -4999,6 +5360,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/3000/2927/wona_concept_wedding_palermo_luana_1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/3000/2927/wona_concept_wedding_palermo_luana_1.jpg', 'https://wonaconcept.com/upload/catalog/3000/2927/wona_concept_wedding_palermo_luana_4.jpg', 'https://wonaconcept.com/upload/catalog/3000/2927/wona_concept_wedding_palermo_luana_3.jpg', 'https://wonaconcept.com/upload/catalog/3000/2927/wona_concept_wedding_palermo_luana_5.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/3000/2927/wona_concept_palermo_collection_luana.webm',
+    price: 338,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/luana/' },
   },
   {
@@ -5013,6 +5375,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2832/wona-personality-millie-1.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2832/wona-personality-millie-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2832/wona-personality-millie-2.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2832/wona_concept_personality_millie.webm',
+    price: 288,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/millie/' },
   },
   {
@@ -5027,6 +5390,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2834/wona-personality-sloan-morris.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2834/wona-personality-sloan-morris.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2834/wona_concept_personality_morris.webm',
+    price: 248,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/morris/' },
   },
   {
@@ -5041,6 +5405,7 @@ export const wonaProducts: DressProduct[] = [
     cover: 'https://wonaconcept.com/upload/catalog/2900/2833/wona-personality-moore-8.jpg',
     images: ['https://wonaconcept.com/upload/catalog/2900/2833/wona-personality-moore-8.jpg', 'https://wonaconcept.com/upload/catalog/2900/2833/wona-personality-moore-5.jpg', 'https://wonaconcept.com/upload/catalog/2900/2833/wona-personality-moore-1.jpg', 'https://wonaconcept.com/upload/catalog/2900/2833/wona-personality-moore-6.jpg', 'https://wonaconcept.com/upload/catalog/2900/2833/wona-personality-moore-2.jpg', 'https://wonaconcept.com/upload/catalog/2900/2833/wona-personality-moore-4.jpg'],
     video: 'https://wonaconcept.com/upload/catalog/2900/2833/wona_concept_personality_moore.webm',
+    price: 341,
     source: { name: 'WONÁ Concept（测试数据）', url: 'https://wonaconcept.com/moore/' },
   },
 ]

@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
-import GalleryCarousel from '../components/common/GalleryCarousel'
+import BackButton from '../components/common/BackButton'
 import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
-import { wonaBrand } from '../data/wonaDresses'
 import { wonaProducts } from '../data/wonaDressProducts'
+import ewLogo from '../assets/europewedding-logo.png'
 
 function isLoggedIn() {
   return !!localStorage.getItem('token')
@@ -22,7 +22,19 @@ export default function DressesDetail() {
   const [showBar, setShowBar] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [isBooked, setIsBooked] = useState(false)
+  const [isBooking, setIsBooking] = useState(false)
+  const [isCanceling, setIsCanceling] = useState(false)
+  const [heroSlide, setHeroSlide] = useState(0)
+  const [heroPrev, setHeroPrev] = useState<number | null>(null)
+  const [heroPaused, setHeroPaused] = useState(false)
+  const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
+  const [videoLightbox, setVideoLightbox] = useState(false)
+  const [galleryVideoReady, setGalleryVideoReady] = useState(false)
+  const [videoReady, setVideoReady] = useState(false)
+  const [videoTimedOut, setVideoTimedOut] = useState(false)
+  const videoReadyRef = useRef(false)
   const aboutRef = useRef<HTMLElement>(null)
+  const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const detail = allProducts.find(p => p.slug === slug) || null
 
@@ -35,19 +47,29 @@ export default function DressesDetail() {
   const handleBook = useCallback(() => {
     if (!detail) return
     if (isBooked) {
-      removeSelectedProduct('dress', detail.slug)
-      setIsBooked(false)
+      setIsCanceling(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setTimeout(() => {
+        removeSelectedProduct('dress', detail.slug)
+        setIsBooked(false)
+        setIsCanceling(false)
+      }, 1200)
     } else {
-      setSelectedItem({
-        categoryId: 'dress',
-        productId: detail.slug,
-        name: detail.name,
-        nameEn: detail.nameEn,
-        price: detail.price || 0,
-        unit: '€',
-        image: detail.cover,
-      })
-      setIsBooked(true)
+      setIsBooking(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setTimeout(() => {
+        setSelectedItem({
+          categoryId: 'dress',
+          productId: detail.slug,
+          name: detail.name,
+          nameEn: detail.nameEn,
+          price: detail.price || 0,
+          unit: '€',
+          image: detail.cover,
+        })
+        setIsBooked(true)
+        setIsBooking(false)
+      }, 1500)
     }
   }, [detail, isBooked])
 
@@ -71,11 +93,54 @@ export default function DressesDetail() {
     navigate('/order')
   }, [detail, navigate])
 
-  const onScroll = useCallback(() => setScrollY(window.scrollY), [])
+  // 视频加载：3s 超时回退轮播（已加载则跳过）
+  const showVideo = !!detail?.video && !videoTimedOut
+  const videoLoading = !!detail?.video && !videoReady && !videoTimedOut
+
+  // Hero 轮播（视频播放时暂停）
   useEffect(() => {
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [onScroll])
+    if (!detail || heroPaused || showVideo) return
+    const total = detail.images.length
+    if (total <= 1) return
+    const timer = setInterval(() => {
+      setHeroSlide(prev => {
+        setHeroPrev(prev)
+        setTimeout(() => setHeroPrev(null), 650)
+        return (prev + 1) % total
+      })
+    }, 4000)
+    return () => clearInterval(timer)
+  }, [detail, heroPaused, showVideo])
+
+  const pauseHeroCarousel = useCallback(() => {
+    setHeroPaused(true)
+    if (heroTimerRef.current) clearTimeout(heroTimerRef.current)
+    heroTimerRef.current = setTimeout(() => setHeroPaused(false), 5000)
+  }, [])
+
+  const goHeroSlide = useCallback((idx: number) => {
+    if (idx === heroSlide) return
+    setHeroPrev(heroSlide); setHeroSlide(idx)
+    pauseHeroCarousel()
+    setTimeout(() => setHeroPrev(null), 650)
+  }, [heroSlide, pauseHeroCarousel])
+
+  useEffect(() => {
+    return () => { if (heroTimerRef.current) clearTimeout(heroTimerRef.current) }
+  }, [])
+
+  useEffect(() => { window.scrollTo({ top: 0 }) }, [])
+
+  useEffect(() => {
+    if (!detail?.video) return
+    setVideoReady(false)
+    videoReadyRef.current = false
+    setVideoTimedOut(false)
+    const timer = setTimeout(() => {
+      if (!videoReadyRef.current) setVideoTimedOut(true)
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [detail?.video])
 
   useEffect(() => {
     if (!aboutRef.current) return
@@ -93,7 +158,7 @@ export default function DressesDetail() {
   if (!detail) {
     return (
       <div className="cd-page">
-        <button className="cd-back" onClick={() => navigate('/dresses')}>← 返回列表</button>
+        <BackButton to="/dresses" />
         <div className="cd-loading"><p>未找到该礼服作品</p></div>
       </div>
     )
@@ -101,38 +166,98 @@ export default function DressesDetail() {
 
   return (
     <div className="cd-page">
-      {/* 返回按钮 */}
-      <button className="cd-back" onClick={() => navigate('/dresses')}>← 返回列表</button>
-
-      {/* ===== 1. 全屏首图 Hero ===== */}
-      <section className="cd-hero">
-        <div className="cd-hero__parallax" style={{ transform: `translateY(${scrollY * 0.35}px)` }}>
-          <FallbackImage src={detail.cover} alt={detail.name} className="cd-hero__img" />
-        </div>
-        <div className="cd-hero__overlay" />
-        <div className="cd-hero__content">
-          <span className="cd-hero__badge">{detail.categoryCn} · {wonaBrand.name}</span>
-          <h1 className="cd-hero__title">{detail.name}</h1>
-          {isBooked && (
-            <span className="cd-hero__booked-badge">✓ 已预定</span>
+      {/* ===== 1. Hero 区域（wt-hero 轮播风格） ===== */}
+      <section className="wt-hero">
+        <div className="wt-hero__bg">
+          {/* 视频骨架屏 */}
+          {videoLoading && <div className="wt-hero__shimmer" />}
+          {/* 视频 or 轮播 */}
+          {showVideo ? (
+            <video
+              className={`wt-hero__video${videoReady ? ' wt-hero__video--ready' : ''}`}
+              src={detail.video}
+              autoPlay muted loop playsInline
+              onCanPlay={() => { videoReadyRef.current = true; setVideoReady(true) }}
+            />
+          ) : (
+            detail.images.map((img, i) => (
+              <div
+                key={i}
+                className={`wt-hero__slide${i === heroSlide ? ' wt-hero__slide--active' : ''}${i === heroPrev ? ' wt-hero__slide--prev' : ''}`}
+              >
+                <FallbackImage src={img} alt={`${detail.nameEn} 作品 ${i + 1}`} className="wt-hero__img" />
+              </div>
+            ))
           )}
-          <div className="cd-hero__divider" />
-          <p className="cd-hero__tagline">{detail.tagline}</p>
+          <div className="wt-hero__overlay" />
+          {isBooked && (
+            <div className="photo-booked-badge">
+              <svg className="photo-booked-badge__svg" viewBox="0 0 80 80" width="120" height="120">
+                <path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <path d="M60 62 C72 52, 76 38, 68 24 C64 17, 58 12, 50 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <circle cx="40" cy="8" r="1.5" fill="currentColor" opacity="0.3"/>
+              </svg>
+              <div className="photo-booked-badge__check">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <span className="photo-booked-badge__text">已加入意向单</span>
+            </div>
+          )}
         </div>
-        <div className="cd-hero__scroll" onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}>
-          <span>向下探索</span>
-          <svg width="20" height="12" viewBox="0 0 20 12"><path d="M1 1l9 9 9-9" stroke="#fff" strokeWidth="1.5" fill="none"/></svg>
-        </div>
-      </section>
 
-      {/* ===== 图片画廊（含官方展示视频） ===== */}
-      <GalleryCarousel images={detail.images} videoUrl={detail.video} />
+        <BackButton to="/dresses" />
+
+        <div className={`wt-hero__info${isBooked ? ' wt-hero__info--booked' : ''}`}>
+          <div className="wt-hero__headshot">
+            <FallbackImage src={detail.cover} alt={detail.nameEn} className="wt-hero__headshot-img" />
+          </div>
+          <div className="wt-hero__meta">
+            <span className="wt-hero__badge">{detail.categoryCn}</span>
+            <h1 className="wt-hero__name">{detail.name}</h1>
+            <p className="wt-hero__name-en">{detail.nameEn}</p>
+            <div className="wt-hero__divider" />
+            <p className="wt-hero__tagline">{detail.tagline}</p>
+          </div>
+        </div>
+
+        <div className="wt-hero__scroll-hint">
+          <div className="wt-hero__scroll-line" />
+          <span className="wt-hero__scroll-text">Scroll</span>
+        </div>
+
+        {/* 轮播指示器（无视频或视频超时时显示） */}
+        {(!showVideo) && detail.images.length > 1 && (
+          <div className="wt-hero__dots">
+            {detail.images.map((_, i) => (
+              <button key={i} className={`wt-hero__dot${i === heroSlide ? ' wt-hero__dot--active' : ''}`} onClick={() => goHeroSlide(i)} />
+            ))}
+          </div>
+        )}
+
+        {/* 预定/取消加载动画 */}
+        {(isBooking || isCanceling) && (
+          <div className="photo-booking-overlay">
+            <div className="photo-booking-gift">
+              <div className="photo-booking-gift__lid" />
+              <div className="photo-booking-gift__box">
+                <img src={ewLogo} alt="" className="photo-booking-gift__logo" />
+              </div>
+              <div className="photo-booking-gift__sparkles">
+                <span /><span /><span /><span /><span /><span />
+              </div>
+            </div>
+            <p className="photo-booking-text">{isCanceling ? '正在移出意向单…' : '正在加入意向单…'}</p>
+          </div>
+        )}
+      </section>
 
       {/* ===== 内容区 ===== */}
       <div className="cd-content">
 
-        {/* ===== 2. 作品描述 ===== */}
-        <section className="cd-about" ref={aboutRef}>
+        {/* 2. 作品介绍 */}
+        <section className="cd-about photo-about" ref={aboutRef}>
           <h2 className="cd-about__title">作品介绍</h2>
           <div className="cd-about__divider" />
           <div className="cd-about__body">
@@ -142,8 +267,8 @@ export default function DressesDetail() {
           </div>
         </section>
 
-        {/* ===== 3. 作品亮点 ===== */}
-        <section className="cd-block cd-block--alt">
+        {/* 3. 作品亮点 */}
+        <section className="cd-block">
           <h2 className="cd-block__title">作品亮点</h2>
           <div className="cd-chips">
             {detail.highlights.map((h, i) => (
@@ -152,19 +277,74 @@ export default function DressesDetail() {
           </div>
         </section>
 
-        {/* ===== 4. 出品方介绍 ===== */}
-        <section className="cd-block">
-          <h2 className="cd-block__title">出品方</h2>
-          <div className="cd-about__body">
-            <p>{wonaBrand.introCn}</p>
-            <p>📍 {wonaBrand.location} · 📞 {wonaBrand.phone} · ✉️ {wonaBrand.email}</p>
-          </div>
-        </section>
+        {/* 4. 作品画廊 */}
+        {detail.images.length > 0 && (
+          <section className="wt-portfolio">
+            <h2 className="cd-block__title">作品画廊</h2>
+            <div className="wt-portfolio__wrapper">
+              <div className="wt-portfolio__grid">
+                {detail.video && (
+                  <div className="wt-portfolio__item wt-portfolio__item--video" onClick={() => setVideoLightbox(true)}>
+                    {!galleryVideoReady && <div className="wt-portfolio__shimmer" />}
+                    <video src={detail.video} muted playsInline preload="metadata" className="wt-portfolio__video" onCanPlay={() => setGalleryVideoReady(true)} />
+                    <div className="wt-portfolio__play-btn">
+                      <div className="wt-portfolio__play-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {detail.images.map((img, i) => (
+                  <div key={i} className="wt-portfolio__item" onClick={() => setGalleryLightbox(i)} style={{ cursor: 'zoom-in' }}>
+                    <FallbackImage src={img} alt={`${detail.nameEn} 作品 ${i + 1}`} className="wt-portfolio__img" loading="lazy" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
-        {/* 来源 */}
-        <section className="cd-source">
-          <p>数据来源：<a href={detail.source?.url || wonaBrand.sourceUrl} target="_blank" rel="noreferrer">{wonaBrand.nameCn}</a></p>
-        </section>
+        {/* Lightbox */}
+        {galleryLightbox !== null && (() => {
+          const total = detail.images.length
+          const currentIdx = galleryLightbox
+          const goPrev = () => setGalleryLightbox((currentIdx - 1 + total) % total)
+          const goNext = () => setGalleryLightbox((currentIdx + 1) % total)
+          return (
+            <div className="photo-hero__lightbox" onClick={() => setGalleryLightbox(null)}>
+              <button className="photo-hero__lightbox-close" onClick={() => setGalleryLightbox(null)}>
+                <svg width="28" height="28" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#fff" strokeWidth="2" fill="none" /></svg>
+              </button>
+              <button className="photo-hero__lightbox-arrow photo-hero__lightbox-arrow--left" onClick={e => { e.stopPropagation(); goPrev() }}>
+                <svg width="28" height="28" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="#fff" strokeWidth="2" fill="none" /></svg>
+              </button>
+              <img src={detail.images[currentIdx]} alt={`作品 ${currentIdx + 1}`} className="photo-hero__lightbox-img" onClick={e => e.stopPropagation()} />
+              <button className="photo-hero__lightbox-arrow photo-hero__lightbox-arrow--right" onClick={e => { e.stopPropagation(); goNext() }}>
+                <svg width="28" height="28" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="#fff" strokeWidth="2" fill="none" /></svg>
+              </button>
+              <div className="photo-hero__lightbox-counter" onClick={e => e.stopPropagation()}>
+                {currentIdx + 1} / {total}
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* 视频 Lightbox */}
+        {videoLightbox && detail.video && (
+          <div className="photo-hero__lightbox" onClick={() => setVideoLightbox(false)}>
+            <button className="photo-hero__lightbox-close" onClick={() => setVideoLightbox(false)}>
+              <svg width="28" height="28" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#fff" strokeWidth="2" fill="none" /></svg>
+            </button>
+            <video
+              src={detail.video}
+              className="photo-hero__lightbox-img"
+              autoPlay
+              controls
+              onClick={e => e.stopPropagation()}
+            />
+          </div>
+        )}
+
       </div>
 
       {/* ===== 底部预定栏 ===== */}
@@ -172,10 +352,10 @@ export default function DressesDetail() {
         <div className="cd-book-bar__inner">
           <div className="cd-book-bar__price">
             <span className="cd-book-bar__price-label">起步价</span>
-            {detail.price ? (
-              <span className="cd-book-bar__price-value cd-book-bar__price-value--red cd-book-bar__price-value--sm">€{detail.price.toFixed(2)}</span>
+            {(detail.price ?? 0) > 0 ? (
+              <span className="cd-book-bar__price-value cd-book-bar__price-value--gold cd-book-bar__price-value--sm">€{(detail.price ?? 0).toLocaleString()}起</span>
             ) : (
-              <span className="cd-book-bar__price-value cd-book-bar__price-value--red">？</span>
+              <span className="cd-book-bar__price-value cd-book-bar__price-value--gold">需咨询</span>
             )}
           </div>
           <div className="cd-book-bar__actions">
@@ -187,9 +367,9 @@ export default function DressesDetail() {
             </button>
             <button className={`cd-book-bar__book${isBooked ? ' cd-book-bar__book--cancel' : ''}`} onClick={handleBook}>
               {isBooked ? (
-                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>取消预定</>
+                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>移出意向单</>
               ) : (
-                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>立即预定</>
+                <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>加入意向单</>
               )}
             </button>
           </div>

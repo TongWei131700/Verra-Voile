@@ -14,6 +14,7 @@ export type DressCategory =
   | 'amore-in-fiore'
   | 'endless-styles'
   | 'miami-bliss'
+  | 'veils'
 
 export interface DressProduct {
   slug: string
@@ -43,6 +44,7 @@ export const dressCategoryList: { key: DressCategory; label: string }[] = [
   { key: 'amore-in-fiore', label: 'Amore in Fiore' },
   { key: 'endless-styles', label: 'Endless Styles' },
   { key: 'miami-bliss', label: 'Miami Bliss' },
+  { key: 'veils', label: 'Veils 头纱' },
 ]
 
 // 品牌信息

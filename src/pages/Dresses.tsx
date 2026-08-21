@@ -5,14 +5,37 @@ import BackButton from '../components/common/BackButton'
 import { getSelectedProducts } from '../utils/selectedProducts'
 import { type DressProduct } from '../data/wonaDresses'
 import { dressCategoryList } from '../data/wonaDresses'
-import { wonaProducts } from '../data/wonaDressProducts'
 
 import heroImg from '../assets/dresses-hero-bg.jpg'
 
 const HERO_IMG = heroImg
+const API_BASE = import.meta.env.VITE_API_URL || ''
 
-// 全部礼服商品（测试数据）
-const allProducts: DressProduct[] = [...wonaProducts]
+// 模块级缓存：从详情返回列表页时复用
+let _cachedDresses: DressProduct[] | null = null
+
+// 将 API 返回的 snake_case 数据转为前端格式
+function mapApiItem(row: any): DressProduct {
+  let highlights: string[] = []
+  try { highlights = typeof row.highlights === 'string' ? JSON.parse(row.highlights) : (row.highlights || []) } catch { /* ignore */ }
+  let images: string[] = []
+  try { images = typeof row.images === 'string' ? JSON.parse(row.images) : (row.images || []) } catch { /* ignore */ }
+  return {
+    slug: row.slug,
+    name: row.name,
+    nameEn: row.name_en || '',
+    category: row.category || 'all',
+    categoryCn: row.category_cn || '',
+    tagline: row.tagline || '',
+    desc: row.description_preview || row.description || '',
+    highlights,
+    cover: row.cover_image || '',
+    images,
+    video: row.video_url || undefined,
+    price: row.price ?? undefined,
+    source: row.source_name ? { name: row.source_name, url: row.source_url || '' } : undefined,
+  }
+}
 
 // 从 highlights 中提取廓形/风格关键词
 function extractStyleKeywords(products: DressProduct[]): string[] {
@@ -28,6 +51,8 @@ function extractStyleKeywords(products: DressProduct[]): string[] {
 
 export default function Dresses() {
   const navigate = useNavigate()
+  const [allProducts, setAllProducts] = useState<DressProduct[]>([])
+  const [dataLoading, setDataLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchFilter, setSearchFilter] = useState('')
   const [searchFocused, setSearchFocused] = useState(false)
@@ -42,6 +67,26 @@ export default function Dresses() {
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
 
+  // 从 API 加载数据（有缓存则复用）
+  useEffect(() => {
+    if (_cachedDresses) {
+      setAllProducts(_cachedDresses)
+      setDataLoading(false)
+      return
+    }
+    setDataLoading(true)
+    fetch(`${API_BASE}/api/products/crawled-dresses`)
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && Array.isArray(res.data)) {
+          const items = res.data.map(mapApiItem)
+          _cachedDresses = items
+          setAllProducts(items)
+        }
+      })
+      .catch(err => console.error('加载礼服列表失败:', err))
+      .finally(() => setDataLoading(false))
+  }, [])
 
   // 响应式列数
   const [colsPerRow, setColsPerRow] = useState(() => {

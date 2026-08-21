@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
-import { wonaProducts } from '../data/wonaDressProducts'
+import { type DressProduct } from '../data/wonaDresses'
 import ewLogo from '../assets/europewedding-logo.png'
 
 function isLoggedIn() {
@@ -12,12 +12,34 @@ function isLoggedIn() {
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
-// 全部礼服商品：WONÁ Concept 批量爬取商品（测试数据）
-const allProducts = [...wonaProducts]
+// 将 API 返回的 snake_case 数据转为前端格式
+function mapApiDetail(row: any): DressProduct {
+  let highlights: string[] = []
+  try { highlights = typeof row.highlights === 'string' ? JSON.parse(row.highlights) : (row.highlights || []) } catch { /* ignore */ }
+  let images: string[] = []
+  try { images = typeof row.images === 'string' ? JSON.parse(row.images) : (row.images || []) } catch { /* ignore */ }
+  return {
+    slug: row.slug,
+    name: row.name,
+    nameEn: row.name_en || '',
+    category: row.category || 'all',
+    categoryCn: row.category_cn || '',
+    tagline: row.tagline || '',
+    desc: row.description || '',
+    highlights,
+    cover: row.cover_image || '',
+    images,
+    video: row.video_url || undefined,
+    price: row.price ?? undefined,
+    source: row.source_name ? { name: row.source_name, url: row.source_url || '' } : undefined,
+  }
+}
 
 export default function DressesDetail() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
+  const [detail, setDetail] = useState<DressProduct | null>(null)
+  const [dataLoading, setDataLoading] = useState(true)
   const [scrollY, setScrollY] = useState(0)
   const [showBar, setShowBar] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
@@ -37,6 +59,29 @@ export default function DressesDetail() {
   const aboutRef = useRef<HTMLElement>(null)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  // 从 API 获取详情数据
+  useEffect(() => {
+    if (!slug) return
+    let cancelled = false
+    setDataLoading(true)
+    fetch(`${API_BASE}/api/products/crawled-dresses/${slug}`)
+      .then(res => res.json())
+      .then(json => {
+        if (cancelled) return
+        if (json.success && json.data) {
+          setDetail(mapApiDetail(json.data))
+        } else {
+          setDetail(null)
+        }
+      })
+      .catch(err => {
+        console.error('获取礼服详情失败:', err)
+        if (!cancelled) setDetail(null)
+      })
+      .finally(() => { if (!cancelled) setDataLoading(false) })
+    return () => { cancelled = true }
+  }, [slug])
+
   // 响应列数：宽屏 3 列，窄屏 2 列，手机 1 列
   useEffect(() => {
     const update = () => setGalleryCols(window.innerWidth >= 1100 ? 3 : window.innerWidth >= 500 ? 2 : 1)
@@ -44,8 +89,6 @@ export default function DressesDetail() {
     window.addEventListener('resize', update)
     return () => window.removeEventListener('resize', update)
   }, [])
-
-  const detail = allProducts.find(p => p.slug === slug) || null
 
   // 检查是否已预定
   useEffect(() => {

@@ -278,31 +278,47 @@ export default function DressesDetail() {
         </section>
 
         {/* 4. 作品画廊 */}
-        {detail.images.length > 0 && (
-          <section className="wt-portfolio">
-            <h2 className="cd-block__title">作品画廊</h2>
-            <div className="wt-portfolio__wrapper">
-              <div className="wt-portfolio__grid">
-                {detail.video && (
-                  <div className="wt-portfolio__item wt-portfolio__item--video" onClick={() => setVideoLightbox(true)}>
-                    {!galleryVideoReady && <div className="wt-portfolio__shimmer" />}
-                    <video src={detail.video} muted playsInline preload="metadata" className="wt-portfolio__video" onCanPlay={() => setGalleryVideoReady(true)} />
-                    <div className="wt-portfolio__play-btn">
-                      <div className="wt-portfolio__play-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                      </div>
+        {detail.images.length > 0 && (() => {
+          const allItems: { type: 'video' | 'image'; src: string }[] = []
+          if (detail.video) allItems.push({ type: 'video', src: detail.video })
+          detail.images.forEach(src => allItems.push({ type: 'image', src }))
+          const cols = 3
+          return (
+            <section className="wt-portfolio">
+              <h2 className="cd-block__title">作品画廊</h2>
+              <div className="wt-portfolio__wrapper">
+                <div className="wt-portfolio__columns">
+                  {Array.from({ length: cols }).map((_, colIdx) => (
+                    <div key={colIdx} className="wt-portfolio__col">
+                      {allItems.filter((_, i) => i % cols === colIdx).map((item, idx) => {
+                        const origIdx = idx * cols + colIdx
+                        if (item.type === 'video') {
+                          return (
+                            <div key={origIdx} className="wt-portfolio__item wt-portfolio__item--video" onClick={() => setVideoLightbox(true)}>
+                              {!galleryVideoReady && <div className="wt-portfolio__shimmer" />}
+                              <video src={item.src} muted playsInline preload="metadata" className="wt-portfolio__video" onCanPlay={() => setGalleryVideoReady(true)} />
+                              <div className="wt-portfolio__play-btn">
+                                <div className="wt-portfolio__play-icon">
+                                  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        }
+                        const imgIdx = detail.video ? origIdx - 1 : origIdx
+                        return (
+                          <div key={origIdx} className="wt-portfolio__item" onClick={() => setGalleryLightbox(imgIdx)} style={{ cursor: 'zoom-in' }}>
+                            <FallbackImage src={item.src} alt={`${detail.nameEn} 作品 ${origIdx + 1}`} className="wt-portfolio__img" loading="lazy" />
+                          </div>
+                        )
+                      })}
                     </div>
-                  </div>
-                )}
-                {detail.images.map((img, i) => (
-                  <div key={i} className="wt-portfolio__item" onClick={() => setGalleryLightbox(i)} style={{ cursor: 'zoom-in' }}>
-                    <FallbackImage src={img} alt={`${detail.nameEn} 作品 ${i + 1}`} className="wt-portfolio__img" loading="lazy" />
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
-        )}
+            </section>
+          )
+        })()}
 
         {/* Lightbox */}
         {galleryLightbox !== null && (() => {

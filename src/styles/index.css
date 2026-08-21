@@ -5536,7 +5536,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 
 /* 返回按钮 */
 .cd-back {
-  position: fixed; top: 24px; left: 24px; z-index: 200;
+  position: fixed; top: 24px; left: 24px; z-index: 10;
   background: rgba(255,255,255,0.85); border: none;
   padding: 10px 22px; border-radius: 24px; cursor: pointer;
   font-family: inherit; font-size: 14px; color: var(--charcoal);
@@ -5582,7 +5582,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   font-size: 15px; opacity: 0.8; letter-spacing: 2px;
 }
 .cd-list-hero__back {
-  position: fixed; top: 28px; left: 28px; z-index: 10000;
+  position: fixed; top: 28px; left: 28px; z-index: 10;
   display: flex; align-items: center; gap: 10px;
   background: rgba(255, 253, 250, 0.85);
   backdrop-filter: blur(20px) saturate(180%);
@@ -6041,7 +6041,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 
 /* 抽屉遮罩 */
 .ph-drawer-overlay {
-  position: fixed; inset: 0; z-index: 10001;
+  position: fixed; inset: 0; z-index: 11;
   background: rgba(0,0,0,0.15);
   display: flex; align-items: stretch; justify-content: flex-end;
   animation: ph-drawer-fadein 0.25s ease;
@@ -6661,7 +6661,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 
 /* ===== Lightbox 放大查看 ===== */
 .cd-lightbox {
-  position: fixed; inset: 0; z-index: 9999;
+  position: fixed; inset: 0; z-index: 11;
   background: rgba(0,0,0,0.6);
   backdrop-filter: blur(8px);
   display: flex; align-items: center; justify-content: center;
@@ -8120,7 +8120,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  z-index: 10001;
+  z-index: 15;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -8193,7 +8193,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  z-index: 10001;
+  z-index: 15;
   padding: 28px;
 }
 
@@ -8267,7 +8267,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  z-index: 10001;
+  z-index: 15;
   padding: 28px;
 }
 
@@ -8864,7 +8864,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
-  z-index: 200;
+  z-index: 11;
 }
 .nh-drawer {
   position: fixed;
@@ -8961,7 +8961,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .nh-skeleton-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 11;
   background: #1a1815;
   overflow: hidden;
 }
@@ -10192,7 +10192,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .photo-booking-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 11;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11016,14 +11016,14 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   inset: 0;
   background: rgba(0,0,0,0.45);
   backdrop-filter: blur(4px);
-  z-index: 10002;
+  z-index: 12;
   animation: fadeIn 0.2s ease;
 }
 .product-modal {
   position: fixed;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 10003;
+  z-index: 13;
   width: 90%;
   max-width: 420px;
   max-height: 85vh;
@@ -11833,7 +11833,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .fpd-lightbox {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 11;
   background: rgba(0, 0, 0, 0.92);
   display: flex;
   align-items: center;
@@ -12688,7 +12688,7 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 .dest-detail__lightbox {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 11;
   background: rgba(0,0,0,.92);
   display: flex;
   align-items: center;

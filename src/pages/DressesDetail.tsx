@@ -30,11 +30,20 @@ export default function DressesDetail() {
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
   const [videoLightbox, setVideoLightbox] = useState(false)
   const [galleryVideoReady, setGalleryVideoReady] = useState(false)
+  const [galleryCols, setGalleryCols] = useState(3)
   const [videoReady, setVideoReady] = useState(false)
   const [videoTimedOut, setVideoTimedOut] = useState(false)
   const videoReadyRef = useRef(false)
   const aboutRef = useRef<HTMLElement>(null)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // 响应列数：宽屏 3 列，窄屏 2 列，手机 1 列
+  useEffect(() => {
+    const update = () => setGalleryCols(window.innerWidth >= 1100 ? 3 : window.innerWidth >= 500 ? 2 : 1)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
   const detail = allProducts.find(p => p.slug === slug) || null
 
@@ -282,16 +291,15 @@ export default function DressesDetail() {
           const allItems: { type: 'video' | 'image'; src: string }[] = []
           if (detail.video) allItems.push({ type: 'video', src: detail.video })
           detail.images.forEach(src => allItems.push({ type: 'image', src }))
-          const cols = 3
           return (
             <section className="wt-portfolio">
               <h2 className="cd-block__title">作品画廊</h2>
               <div className="wt-portfolio__wrapper">
                 <div className="wt-portfolio__columns">
-                  {Array.from({ length: cols }).map((_, colIdx) => (
+                  {Array.from({ length: galleryCols }).map((_, colIdx) => (
                     <div key={colIdx} className="wt-portfolio__col">
-                      {allItems.filter((_, i) => i % cols === colIdx).map((item, idx) => {
-                        const origIdx = idx * cols + colIdx
+                      {allItems.filter((_, i) => i % galleryCols === colIdx).map((item, idx) => {
+                        const origIdx = idx * galleryCols + colIdx
                         if (item.type === 'video') {
                           return (
                             <div key={origIdx} className="wt-portfolio__item wt-portfolio__item--video" onClick={() => setVideoLightbox(true)}>

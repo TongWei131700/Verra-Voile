@@ -7,7 +7,9 @@ import { type DressProduct } from '../data/wonaDresses'
 import { dressCategoryList } from '../data/wonaDresses'
 import { wonaProducts } from '../data/wonaDressProducts'
 
-const HERO_IMG = '/src/assets/dresses-hero-bg.jpg'
+import heroImg from '../assets/dresses-hero-bg.jpg'
+
+const HERO_IMG = heroImg
 
 // 全部礼服商品（测试数据）
 const allProducts: DressProduct[] = [...wonaProducts]

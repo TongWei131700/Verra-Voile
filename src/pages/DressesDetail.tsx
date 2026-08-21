@@ -207,6 +207,32 @@ export default function DressesDetail() {
     return () => observer.disconnect()
   }, [detail])
 
+  if (dataLoading) {
+    return (
+      <div className="cd-page">
+        <section className="wt-hero">
+          <div className="wt-hero__bg">
+            <div className="wt-hero__shimmer" />
+            <div className="wt-hero__overlay" />
+          </div>
+          <BackButton to="/dresses" />
+          <div className="wt-hero__info">
+            <div className="wt-hero__headshot">
+              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+            </div>
+            <div className="wt-hero__meta">
+              <div style={{ height: 14, width: '35%', borderRadius: 4, marginBottom: 12, background: 'rgba(255,255,255,0.06)' }} />
+              <div style={{ height: 22, width: '50%', borderRadius: 4, marginBottom: 8, background: 'rgba(255,255,255,0.06)' }} />
+              <div style={{ height: 14, width: '30%', borderRadius: 4, marginBottom: 14, background: 'rgba(255,255,255,0.06)' }} />
+              <div style={{ height: 1, width: '40%', background: 'rgba(255,255,255,0.08)', marginBottom: 14 }} />
+              <div style={{ height: 14, width: '60%', borderRadius: 4, background: 'rgba(255,255,255,0.06)' }} />
+            </div>
+          </div>
+        </section>
+      </div>
+    )
+  }
+
   if (!detail) {
     return (
       <div className="cd-page">

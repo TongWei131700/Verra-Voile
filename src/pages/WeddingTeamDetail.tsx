@@ -338,8 +338,25 @@ export default function WeddingTeamDetail() {
   if (dataLoading) {
     return (
       <div className="cd-page">
-        <button className="cd-back" onClick={() => navigate('/wedding-team')}>← 返回列表</button>
-        <div className="cd-loading"><p>加载中…</p></div>
+        <section className="wt-hero">
+          <div className="wt-hero__bg">
+            <div className="wt-hero__shimmer" />
+            <div className="wt-hero__overlay" />
+          </div>
+          <BackButton to="/wedding-team" />
+          <div className="wt-hero__info">
+            <div className="wt-hero__headshot">
+              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+            </div>
+            <div className="wt-hero__meta">
+              <div style={{ height: 14, width: '35%', borderRadius: 4, marginBottom: 12, background: 'rgba(255,255,255,0.06)' }} />
+              <div style={{ height: 22, width: '50%', borderRadius: 4, marginBottom: 8, background: 'rgba(255,255,255,0.06)' }} />
+              <div style={{ height: 14, width: '30%', borderRadius: 4, marginBottom: 14, background: 'rgba(255,255,255,0.06)' }} />
+              <div style={{ height: 1, width: '40%', background: 'rgba(255,255,255,0.08)', marginBottom: 14 }} />
+              <div style={{ height: 14, width: '60%', borderRadius: 4, background: 'rgba(255,255,255,0.06)' }} />
+            </div>
+          </div>
+        </section>
       </div>
     )
   }

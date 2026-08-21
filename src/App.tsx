@@ -56,10 +56,11 @@ function setScrollTop(el: Element | Window, value: number) {
 function ScrollRestoration() {
   const { pathname } = useLocation()
 
-  // 路由切换时恢复滚动位置
+  // 路由切换时处理滚动位置
   useEffect(() => {
-    // photography / wedding-team 详情页每次进入都回到顶部，不恢复滚动位置
-    if (pathname.startsWith('/photography/') || pathname.startsWith('/wedding-team/')) {
+    // 详情页每次进入都回到顶部
+    const isDetailPage = /^\/(destinations|flowers|dresses|photography|wedding-team|wine)\/[^/]+/.test(pathname)
+    if (isDetailPage) {
       let attempts = 0
       const resetTop = () => {
         const nhIntro = document.querySelector('.nh-intro')
@@ -72,6 +73,8 @@ function ScrollRestoration() {
       delete scrollCache[pathname]
       return () => clearTimeout(timer)
     }
+
+    // 列表页：恢复之前保存的滚动位置（由 navFromList 在导航前保存）
     const savedPos = scrollCache[pathname]
     if (savedPos !== undefined && savedPos > 0) {
       let attempts = 0

@@ -166,11 +166,18 @@ export default function NewHome() {
     }
   }
 
+  // 从首页进入列表页：清除缓存位置，确保列表页从顶部开始
+  const navigateFromHome = (path: string) => {
+    const cache = (window as any).__scrollCache
+    if (cache) delete cache[path]
+    navigate(path)
+  }
+
   const renderItemContent = (m: ModuleDef) => (
     <div className="nh-content">
       <h2>{m.title}</h2>
       <div className="nh-wrapper">
-        <button type="button" onClick={() => navigate(m.route)}>定制</button>
+        <button type="button" onClick={() => navigateFromHome(m.route)}>定制</button>
         <button type="button" onClick={handleConsult}>咨询</button>
       </div>
     </div>
@@ -317,7 +324,7 @@ export default function NewHome() {
             <div className="nh-mobile-container">
               <h2>{m.title}</h2>
               <div className="nh-wrapper">
-                <button type="button" onClick={() => navigate(m.route)}>定制</button>
+                <button type="button" onClick={() => navigateFromHome(m.route)}>定制</button>
                 <button type="button" onClick={handleConsult}>咨询</button>
               </div>
             </div>

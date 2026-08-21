@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { navFromList } from '../utils/navigateFromList'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { getSelectedProducts } from '../utils/selectedProducts'
@@ -293,7 +294,7 @@ export default function Flowers() {
     } else if (item.type === 'specialty') {
       setSelectedSpecialties(prev => { const n = new Set(prev); n.add(item.label); return n })
     } else if (item.type === 'company' && item.slug) {
-      navigate(`/flowers/${item.slug}`)
+      navFromList('/flowers', `/flowers/${item.slug}`, navigate)
     }
     setSearchQuery('')
     setSearchSubmitted(false)
@@ -655,7 +656,7 @@ export default function Flowers() {
                       <div
                         key={item.slug}
                         className="cd-card cd-card--booked"
-                        onClick={() => navigate(item.type === 'service' ? `/flowers/${item.slug}` : `/flowers/product/${item.slug}`)}
+                        onClick={() => navFromList('/flowers', item.type === 'service' ? `/flowers/${item.slug}` : `/flowers/product/${item.slug}`, navigate)}
                       >
                         <div className="cd-card__img-wrap">
                           <FallbackImage
@@ -710,7 +711,7 @@ export default function Flowers() {
                     <div
                       key={item.slug}
                       className="cd-card"
-                      onClick={() => { window.__saveScrollPos?.('/flowers'); navigate(`/flowers/${item.slug}`) }}
+                      onClick={() => navFromList('/flowers', `/flowers/${item.slug}`, navigate)}
                     >
                       <div className="cd-card__img-wrap">
                         <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
@@ -758,7 +759,7 @@ export default function Flowers() {
                     <div
                       key={idx}
                       className="cd-card"
-                      onClick={() => navigate(`/flowers/product/${product.slug}`)}
+                      onClick={() => navFromList('/flowers', `/flowers/product/${product.slug}`, navigate)}
                     >
                       <div className="cd-card__img-wrap">
                         <FallbackImage

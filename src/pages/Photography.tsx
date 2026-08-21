@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { navFromList } from '../utils/navigateFromList'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { getSelectedProducts } from '../utils/selectedProducts'
@@ -253,7 +254,7 @@ export default function Photography() {
     } else if (item.type === 'style') {
       setSelectedStyles(prev => { const n = new Set(prev); n.add(item.label); return n })
     } else if (item.type === 'photographer' && item.slug) {
-      navigate(`/photography/${item.slug}`)
+      navFromList('/photography', `/photography/${item.slug}`, navigate)
     }
     setSearchQuery('')
     setSearchSubmitted(false)
@@ -633,7 +634,7 @@ export default function Photography() {
                     <div
                       key={item.slug}
                       className="cd-card cd-card--booked"
-                      onClick={() => { window.__saveScrollPos?.('/photography'); navigate(`/photography/${item.slug}`) }}
+                      onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}
                     >
                       <div className="cd-card__img-wrap">
                         <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
@@ -687,7 +688,7 @@ export default function Photography() {
                             <div
                               key={item.slug}
                               className="cd-card"
-                              onClick={() => { window.__saveScrollPos?.('/photography'); navigate(`/photography/${item.slug}`) }}
+                              onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}
                             >
                               <div className="cd-card__img-wrap">
                                 <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
@@ -747,7 +748,7 @@ export default function Photography() {
                       <div
                         key={item.slug}
                         className="cd-card"
-                        onClick={() => { window.__saveScrollPos?.('/photography'); navigate(`/photography/${item.slug}`) }}
+                        onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}
                       >
                         <div className="cd-card__img-wrap">
                           <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />

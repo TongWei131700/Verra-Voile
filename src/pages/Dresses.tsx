@@ -152,7 +152,7 @@ export default function Dresses() {
     allStyles.forEach(s => { if (s.toLowerCase().includes(q)) items.push({ type: 'style', label: s }) })
     allProducts.forEach(p => { if (p.name.toLowerCase().includes(q) || p.nameEn.toLowerCase().includes(q)) items.push({ type: 'dress', label: p.nameEn, sub: p.categoryCn, slug: p.slug }) })
     return items.slice(0, 10)
-  }, [searchQuery, allSeries, allStyles])
+  }, [searchQuery, allSeries, allStyles, allProducts])
 
   const bookedList = useMemo(() => filteredList.filter(p => bookedSlugs.has(p.slug)), [filteredList, bookedSlugs])
   const otherList = useMemo(() => filteredList.filter(p => !bookedSlugs.has(p.slug)), [filteredList, bookedSlugs])

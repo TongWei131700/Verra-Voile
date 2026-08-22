@@ -10417,15 +10417,20 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.65s ease;
+  z-index: 0;
   pointer-events: none;
+}
+.wt-hero__slide--prev {
+  opacity: 1;
+  z-index: 1;
+  transition: none !important;
+  pointer-events: auto;
 }
 .wt-hero__slide--active {
   opacity: 1;
+  z-index: 2;
+  transition: transform 0.6s ease;
   pointer-events: auto;
-}
-.wt-hero__slide--prev {
-  opacity: 0;
 }
 .wt-hero__img {
   width: 100%;
@@ -11918,6 +11923,28 @@ footer .copy { margin-top: 20px; opacity: 0.5; font-size: 12px; letter-spacing: 
 
 .fpd-carousel__inner:hover .fpd-carousel__zoom {
   opacity: 1;
+}
+
+/* 轮播幻灯片切换动画 */
+.fpd-carousel__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  z-index: 0;
+}
+
+/* 旧图：保持可见，无动效 */
+.fpd-carousel__slide--prev {
+  opacity: 1;
+  z-index: 1;
+  transition: none !important;
+}
+
+/* 新图：滑入覆盖 */
+.fpd-carousel__slide--active {
+  opacity: 1;
+  z-index: 2;
+  transition: transform 0.6s ease;
 }
 
 /* Lightbox 放大查看 */

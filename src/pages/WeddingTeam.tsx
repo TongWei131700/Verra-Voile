@@ -673,6 +673,7 @@ export default function WeddingTeam() {
                     <div
                       key={item.slug}
                       className="cd-card cd-card--booked"
+                      data-scroll-id={item.slug}
                       onClick={() => navFromList('/wedding-team', `/wedding-team/${item.slug}`, navigate)}
                     >
                       <div className="cd-card__img-wrap">
@@ -728,6 +729,7 @@ export default function WeddingTeam() {
                             <div
                               key={item.slug}
                               className="cd-card"
+                              data-scroll-id={item.slug}
                               onClick={() => navFromList('/wedding-team', `/wedding-team/${item.slug}`, navigate)}
                             >
                               <div className="cd-card__img-wrap">

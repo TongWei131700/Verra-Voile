@@ -125,6 +125,11 @@ export default function DressesDetail() {
     }
   }, [detail, isBooked])
 
+  // 加入意向单后设置列表页锚点
+  useEffect(() => {
+    if (isBooked && detail) sessionStorage.setItem('scroll_anchor_dresses', detail.slug)
+  }, [isBooked, detail])
+
   // 咨询按钮
   const handleConsult = useCallback(() => {
     if (!isLoggedIn()) {

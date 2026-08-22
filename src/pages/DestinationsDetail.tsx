@@ -135,6 +135,11 @@ export default function DestinationsDetail() {
       .finally(() => setLoading(false))
   }, [slug])
 
+  // 加入意向单后设置列表页锚点
+  useEffect(() => {
+    if (booked && venue) sessionStorage.setItem('scroll_anchor_destinations', venue.slug)
+  }, [booked, venue])
+
   // Scroll 追踪
   const onScroll = useCallback(() => setScrollY(window.scrollY), [])
   useEffect(() => {

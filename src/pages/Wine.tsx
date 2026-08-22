@@ -443,6 +443,7 @@ export default function Wine() {
                       <div
                         key={item.productId}
                         className="cd-card cd-card--booked"
+                        data-scroll-id={item.productId}
                         onClick={() => navFromList('/wine', `/wine/${item.productId}`, navigate)}
                       >
                         <div className="cd-card__img-wrap">
@@ -485,7 +486,7 @@ export default function Wine() {
                     <span className="cd-section-label__count">{group.items.length}</span>
                   </div>
                   {group.visibleItems.map(item => (
-                    <div key={item.productId} className="cd-card" onClick={() => navFromList('/wine', `/wine/${item.productId}`, navigate)}>
+                    <div key={item.productId} className="cd-card" data-scroll-id={item.productId} onClick={() => navFromList('/wine', `/wine/${item.productId}`, navigate)}>
                       <div className="cd-card__img-wrap">
                         <FallbackImage src={item.image} alt={item.name} className="cd-card__img" />
                         <div className="cd-card__img-overlay" />

@@ -90,6 +90,35 @@ function ScrollRestoration() {
     }
   }, [pathname])
 
+  // 锚点滚动：返回列表页时自动滚动到之前加入意向单的卡片
+  useEffect(() => {
+    const isDetailPage = /^\/(destinations|flowers|dresses|photography|wedding-team|wine)\/[^/]+/.test(pathname)
+    if (isDetailPage) return
+
+    const categories = ['wine', 'photography', 'destinations', 'wedding-team', 'flowers', 'dresses']
+    let anchorKey: string | null = null
+    let anchorId: string | null = null
+    for (const cat of categories) {
+      const val = sessionStorage.getItem(`scroll_anchor_${cat}`)
+      if (val) { anchorKey = `scroll_anchor_${cat}`; anchorId = val; break }
+    }
+    if (!anchorKey || !anchorId) return
+    sessionStorage.removeItem(anchorKey)
+
+    let attempts = 0
+    const tryScroll = () => {
+      const el = document.querySelector(`[data-scroll-id="${anchorId}"]`)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      } else if (attempts < 10) {
+        attempts++
+        setTimeout(tryScroll, 100)
+      }
+    }
+    const timer = setTimeout(tryScroll, 400)
+    return () => clearTimeout(timer)
+  }, [pathname])
+
   return null
 }
 

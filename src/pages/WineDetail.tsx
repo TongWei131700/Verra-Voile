@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
@@ -40,7 +40,10 @@ export default function WineDetail() {
   const [loading, setLoading] = useState(true)
   const [detail, setDetail] = useState<WineProduct | null>(null)
   const [currentImg, setCurrentImg] = useState(0)
+  const [prevImg, setPrevImg] = useState<number | null>(null)
+  const [slideDir, setSlideDir] = useState<'forward' | 'backward'>('forward')
   const [lightbox, setLightbox] = useState(false)
+  const carouselTouchX = useRef<number | null>(null)
   const [isBooking, setIsBooking] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
 
@@ -86,6 +89,11 @@ export default function WineDetail() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [productId])
+
+  // 加入意向单后设置列表页锚点
+  useEffect(() => {
+    if (isBooked && productId) sessionStorage.setItem('scroll_anchor_wine', productId)
+  }, [isBooked, productId])
 
   // 检查是否有未提交的修改
   const hasUnsavedChanges = isBooked && JSON.stringify(selectedOptions) !== JSON.stringify(submittedOptions)
@@ -159,6 +167,14 @@ export default function WineDetail() {
     return path
   }
 
+  const goImg = (idx: number, dir: 'forward' | 'backward') => {
+    if (idx === currentImg) return
+    setSlideDir(dir)
+    setPrevImg(currentImg)
+    setCurrentImg(idx)
+    setTimeout(() => setPrevImg(null), 650)
+  }
+
   if (loading) {
     return (
       <div className="fpd-page">
@@ -199,12 +215,49 @@ export default function WineDetail() {
 
       {/* 左侧：图片轮播 */}
       <div className="fpd-carousel">
-        <div className="fpd-carousel__inner" onClick={() => setLightbox(true)}>
-          <FallbackImage
-            src={imgUrl(images[currentImg])}
-            alt={detail.name}
-            className="fpd-carousel__img"
-          />
+        <div
+          className="fpd-carousel__inner"
+          onClick={() => setLightbox(true)}
+          onTouchStart={(e) => { carouselTouchX.current = e.touches[0].clientX }}
+          onTouchEnd={(e) => {
+            if (carouselTouchX.current === null) return
+            const diff = e.changedTouches[0].clientX - carouselTouchX.current
+            carouselTouchX.current = null
+            if (Math.abs(diff) < 40) return
+            goImg(diff < 0 ? (currentImg + 1) % images.length : (currentImg - 1 + images.length) % images.length, diff < 0 ? 'forward' : 'backward')
+          }}
+        >
+          {images.map((img, i) => {
+            const isActive = i === currentImg
+            const isPrev = i === prevImg
+            const tx = isActive || isPrev ? 'translateX(0)' : `translateX(${slideDir === 'forward' ? '100%' : '-100%'})`
+            return (
+              <div
+                key={i}
+                className={`fpd-carousel__slide${isActive ? ' fpd-carousel__slide--active' : ''}${isPrev ? ' fpd-carousel__slide--prev' : ''}`}
+                style={{ transform: tx }}
+              >
+                <FallbackImage src={imgUrl(img)} alt={detail.name} className="fpd-carousel__img" />
+              </div>
+            )
+          })}
+          {isBooked && (
+            <div className="photo-booked-badge">
+              <svg className="photo-booked-badge__svg" viewBox="0 0 80 80" width="120" height="120">
+                <path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <path d="M60 62 C72 52, 76 38, 68 24 C64 17, 58 12, 50 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                <ellipse cx="11" cy="44" rx="3" ry="1.5" transform="rotate(-30 11 44)" fill="currentColor" opacity="0.15"/>
+                <ellipse cx="69" cy="44" rx="3" ry="1.5" transform="rotate(30 69 44)" fill="currentColor" opacity="0.15"/>
+                <circle cx="40" cy="8" r="1.5" fill="currentColor" opacity="0.3"/>
+              </svg>
+              <div className="photo-booked-badge__check">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <span className="photo-booked-badge__text">已加入意向单</span>
+            </div>
+          )}
           <div className="fpd-carousel__zoom">🔍</div>
         </div>
 
@@ -215,7 +268,7 @@ export default function WineDetail() {
               <button
                 key={i}
                 className={`fpd-thumb${i === currentImg ? ' fpd-thumb--active' : ''}`}
-                onClick={() => setCurrentImg(i)}
+                onClick={() => goImg(i, i > currentImg ? 'forward' : 'backward')}
               >
                 <FallbackImage
                   src={imgUrl(img)}
@@ -232,13 +285,13 @@ export default function WineDetail() {
           <>
             <button
               className="fpd-arrow fpd-arrow--left"
-              onClick={() => setCurrentImg(i => (i - 1 + images.length) % images.length)}
+              onClick={() => goImg((currentImg - 1 + images.length) % images.length, 'backward')}
             >
               ‹
             </button>
             <button
               className="fpd-arrow fpd-arrow--right"
-              onClick={() => setCurrentImg(i => (i + 1) % images.length)}
+              onClick={() => goImg((currentImg + 1) % images.length, 'forward')}
             >
               ›
             </button>
@@ -500,7 +553,7 @@ export default function WineDetail() {
           {images.length > 1 && (
             <button
               className="fpd-lightbox__arrow fpd-lightbox__arrow--left"
-              onClick={(e) => { e.stopPropagation(); setCurrentImg(i => (i - 1 + images.length) % images.length) }}
+              onClick={(e) => { e.stopPropagation(); goImg((currentImg - 1 + images.length) % images.length, 'backward') }}
             >‹</button>
           )}
 
@@ -509,12 +562,21 @@ export default function WineDetail() {
             alt={detail.name}
             className="fpd-lightbox__img"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => { carouselTouchX.current = e.touches[0].clientX }}
+            onTouchEnd={(e) => {
+              if (carouselTouchX.current === null) return
+              const diff = e.changedTouches[0].clientX - carouselTouchX.current
+              carouselTouchX.current = null
+              if (Math.abs(diff) < 40) return
+              e.stopPropagation()
+              goImg(diff < 0 ? (currentImg + 1) % images.length : (currentImg - 1 + images.length) % images.length, diff < 0 ? 'forward' : 'backward')
+            }}
           />
 
           {images.length > 1 && (
             <button
               className="fpd-lightbox__arrow fpd-lightbox__arrow--right"
-              onClick={(e) => { e.stopPropagation(); setCurrentImg(i => (i + 1) % images.length) }}
+              onClick={(e) => { e.stopPropagation(); goImg((currentImg + 1) % images.length, 'forward') }}
             >›</button>
           )}
 

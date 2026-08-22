@@ -139,11 +139,10 @@ export default function FlowersDetail() {
   })
   const [heroSlide, setHeroSlide] = useState(0)
   const [heroPrev, setHeroPrev] = useState<number | null>(null)
+  const [heroDir, setHeroDir] = useState<'forward' | 'backward'>('forward')
   const [heroPaused, setHeroPaused] = useState(false)
   const [galleryPage, setGalleryPage] = useState(1)
   const [galleryLoading, setGalleryLoading] = useState(false)
-  const [gallerySuppressUntil, setGallerySuppressUntil] = useState(0)
-  const [galleryTick, setGalleryTick] = useState(0)
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
   const [galleryCols, setGalleryCols] = useState(3)
   const [isBooking, setIsBooking] = useState(false)
@@ -163,6 +162,7 @@ export default function FlowersDetail() {
   const [showFlowerList, setShowFlowerList] = useState(false)
   const [zoomImage, setZoomImage] = useState<string | null>(null)
   const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const heroTouchX = useRef<number | null>(null)
 
   // 已选花朵变化时持久化到 sessionStorage
   useEffect(() => {
@@ -219,16 +219,27 @@ export default function FlowersDetail() {
     return () => window.removeEventListener('resize', update)
   }, [])
 
-  // "查看更多"延迟
+  // 作品集滚动加载
   useEffect(() => {
-    if (gallerySuppressUntil > 0 && !galleryLoading) {
-      const delay = gallerySuppressUntil - Date.now()
-      if (delay > 0) {
-        const t = setTimeout(() => setGalleryTick(n => n + 1), delay)
-        return () => clearTimeout(t)
+    if (!detail) return
+    const totalGallery = detail.portfolioImages.length
+    const perPage = window.innerWidth <= 900 ? 6 : 12
+    const maxPage = Math.ceil(totalGallery / perPage)
+    const onScroll = () => {
+      if (galleryLoading || galleryPage >= maxPage) return
+      const scrollBottom = window.innerHeight + window.scrollY
+      const docHeight = document.documentElement.scrollHeight
+      if (scrollBottom >= docHeight - 300) {
+        setGalleryLoading(true)
+        setTimeout(() => {
+          setGalleryPage(prev => prev + 1)
+          setGalleryLoading(false)
+        }, 400)
       }
     }
-  }, [gallerySuppressUntil, galleryLoading])
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [detail, galleryLoading, galleryPage])
 
   // 预定/取消预定
   const handleBook = useCallback(() => {
@@ -278,6 +289,11 @@ export default function FlowersDetail() {
     }
   }, [detail, isBooked])
 
+  // 加入意向单后设置列表页锚点
+  useEffect(() => {
+    if (isBooked && detail) sessionStorage.setItem('scroll_anchor_flowers', detail.slug)
+  }, [isBooked, detail])
+
   // 咨询按钮
   const handleConsult = useCallback(() => {
     if (!isLoggedIn()) { setShowLoginModal(true); return }
@@ -306,9 +322,11 @@ export default function FlowersDetail() {
     if (total === 0) return
     const timer = setInterval(() => {
       setHeroSlide(prev => {
+        const next = (prev + 1) % total
+        setHeroDir('forward')
         setHeroPrev(prev)
         setTimeout(() => setHeroPrev(null), 650)
-        return (prev + 1) % total
+        return next
       })
     }, 4000)
     return () => clearInterval(timer)
@@ -320,8 +338,9 @@ export default function FlowersDetail() {
     heroTimerRef.current = setTimeout(() => setHeroPaused(false), 5000)
   }, [])
 
-  const goHeroSlide = useCallback((idx: number) => {
+  const goHeroSlide = useCallback((idx: number, dir: 'forward' | 'backward') => {
     if (idx === heroSlide) return
+    setHeroDir(dir)
     setHeroPrev(heroSlide); setHeroSlide(idx)
     pauseHeroCarousel()
     setTimeout(() => setHeroPrev(null), 650)
@@ -393,15 +412,32 @@ export default function FlowersDetail() {
     <div className="cd-page">
       {/* ===== 1. Hero 区域 ===== */}
       <section className="wt-hero" ref={heroRef}>
-        <div className="wt-hero__bg">
-          {heroImages.map((img, i) => (
-            <div
-              key={i}
-              className={`wt-hero__slide${i === heroSlide ? ' wt-hero__slide--active' : ''}${i === heroPrev ? ' wt-hero__slide--prev' : ''}`}
-            >
-              <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${i + 1}`} className="wt-hero__img" />
-            </div>
-          ))}
+        <div className="wt-hero__bg"
+          onTouchStart={(e) => { heroTouchX.current = e.touches[0].clientX }}
+          onTouchEnd={(e) => {
+            if (heroTouchX.current === null) return
+            const diff = e.changedTouches[0].clientX - heroTouchX.current
+            heroTouchX.current = null
+            if (Math.abs(diff) < 40) return
+            const total = heroImages.length
+            if (total <= 1) return
+            goHeroSlide(diff < 0 ? (heroSlide + 1) % total : (heroSlide - 1 + total) % total, diff < 0 ? 'forward' : 'backward')
+          }}
+        >
+          {heroImages.map((img, i) => {
+            const isActive = i === heroSlide
+            const isPrev = i === heroPrev
+            const tx = isActive || isPrev ? 'translateX(0)' : `translateX(${heroDir === 'forward' ? '100%' : '-100%'})`
+            return (
+              <div
+                key={i}
+                className={`wt-hero__slide${isActive ? ' wt-hero__slide--active' : ''}${isPrev ? ' wt-hero__slide--prev' : ''}`}
+                style={{ transform: tx }}
+              >
+                <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${i + 1}`} className="wt-hero__img" />
+              </div>
+            )
+          })}
           <div className="wt-hero__overlay" />
           {isBooked && (
             <div className="photo-booked-badge">
@@ -536,22 +572,12 @@ export default function FlowersDetail() {
 
         {/* 11. 作品集 */}
         {(() => {
-          const galleryImages = detail.portfolioImages.slice(3)
-          if (galleryImages.length === 0 && detail.portfolioImages.length === 0) return null
           const allPortfolio = detail.portfolioImages
-          const perPage = galleryCols * 3
-          const visibleCount = galleryPage * perPage
+          if (allPortfolio.length === 0) return null
+          const perPage = window.innerWidth <= 900 ? 6 : 12
+          const visibleCount = Math.min(galleryPage * perPage, allPortfolio.length)
           const hasMore = visibleCount < allPortfolio.length
           const visibleImages = allPortfolio.slice(0, visibleCount)
-
-          const loadMore = () => {
-            setGallerySuppressUntil(Date.now() + 1000)
-            setGalleryLoading(true)
-            setTimeout(() => {
-              setGalleryPage(prev => prev + 1)
-              setGalleryLoading(false)
-            }, 600)
-          }
 
           return (
             <section className="wt-portfolio">
@@ -574,11 +600,10 @@ export default function FlowersDetail() {
                     </div>
                   ))}
                 </div>
-                {hasMore && !galleryLoading && Date.now() >= gallerySuppressUntil && (galleryTick || true) && (
-                  <>
-                    <div className="photo-gallery__fade" />
-                    <button className="photo-gallery__more" onClick={loadMore}>查看更多</button>
-                  </>
+                {!hasMore && allPortfolio.length > perPage && (
+                  <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '12px 0', color: '#b8a9a0', fontSize: 13 }}>
+                    — 已展示全部 {allPortfolio.length} 张图片 —
+                  </div>
                 )}
               </div>
             </section>

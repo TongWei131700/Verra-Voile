@@ -686,6 +686,7 @@ export default function Flowers() {
                       <div
                         key={item.slug}
                         className="cd-card cd-card--booked"
+                        data-scroll-id={item.slug}
                         onClick={() => navFromList('/flowers', item.type === 'service' ? `/flowers/${item.slug}` : `/flowers/product/${item.slug}`, navigate)}
                       >
                         <div className="cd-card__img-wrap">
@@ -725,7 +726,60 @@ export default function Flowers() {
                 </>
               )}
 
-              {/* Section 1: 花艺服务团队 - 过滤已加入意向单的商品 */}
+              {/* Section 1: 鲜花花束系列 - 过滤已加入意向单的商品 */}
+              {(() => {
+                const allProducts = florajetProducts.filter(p => !bookedProducts.has(p.slug))
+                const pages = sectionPages['product'] || 1
+                const limit = isNarrow
+                  ? (pages === 1 ? NARROW_LIMIT : NARROW_LIMIT + (pages - 1) * NARROW_MORE)
+                  : pages * WIDE_LIMIT
+                const visibleProducts = allProducts.slice(0, limit)
+                const hiddenCount = Math.max(0, allProducts.length - limit)
+                const hasMore = allProducts.length > limit
+                return visibleProducts.length > 0 ? (
+                <>
+                  <div className="cd-section-label">
+                    <span className="cd-section-label__icon">✦</span>
+                    <span>鲜花花束系列</span>
+                    <span className="cd-section-label__count">{allProducts.length}</span>
+                  </div>
+                  {visibleProducts.map((product, idx) => (
+                    <div
+                      key={idx}
+                      className="cd-card"
+                      data-scroll-id={product.slug}
+                      onClick={() => navFromList('/flowers', `/flowers/product/${product.slug}`, navigate)}
+                    >
+                      <div className="cd-card__img-wrap">
+                        <FallbackImage
+                          src={product.image?.startsWith('/') ? `${API_BASE}${product.image}` : (product.image || '')}
+                          alt={product.name_cn || product.name}
+                          className="cd-card__img"
+                        />
+                        <div className="cd-card__img-overlay" />
+                        <span className="cd-card__country">法国</span>
+                      </div>
+                      <div className="cd-card__body">
+                        <h3 className="cd-card__name">{product.name_cn || product.name}</h3>
+                        <p className="cd-card__tagline">{product.name}</p>
+                        <p className="cd-card__desc">{product.desc_cn || product.desc || ''}</p>
+                        <div className="cd-card__footer">
+                          <span className="cd-card__price">€{product.price}{product.price_from ? '起' : ''}</span>
+                          <span className="cd-card__arrow">查看详情 →</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {hasMore && (
+                    <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
+                      <button className="cd-section-more__btn" onClick={() => loadMoreSection('product')}>查看更多 ({hiddenCount})</button>
+                    </div>
+                  )}
+                </>
+                ) : null
+              })()}
+
+              {/* Section 2: 花艺服务团队 - 过滤已加入意向单的商品 */}
               {(() => {
                 const allServices = serviceList.filter(item => !bookedProducts.has(item.slug))
                 const pages = sectionPages['service'] || 1
@@ -746,6 +800,7 @@ export default function Flowers() {
                     <div
                       key={item.slug}
                       className="cd-card"
+                      data-scroll-id={item.slug}
                       onClick={() => navFromList('/flowers', `/flowers/${item.slug}`, navigate)}
                     >
                       <div className="cd-card__img-wrap">
@@ -772,58 +827,6 @@ export default function Flowers() {
                   {hasMore && (
                     <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
                       <button className="cd-section-more__btn" onClick={() => loadMoreSection('service')}>查看更多 ({hiddenCount})</button>
-                    </div>
-                  )}
-                </>
-                ) : null
-              })()}
-
-              {/* Section 2: 鲜花花束系列 - 过滤已加入意向单的商品 */}
-              {(() => {
-                const allProducts = florajetProducts.filter(p => !bookedProducts.has(p.slug))
-                const pages = sectionPages['product'] || 1
-                const limit = isNarrow
-                  ? (pages === 1 ? NARROW_LIMIT : NARROW_LIMIT + (pages - 1) * NARROW_MORE)
-                  : pages * WIDE_LIMIT
-                const visibleProducts = allProducts.slice(0, limit)
-                const hiddenCount = Math.max(0, allProducts.length - limit)
-                const hasMore = allProducts.length > limit
-                return visibleProducts.length > 0 ? (
-                <>
-                  <div className="cd-section-label">
-                    <span className="cd-section-label__icon">✦</span>
-                    <span>鲜花花束系列</span>
-                    <span className="cd-section-label__count">{allProducts.length}</span>
-                  </div>
-                  {visibleProducts.map((product, idx) => (
-                    <div
-                      key={idx}
-                      className="cd-card"
-                      onClick={() => navFromList('/flowers', `/flowers/product/${product.slug}`, navigate)}
-                    >
-                      <div className="cd-card__img-wrap">
-                        <FallbackImage
-                          src={product.image?.startsWith('/') ? `${API_BASE}${product.image}` : (product.image || '')}
-                          alt={product.name_cn || product.name}
-                          className="cd-card__img"
-                        />
-                        <div className="cd-card__img-overlay" />
-                        <span className="cd-card__country">法国</span>
-                      </div>
-                      <div className="cd-card__body">
-                        <h3 className="cd-card__name">{product.name_cn || product.name}</h3>
-                        <p className="cd-card__tagline">{product.name}</p>
-                        <p className="cd-card__desc">{product.desc_cn || product.desc || ''}</p>
-                        <div className="cd-card__footer">
-                          <span className="cd-card__price">€{product.price}{product.price_from ? '起' : ''}</span>
-                          <span className="cd-card__arrow">查看详情 →</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {hasMore && (
-                    <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                      <button className="cd-section-more__btn" onClick={() => loadMoreSection('product')}>查看更多 ({hiddenCount})</button>
                     </div>
                   )}
                 </>

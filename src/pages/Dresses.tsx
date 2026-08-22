@@ -316,7 +316,7 @@ export default function Dresses() {
 
   // ===== 卡片渲染 =====
   const renderCard = (item: DressProduct, isBooked = false) => (
-    <div key={item.slug} className={`cd-card${isBooked ? ' cd-card--booked' : ''}`} onClick={() => navFromList('/dresses', `/dresses/${item.slug}`, navigate)}>
+    <div key={item.slug} className={`cd-card${isBooked ? ' cd-card--booked' : ''}`} data-scroll-id={item.slug} onClick={() => navFromList('/dresses', `/dresses/${item.slug}`, navigate)}>
       <div className="cd-card__img-wrap">
         <FallbackImage src={item.cover} alt={item.name} className="cd-card__img" loading="lazy" />
         <div className="cd-card__img-overlay" />

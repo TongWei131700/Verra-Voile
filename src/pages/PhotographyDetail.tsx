@@ -72,6 +72,7 @@ export default function PhotographyDetail() {
   const [heroPaused, setHeroPaused] = useState(false)
   const [heroLightbox, setHeroLightbox] = useState(false)
   const [galleryPage, setGalleryPage] = useState(1)
+  const [galleryLoading, setGalleryLoading] = useState(false)
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
   const [galleryCols, setGalleryCols] = useState(3)
   const [isBooking, setIsBooking] = useState(false)
@@ -206,6 +207,28 @@ export default function PhotographyDetail() {
   useEffect(() => {
     return () => { if (heroTimerRef.current) clearTimeout(heroTimerRef.current) }
   }, [])
+
+  // 作品展滚动加载：窗口滚动到底部附近时追加一批图片
+  useEffect(() => {
+    if (!detail) return
+    const totalGallery = detail.images.slice(3).length
+    const perPage = window.innerWidth <= 900 ? 6 : 12
+    const maxPage = Math.ceil(totalGallery / perPage)
+    const onScroll = () => {
+      if (galleryLoading || galleryPage >= maxPage) return
+      const scrollBottom = window.innerHeight + window.scrollY
+      const docHeight = document.documentElement.scrollHeight
+      if (scrollBottom >= docHeight - 300) {
+        setGalleryLoading(true)
+        setTimeout(() => {
+          setGalleryPage(prev => prev + 1)
+          setGalleryLoading(false)
+        }, 400)
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [detail, galleryLoading, galleryPage])
 
   // 触摸滑动支持
   const onCarouselTouchStart = (e: React.TouchEvent) => {
@@ -400,16 +423,10 @@ export default function PhotographyDetail() {
           const galleryImages = detail.images.slice(galleryStart)
           const hasGallery = galleryImages.length > 0
           if (!hasStyle && !hasGallery) return null
-          const perPage = 9
-          const visibleCount = galleryPage * perPage
+          const perPage = window.innerWidth <= 900 ? 6 : 12
+          const visibleCount = Math.min(galleryPage * perPage, galleryImages.length)
           const hasMore = visibleCount < galleryImages.length
           const visibleImages = galleryImages.slice(0, visibleCount)
-
-          const loadMore = () => {
-            const scrollPos = window.scrollY
-            setGalleryPage((prev: number) => prev + 1)
-            requestAnimationFrame(() => window.scrollTo({ top: scrollPos }))
-          }
 
           return (
             <section className="photo-combined-card">
@@ -417,7 +434,7 @@ export default function PhotographyDetail() {
                 <>
                   <h2 className="cd-block__title">摄影风格</h2>
                   <div className="photo-style__grid">
-                    {detail.style.map((group: { title: string; items: { label: string; desc?: string }[] }, gi: number) => (
+                    {detail.style?.map((group: { title: string; items: { label: string; desc?: string }[] }, gi: number) => (
                       <div key={gi} className="photo-style__group">
                         <h3 className="photo-style__group-title">{group.title}</h3>
                         <ul className="photo-style__list">
@@ -452,16 +469,16 @@ export default function PhotographyDetail() {
                               </div>
                             )
                           })}
+                          {galleryLoading && Array.from({ length: 3 }).map((_, i) => (
+                            <div key={`s-${colIdx}-${i}`} className="wt-portfolio__skeleton"><div className="wt-portfolio__skeleton-inner" /></div>
+                          ))}
                         </div>
                       ))}
                     </div>
-                    {hasMore && (
-                      <>
-                        <div className="photo-gallery__fade" />
-                        <button className="photo-gallery__more" onClick={loadMore}>
-                          查看更多
-                        </button>
-                      </>
+                    {!hasMore && !galleryLoading && galleryImages.length > perPage && (
+                      <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '12px 0', color: '#b8a9a0', fontSize: 13 }}>
+                        — 已展示全部 {galleryImages.length} 张图片 —
+                      </div>
                     )}
                   </div>
                 </>

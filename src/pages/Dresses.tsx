@@ -111,8 +111,21 @@ export default function Dresses() {
   }, [])
   const PAGE_SIZE = colsPerRow * 2
 
-  // 页式"查看更多"：每组默认 1 页（两行），每次点击追加 1 页
-  const [seriesPages, setSeriesPages] = useState<Record<string, number>>({})
+  // 列表展示规则：宽屏10 / 窄屏3+追加10 / sessionStorage 持久化
+  const WIDE_LIMIT = 10
+  const NARROW_LIMIT = 3
+  const NARROW_MORE = 10
+  const [isNarrow, setIsNarrow] = useState(() => window.innerWidth <= 900)
+  useEffect(() => {
+    const fn = () => setIsNarrow(window.innerWidth <= 900)
+    window.addEventListener('resize', fn)
+    return () => window.removeEventListener('resize', fn)
+  }, [])
+
+  // 页式"查看更多"：从 sessionStorage 恢复
+  const [seriesPages, setSeriesPages] = useState<Record<string, number>>(() => {
+    try { return JSON.parse(sessionStorage.getItem('dress_series_pages') || '{}') } catch { return {} }
+  })
 
   // 刷新已预定状态
   const refreshBooked = useCallback(() => {
@@ -173,17 +186,29 @@ export default function Dresses() {
   const groupedWithVisibility = useMemo(() => {
     return visibleGroupedBySeries.map(group => {
       const pages = seriesPages[group.series] || 1
-      const visible = pages * PAGE_SIZE
-      return { ...group, visibleItems: group.items.slice(0, visible), hasMore: group.items.length > visible, hiddenCount: Math.max(0, group.items.length - visible) }
+      const limit = isNarrow
+        ? (pages === 1 ? NARROW_LIMIT : NARROW_LIMIT + (pages - 1) * NARROW_MORE)
+        : pages * WIDE_LIMIT
+      const visibleItems = group.items.slice(0, limit)
+      return { ...group, visibleItems, hasMore: group.items.length > limit, hiddenCount: Math.max(0, group.items.length - limit) }
     })
-  }, [visibleGroupedBySeries, seriesPages, PAGE_SIZE])
+  }, [visibleGroupedBySeries, seriesPages, isNarrow])
 
   const loadMoreSeries = (series: string) => {
-    setSeriesPages(prev => ({ ...prev, [series]: (prev[series] || 1) + 1 }))
+    setSeriesPages(prev => {
+      const next = { ...prev, [series]: (prev[series] || 1) + 1 }
+      sessionStorage.setItem('dress_series_pages', JSON.stringify(next))
+      return next
+    })
   }
 
-  // 筛选变化时重置
-  useEffect(() => { setSeriesPages({}) }, [selectedSeries, selectedStyles, searchFilter])
+  // 筛选变化时重置（跳过首次挂载）
+  const isFirstMount = useRef(true)
+  useEffect(() => {
+    if (isFirstMount.current) { isFirstMount.current = false; return }
+    setSeriesPages({})
+    sessionStorage.removeItem('dress_series_pages')
+  }, [selectedSeries, selectedStyles, searchFilter])
 
   const totalFilters = selectedSeries.size + selectedStyles.size + (searchFilter ? 1 : 0)
 

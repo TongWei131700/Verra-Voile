@@ -81,9 +81,23 @@ export default function Flowers() {
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
-  const ITEMS_PER_SECTION = 6 // 每个模块初始显示数量（3行×2列）
-  const [serviceVisibleCount, setServiceVisibleCount] = useState(ITEMS_PER_SECTION)
-  const [productVisibleCount, setProductVisibleCount] = useState(ITEMS_PER_SECTION)
+  const ITEMS_PER_PAGE = 6
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
+  const [listLoading, setListLoading] = useState(false)
+
+  // 列表展示规则：宽屏10 / 窄屏3+追加10 / sessionStorage 持久化
+  const WIDE_LIMIT = 10
+  const NARROW_LIMIT = 3
+  const NARROW_MORE = 10
+  const [isNarrow, setIsNarrow] = useState(() => window.innerWidth <= 900)
+  useEffect(() => {
+    const fn = () => setIsNarrow(window.innerWidth <= 900)
+    window.addEventListener('resize', fn)
+    return () => window.removeEventListener('resize', fn)
+  }, [])
+  const [sectionPages, setSectionPages] = useState<Record<string, number>>(() => {
+    try { return JSON.parse(sessionStorage.getItem('flower_section_pages') || '{}') } catch { return {} }
+  })
 
   // 从 API 加载数据
   useEffect(() => {
@@ -248,11 +262,27 @@ export default function Flowers() {
     return items.slice(0, 10)
   }, [searchQuery, allCountries, allSpecialties])
 
-  // 筛选变化时重置各模块显示数量
+  // sectionPages 变化时持久化到 sessionStorage
   useEffect(() => {
-    setServiceVisibleCount(ITEMS_PER_SECTION)
-    setProductVisibleCount(ITEMS_PER_SECTION)
+    sessionStorage.setItem('flower_section_pages', JSON.stringify(sectionPages))
+  }, [sectionPages])
+
+  // 筛选变化时重置各模块显示数量（跳过首次挂载，避免覆盖 sessionStorage 恢复值）
+  const isFirstMount = useRef(true)
+  useEffect(() => {
+    if (isFirstMount.current) { isFirstMount.current = false; return }
+    setSectionPages({})
+    sessionStorage.removeItem('flower_section_pages')
   }, [selectedCountries, selectedSpecialties, searchFilter])
+
+  const loadMoreSection = (key: string) => {
+    if (listLoading) return
+    setListLoading(true)
+    setTimeout(() => {
+      setSectionPages(prev => ({ ...prev, [key]: (prev[key] || 1) + 1 }))
+      setListLoading(false)
+    }, 300)
+  }
 
   const totalFilters = selectedCountries.size + selectedSpecialties.size + (searchFilter ? 1 : 0)
 
@@ -698,8 +728,13 @@ export default function Flowers() {
               {/* Section 1: 花艺服务团队 - 过滤已加入意向单的商品 */}
               {(() => {
                 const allServices = serviceList.filter(item => !bookedProducts.has(item.slug))
-                const hasMore = serviceVisibleCount < allServices.length
-                const visibleServices = allServices.slice(0, serviceVisibleCount)
+                const pages = sectionPages['service'] || 1
+                const limit = isNarrow
+                  ? (pages === 1 ? NARROW_LIMIT : NARROW_LIMIT + (pages - 1) * NARROW_MORE)
+                  : pages * WIDE_LIMIT
+                const visibleServices = allServices.slice(0, limit)
+                const hiddenCount = Math.max(0, allServices.length - limit)
+                const hasMore = allServices.length > limit
                 return visibleServices.length > 0 ? (
                 <>
                   <div className="cd-section-label">
@@ -736,7 +771,7 @@ export default function Flowers() {
                   ))}
                   {hasMore && (
                     <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                      <button className="cd-section-more__btn" onClick={() => setServiceVisibleCount(prev => prev + ITEMS_PER_SECTION)}>查看更多</button>
+                      <button className="cd-section-more__btn" onClick={() => loadMoreSection('service')}>查看更多 ({hiddenCount})</button>
                     </div>
                   )}
                 </>
@@ -746,8 +781,13 @@ export default function Flowers() {
               {/* Section 2: 鲜花花束系列 - 过滤已加入意向单的商品 */}
               {(() => {
                 const allProducts = florajetProducts.filter(p => !bookedProducts.has(p.slug))
-                const hasMore = productVisibleCount < allProducts.length
-                const visibleProducts = allProducts.slice(0, productVisibleCount)
+                const pages = sectionPages['product'] || 1
+                const limit = isNarrow
+                  ? (pages === 1 ? NARROW_LIMIT : NARROW_LIMIT + (pages - 1) * NARROW_MORE)
+                  : pages * WIDE_LIMIT
+                const visibleProducts = allProducts.slice(0, limit)
+                const hiddenCount = Math.max(0, allProducts.length - limit)
+                const hasMore = allProducts.length > limit
                 return visibleProducts.length > 0 ? (
                 <>
                   <div className="cd-section-label">
@@ -783,7 +823,7 @@ export default function Flowers() {
                   ))}
                   {hasMore && (
                     <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                      <button className="cd-section-more__btn" onClick={() => setProductVisibleCount(prev => prev + ITEMS_PER_SECTION)}>查看更多</button>
+                      <button className="cd-section-more__btn" onClick={() => loadMoreSection('product')}>查看更多 ({hiddenCount})</button>
                     </div>
                   )}
                 </>

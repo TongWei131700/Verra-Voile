@@ -115,8 +115,6 @@ export default function DestinationsDetail() {
   const [galleryCols, setGalleryCols] = useState(3)
   const [galleryPage, setGalleryPage] = useState(1)
   const [galleryLoading, setGalleryLoading] = useState(false)
-  const [gallerySuppressUntil, setGallerySuppressUntil] = useState(0)
-  const [galleryTick, setGalleryTick] = useState(0)
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
   const heroRef = useRef<HTMLElement>(null)
   const aboutRef = useRef<HTMLElement>(null)
@@ -201,16 +199,28 @@ export default function DestinationsDetail() {
     return () => { if (heroTimerRef.current) clearTimeout(heroTimerRef.current) }
   }, [])
 
-  // "查看更多"点击后延迟出现
+
+  // 图集滚动加载：窗口滚动到底部附近时追加一批图片
   useEffect(() => {
-    if (gallerySuppressUntil > 0 && !galleryLoading) {
-      const delay = gallerySuppressUntil - Date.now()
-      if (delay > 0) {
-        const t = setTimeout(() => setGalleryTick(n => n + 1), delay)
-        return () => clearTimeout(t)
+    if (!venue) return
+    const totalGallery = venue.galleryImages.slice(3).length
+    const perPage = window.innerWidth <= 900 ? 6 : 12
+    const maxPage = Math.ceil(totalGallery / perPage)
+    const onScroll = () => {
+      if (galleryLoading || galleryPage >= maxPage) return
+      const scrollBottom = window.innerHeight + window.scrollY
+      const docHeight = document.documentElement.scrollHeight
+      if (scrollBottom >= docHeight - 300) {
+        setGalleryLoading(true)
+        setTimeout(() => {
+          setGalleryPage(prev => prev + 1)
+          setGalleryLoading(false)
+        }, 400)
       }
     }
-  }, [gallerySuppressUntil, galleryLoading])
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [venue, galleryLoading, galleryPage])
 
   const handleBook = useCallback(() => {
     if (!venue) return
@@ -438,19 +448,10 @@ export default function DestinationsDetail() {
       {(() => {
         const galleryImages = venue.galleryImages.slice(3) // 跳过 Hero 前 3 张
         if (galleryImages.length === 0) return null
-        const perPage = galleryCols * 3
-        const visibleCount = galleryPage * perPage
+        const perPage = window.innerWidth <= 900 ? 6 : 12
+        const visibleCount = Math.min(galleryPage * perPage, galleryImages.length)
         const hasMore = visibleCount < galleryImages.length
         const visibleImages = galleryImages.slice(0, visibleCount)
-
-        const loadMore = () => {
-          setGallerySuppressUntil(Date.now() + 1000)
-          setGalleryLoading(true)
-          setTimeout(() => {
-            setGalleryPage(prev => prev + 1)
-            setGalleryLoading(false)
-          }, 600)
-        }
 
         return (
           <section className="dest-detail__gallery cd-block">
@@ -473,11 +474,10 @@ export default function DestinationsDetail() {
                   </div>
                 ))}
               </div>
-              {hasMore && !galleryLoading && Date.now() >= gallerySuppressUntil && (galleryTick || true) && (
-                <>
-                  <div className="photo-gallery__fade" />
-                  <button className="photo-gallery__more" onClick={loadMore}>查看更多</button>
-                </>
+              {!hasMore && !galleryLoading && galleryImages.length > perPage && (
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '12px 0', color: '#b8a9a0', fontSize: 13 }}>
+                  — 已展示全部 {galleryImages.length} 张图片 —
+                </div>
               )}
             </div>
           </section>

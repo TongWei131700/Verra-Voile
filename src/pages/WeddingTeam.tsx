@@ -111,6 +111,20 @@ export default function WeddingTeam() {
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
   const [listLoading, setListLoading] = useState(false)
 
+  // 列表展示规则：宽屏10 / 窄屏3+追加10 / sessionStorage 持久化
+  const WIDE_LIMIT = 10
+  const NARROW_LIMIT = 3
+  const NARROW_MORE = 10
+  const [isNarrow, setIsNarrow] = useState(() => window.innerWidth <= 900)
+  useEffect(() => {
+    const fn = () => setIsNarrow(window.innerWidth <= 900)
+    window.addEventListener('resize', fn)
+    return () => window.removeEventListener('resize', fn)
+  }, [])
+  const [countryPages, setCountryPages] = useState<Record<string, number>>(() => {
+    try { return JSON.parse(sessionStorage.getItem('team_country_pages') || '{}') } catch { return {} }
+  })
+
   // 从 API 加载数据（有缓存则复用）
   useEffect(() => {
     if (_cachedCompanies) {
@@ -212,40 +226,32 @@ export default function WeddingTeam() {
     return groups
   }, [visibleOtherList])
 
-  // 每个国家分组默认显示两行，超出显示"查看更多"
-  const [expandedCountries, setExpandedCountries] = useState<Set<string>>(new Set())
-  const colsPerRow = useMemo(() => {
-    if (typeof window === 'undefined') return 3
-    const w = window.innerWidth
-    if (w < 640) return 1
-    if (w < 1000) return 2
-    if (w < 1400) return 3
-    return 4
-  }, [])
-  const MAX_COUNTRY_ITEMS = colsPerRow * 2
+  // 页式"查看更多"
   const groupedWithVisibility = useMemo(() => {
-    return visibleGroupedByCountry.map(group => ({
-      ...group,
-      visibleItems: expandedCountries.has(group.country)
-        ? group.items
-        : group.items.slice(0, MAX_COUNTRY_ITEMS),
-      hasMore: group.items.length > MAX_COUNTRY_ITEMS && !expandedCountries.has(group.country),
-      hiddenCount: group.items.length - MAX_COUNTRY_ITEMS,
-    }))
-  }, [visibleGroupedByCountry, expandedCountries, MAX_COUNTRY_ITEMS])
+    return visibleGroupedByCountry.map(group => {
+      const pages = countryPages[group.country] || 1
+      const limit = isNarrow
+        ? (pages === 1 ? NARROW_LIMIT : NARROW_LIMIT + (pages - 1) * NARROW_MORE)
+        : pages * WIDE_LIMIT
+      const visibleItems = group.items.slice(0, limit)
+      return { ...group, visibleItems, hasMore: group.items.length > limit, hiddenCount: Math.max(0, group.items.length - limit) }
+    })
+  }, [visibleGroupedByCountry, countryPages, isNarrow])
 
-  const toggleCountryExpand = (country: string) => {
-    setExpandedCountries(prev => {
-      const next = new Set(prev)
-      next.has(country) ? next.delete(country) : next.add(country)
+  const loadMoreCountry = (country: string) => {
+    setCountryPages(prev => {
+      const next = { ...prev, [country]: (prev[country] || 1) + 1 }
+      sessionStorage.setItem('team_country_pages', JSON.stringify(next))
       return next
     })
   }
 
-  // 筛选变化时重置分页
+  // 筛选变化时重置（跳过首次挂载）
+  const isFirstMount = useRef(true)
   useEffect(() => {
-    setVisibleCount(ITEMS_PER_PAGE)
-    setExpandedCountries(new Set())
+    if (isFirstMount.current) { isFirstMount.current = false; return }
+    setCountryPages({})
+    sessionStorage.removeItem('team_country_pages')
   }, [selectedCountries, selectedSpecialties, searchFilter])
 
   const totalFilters = selectedCountries.size + selectedSpecialties.size + (searchFilter ? 1 : 0)
@@ -746,7 +752,7 @@ export default function WeddingTeam() {
                           ))}
                           {group.hasMore && (
                             <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                              <button className="cd-section-more__btn" onClick={() => toggleCountryExpand(group.country)}>
+                              <button className="cd-section-more__btn" onClick={() => loadMoreCountry(group.country)}>
                                 查看更多 ({group.hiddenCount})
                               </button>
                             </div>
@@ -804,7 +810,7 @@ export default function WeddingTeam() {
                     ))}
                     {group.hasMore && (
                       <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                        <button className="cd-section-more__btn" onClick={() => toggleCountryExpand(group.country)}>
+                        <button className="cd-section-more__btn" onClick={() => loadMoreCountry(group.country)}>
                           查看更多 ({group.hiddenCount})
                         </button>
                       </div>

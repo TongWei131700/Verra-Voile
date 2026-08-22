@@ -286,15 +286,9 @@ export default function FlowerProductDetail() {
                       key={idx}
                       className={`fpd-formule ${isSelected ? 'fpd-formule--selected' : ''}`}
                       onClick={(e) => {
-                        // 避免点击数量按钮时触发选中/取消
+                        // 避免点击数量按钮时触发选中
                         if ((e.target as HTMLElement).closest('.fpd-formule__qty')) return
-                        if (isSelected) {
-                          setSelectedFormules(prev => {
-                            const next = { ...prev }
-                            delete next[idx]
-                            return next
-                          })
-                        } else {
+                        if (!isSelected) {
                           setSelectedFormules(prev => ({ ...prev, [idx]: 1 }))
                         }
                       }}

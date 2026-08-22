@@ -162,8 +162,6 @@ export default function WeddingTeamDetail() {
   const [heroPaused, setHeroPaused] = useState(false)
   const [galleryPage, setGalleryPage] = useState(1)
   const [galleryLoading, setGalleryLoading] = useState(false)
-  const [gallerySuppressUntil, setGallerySuppressUntil] = useState(0)
-  const [galleryTick, setGalleryTick] = useState(0)
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
   const [galleryCols, setGalleryCols] = useState(3)
   const [isBooking, setIsBooking] = useState(false)
@@ -213,16 +211,27 @@ export default function WeddingTeamDetail() {
     return () => window.removeEventListener('resize', update)
   }, [])
 
-  // "查看更多"点击后延迟出现
+  // 作品集滚动加载：窗口滚动到底部附近时追加一批图片
   useEffect(() => {
-    if (gallerySuppressUntil > 0 && !galleryLoading) {
-      const delay = gallerySuppressUntil - Date.now()
-      if (delay > 0) {
-        const t = setTimeout(() => setGalleryTick(n => n + 1), delay)
-        return () => clearTimeout(t)
+    if (!detail) return
+    const totalGallery = detail.images.slice(3).length
+    const perPage = window.innerWidth <= 900 ? 6 : 12
+    const maxPage = Math.ceil(totalGallery / perPage)
+    const onScroll = () => {
+      if (galleryLoading || galleryPage >= maxPage) return
+      const scrollBottom = window.innerHeight + window.scrollY
+      const docHeight = document.documentElement.scrollHeight
+      if (scrollBottom >= docHeight - 300) {
+        setGalleryLoading(true)
+        setTimeout(() => {
+          setGalleryPage(prev => prev + 1)
+          setGalleryLoading(false)
+        }, 400)
       }
     }
-  }, [gallerySuppressUntil, galleryLoading])
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [detail, galleryLoading, galleryPage])
 
   // 预定/取消预定
   const handleBook = useCallback(() => {
@@ -559,19 +568,10 @@ export default function WeddingTeamDetail() {
         {(() => {
           const galleryImages = detail.images.slice(3) // 跳过 Hero 前3张
           if (galleryImages.length === 0) return null
-          const perPage = galleryCols * 3
-          const visibleCount = galleryPage * perPage
+          const perPage = window.innerWidth <= 900 ? 6 : 12
+          const visibleCount = Math.min(galleryPage * perPage, galleryImages.length)
           const hasMore = visibleCount < galleryImages.length
           const visibleImages = galleryImages.slice(0, visibleCount)
-
-          const loadMore = () => {
-            setGallerySuppressUntil(Date.now() + 1000)
-            setGalleryLoading(true)
-            setTimeout(() => {
-              setGalleryPage(prev => prev + 1)
-              setGalleryLoading(false)
-            }, 600)
-          }
 
           return (
             <section className="wt-portfolio">
@@ -594,11 +594,10 @@ export default function WeddingTeamDetail() {
                     </div>
                   ))}
                 </div>
-                {hasMore && !galleryLoading && Date.now() >= gallerySuppressUntil && (galleryTick || true) && (
-                  <>
-                    <div className="photo-gallery__fade" />
-                    <button className="photo-gallery__more" onClick={loadMore}>查看更多</button>
-                  </>
+                {!hasMore && !galleryLoading && galleryImages.length > perPage && (
+                  <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '12px 0', color: '#b8a9a0', fontSize: 13 }}>
+                    — 已展示全部 {galleryImages.length} 张图片 —
+                  </div>
                 )}
               </div>
             </section>

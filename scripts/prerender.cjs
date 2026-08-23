@@ -55,6 +55,8 @@ async function prefetchAllData() {
     const venues = await fetchApi('/crawled-venues')
     const items = Array.isArray(venues) ? venues : []
     apiCache['/api/products/crawled-venues'] = { success: true, data: items }
+    // 列表页
+    routeMap['/destinations'] = ['/api/products/crawled-venues']
     for (const v of items) {
       if (v.slug) {
         const route = `/destinations/${v.slug}`
@@ -71,9 +73,16 @@ async function prefetchAllData() {
   try {
     const florists = await fetchApi('/crawled-florists')
     const items = Array.isArray(florists) ? florists : []
-    apiCache['/api/products/crawled-florists'] = { success: true, data: items }
-    apiCache['/api/products/crawled-florists?type=service'] = { success: true, data: items.filter(f => f.type === 'service') }
-    apiCache['/api/products/crawled-florists?type=product'] = { success: true, data: items.filter(f => f.type === 'product') }
+    // 花卉列表页直接用后端分类型接口（数据中无 type 字段，后端有自己的过滤逻辑）
+    const [serviceRes, productRes] = await Promise.all([
+      fetch(`${API_BASE}/api/products/crawled-florists?type=service`).then(r => r.json()),
+      fetch(`${API_BASE}/api/products/crawled-florists?type=product`).then(r => r.json()),
+    ])
+    apiCache['/api/products/crawled-florists?type=service'] = serviceRes
+    apiCache['/api/products/crawled-florists?type=product'] = productRes
+    apiCache['/api/products/crawled-florists'] = { success: true, data: [...(serviceRes.data || []), ...(productRes.data || [])] }
+    // 列表页
+    routeMap['/flowers'] = ['/api/products/crawled-florists?type=service', '/api/products/crawled-florists?type=product']
     for (const f of items) {
       if (!f.slug) continue
       const detailKey = `/api/products/crawled-florists/${f.slug}`
@@ -92,6 +101,8 @@ async function prefetchAllData() {
     const dresses = await fetchApi('/crawled-dresses')
     const items = Array.isArray(dresses) ? dresses : []
     apiCache['/api/products/crawled-dresses'] = { success: true, data: items }
+    // 列表页
+    routeMap['/dresses'] = ['/api/products/crawled-dresses']
     for (const d of items) {
       if (d.slug) {
         const detailKey = `/api/products/crawled-dresses/${d.slug}`
@@ -107,6 +118,8 @@ async function prefetchAllData() {
     const photographers = await fetchApi('/crawled-photographers')
     const items = Array.isArray(photographers) ? photographers : []
     apiCache['/api/products/crawled-photographers'] = { success: true, data: items }
+    // 列表页
+    routeMap['/photography'] = ['/api/products/crawled-photographers']
     for (const p of items) {
       if (p.slug) {
         const detailKey = `/api/products/crawled-photographers/${p.slug}`
@@ -122,6 +135,8 @@ async function prefetchAllData() {
     const teams = await fetchApi('/crawled-wedding-teams')
     const items = Array.isArray(teams) ? teams : []
     apiCache['/api/products/crawled-wedding-teams'] = { success: true, data: items }
+    // 列表页
+    routeMap['/wedding-team'] = ['/api/products/crawled-wedding-teams']
     for (const t of items) {
       if (t.slug) {
         const detailKey = `/api/products/crawled-wedding-teams/${t.slug}`
@@ -137,6 +152,8 @@ async function prefetchAllData() {
     const wineData = await fetchApi('/wine')
     const products = wineData.products || []
     apiCache['/api/products/wine'] = { success: true, data: wineData }
+    // 列表页
+    routeMap['/wine'] = ['/api/products/wine']
     for (const w of products) {
       if (w.productId) {
         routeMap[`/wine/${w.productId}`] = ['/api/products/wine']

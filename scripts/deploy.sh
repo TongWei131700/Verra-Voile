@@ -35,12 +35,13 @@ echo "   Verra-Voile 全栈部署"
 echo "   目标: ${SERVER_IP}"
 echo "============================================"
 
-# ====== Step 1: 本地构建前端 ======
+# ====== Step 1: 本地构建前端（含 SSG 预渲染）======
 echo ""
-echo "▶ [1/8] 构建前端..."
+echo "▶ [1/8] 构建前端（SSG 预渲染）..."
 cd "$FRONTEND_DIR"
-npx vite build
-echo "  ✓ 前端构建完成"
+export VITE_API_URL="https://europewedding.cn"
+npx vite build && node scripts/prerender.cjs
+echo "  ✓ 前端构建 + 预渲染完成"
 
 # ====== Step 2: 服务器环境安装 ======
 echo ""
@@ -158,9 +159,50 @@ server {
     root ${REMOTE_FRONTEND};
     index index.html;
 
+    # 预渲染 HTML 优先服务（SSG）
+    location = / {
+        try_files /index.html =404;
+    }
+    location = /destinations {
+        try_files /destinations.html /index.html;
+    }
+    location ~ ^/destinations/ {
+        try_files \$uri.html /index.html;
+    }
+    location = /flowers {
+        try_files /flowers.html /index.html;
+    }
+    location ~ ^/flowers/ {
+        try_files \$uri.html /index.html;
+    }
+    location = /dresses {
+        try_files /dresses.html /index.html;
+    }
+    location ~ ^/dresses/ {
+        try_files \$uri.html /index.html;
+    }
+    location = /photography {
+        try_files /photography.html /index.html;
+    }
+    location ~ ^/photography/ {
+        try_files \$uri.html /index.html;
+    }
+    location = /wedding-team {
+        try_files /wedding-team.html /index.html;
+    }
+    location ~ ^/wedding-team/ {
+        try_files \$uri.html /index.html;
+    }
+    location = /wine {
+        try_files /wine.html /index.html;
+    }
+    location ~ ^/wine/ {
+        try_files \$uri.html /index.html;
+    }
+    
     # SPA 路由 fallback
     location / {
-        try_files \\\$uri \\\$uri/ /index.html;
+        try_files \$uri \$uri/ /index.html;
     }
 
     # API 反向代理

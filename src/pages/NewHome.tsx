@@ -177,7 +177,7 @@ export default function NewHome() {
     <div className="nh-content">
       <h2>{m.title}</h2>
       <div className="nh-wrapper">
-        <button type="button" onClick={() => navigateFromHome(m.route)}>定制</button>
+        <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>定制</Link>
         <button type="button" onClick={handleConsult}>咨询</button>
       </div>
     </div>
@@ -191,9 +191,9 @@ export default function NewHome() {
           <nav className="nh-menu-nav">
             <ul className="nh-menu-list">
               <li className="nh-logo">
-                <button type="button" aria-label="首页" onClick={() => window.location.reload()}>
+                <Link to="/" aria-label="首页">
                   <img src={logoUrl} alt="EuropeWedding" />
-                </button>
+                </Link>
               </li>
               <li className={`nh-user${isLoggedIn ? ' nh-user--logged' : ''}`}>
                 <button type="button" className="nh-user__btn" aria-label="用户菜单" onClick={() => setShowUserMenu(v => !v)}>
@@ -302,6 +302,7 @@ export default function NewHome() {
 
       {/* 主体：滚动吸附容器 */}
       <main ref={mainRef} className="nh-intro">
+        <h1 className="nh-sr-only">欧洲目的地婚礼 — 场地·团队·花卉·礼服·摄影·酒水一站式策划</h1>
         {/* 桌面端：每屏三块面板并排，六模块分两屏 */}
         <section className="nh-desktop-only">
           {MODULES.slice(0, 3).map(m => (
@@ -324,7 +325,7 @@ export default function NewHome() {
             <div className="nh-mobile-container">
               <h2>{m.title}</h2>
               <div className="nh-wrapper">
-                <button type="button" onClick={() => navigateFromHome(m.route)}>定制</button>
+                <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>定制</Link>
                 <button type="button" onClick={handleConsult}>咨询</button>
               </div>
             </div>

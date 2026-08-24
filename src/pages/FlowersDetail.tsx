@@ -427,7 +427,18 @@ export default function FlowersDetail() {
       <Seo
         title={detail ? `${detail.name} - 婚礼花艺` : '婚礼花卉'}
         description={detail?.desc?.slice(0, 150) || `欧洲专业婚礼花艺工作室，提供目的地婚礼花卉布置服务。EuropeWedding 涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块。`}
-        keywords={`婚礼花艺, 婚礼花卉, ${detail?.country || ''}花艺, ${detail?.city || ''}花艺, 目的地婚礼花卉`}
+        keywords={(() => {
+          const country = detail?.country || ''
+          const city = detail?.city || ''
+          const baseKeywords = ['婚礼花艺', '婚礼花卉', '目的地婚礼花卉', '欧洲婚礼']
+          if (country) {
+            baseKeywords.push(`${country}婚礼`, `${country}旅拍`, `${country}花艺`)
+          }
+          if (city) {
+            baseKeywords.push(`${city}婚礼`, `${city}花艺`)
+          }
+          return baseKeywords.join(', ')
+        })()}
         ogImage={detail?.cover}
       />
       {/* ===== 1. Hero 区域 ===== */}

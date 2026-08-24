@@ -390,7 +390,17 @@ export default function WeddingTeamDetail() {
       <Seo
         title={detail ? `${detail.name} - 婚礼策划团队` : '婚礼团队'}
         description={detail?.desc?.slice(0, 150) || `欧洲专业婚礼策划团队，提供目的地婚礼一站式服务。EuropeWedding 涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块。`}
-        keywords={`婚礼团队, 婚礼策划, ${detail?.nameEn || ''}, 目的地婚礼策划, ${detail?.country || ''}婚礼`}
+        keywords={(() => {
+          const country = detail?.country || ''
+          const baseKeywords = ['婚礼团队', '婚礼策划', '目的地婚礼策划', '欧洲婚礼']
+          if (detail?.nameEn) {
+            baseKeywords.push(detail.nameEn)
+          }
+          if (country) {
+            baseKeywords.push(`${country}婚礼`, `${country}旅拍`, `${country}婚礼策划`)
+          }
+          return baseKeywords.join(', ')
+        })()}
         ogImage={detail?.cover}
       />
       {/* ===== 1. Hero 区域：全屏图片 + 居中信息 ===== */}

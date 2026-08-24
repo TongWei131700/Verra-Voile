@@ -29,6 +29,9 @@ export default function Seo({ title, description, keywords, ogType = 'website', 
       <title>{fullTitle}</title>
       <meta name="description" content={fullDesc} />
       <meta name="keywords" content={fullKeywords} />
+      <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+      <meta http-equiv="Pragma" content="no-cache" />
+      <meta http-equiv="Expires" content="0" />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={fullDesc} />
       <meta property="og:type" content={ogType} />

@@ -248,6 +248,12 @@ async function renderPage(browser, route) {
   const url = `http://localhost:${PORT}${route}`
   try {
     await page.goto(url, { waitUntil: 'networkidle0', timeout: 20000 })
+    // 确保 React Router 获取正确的路径
+    await page.evaluate((path) => {
+      window.history.pushState({}, '', path)
+      // 触发 popstate 事件，让 React Router 重新匹配路由
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    }, route)
     // 等待 React 渲染完成 + Helmet DOM 更新
     await new Promise(r => setTimeout(r, 3000))
     

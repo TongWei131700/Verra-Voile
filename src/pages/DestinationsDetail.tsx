@@ -326,7 +326,18 @@ export default function DestinationsDetail() {
       <Seo
         title={venue ? `${venue.name} - ${venue.city}${venue.country}` : '目的地婚礼场地'}
         description={venue?.description?.slice(0, 150) || `探索${venue?.name || ''}，位于${venue?.city || ''}${venue?.country || ''}的精选目的地婚礼场地。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。`}
-        keywords={`目的地婚礼场地, ${venue?.country || ''}婚礼, ${venue?.city || ''}婚礼, 海外婚礼`}
+        keywords={(() => {
+          const country = venue?.country || ''
+          const city = venue?.city || ''
+          const baseKeywords = ['目的地婚礼', '欧洲婚礼', '海外婚礼']
+          if (country) {
+            baseKeywords.push(`${country}婚礼`, `${country}旅拍`, `${country}目的地婚礼`)
+          }
+          if (city) {
+            baseKeywords.push(`${city}婚礼`, `${city}旅拍`)
+          }
+          return baseKeywords.join(', ')
+        })()}
         ogImage={venue?.coverImage}
         structuredData={venue ? {
           "@context": "https://schema.org",

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useNavShrink } from '../hooks/useScrollAnimations'
+import { onLoginSuccess } from '../utils/selectedProducts'
 
 const navLinks = [
   { href: '#story', label: '故事' },
@@ -137,8 +138,7 @@ export default function Navbar() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        localStorage.setItem('token', data.data.token)
-        localStorage.setItem('userEmail', data.data.email)
+        onLoginSuccess(data.data.token, { email: data.data.email })
         setLoggedIn(true)
         setUserPhone(data.data.email)
         setShowLoginModal(false)
@@ -177,8 +177,7 @@ export default function Navbar() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        localStorage.setItem('token', data.data.token)
-        localStorage.setItem('userPhone', data.data.phone)
+        onLoginSuccess(data.data.token, { phone: data.data.phone })
         setLoggedIn(true)
         setUserPhone(data.data.phone)
         setShowLoginModal(false)

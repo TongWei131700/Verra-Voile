@@ -1,5 +1,8 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { loadSelectedProductsFromServer, getSelectedProducts } from './utils/selectedProducts'
+import Footer from './components/Footer'
+import AppHeader from './components/common/AppHeader'
 import Home from './pages/Home'
 import Admin from './pages/Admin'
 import Upload from './pages/Upload'
@@ -58,9 +61,10 @@ function ScrollRestoration() {
 
   // 路由切换时处理滚动位置
   useEffect(() => {
-    // 详情页每次进入都回到顶部
+    // 详情页和订单页每次进入都回到顶部
     const isDetailPage = /^\/(destinations|flowers|dresses|photography|wedding-team|wine)\/[^/]+/.test(pathname)
-    if (isDetailPage) {
+    const isOrderPage = pathname === '/order'
+    if (isDetailPage || isOrderPage) {
       let attempts = 0
       const resetTop = () => {
         const nhIntro = document.querySelector('.nh-intro')
@@ -93,7 +97,7 @@ function ScrollRestoration() {
   // 锚点滚动：返回列表页时自动滚动到之前加入意向单的卡片
   useEffect(() => {
     const isDetailPage = /^\/(destinations|flowers|dresses|photography|wedding-team|wine)\/[^/]+/.test(pathname)
-    if (isDetailPage) return
+    if (isDetailPage || pathname === '/order') return
 
     const categories = ['wine', 'photography', 'destinations', 'wedding-team', 'flowers', 'dresses']
     let anchorKey: string | null = null
@@ -123,6 +127,8 @@ function ScrollRestoration() {
 }
 
 export default function App() {
+  const { pathname } = useLocation()
+
   // 全局兼容旧浏览器：JS 动态设置 --vh 变量（解决 100vh 在某些浏览器不准确的问题）
   useEffect(() => {
     const setVh = () => {
@@ -132,6 +138,20 @@ export default function App() {
     window.addEventListener('resize', setVh)
     return () => window.removeEventListener('resize', setVh)
   }, [])
+
+  // 应用启动时，若用户已登录则从服务器恢复购物车
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      loadSelectedProductsFromServer()
+    }
+  }, [])
+
+  // 进入订单页时标记意向单已查看（清除未读提示）
+  useEffect(() => {
+    if (pathname === '/order') {
+      sessionStorage.setItem('wishlist_seen_count', String(getSelectedProducts().length))
+    }
+  }, [pathname])
 
   return (
     <>
@@ -165,6 +185,9 @@ export default function App() {
         <Route path="/wedding-team" element={<WeddingTeam />} />
         <Route path="/wedding-team/:slug" element={<WeddingTeamDetail />} />
       </Routes>
+      {/* 公共精简头部：仅在业务模块页面显示（首页/订单/管理页除外） */}
+      {!['/', '/new-home', '/old-home', '/order', '/admin', '/upload', '/login', '/register'].includes(pathname) && <AppHeader />}
+      {pathname !== '/order' && <Footer />}
     </>
   )
 }

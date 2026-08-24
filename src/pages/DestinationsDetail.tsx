@@ -4,10 +4,13 @@ import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { proxyImage } from '../utils/imageProxy'
 import ewLogo from '../assets/europewedding-logo.png'
+import Seo from '../components/Seo'
 import {
   setSelectedItem,
+  updateSelectedItem,
   removeSelectedProduct,
   isProductSelected,
+  onLoginSuccess,
 } from '../utils/selectedProducts'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
@@ -135,6 +138,20 @@ export default function DestinationsDetail() {
       .finally(() => setLoading(false))
   }, [slug])
 
+  // 修正已选目的地商品的价格（历史数据可能存了 price=0）
+  useEffect(() => {
+    if (!venue || !booked) return
+    updateSelectedItem({
+      categoryId: CATEGORY_ID,
+      productId: venue.slug,
+      name: venue.name,
+      nameEn: venue.nameEn,
+      price: venue.price || 0,
+      unit: venue.priceUnit || '',
+      image: venue.coverImage,
+    })
+  }, [venue, booked])
+
   // 加入意向单后设置列表页锚点
   useEffect(() => {
     if (booked && venue) sessionStorage.setItem('scroll_anchor_destinations', venue.slug)
@@ -246,8 +263,8 @@ export default function DestinationsDetail() {
           productId: venue.slug,
           name: venue.name,
           nameEn: venue.nameEn,
-          price: 0,
-          unit: '',
+          price: venue.price || 0,
+          unit: venue.priceUnit || '',
           image: venue.coverImage,
         })
         setBooked(true)
@@ -306,6 +323,12 @@ export default function DestinationsDetail() {
 
   return (
     <div className="cd-page">
+      <Seo
+        title={venue ? `${venue.name} - ${venue.city}${venue.country}` : '目的地婚礼场地'}
+        description={venue?.description?.slice(0, 150) || `探索${venue?.name || ''}，位于${venue?.city || ''}${venue?.country || ''}的精选目的地婚礼场地。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。`}
+        keywords={`目的地婚礼场地, ${venue?.country || ''}婚礼, ${venue?.city || ''}婚礼, 海外婚礼`}
+        ogImage={venue?.coverImage}
+      />
       {/* ===== 1. Hero 区域：全屏图片 + 居中信息 ===== */}
       <section className="wt-hero" ref={heroRef}>
         {/* 全屏背景轮播 */}
@@ -598,7 +621,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     try {
       const res = await fetch(`${API_BASE}/api/auth/login-by-email`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, code: emailCode }) })
       const data = await res.json()
-      if (res.ok && data.success) { localStorage.setItem('token', data.data.token); localStorage.setItem('userEmail', data.data.email); onSuccess() }
+      if (res.ok && data.success) { onLoginSuccess(data.data.token, { email: data.data.email }); onSuccess() }
       else { setError(data.message || '登录失败') }
     } catch { setError('网络异常，请稍后重试') } finally { setSubmitting(false) }
   }
@@ -612,7 +635,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
       const res = await fetch(`${API_BASE}${url}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       const data = await res.json()
       if (res.ok && data.success) {
-        localStorage.setItem('token', data.data.token); localStorage.setItem('userPhone', data.data.phone); onSuccess()
+        onLoginSuccess(data.data.token, { phone: data.data.phone }); onSuccess()
       } else {
         if (data.code === 'NOT_REGISTERED') { setError('该手机号未注册，请注册'); setLoginMode('register') }
         else if (data.code === 'ALREADY_EXISTS') { setError('该手机号已注册，请登录'); setLoginMode('login') }

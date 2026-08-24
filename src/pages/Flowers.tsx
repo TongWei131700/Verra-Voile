@@ -4,8 +4,10 @@ import { navFromList } from '../utils/navigateFromList'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { getSelectedProducts } from '../utils/selectedProducts'
+import { loadWishlistFromServer } from '../utils/wishlistSync'
 import { proxyImage } from '../utils/imageProxy'
 import heroImg from '../assets/flowers-hero-bg.jpg'
+import Seo from '../components/Seo'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -200,6 +202,25 @@ export default function Flowers() {
       .catch(err => console.error('加载 Florajet 商品失败:', err))
   }, [])
 
+  // 登录状态下从服务端恢复意向单数据到 sessionStorage，再刷新列表状态
+  useEffect(() => {
+    if (!localStorage.getItem('token')) return
+    loadWishlistFromServer().then(() => {
+      const booked = new Set<string>()
+      const items: any[] = []
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i)
+        if (key?.startsWith('flower_wishlist_')) {
+          const slug = key.replace('flower_wishlist_', '')
+          booked.add(slug)
+          try { items.push(JSON.parse(sessionStorage.getItem(key)!)) } catch {}
+        }
+      }
+      setBookedProducts(booked)
+      setWishlistItems(items)
+    })
+  }, [])
+
   // 监听页面可见性变化和浏览器返回，从详情页返回时刷新意向单状态
   useEffect(() => {
     const refreshBooked = () => {
@@ -386,6 +407,11 @@ export default function Flowers() {
 
   return (
     <div className="cd-page">
+      <Seo
+        title="婚礼花卉"
+        description="欧洲顶级花艺师团队，为目的地婚礼打造精致花卉装饰，从手捧花到宴会花艺设计。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
+        keywords="婚礼花卉, 婚礼花艺, 欧洲婚礼花束, 目的地婚礼花卉, 手捧花"
+      />
       {/* 首屏 */}
       <section className="cd-list-hero">
         <div className="cd-list-hero__bg" style={{

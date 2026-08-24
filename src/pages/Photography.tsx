@@ -6,6 +6,7 @@ import BackButton from '../components/common/BackButton'
 import { getSelectedProducts } from '../utils/selectedProducts'
 import { proxyImage } from '../utils/imageProxy'
 import heroImg from '../assets/mariah-krafft-ayc1G5wV3aA-unsplash.jpg'
+import Seo from '../components/Seo'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -346,6 +347,11 @@ export default function Photography() {
 
   return (
     <div className="cd-page">
+      <Seo
+        title="婚礼摄影"
+        description="欧洲专业婚礼摄影师团队，提供婚礼跟拍、航拍、婚纱照等全方位影像服务。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
+        keywords="婚礼摄影, 婚礼跟拍, 欧洲婚礼摄影, 目的地婚礼跟拍, 婚礼航拍"
+      />
       {/* 首屏 */}
       <section className="cd-list-hero">
         <div className="cd-list-hero__bg" style={{

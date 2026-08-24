@@ -24,7 +24,12 @@ export default function BackButton({ to = '/' }: BackButtonProps) {
 
   const handleBack = () => {
     window.__saveScrollPos?.(location.pathname)
-    navigate(to, { replace: true })
+    // 优先回退历史栈（从订单页/列表页进入都能正确返回）
+    if (window.history.length > 1) {
+      navigate(-1)
+    } else {
+      navigate(to, { replace: true })
+    }
   }
 
   return (

@@ -2,10 +2,12 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
-import { setSelectedItem, removeSelectedProduct } from '../utils/selectedProducts'
+import { setSelectedItem, removeSelectedProduct, onLoginSuccess } from '../utils/selectedProducts'
+import { syncWishlistToServer, removeWishlistFromServer } from '../utils/wishlistSync'
 import { proxyImage } from '../utils/imageProxy'
 import ewLogo from '../assets/europewedding-logo.png'
 import defaultHeadshot from '../assets/default-headshot.jpg'
+import Seo from '../components/Seo'
 
 function isLoggedIn() {
   return !!localStorage.getItem('token')
@@ -252,7 +254,7 @@ export default function FlowersDetail() {
         setSelectedFlowers([])
         if (detail.slug) {
           sessionStorage.removeItem(`selected_flowers_${detail.slug}`)
-          sessionStorage.removeItem(`flower_wishlist_${detail.slug}`)
+          removeWishlistFromServer('floral', detail.slug)
         }
         setIsBooked(false)
         setIsCanceling(false)
@@ -282,6 +284,18 @@ export default function FlowersDetail() {
             addedAt: Date.now()
           }
           sessionStorage.setItem(`flower_wishlist_${detail.slug}`, JSON.stringify(wishlistItem))
+          // 同步到服务端
+          syncWishlistToServer({
+            categoryId: 'floral',
+            productId: detail.slug,
+            itemName: detail.name,
+            itemNameEn: detail.nameEn,
+            image: detail.cover || '',
+            basePrice: detail.price || 0,
+            totalPrice: detail.price || 0,
+            unit: '£',
+            optionsJson: null,
+          })
         }
         setIsBooked(true)
         setIsBooking(false)
@@ -410,6 +424,12 @@ export default function FlowersDetail() {
 
   return (
     <div className="cd-page">
+      <Seo
+        title={detail ? `${detail.name} - 婚礼花艺` : '婚礼花卉'}
+        description={detail?.desc?.slice(0, 150) || `欧洲专业婚礼花艺工作室，提供目的地婚礼花卉布置服务。EuropeWedding 涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块。`}
+        keywords={`婚礼花艺, 婚礼花卉, ${detail?.country || ''}花艺, ${detail?.city || ''}花艺, 目的地婚礼花卉`}
+        ogImage={detail?.cover}
+      />
       {/* ===== 1. Hero 区域 ===== */}
       <section className="wt-hero" ref={heroRef}>
         <div className="wt-hero__bg"
@@ -851,7 +871,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     try {
       const res = await fetch(`${API_BASE}/api/auth/login-by-email`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, code: emailCode }) })
       const data = await res.json()
-      if (res.ok && data.success) { localStorage.setItem('token', data.data.token); localStorage.setItem('userEmail', data.data.email); onSuccess() }
+      if (res.ok && data.success) { onLoginSuccess(data.data.token, { email: data.data.email }); onSuccess() }
       else { setError(data.message || '登录失败') }
     } catch { setError('网络异常，请稍后重试') } finally { setSubmitting(false) }
   }
@@ -865,7 +885,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
       const res = await fetch(`${API_BASE}${url}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       const data = await res.json()
       if (res.ok && data.success) {
-        localStorage.setItem('token', data.data.token); localStorage.setItem('userPhone', data.data.phone); onSuccess()
+        onLoginSuccess(data.data.token, { phone: data.data.phone }); onSuccess()
       } else {
         if (data.code === 'NOT_REGISTERED') { setError('该手机号未注册，请注册'); setLoginMode('register') }
         else if (data.code === 'ALREADY_EXISTS') { setError('该手机号已注册，请登录'); setLoginMode('login') }

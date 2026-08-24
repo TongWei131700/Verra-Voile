@@ -2,7 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
+import { updateSelectedItem, removeSelectedProduct } from '../utils/selectedProducts'
+import { syncWishlistToServer, removeWishlistFromServer } from '../utils/wishlistSync'
 import ewLogo from '../assets/europewedding-logo.png'
+import Seo from '../components/Seo'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -114,7 +117,7 @@ export default function FlowerProductDetail() {
     if (isBooked && slug) sessionStorage.setItem('scroll_anchor_flowers', slug)
   }, [isBooked, slug])
 
-  // 保存产品信息到 sessionStorage
+  // 保存产品信息到 sessionStorage + 同步服务端
   const saveToWishlist = (formules: Record<number, number>) => {
     if (!product || !slug) return
     const wishlistFormules: Record<string, WishlistFormule> = {}
@@ -148,12 +151,47 @@ export default function FlowerProductDetail() {
     }
     
     sessionStorage.setItem(WISHLIST_KEY(slug), JSON.stringify(item))
+
+    // 同步到全局购物车（订单页数据源）——价格直接存总价，与酒水保持一致
+    // 构建规格明细描述
+    const specsParts: string[] = []
+    Object.entries(formules).forEach(([idx, qty]) => {
+      const formule = product.formules?.[Number(idx)]
+      if (formule) specsParts.push(`${formule.name} × ${qty}`)
+    })
+    const specs = specsParts.join(', ')
+    // 清除旧版 floral 条目（历史数据 categoryId 不同会残留）
+    removeSelectedProduct('floral', slug)
+    updateSelectedItem({
+      categoryId: 'floral-product',
+      productId: slug,
+      name: product.name_cn,
+      nameEn: product.name,
+      price: totalPrice,
+      unit: '£',
+      image: product.image || '',
+      specs,
+    })
+
+    // 同步到服务端
+    syncWishlistToServer({
+      categoryId: 'floral',
+      productId: slug,
+      itemName: product.name_cn,
+      itemNameEn: product.name,
+      image: product.image || '',
+      basePrice: product.price,
+      totalPrice,
+      unit: '£',
+      optionsJson: wishlistFormules as Record<string, { name: string; price: number; qty: number }>,
+    })
   }
 
-  // 从 sessionStorage 移除
+  // 从 sessionStorage 移除 + 同步服务端
   const removeFromWishlist = () => {
     if (!slug) return
-    sessionStorage.removeItem(WISHLIST_KEY(slug))
+    removeSelectedProduct('floral-product', slug)
+    removeWishlistFromServer('floral', slug)
   }
 
   useEffect(() => {
@@ -210,6 +248,12 @@ export default function FlowerProductDetail() {
 
   return (
     <div className="fpd-page">
+      <Seo
+        title={product ? `${product.name_cn || product.name} - 婚礼花卉` : '婚礼花卉'}
+        description={product?.desc_cn?.slice(0, 150) || product?.desc?.slice(0, 150) || `精选婚礼花卉产品，为目的地婚礼打造精致花艺装饰。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。`}
+        keywords={`婚礼花卉, 婚礼花艺, ${product?.name || ''}, 目的地婚礼花卉, 手捧花`}
+        ogImage={product?.image}
+      />
       <BackButton to="/flowers" />
 
       {/* 左侧：图片轮播 */}

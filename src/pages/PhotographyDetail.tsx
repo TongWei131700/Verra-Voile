@@ -2,10 +2,11 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
-import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
+import { setSelectedItem, isProductSelected, removeSelectedProduct, onLoginSuccess } from '../utils/selectedProducts'
 import { proxyImage } from '../utils/imageProxy'
 import ewLogo from '../assets/europewedding-logo.png'
 import defaultHeadshot from '../assets/default-photographer-headshot.jpg'
+import Seo from '../components/Seo'
 
 function isLoggedIn() {
   return !!localStorage.getItem('token')
@@ -306,6 +307,12 @@ export default function PhotographyDetail() {
 
   return (
     <div className="cd-page">
+      <Seo
+        title={detail ? `${detail.name} - ${detail.categoryCn || '婚礼摄影'}` : '婚礼摄影'}
+        description={detail?.desc?.slice(0, 150) || `欧洲专业婚礼摄影师，提供目的地婚礼跟拍、航拍、婚纱照服务。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。`}
+        keywords={`婚礼摄影, 婚礼跟拍, ${detail?.nameEn || ''}, 目的地婚礼摄影, 婚礼航拍`}
+        ogImage={detail?.cover}
+      />
       {/* ===== 1. Hero 区域 ===== */}
       <section className="photo-hero">
         <div className="photo-hero__card">
@@ -614,7 +621,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     try {
       const res = await fetch(`${API_BASE}/api/auth/login-by-email`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, code: emailCode }) })
       const data = await res.json()
-      if (res.ok && data.success) { localStorage.setItem('token', data.data.token); localStorage.setItem('userEmail', data.data.email); onSuccess() }
+      if (res.ok && data.success) { onLoginSuccess(data.data.token, { email: data.data.email }); onSuccess() }
       else { setError(data.message || '登录失败') }
     } catch { setError('网络异常，请稍后重试') } finally { setSubmitting(false) }
   }
@@ -628,7 +635,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
       const res = await fetch(`${API_BASE}${url}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       const data = await res.json()
       if (res.ok && data.success) {
-        localStorage.setItem('token', data.data.token); localStorage.setItem('userPhone', data.data.phone); onSuccess()
+        onLoginSuccess(data.data.token, { phone: data.data.phone }); onSuccess()
       } else {
         if (data.code === 'NOT_REGISTERED') { setError('该手机号未注册，请注册'); setLoginMode('register') }
         else if (data.code === 'ALREADY_EXISTS') { setError('该手机号已注册，请登录'); setLoginMode('login') }

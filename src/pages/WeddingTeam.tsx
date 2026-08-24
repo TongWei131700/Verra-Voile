@@ -6,6 +6,7 @@ import BackButton from '../components/common/BackButton'
 import { getSelectedProducts } from '../utils/selectedProducts'
 import { proxyImage } from '../utils/imageProxy'
 import heroImg from '../assets/wedding-team-hero-bg.jpg'
+import Seo from '../components/Seo'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -374,6 +375,11 @@ export default function WeddingTeam() {
 
   return (
     <div className="cd-page">
+      <Seo
+        title="婚礼团队"
+        description="欧洲专业婚礼策划团队，提供一站式目的地婚礼服务，从场地甄选到全程执行。EuropeWedding 涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块。"
+        keywords="婚礼团队, 婚礼策划, 欧洲婚礼策划, 目的地婚礼团队, 婚礼统筹"
+      />
       {/* 首屏 */}
       <section className="cd-list-hero">
         <div className="cd-list-hero__bg" style={{

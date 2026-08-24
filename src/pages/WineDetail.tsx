@@ -3,7 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import ewLogo from '../assets/europewedding-logo.png'
-import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
+import Seo from '../components/Seo'
+import { setSelectedItem, updateSelectedItem, isProductSelected, removeSelectedProduct, onLoginSuccess } from '../utils/selectedProducts'
+import { syncWishlistToServer, removeWishlistFromServer } from '../utils/wishlistSync'
 import type { WineProduct, WineCharacteristic, WineReview, WineAboutImage, WineOverview, WineOverviewAttribute, WineOverviewItem, WineBuyingOption } from './Wine'
 
 function isLoggedIn() {
@@ -98,7 +100,7 @@ export default function WineDetail() {
   // 检查是否有未提交的修改
   const hasUnsavedChanges = isBooked && JSON.stringify(selectedOptions) !== JSON.stringify(submittedOptions)
 
-  // 保存意向单到 sessionStorage
+  // 保存意向单到 sessionStorage + 同步服务端
   const saveToWishlist = (options: Record<number, number>) => {
     if (!detail || !productId) return
     const wishlistOptions: Record<string, WishlistOption> = {}
@@ -134,11 +136,44 @@ export default function WineDetail() {
     }
 
     sessionStorage.setItem(WISHLIST_KEY(productId), JSON.stringify(item))
+
+    // 构建规格明细描述
+    const specsParts: string[] = []
+    Object.values(wishlistOptions).forEach(opt => {
+      specsParts.push(`${opt.name} × ${opt.qty}`)
+    })
+    const specs = specsParts.join(', ')
+
+    // 同步到全局购物车（订单页数据源）
+    updateSelectedItem({
+      categoryId: 'wine',
+      productId,
+      name: detail.name,
+      nameEn: detail.nameEn,
+      price: totalPrice,
+      unit: detail.unit || '£',
+      image: detail.image || '',
+      specs,
+    })
+
+    // 同步到服务端
+    syncWishlistToServer({
+      categoryId: 'wine',
+      productId,
+      itemName: detail.name,
+      itemNameEn: detail.nameEn,
+      image: detail.image || '',
+      basePrice: detail.price,
+      totalPrice,
+      unit: detail.unit || '£',
+      optionsJson: wishlistOptions as Record<string, { name: string; price: number; qty: number }>,
+    })
   }
 
   const removeFromWishlist = () => {
     if (!productId) return
-    sessionStorage.removeItem(WISHLIST_KEY(productId))
+    removeSelectedProduct('wine', productId)
+    removeWishlistFromServer('wine', productId)
   }
 
   // 咨询按钮
@@ -211,6 +246,12 @@ export default function WineDetail() {
 
   return (
     <div className="fpd-page">
+      <Seo
+        title={detail ? `${detail.name} - 婚礼酒水` : '酒水宴席'}
+        description={detail?.description?.slice(0, 150) || `精选欧洲产区葡萄酒与香槟，为婚礼宴席提供专业酒水搭配。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。`}
+        keywords={`婚礼酒水, 婚礼香槟, ${detail?.nameEn || ''}, 目的地婚礼用酒, 葡萄酒`}
+        ogImage={detail?.image}
+      />
       <BackButton to="/wine" />
 
       {/* 左侧：图片轮播 */}
@@ -623,7 +664,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     try {
       const res = await fetch(`${API_BASE}/api/auth/login-by-email`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, code: emailCode }) })
       const data = await res.json()
-      if (res.ok && data.success) { localStorage.setItem('token', data.data.token); localStorage.setItem('userEmail', data.data.email); onSuccess() }
+      if (res.ok && data.success) { onLoginSuccess(data.data.token, { email: data.data.email }); onSuccess() }
       else { setError(data.message || '登录失败') }
     } catch { setError('网络异常，请稍后重试') } finally { setSubmitting(false) }
   }
@@ -637,7 +678,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
       const res = await fetch(`${API_BASE}${url}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       const data = await res.json()
       if (res.ok && data.success) {
-        localStorage.setItem('token', data.data.token); localStorage.setItem('userPhone', data.data.phone); onSuccess()
+        onLoginSuccess(data.data.token, { phone: data.data.phone }); onSuccess()
       } else {
         if (data.code === 'NOT_REGISTERED') { setError('该手机号未注册，请先注册'); setLoginMode('register') }
         else if (data.code === 'ALREADY_EXISTS') { setError('该手机号已注册，请直接登录'); setLoginMode('login') }

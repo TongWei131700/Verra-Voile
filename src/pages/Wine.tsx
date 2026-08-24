@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
 import { navFromList } from '../utils/navigateFromList'
+import { loadWishlistFromServer } from '../utils/wishlistSync'
 
 export interface WineCharacteristic {
   label: string
@@ -80,6 +81,8 @@ export interface WineProduct {
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
 const HERO_IMG = 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1600&h=900&fit=crop'
+
+import Seo from '../components/Seo'
 
 const MAX_VISIBLE_FILTERS = 5
 const WIDE_LIMIT = 10   // 宽屏每个模块最多展示
@@ -177,6 +180,25 @@ export default function Wine() {
       })
       .catch(() => {})
       .finally(() => setLoading(false))
+  }, [])
+
+  // 登录状态下从服务端恢复意向单数据到 sessionStorage，再刷新列表状态
+  useEffect(() => {
+    if (!localStorage.getItem('token')) return
+    loadWishlistFromServer().then(() => {
+      const booked = new Set<string>()
+      const items: any[] = []
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i)
+        if (key?.startsWith('wine_wishlist_')) {
+          const id = key.replace('wine_wishlist_', '')
+          booked.add(id)
+          try { items.push(JSON.parse(sessionStorage.getItem(key)!)) } catch {}
+        }
+      }
+      setBookedProducts(booked)
+      setWishlistItems(items)
+    })
   }, [])
 
   // 监听页面可见性变化和浏览器返回，从详情页返回时刷新意向单状态
@@ -316,6 +338,11 @@ export default function Wine() {
 
   return (
     <div className="cd-page">
+      <Seo
+        title="酒水宴席"
+        description="精选欧洲各产区葡萄酒与香槟，为婚礼宴席提供专业酒水搭配方案。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
+        keywords="婚礼酒水, 婚礼香槟, 欧洲婚礼用酒, 目的地婚礼宴席, 葡萄酒"
+      />
       {/* 首屏 */}
       <section className="cd-list-hero">
         <div className="cd-list-hero__bg" style={{

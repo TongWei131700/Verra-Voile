@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { onLoginSuccess } from '../utils/selectedProducts'
 
 type LoginTab = 'phone' | 'email'
 
@@ -69,8 +70,7 @@ export default function Login() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        localStorage.setItem('token', data.data.token)
-        localStorage.setItem('userPhone', data.data.phone)
+        onLoginSuccess(data.data.token, { phone: data.data.phone })
         alert('登录成功！')
         navigate('/')
       } else {
@@ -96,8 +96,7 @@ export default function Login() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        localStorage.setItem('token', data.data.token)
-        localStorage.setItem('userEmail', data.data.email)
+        onLoginSuccess(data.data.token, { email: data.data.email })
         alert('登录成功！')
         navigate('/')
       } else {

@@ -2,9 +2,10 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
-import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
+import { setSelectedItem, isProductSelected, removeSelectedProduct, onLoginSuccess } from '../utils/selectedProducts'
 import { type DressProduct } from '../data/wonaDresses'
 import ewLogo from '../assets/europewedding-logo.png'
+import Seo from '../components/Seo'
 
 function isLoggedIn() {
   return !!localStorage.getItem('token')
@@ -250,6 +251,12 @@ export default function DressesDetail() {
 
   return (
     <div className="cd-page">
+      <Seo
+        title={detail ? `${detail.name} - 婚纱礼服` : '婚纱礼服'}
+        description={detail?.desc?.slice(0, 150) || `精选欧洲高定婚纱礼服，为目的地婚礼打造完美造型。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。`}
+        keywords={`婚纱礼服, 高定婚纱, ${detail?.categoryCn || ''}礼服, 目的地婚礼婚纱`}
+        ogImage={detail?.cover}
+      />
       {/* ===== 1. Hero 区域（wt-hero 轮播风格） ===== */}
       <section className="wt-hero">
         <div className="wt-hero__bg">
@@ -523,7 +530,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     try {
       const res = await fetch(`${API_BASE}/api/auth/login-by-email`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, code: emailCode }) })
       const data = await res.json()
-      if (res.ok && data.success) { localStorage.setItem('token', data.data.token); localStorage.setItem('userEmail', data.data.email); onSuccess() }
+      if (res.ok && data.success) { onLoginSuccess(data.data.token, { email: data.data.email }); onSuccess() }
       else { setError(data.message || '登录失败') }
     } catch { setError('网络异常，请稍后重试') } finally { setSubmitting(false) }
   }
@@ -537,7 +544,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
       const res = await fetch(`${API_BASE}${url}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       const data = await res.json()
       if (res.ok && data.success) {
-        localStorage.setItem('token', data.data.token); localStorage.setItem('userPhone', data.data.phone); onSuccess()
+        onLoginSuccess(data.data.token, { phone: data.data.phone }); onSuccess()
       } else {
         if (data.code === 'NOT_REGISTERED') { setError('该手机号未注册，请先注册'); setLoginMode('register') }
         else if (data.code === 'ALREADY_EXISTS') { setError('该手机号已注册，请直接登录'); setLoginMode('login') }

@@ -8,6 +8,7 @@ import { type DressProduct } from '../data/wonaDresses'
 import { dressCategoryList } from '../data/wonaDresses'
 
 import heroImg from '../assets/dresses-hero-bg.jpg'
+import Seo from '../components/Seo'
 
 const HERO_IMG = heroImg
 const API_BASE = import.meta.env.VITE_API_URL || ''
@@ -344,6 +345,11 @@ export default function Dresses() {
 
   return (
     <div className="cd-page">
+      <Seo
+        title="婚纱礼服"
+        description="精选欧洲顶级婚纱品牌高定礼服，为新娘打造完美婚纱。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式目的地婚礼服务。"
+        keywords="婚纱礼服, 欧洲婚纱, 高定礼服, 目的地婚礼婚纱, 新娘礼服"
+      />
       {/* 首屏 */}
       <section className="cd-list-hero">
         <div className="cd-list-hero__bg" style={{ backgroundImage: `url(${HERO_IMG})`, backgroundSize: 'cover', backgroundPosition: 'center', width: '100%', height: '100%' }} />

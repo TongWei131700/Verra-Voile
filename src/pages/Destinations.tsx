@@ -6,6 +6,7 @@ import BackButton from '../components/common/BackButton'
 import { getSelectedProducts } from '../utils/selectedProducts'
 import { proxyImage } from '../utils/imageProxy'
 import coverDest from '../assets/destinations-cover.jpg'
+import Seo from '../components/Seo'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -347,6 +348,11 @@ export default function Destinations() {
 
   return (
     <div className="cd-page">
+      <Seo
+        title="目的地婚礼场地"
+        description="精选欧洲12国50+城市目的地婚礼场地，涵盖意大利、法国、西班牙、希腊等浪漫婚礼目的地。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
+        keywords="目的地婚礼场地, 欧洲婚礼场地, 海外婚礼场地, 意大利婚礼, 法国婚礼"
+      />
       {/* 首屏 */}
       <section className="cd-list-hero">
         <div className="cd-list-hero__bg" style={{

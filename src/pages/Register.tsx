@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { onLoginSuccess } from '../utils/selectedProducts'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -31,11 +32,7 @@ export default function Register() {
       const data = await res.json()
 
       if (res.ok && data.success) {
-        localStorage.setItem('token', data.data.token)
-        localStorage.setItem('userPhone', data.data.phone)
-        if (data.data.email) {
-          localStorage.setItem('userEmail', data.data.email)
-        }
+        onLoginSuccess(data.data.token, { phone: data.data.phone, email: data.data.email })
         alert('注册成功！')
         navigate('/')
       } else {

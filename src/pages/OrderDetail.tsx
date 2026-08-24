@@ -1,19 +1,40 @@
-import { useMemo, useState, useEffect, useRef } from 'react'
+import { useMemo, useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { io, Socket } from 'socket.io-client'
-import { getSelectedProducts, removeSelectedProduct, clearSelectedProducts } from '../utils/selectedProducts'
+import { getSelectedProducts, removeSelectedProduct, clearSelectedProducts, loadSelectedProductsFromServer } from '../utils/selectedProducts'
+import { removeWishlistFromServer } from '../utils/wishlistSync'
+import { exportOrderPDF } from '../utils/exportPDF'
+import LoginForm from '../components/LoginForm'
 import type { SelectedItem } from '../utils/selectedProducts'
 
 const CATEGORY_LABELS: Record<string, string> = {
-  destination: '目的地婚礼',
+  destination: '目的地',
   team: '婚礼团队',
+  'wedding-team': '婚礼团队',
   floral: '花卉',
+  'floral-product': '花卉',
   wine: '酒水宴席',
   dinner: '酒水宴席',
   catering: '酒水宴席',
   dress: '礼服',
   photography: '摄影',
   other: '其他服务',
+}
+
+/** 根据 categoryId 生成详情页路由 */
+function getDetailPath(categoryId: string, productId: string): string | null {
+  const map: Record<string, string> = {
+    destination: '/destinations',
+    team: '/wedding-team',
+    'wedding-team': '/wedding-team',
+    floral: '/flowers',
+    'floral-product': '/flowers/product',
+    wine: '/wine',
+    dress: '/dresses',
+    photography: '/photography',
+  }
+  const prefix = map[categoryId]
+  return prefix ? `${prefix}/${productId}` : null
 }
 
 /** 根据 SelectedItem 获取商品图片 */
@@ -35,7 +56,9 @@ interface ChatMessage {
 export default function OrderDetail() {
   const navigate = useNavigate()
   const [items, setItems] = useState<SelectedItem[]>(() => getSelectedProducts())
-  const [showChat, setShowChat] = useState(true)
+  const [loggedIn, setLoggedIn] = useState(() => !!localStorage.getItem('token'))
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [showChat, setShowChat] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [chatInput, setChatInput] = useState('')
   const [socketConnected, setSocketConnected] = useState(false)
@@ -44,21 +67,34 @@ export default function OrderDetail() {
   const socketRef = useRef<Socket | null>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const chatMessagesRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const isInitialLoad = useRef(true)
 
-  // 同步购物车到后端
+  // 每次进入订单页时滚动到顶部（同步执行，避免闪烁）
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0)
+    contentRef.current?.scrollTo(0, 0)
+  }, [])
+
+  // 挂载时从服务器恢复购物车（解决 App 级异步加载未完成时序问题）
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (!token || items.length === 0) return
-    fetch('/api/cart/sync', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ items }),
-    }).catch(e => console.error('同步购物车失败:', e))
-  }, [items])
+    loadSelectedProductsFromServer().then(() => {
+      setItems(getSelectedProducts())
+    })
+  }, [])
+
+  // 从详情页返回或页面重新可见时，刷新商品列表（实时同步规格/价格变化）
+  useEffect(() => {
+    const refresh = () => setItems(getSelectedProducts())
+    window.addEventListener('popstate', refresh)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') refresh()
+    })
+    return () => {
+      window.removeEventListener('popstate', refresh)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [])
 
   // 初始化 WebSocket 连接
   useEffect(() => {
@@ -182,15 +218,44 @@ export default function OrderDetail() {
     return map
   }, [items])
 
-  const totalPrice = useMemo(() => items.reduce((sum, i) => sum + i.price, 0), [items])
+  const totalPrice = useMemo(() => items.reduce((sum, i) => sum + i.price * (i.qty || 1), 0), [items])
+
+  const [exporting, setExporting] = useState(false)
+
+  const handleExportPDF = async () => {
+    if (exporting) return
+    setExporting(true)
+    try {
+      const pdfGroups: { label: string; items: SelectedItem[] }[] = Array.from(grouped.entries()).map(([label, items]) => ({ label, items }))
+      await exportOrderPDF(pdfGroups, totalPrice)
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const handleRemove = (categoryId: string, productId: string) => {
+    // 清除购物车
     const updated = removeSelectedProduct(categoryId, productId)
     setItems([...updated])
+    // 同步清除意向单 sessionStorage + 服务端（花卉/酒水）
+    if (categoryId === 'floral-product') {
+      removeWishlistFromServer('floral', productId)
+    } else if (categoryId === 'wine') {
+      removeWishlistFromServer('wine', productId)
+    }
   }
 
   const handleClear = () => {
     clearSelectedProducts()
+    // 清除花卉/酒水模块独立的 sessionStorage key
+    const keysToRemove: string[] = []
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i)
+      if (key?.startsWith('flower_wishlist_') || key?.startsWith('selected_flowers_') || key?.startsWith('wine_wishlist_')) {
+        keysToRemove.push(key)
+      }
+    }
+    keysToRemove.forEach(k => sessionStorage.removeItem(k))
     setItems([])
   }
 
@@ -202,15 +267,18 @@ export default function OrderDetail() {
           ← 返回
         </button>
         <h1 className="order-detail-title">我的订单</h1>
-        <button className="order-detail-chat-toggle" onClick={() => setShowChat(v => !v)}>
-          💬 {showChat ? '收起咨询' : '咨询客服'}
+        <button className="order-detail-chat-toggle" onClick={() => {
+          if (!loggedIn) { setShowLoginModal(true); return }
+          setShowChat(v => !v)
+        }}>
+          💬 {!loggedIn ? '发起咨询' : showChat ? '收起咨询' : '咨询客服'}
         </button>
       </div>
 
       {/* 主体区域 */}
       <div className="order-detail-main">
         {/* 左侧：订单内容 */}
-        <div className="order-detail-content">
+        <div className="order-detail-content" ref={contentRef}>
         {items.length === 0 ? (
           <div className="order-detail-empty">
             <div className="order-detail-empty-icon">🛍️</div>
@@ -230,7 +298,9 @@ export default function OrderDetail() {
                     <span className="order-detail-group-label">{groupLabel}</span>
                     <span className="order-detail-group-count">{groupItems.length} 项</span>
                   </div>
-                  {groupItems.map(item => (
+                  {groupItems.map(item => {
+                    const detailPath = getDetailPath(item.categoryId, item.productId)
+                    return (
                     <div
                       key={`${item.categoryId}:${item.productId}`}
                       className="order-detail-item"
@@ -246,18 +316,30 @@ export default function OrderDetail() {
                         <div className="order-detail-item-name">{item.name}</div>
                         <div className="order-detail-item-name-en">{item.nameEn}</div>
                         <div className="order-detail-item-price">
-                          {item.unit === '€' ? '€' : '¥'}{item.price.toLocaleString()}
+                          {item.unit === '€' ? '€' : item.unit === '£' ? '£' : '¥'}{item.price.toLocaleString()}
                         </div>
+                        {item.specs && (
+                          <div className="order-detail-item-specs">{item.specs}</div>
+                        )}
+                        {detailPath && (
+                          <span
+                            className="order-detail-item-link"
+                            onClick={(e) => { e.stopPropagation(); navigate(detailPath) }}
+                          >
+                            查看详情 →
+                          </span>
+                        )}
                       </div>
                       <button
                         className="order-detail-item-remove"
-                        onClick={() => handleRemove(item.categoryId, item.productId)}
+                        onClick={(e) => { e.stopPropagation(); handleRemove(item.categoryId, item.productId) }}
                         title="移除"
                       >
                         ✕
                       </button>
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
               ))}
             </div>
@@ -265,7 +347,7 @@ export default function OrderDetail() {
             {/* 底部汇总 */}
             <div className="order-detail-summary">
               <div className="order-detail-summary-row">
-                <span>共 {items.length} 项服务</span>
+                <span>共 {items.reduce((s, i) => s + (i.qty || 1), 0)} 项服务</span>
                 <span className="order-detail-total">
                   合计：€{totalPrice.toLocaleString()}
                 </span>
@@ -277,6 +359,19 @@ export default function OrderDetail() {
                 <button className="order-detail-btn-primary" onClick={() => navigate('/listing')}>
                   继续选购
                 </button>
+                <button className="order-detail-btn-export" onClick={handleExportPDF} disabled={exporting}>
+                  {exporting ? '生成中...' : '📄 导出PDF'}
+                </button>
+              </div>
+            </div>
+
+            {/* 页脚品牌信息 */}
+            <div className="order-detail-footer">
+              <div className="order-detail-footer__monogram">V &amp; V</div>
+              <p className="order-detail-footer__tagline">Forever &amp; Always</p>
+              <div className="order-detail-footer__copy">© 2026 Verra & Voile (Beijing) Network Technology Co., Ltd.</div>
+              <div className="order-detail-footer__icp">
+                <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">皖ICP备2026019280号-1</a>
               </div>
             </div>
           </>
@@ -285,11 +380,32 @@ export default function OrderDetail() {
 
         {/* 右侧：聊天面板（始终渲染，避免布局抖动） */}
         <div className={`order-chat-panel ${showChat ? '' : 'order-chat-panel--hidden'}`}>
+          {!loggedIn ? (
+            <div className="order-chat-login-prompt">
+              <div className="order-chat-login-prompt__icon">💬</div>
+              <h3>发起咨询</h3>
+              <p>登录后即可咨询客服</p>
+              <button className="order-chat-login-prompt__btn" onClick={() => setShowLoginModal(true)}>
+                登录 / 注册
+              </button>
+            </div>
+          ) : !showChat ? (
+            <div className="order-chat-login-prompt">
+              <div className="order-chat-login-prompt__icon">💬</div>
+              <h3>需要帮助？</h3>
+              <p>在线沟通客服，为您量身定制方案</p>
+              <button className="order-chat-login-prompt__btn" onClick={() => setShowChat(true)}>
+                开始咨询
+              </button>
+            </div>
+          ) : (
+            <>
             <div className="order-chat-header">
               <span className="order-chat-header__title">💬 在线咨询</span>
               <span className={`order-chat-header__status ${socketConnected ? 'order-chat-header__status--online' : ''}`}>
                 {socketConnected ? '已连接' : '连接中...'}
               </span>
+              <button className="order-chat-header__close" onClick={() => setShowChat(false)}>✕</button>
             </div>
             <div className="order-chat-messages" ref={chatMessagesRef} onScroll={handleChatScroll}>
               {loadingMore && (
@@ -332,8 +448,23 @@ export default function OrderDetail() {
                 发送
               </button>
             </div>
+            </>
+          )}
         </div>
       </div>
+
+      {/* 登录弹窗 */}
+      {showLoginModal && (
+        <>
+          <div className="login-modal-backdrop" onClick={() => setShowLoginModal(false)} />
+          <div className="login-modal">
+            <button type="button" className="login-modal__close" onClick={() => setShowLoginModal(false)}>✕</button>
+            <h3 className="login-modal__title">欢迎</h3>
+            <p className="login-modal__desc">登录后即可咨询婚礼顾问</p>
+            <LoginForm onSuccess={() => { setShowLoginModal(false); setLoggedIn(true) }} />
+          </div>
+        </>
+      )}
     </div>
   )
 }

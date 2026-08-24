@@ -6,13 +6,14 @@ interface SeoProps {
   keywords?: string
   ogType?: string
   ogImage?: string
+  structuredData?: object  // JSON-LD 结构化数据
 }
 
 // 六大模块关键词（每页都包含，确保搜索引擎关联）
 const MODULE_KEYWORDS = '目的地婚礼, 婚礼团队, 花卉装饰, 婚纱礼服, 婚礼摄影, 酒水宴席'
 const BRAND = 'EuropeWedding'
 
-export default function Seo({ title, description, keywords, ogType = 'website', ogImage }: SeoProps) {
+export default function Seo({ title, description, keywords, ogType = 'website', ogImage, structuredData }: SeoProps) {
   const fullTitle = title ? `${title} | ${BRAND}` : `${BRAND} · 欧洲目的地婚礼全程策划`
   const fullDesc = description ||
     'EuropeWedding 提供欧洲 12 国 50+ 城市目的地婚礼全程策划服务，涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块。'
@@ -31,6 +32,11 @@ export default function Seo({ title, description, keywords, ogType = 'website', 
       <meta property="og:url" content={`https://europewedding.cn${window.location.pathname}`} />
       {ogImage && <meta property="og:image" content={ogImage} />}
       <link rel="canonical" href={`https://europewedding.cn${window.location.pathname}`} />
+      {structuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      )}
     </Helmet>
   )
 }

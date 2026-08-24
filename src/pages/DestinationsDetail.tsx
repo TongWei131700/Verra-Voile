@@ -328,6 +328,30 @@ export default function DestinationsDetail() {
         description={venue?.description?.slice(0, 150) || `探索${venue?.name || ''}，位于${venue?.city || ''}${venue?.country || ''}的精选目的地婚礼场地。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。`}
         keywords={`目的地婚礼场地, ${venue?.country || ''}婚礼, ${venue?.city || ''}婚礼, 海外婚礼`}
         ogImage={venue?.coverImage}
+        structuredData={venue ? {
+          "@context": "https://schema.org",
+          "@type": "Place",
+          "name": venue.name,
+          "description": venue.description,
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": venue.city,
+            "addressCountry": venue.country
+          },
+          "geo": venue.latitude && venue.longitude ? {
+            "@type": "GeoCoordinates",
+            "latitude": venue.latitude,
+            "longitude": venue.longitude
+          } : undefined,
+          "maximumAttendeeCapacity": venue.capacity,
+          "offers": {
+            "@type": "Offer",
+            "price": venue.price,
+            "priceCurrency": "EUR"
+          },
+          "image": venue.coverImage,
+          "url": `https://europewedding.cn/destinations/${venue.slug}`
+        } : undefined}
       />
       {/* ===== 1. Hero 区域：全屏图片 + 居中信息 ===== */}
       <section className="wt-hero" ref={heroRef}>

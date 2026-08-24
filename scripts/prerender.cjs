@@ -61,9 +61,14 @@ async function prefetchAllData() {
       if (v.slug) {
         const route = `/destinations/${v.slug}`
         routeMap[route] = ['/api/products/crawled-venues']
-        // 详情页 API
+        // 详情页 API：额外请求详情接口获取完整数据（列表接口缺少 description_cn 等字段）
         const detailKey = `/api/products/crawled-venues/${v.slug}`
-        apiCache[detailKey] = { success: true, data: v }
+        try {
+          const detailData = await fetchApi(`/crawled-venues/${v.slug}`)
+          apiCache[detailKey] = { success: true, data: detailData }
+        } catch {
+          apiCache[detailKey] = { success: true, data: v }
+        }
       }
     }
     console.log(`  目的地场地: ${items.length}`)
@@ -86,7 +91,13 @@ async function prefetchAllData() {
     for (const f of items) {
       if (!f.slug) continue
       const detailKey = `/api/products/crawled-florists/${f.slug}`
-      apiCache[detailKey] = { success: true, data: f }
+      // 额外请求详情接口获取完整数据（列表接口只有 description_preview）
+      try {
+        const detailData = await fetchApi(`/crawled-florists/${f.slug}`)
+        apiCache[detailKey] = { success: true, data: detailData }
+      } catch {
+        apiCache[detailKey] = { success: true, data: f }
+      }
       if (f.type === 'product') {
         routeMap[`/flowers/product/${f.slug}`] = [detailKey]
       } else {
@@ -106,7 +117,13 @@ async function prefetchAllData() {
     for (const d of items) {
       if (d.slug) {
         const detailKey = `/api/products/crawled-dresses/${d.slug}`
-        apiCache[detailKey] = { success: true, data: d }
+        // 额外请求详情接口获取完整数据
+        try {
+          const detailData = await fetchApi(`/crawled-dresses/${d.slug}`)
+          apiCache[detailKey] = { success: true, data: detailData }
+        } catch {
+          apiCache[detailKey] = { success: true, data: d }
+        }
         routeMap[`/dresses/${d.slug}`] = [detailKey]
       }
     }
@@ -123,7 +140,13 @@ async function prefetchAllData() {
     for (const p of items) {
       if (p.slug) {
         const detailKey = `/api/products/crawled-photographers/${p.slug}`
-        apiCache[detailKey] = { success: true, data: p }
+        // 额外请求详情接口获取完整数据
+        try {
+          const detailData = await fetchApi(`/crawled-photographers/${p.slug}`)
+          apiCache[detailKey] = { success: true, data: detailData }
+        } catch {
+          apiCache[detailKey] = { success: true, data: p }
+        }
         routeMap[`/photography/${p.slug}`] = [detailKey]
       }
     }
@@ -140,7 +163,13 @@ async function prefetchAllData() {
     for (const t of items) {
       if (t.slug) {
         const detailKey = `/api/products/crawled-wedding-teams/${t.slug}`
-        apiCache[detailKey] = { success: true, data: t }
+        // 额外请求详情接口获取完整数据
+        try {
+          const detailData = await fetchApi(`/crawled-wedding-teams/${t.slug}`)
+          apiCache[detailKey] = { success: true, data: detailData }
+        } catch {
+          apiCache[detailKey] = { success: true, data: t }
+        }
         routeMap[`/wedding-team/${t.slug}`] = [detailKey]
       }
     }

@@ -28,6 +28,7 @@ export default function Seo({ title, description, keywords, ogType = 'website', 
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={fullDesc} />
       <meta property="og:type" content={ogType} />
+      <meta property="og:url" content={`https://europewedding.cn${window.location.pathname}`} />
       {ogImage && <meta property="og:image" content={ogImage} />}
       <link rel="canonical" href={`https://europewedding.cn${window.location.pathname}`} />
     </Helmet>

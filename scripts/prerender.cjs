@@ -219,8 +219,19 @@ async function renderPage(browser, route) {
   const url = `http://localhost:${PORT}${route}`
   try {
     await page.goto(url, { waitUntil: 'networkidle0', timeout: 20000 })
-    // 等待 React 渲染完成
-    await new Promise(r => setTimeout(r, 1500))
+    // 等待 React 渲染完成 + Helmet DOM 更新
+    await new Promise(r => setTimeout(r, 3000))
+    
+    // 验证 title 是否已更新（排除首页）
+    if (route !== '/') {
+      const currentTitle = await page.evaluate(() => document.title)
+      const defaultTitle = '欧洲目的地婚礼 | EuropeWedding 全程策划'
+      if (currentTitle === defaultTitle) {
+        console.log(`\n  ⚠ ${route} title 未更新，额外等待 2s...`)
+        await new Promise(r => setTimeout(r, 2000))
+      }
+    }
+    
     return await page.content()
   } catch (err) {
     console.error(`\n  ✗ 渲染异常 ${route}: ${err.message}`)

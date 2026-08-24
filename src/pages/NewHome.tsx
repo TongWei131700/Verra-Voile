@@ -313,7 +313,13 @@ export default function NewHome() {
 
       {/* 主体：滚动吸附容器 */}
       <main ref={mainRef} className="nh-intro">
+        {/* 隐藏的 H1 供搜索引擎和屏幕阅读器 */}
         <h1 className="nh-sr-only">欧洲目的地婚礼 — 场地·团队·花卉·礼服·摄影·酒水一站式策划</h1>
+        {/* 可见的 H1 标题（SEO 优化）*/}
+        <div className="nh-hero-title">
+          <h2>欧洲目的地婚礼全程策划服务</h2>
+          <p>精选 12 国 50+ 城市 · 六大模块一站式服务</p>
+        </div>
         {/* 桌面端：每屏三块面板并排，六模块分两屏 */}
         <section className="nh-desktop-only">
           {MODULES.slice(0, 3).map(m => (

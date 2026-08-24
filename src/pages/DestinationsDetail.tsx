@@ -339,30 +339,57 @@ export default function DestinationsDetail() {
           return baseKeywords.join(', ')
         })()}
         ogImage={venue?.coverImage}
-        structuredData={venue ? {
-          "@context": "https://schema.org",
-          "@type": "Place",
-          "name": venue.name,
-          "description": venue.description,
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": venue.city,
-            "addressCountry": venue.country
+        structuredData={venue ? [
+          // Place Schema
+          {
+            "@context": "https://schema.org",
+            "@type": "Place",
+            "name": venue.name,
+            "description": venue.description,
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": venue.city,
+              "addressCountry": venue.country
+            },
+            "geo": venue.latitude && venue.longitude ? {
+              "@type": "GeoCoordinates",
+              "latitude": venue.latitude,
+              "longitude": venue.longitude
+            } : undefined,
+            "maximumAttendeeCapacity": venue.capacity,
+            "offers": {
+              "@type": "Offer",
+              "price": venue.price,
+              "priceCurrency": "EUR"
+            },
+            "image": venue.coverImage,
+            "url": `https://europewedding.cn/destinations/${venue.slug}`
           },
-          "geo": venue.latitude && venue.longitude ? {
-            "@type": "GeoCoordinates",
-            "latitude": venue.latitude,
-            "longitude": venue.longitude
-          } : undefined,
-          "maximumAttendeeCapacity": venue.capacity,
-          "offers": {
-            "@type": "Offer",
-            "price": venue.price,
-            "priceCurrency": "EUR"
-          },
-          "image": venue.coverImage,
-          "url": `https://europewedding.cn/destinations/${venue.slug}`
-        } : undefined}
+          // BreadcrumbList Schema
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "首页",
+                "item": "https://europewedding.cn/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "目的地婚礼",
+                "item": "https://europewedding.cn/destinations"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": venue.name
+              }
+            ]
+          }
+        ] : undefined}
       />
       {/* ===== 1. Hero 区域：全屏图片 + 居中信息 ===== */}
       <section className="wt-hero" ref={heroRef}>

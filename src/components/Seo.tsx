@@ -7,7 +7,7 @@ interface SeoProps {
   keywords?: string
   ogType?: string
   ogImage?: string
-  structuredData?: object  // JSON-LD 结构化数据
+  structuredData?: object | object[]  // JSON-LD 结构化数据（单个对象或数组）
 }
 
 // 六大模块关键词（每页都包含，确保搜索引擎关联）
@@ -20,9 +20,25 @@ export default function Seo({ title, description, keywords, ogType = 'website', 
   const fullTitle = title ? `${title} | ${BRAND}` : `${BRAND} · 欧洲目的地婚礼全程策划`
   const fullDesc = description ||
     'EuropeWedding 提供欧洲 12 国 50+ 城市目的地婚礼全程策划服务，涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块。'
-  const fullKeywords = keywords
-    ? `${keywords}, 欧洲婚礼, 海外婚礼, ${MODULE_KEYWORDS}`
-    : `欧洲婚礼, 海外婚礼, 目的地婚礼, ${MODULE_KEYWORDS}`
+  const fullKeywords = (() => {
+    // 使用 Set 去重
+    const keywordSet = new Set<string>()
+    
+    // 添加传入的 keywords（可能包含国家+婚礼等长尾词）
+    if (keywords) {
+      keywords.split(', ').forEach(k => keywordSet.add(k.trim()))
+    }
+    
+    // 添加基础关键词
+    keywordSet.add('欧洲婚礼')
+    keywordSet.add('海外婚礼')
+    keywordSet.add('目的地婚礼')
+    
+    // 添加六大模块关键词
+    MODULE_KEYWORDS.split(', ').forEach(k => keywordSet.add(k.trim()))
+    
+    return Array.from(keywordSet).join(', ')
+  })()
 
   return (
     <Helmet>
@@ -39,9 +55,19 @@ export default function Seo({ title, description, keywords, ogType = 'website', 
       {ogImage && <meta property="og:image" content={ogImage} />}
       <link rel="canonical" href={currentUrl} />
       {structuredData && (
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
+        <>
+          {Array.isArray(structuredData) ? (
+            structuredData.map((data, index) => (
+              <script key={index} type="application/ld+json">
+                {JSON.stringify(data)}
+              </script>
+            ))
+          ) : (
+            <script type="application/ld+json">
+              {JSON.stringify(structuredData)}
+            </script>
+          )}
+        </>
       )}
     </Helmet>
   )

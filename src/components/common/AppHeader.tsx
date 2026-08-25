@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { getSelectedProducts } from '../../utils/selectedProducts'
-import LoginForm from '../LoginForm'
+import LoginModal from '../LoginModal'
 
 /** 判断当前页面是否显示返回按钮（首页不显示） */
 function shouldShowBack(pathname: string): boolean {
@@ -199,15 +199,7 @@ export default function AppHeader() {
       </aside>
       {/* 登录弹窗 */}
       {showLoginModal && (
-        <>
-          <div className="login-modal-backdrop" onClick={() => setShowLoginModal(false)} />
-          <div className="login-modal">
-            <button type="button" className="login-modal__close" onClick={() => setShowLoginModal(false)}>✕</button>
-            <h3 className="login-modal__title">登录</h3>
-            <p className="login-modal__desc">登录后即可查看订单</p>
-            <LoginForm onSuccess={() => setShowLoginModal(false)} />
-          </div>
-        </>
+        <LoginModal onClose={() => setShowLoginModal(false)} onSuccess={() => setShowLoginModal(false)} />
       )}
     </>
   )

@@ -27,6 +27,11 @@ const HERO_IMG = heroImg
 
 // 模块级缓存：从详情返回列表页时复用，避免重复请求
 let _cachedProducts: PhotographerItem[] | null = null
+// 筛选/排序缓存：返回列表页时恢复用户之前的筛选状态
+let _cachedSelectedCountries: string[] | null = null
+let _cachedSelectedStyles: string[] | null = null
+let _cachedSearchFilter: string | null = null
+let _cachedSortMode: string | null = null
 
 // 从数据中提取去重后的选项列表
 function extractUnique<T>(products: PhotographerItem[], getter: (p: PhotographerItem) => T | T[]): T[] {
@@ -62,21 +67,23 @@ export default function Photography() {
   const [dataLoading, setDataLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchSubmitted, setSearchSubmitted] = useState(false)
-  const [searchFilter, setSearchFilter] = useState('')
+  const [searchFilter, setSearchFilter] = useState(() => _cachedSearchFilter ?? '')
   const [searchFocused, setSearchFocused] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const filterBodyRef = useRef<HTMLDivElement>(null)
-  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(new Set())
-  const [selectedStyles, setSelectedStyles] = useState<Set<string>>(new Set())
+  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => new Set(_cachedSelectedCountries ?? []))
+  const [selectedStyles, setSelectedStyles] = useState<Set<string>>(() => new Set(_cachedSelectedStyles ?? []))
   const [openGroups, setOpenGroups] = useState({ country: true, style: true })
   const [expandedFilters, setExpandedFilters] = useState({ country: false, style: false })
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
-  const ITEMS_PER_PAGE = 6
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
-  const [listLoading, setListLoading] = useState(false)
+  const [sortMode, setSortMode] = useState<string>(() => _cachedSortMode ?? 'default')
+  const [bottomSheet, setBottomSheet] = useState<'sort' | 'country' | 'filter' | null>(null)
+  const [pendingCountries, setPendingCountries] = useState<Set<string> | null>(null)
+  const GROUPS_PER_PAGE = 5
+  const [visibleGroupCount, setVisibleGroupCount] = useState(GROUPS_PER_PAGE)
 
   // 列表展示规则：宽屏10 / 窄屏3+追加10 / sessionStorage 持久化
   const WIDE_LIMIT = 10
@@ -132,6 +139,13 @@ export default function Photography() {
   const allCountries = useMemo(() => extractUnique(allProducts, (p: PhotographerItem) => p.country), [allProducts])
   const allStyles = useMemo(() => extractUnique(allProducts, (p: PhotographerItem) => p.photoStyles), [allProducts])
 
+  const sortOptions = [
+    { value: 'default', label: '默认排序' },
+    { value: 'price-asc', label: '价格低→高' },
+    { value: 'price-desc', label: '价格高→低' },
+    { value: 'name', label: '名称 A→Z' },
+  ]
+
   const filteredList = useMemo(() => {
     let list = allProducts
     if (selectedCountries.size > 0) {
@@ -150,8 +164,15 @@ export default function Photography() {
         p.photoStyles.some(s => s.toLowerCase().includes(q))
       )
     }
+    if (sortMode === 'price-asc') {
+      list = [...list].sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity))
+    } else if (sortMode === 'price-desc') {
+      list = [...list].sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
+    } else if (sortMode === 'name') {
+      list = [...list].sort((a, b) => a.nameEn.localeCompare(b.nameEn))
+    }
     return list
-  }, [selectedCountries, selectedStyles, searchFilter, allProducts])
+  }, [selectedCountries, selectedStyles, searchFilter, sortMode, allProducts])
 
   // 搜索推荐条目
   const searchSuggestions = useMemo(() => {
@@ -172,16 +193,14 @@ export default function Photography() {
     return items.slice(0, 10)
   }, [searchQuery, allCountries, allStyles, allProducts])
 
-  const bookedList = useMemo(() => filteredList.filter(p => bookedSlugs.has(p.slug)), [filteredList, bookedSlugs])
+  const bookedList = useMemo(() => allProducts.filter(p => bookedSlugs.has(p.slug)), [allProducts, bookedSlugs])
   const otherList = useMemo(() => filteredList.filter(p => !bookedSlugs.has(p.slug)), [filteredList, bookedSlugs])
-  const visibleOtherList = useMemo(() => otherList.slice(0, visibleCount), [otherList, visibleCount])
-  const hasMoreItems = visibleCount < otherList.length
 
   // 按国家分组（保持首次出现顺序）
   const visibleGroupedByCountry = useMemo(() => {
     const groups: { country: string; countryEn: string; items: PhotographerItem[] }[] = []
     const map = new Map<string, { country: string; countryEn: string; items: PhotographerItem[] }>()
-    visibleOtherList.forEach(item => {
+    otherList.forEach(item => {
       if (!map.has(item.country)) {
         const group = { country: item.country, countryEn: item.countryEn, items: [] }
         map.set(item.country, group)
@@ -190,10 +209,10 @@ export default function Photography() {
       map.get(item.country)!.items.push(item)
     })
     return groups
-  }, [visibleOtherList])
+  }, [otherList])
 
   // 页式"查看更多"
-  const groupedWithVisibility = useMemo(() => {
+  const groupedWithExpansion = useMemo(() => {
     return visibleGroupedByCountry.map(group => {
       const pages = countryPages[group.country] || 1
       const limit = isNarrow
@@ -204,6 +223,12 @@ export default function Photography() {
     })
   }, [visibleGroupedByCountry, countryPages, isNarrow])
 
+  const visibleGroups = useMemo(() => {
+    return groupedWithExpansion.slice(0, visibleGroupCount)
+  }, [groupedWithExpansion, visibleGroupCount])
+
+  const hasMoreGroups = visibleGroupCount < groupedWithExpansion.length
+
   const loadMoreCountry = (country: string) => {
     setCountryPages(prev => {
       const next = { ...prev, [country]: (prev[country] || 1) + 1 }
@@ -212,13 +237,22 @@ export default function Photography() {
     })
   }
 
-  // 筛选变化时重置（跳过首次挂载）
+  // 筛选/排序变化时重置分页并滚回顶部（跳过首次挂载）
   const isFirstMount = useRef(true)
   useEffect(() => {
     if (isFirstMount.current) { isFirstMount.current = false; return }
     setCountryPages({})
     sessionStorage.removeItem('photo_country_pages')
-  }, [selectedCountries, selectedStyles, searchFilter])
+    setVisibleGroupCount(GROUPS_PER_PAGE)
+    // 滚回顶部
+    document.documentElement.scrollTop = 0
+  }, [selectedCountries, selectedStyles, searchFilter, sortMode])
+
+  // 筛选/排序状态变化时同步写入模块级缓存
+  useEffect(() => { _cachedSelectedCountries = Array.from(selectedCountries) }, [selectedCountries])
+  useEffect(() => { _cachedSelectedStyles = Array.from(selectedStyles) }, [selectedStyles])
+  useEffect(() => { _cachedSearchFilter = searchFilter }, [searchFilter])
+  useEffect(() => { _cachedSortMode = sortMode }, [sortMode])
 
   const totalFilters = selectedCountries.size + selectedStyles.size + (searchFilter ? 1 : 0)
   const bookedCount = allProducts.filter((p: PhotographerItem) => bookedSlugs.has(p.slug)).length
@@ -293,23 +327,10 @@ export default function Photography() {
     return () => el.removeEventListener('wheel', preventScroll)
   }, [])
 
-  // 无限滚动：监听页面滚动，接近底部时加载更多
-  useEffect(() => {
-    const onScroll = () => {
-      if (listLoading || !hasMoreItems) return
-      const scrollBottom = window.innerHeight + window.scrollY
-      const docHeight = document.documentElement.scrollHeight
-      if (scrollBottom >= docHeight - 400) {
-        setListLoading(true)
-        setTimeout(() => {
-          setVisibleCount(prev => prev + ITEMS_PER_PAGE)
-          setListLoading(false)
-        }, 400)
-      }
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [hasMoreItems, listLoading])
+  // 加载更多国家分组
+  const handleLoadMoreGroups = () => {
+    setVisibleGroupCount(prev => prev + GROUPS_PER_PAGE)
+  }
 
   // 回车确认搜索：匹配筛选条件则加入左侧筛选，否则按文字过滤
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
@@ -366,7 +387,11 @@ export default function Photography() {
           <h1 className="cd-list-hero__title">摄影</h1>
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
-            {allProducts.length > 0 ? `共收录 ${allProducts.length} 位严选摄影师` : '记录每一个珍贵瞬间'}
+            {allProducts.length > 0
+              ? (totalFilters > 0 || sortMode !== 'default')
+                ? `找到 ${filteredList.length} 位摄影师`
+                : `共收录 ${allProducts.length} 位严选摄影师`
+              : '记录每一个珍贵瞬间'}
           </p>
         </div>
       </section>
@@ -419,17 +444,10 @@ export default function Photography() {
         )}
       </div>
 
-      {/* 移动端筛选栏 */}
-      <div className="ph-mobile-filter-bar">
-        <span className="ph-mobile-filter-bar__count">
-          共 <strong>{filteredList.length}</strong> 位摄影师
-        </span>
-        <button
-          type="button"
-          className="ph-mobile-filter-btn"
-          onClick={() => setFilterDrawerOpen(true)}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {/* 窄屏底部操作栏 */}
+      <div className="dest-bottom-bar">
+        <button type="button" className="dest-bottom-bar__btn" onClick={() => setBottomSheet('filter')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
             <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
             <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
@@ -437,91 +455,139 @@ export default function Photography() {
             <line x1="17" y1="16" x2="23" y2="16"/>
           </svg>
           <span>筛选</span>
-          {totalFilters > 0 && <span className="ph-mobile-filter-btn__badge">{totalFilters}</span>}
+          {totalFilters > 0 && <span className="dest-bottom-bar__badge">{totalFilters}</span>}
+        </button>
+        <button type="button" className="dest-bottom-bar__btn" onClick={() => setBottomSheet('sort')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h18M6 12h12M9 18h6"/>
+          </svg>
+          <span>{sortOptions.find(o => o.value === sortMode)?.label ?? '排序'}</span>
+          {sortMode !== 'default' && <span className="dest-bottom-bar__badge">1</span>}
+        </button>
+        <button type="button" className="dest-bottom-bar__btn" onClick={() => setBottomSheet('country')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          <span>国家</span>
+          {selectedCountries.size > 0 && <span className="dest-bottom-bar__badge">{selectedCountries.size}</span>}
         </button>
       </div>
 
-      {/* 移动端筛选抽屉 */}
-      {filterDrawerOpen && (
-        <div className="ph-drawer-overlay" onClick={() => setFilterDrawerOpen(false)}>
-          <div className="ph-drawer" onClick={e => e.stopPropagation()}>
-            {/* 头部 */}
-            <div className="ph-drawer__header">
-              <h4 className="ph-drawer__title">筛选</h4>
-              <button className="ph-drawer__close" onClick={() => setFilterDrawerOpen(false)}>✕</button>
+      {/* 排序 ActionSheet */}
+      {bottomSheet === 'sort' && (
+        <div className="dest-sheet-overlay" onClick={() => setBottomSheet(null)}>
+          <div className="dest-sheet" onClick={e => e.stopPropagation()}>
+            <div className="dest-sheet__header">
+              <h4>排序方式</h4>
+              <button type="button" className="dest-sheet__close" onClick={() => setBottomSheet(null)}>✕</button>
             </div>
-            {/* 筛选内容 */}
-            <div className="ph-drawer__body">
-              {/* 筛选分区 */}
-              <div className="ph-filter-section">
-                <div className="ph-filter-section__title">
-                  <span>筛选</span>
-                  <span className="ph-filter-section__en">Filter</span>
-                </div>
-                {/* 国家 */}
-                <div className="ph-filter-group">
-                <button type="button" className="ph-filter-group__header" onClick={() => toggleGroup('country')}>
-                  <span className="ph-filter-group__label">国家</span>
-                  <span className="ph-filter-group__en">Country</span>
-                  {selectedCountries.size > 0 && <span className="ph-filter-group__badge">{selectedCountries.size}</span>}
-                  <span className={`ph-filter-group__arrow${openGroups.country ? ' ph-filter-group__arrow--open' : ''}`}>▾</span>
+            <div className="dest-sheet__body">
+              {sortOptions.map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className={`dest-sheet__option${sortMode === opt.value ? ' dest-sheet__option--active' : ''}`}
+                  onClick={() => { setSortMode(opt.value); setBottomSheet(null) }}
+                >
+                  <span>{opt.label}</span>
+                  {sortMode === opt.value && <span className="dest-sheet__check">✓</span>}
                 </button>
-                {openGroups.country && (
-                  <ul className="ph-filter-group__list">
-                    {(expandedFilters.country ? allCountries : allCountries.slice(0, MAX_VISIBLE_FILTERS)).map(c => {
-                      const count = allProducts.filter(p => p.country === c).length
-                      return (
-                        <li key={c} className={`ph-filter-group__item${selectedCountries.has(c) ? ' ph-filter-group__item--checked' : ''}`} onClick={() => toggleCountry(c)}>
-                          <span className="ph-filter-group__checkbox">{selectedCountries.has(c) ? '☑' : '☐'}</span>
-                          <span className="ph-filter-group__name">{c}</span>
-                          <span className="ph-filter-group__count">{count}</span>
-                        </li>
-                      )
-                    })}
-                    {allCountries.length > MAX_VISIBLE_FILTERS && (
-                      <li className="ph-filter-group__item ph-filter-group__item--more" onClick={() => toggleExpandFilter('country')}>
-                        {expandedFilters.country ? '收起' : `更多 (${allCountries.length - MAX_VISIBLE_FILTERS})`}
-                      </li>
-                    )}
-                  </ul>
-                )}
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 国家快选 ActionSheet */}
+      {bottomSheet === 'country' && (() => {
+        const current = pendingCountries ?? selectedCountries
+        return (
+        <div className="dest-sheet-overlay" onClick={() => { setBottomSheet(null); setPendingCountries(null) }}>
+          <div className="dest-sheet dest-sheet--tall" onClick={e => e.stopPropagation()}>
+            <div className="dest-sheet__header">
+              <h4>选择国家</h4>
+              <button type="button" className="dest-sheet__close" onClick={() => { setBottomSheet(null); setPendingCountries(null) }}>✕</button>
+            </div>
+            <div className="dest-sheet__body">
+              {allCountries.map(c => {
+                const count = allProducts.filter(p => p.country === c).length
+                const active = current.has(c)
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    className={`dest-sheet__option${active ? ' dest-sheet__option--active' : ''}`}
+                    onClick={() => {
+                      const base = pendingCountries ?? selectedCountries
+                      const next = new Set(base)
+                      next.has(c) ? next.delete(c) : next.add(c)
+                      setPendingCountries(next)
+                    }}
+                  >
+                    <span>{c} <em>({count})</em></span>
+                    <span className="dest-sheet__check">{active ? '✓' : ''}</span>
+                  </button>
+                )
+              })}
+            </div>
+            <div className="dest-sheet__footer">
+              <button type="button" className="dest-sheet__confirm" onClick={() => {
+                if (pendingCountries) setSelectedCountries(pendingCountries)
+                setPendingCountries(null)
+                setBottomSheet(null)
+              }}>
+                查看 {(() => {
+                  let list = allProducts
+                  if (current.size > 0) list = list.filter(p => current.has(p.country))
+                  if (selectedStyles.size > 0) list = list.filter(p => p.photoStyles.some(s => selectedStyles.has(s)))
+                  return list.length
+                })()} 位摄影师
+              </button>
+            </div>
+          </div>
+        </div>
+        )
+      })()}
+
+      {/* 筛选 ActionSheet */}
+      {bottomSheet === 'filter' && (
+        <div className="dest-sheet-overlay" onClick={() => setBottomSheet(null)}>
+          <div className="dest-sheet dest-sheet--tall" onClick={e => e.stopPropagation()}>
+            <div className="dest-sheet__header">
+              <h4>筛选条件</h4>
+              <button type="button" className="dest-sheet__close" onClick={() => setBottomSheet(null)}>✕</button>
+            </div>
+            <div className="dest-sheet__body">
+              <div className="dest-sheet__section-title">国家 <span>Country</span></div>
+              <div className="dest-sheet__chips">
+                {allCountries.map(c => {
+                  const count = allProducts.filter(p => p.country === c).length
+                  const active = selectedCountries.has(c)
+                  return (
+                    <button key={c} type="button" className={`dest-sheet__chip${active ? ' dest-sheet__chip--active' : ''}`} onClick={() => toggleCountry(c)}>
+                      {c} <em>({count})</em>
+                    </button>
+                  )
+                })}
               </div>
-              {/* 摄影风格 */}
-              <div className="ph-filter-group">
-                <button type="button" className="ph-filter-group__header" onClick={() => toggleGroup('style')}>
-                  <span className="ph-filter-group__label">摄影风格</span>
-                  <span className="ph-filter-group__en">Style</span>
-                  {selectedStyles.size > 0 && <span className="ph-filter-group__badge">{selectedStyles.size}</span>}
-                  <span className={`ph-filter-group__arrow${openGroups.style ? ' ph-filter-group__arrow--open' : ''}`}>▾</span>
-                </button>
-                {openGroups.style && (
-                  <ul className="ph-filter-group__list">
-                    {(expandedFilters.style ? allStyles : allStyles.slice(0, MAX_VISIBLE_FILTERS)).map(s => {
-                      const count = allProducts.filter(p => p.photoStyles.includes(s)).length
-                      return (
-                        <li key={s} className={`ph-filter-group__item${selectedStyles.has(s) ? ' ph-filter-group__item--checked' : ''}`} onClick={() => toggleStyle(s)}>
-                          <span className="ph-filter-group__checkbox">{selectedStyles.has(s) ? '☑' : '☐'}</span>
-                          <span className="ph-filter-group__name">{s}</span>
-                          <span className="ph-filter-group__count">{count}</span>
-                        </li>
-                      )
-                    })}
-                    {allStyles.length > MAX_VISIBLE_FILTERS && (
-                      <li className="ph-filter-group__item ph-filter-group__item--more" onClick={() => toggleExpandFilter('style')}>
-                        {expandedFilters.style ? '收起' : `更多 (${allStyles.length - MAX_VISIBLE_FILTERS})`}
-                      </li>
-                    )}
-                  </ul>
-                )}
-              </div>
+              <div className="dest-sheet__section-title">摄影风格 <span>Style</span></div>
+              <div className="dest-sheet__chips">
+                {allStyles.map(s => {
+                  const count = allProducts.filter(p => p.photoStyles.includes(s)).length
+                  const active = selectedStyles.has(s)
+                  return (
+                    <button key={s} type="button" className={`dest-sheet__chip${active ? ' dest-sheet__chip--active' : ''}`} onClick={() => toggleStyle(s)}>
+                      {s} <em>({count})</em>
+                    </button>
+                  )
+                })}
               </div>
             </div>
-            {/* 底部 */}
-            <div className="ph-drawer__footer">
+            <div className="dest-sheet__footer">
               {totalFilters > 0 && (
-                <button className="ph-drawer__clear" onClick={clearAllFilters}>清除全部</button>
+                <button type="button" className="dest-sheet__clear" onClick={clearAllFilters}>清除全部</button>
               )}
-              <button className="ph-drawer__confirm" onClick={() => setFilterDrawerOpen(false)}>
+              <button type="button" className="dest-sheet__confirm" onClick={() => setBottomSheet(null)}>
                 查看 {filteredList.length} 位摄影师
               </button>
             </div>
@@ -631,10 +697,67 @@ export default function Photography() {
 
         {/* 右侧卡片列表 */}
         <div className="cd-list">
-          {filteredList.length > 0 ? (
+          {(filteredList.length > 0 || bookedList.length > 0) ? (
             <>
-              {/* 有已预定时分两个区域展示 */}
-              {bookedList.length > 0 ? (
+              {sortMode !== 'default' ? (
+                /* 排序模式：扁平列表，无国家分组 */
+                <>
+                  {bookedList.length > 0 && (
+                    <>
+                      <div className="cd-section-label">
+                        <span className="cd-section-label__icon">✦</span>
+                        <span>意向单</span>
+                        <span className="cd-section-label__count">{bookedList.length}</span>
+                      </div>
+                      {bookedList.map(item => (
+                        <div key={item.slug} className="cd-card cd-card--booked" data-scroll-id={item.slug} onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}>
+                          <div className="cd-card__img-wrap">
+                            <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
+                            <div className="cd-card__img-overlay" />
+                            <span className="cd-card__booked-badge">
+                              <svg className="cd-card__booked-wreath" viewBox="0 0 80 80" width="36" height="36"><path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><path d="M60 62 C72 52, 76 38, 68 24 C64 17, 58 12, 50 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                              <svg className="cd-card__booked-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </span>
+                          </div>
+                          <div className="cd-card__body">
+                            <h3 className="cd-card__name">{item.name}</h3>
+                            <p className="cd-card__tagline">{item.tagline}</p>
+                            <div className="cd-card__styles">{item.photoStyles.slice(0, 3).map(s => <span key={s} className="cd-card__style-tag">{s}</span>)}</div>
+                            <div className="cd-card__footer">
+                              <span className="cd-card__price">€{item.price ?? 250}起</span>
+                              <span className="cd-card__arrow">查看详情 →</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                  {otherList.length > 0 && bookedList.length > 0 && (
+                    <div className="cd-section-label cd-section-label--rest">
+                      <span className="cd-section-label__icon">✦</span>
+                      <span>其他</span>
+                      <span className="cd-section-label__count">{otherList.length}</span>
+                    </div>
+                  )}
+                  {otherList.map(item => (
+                    <div key={item.slug} className="cd-card" data-scroll-id={item.slug} onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}>
+                      <div className="cd-card__img-wrap">
+                        <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
+                        <div className="cd-card__img-overlay" />
+                      </div>
+                      <div className="cd-card__body">
+                        <h3 className="cd-card__name">{item.name}</h3>
+                        <p className="cd-card__tagline">{item.tagline}</p>
+                        <div className="cd-card__styles">{item.photoStyles.slice(0, 3).map(s => <span key={s} className="cd-card__style-tag">{s}</span>)}</div>
+                        <div className="cd-card__footer">
+                          <span className="cd-card__price">€{item.price ?? 250}起</span>
+                          <span className="cd-card__arrow">查看详情 →</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : bookedList.length > 0 ? (
                 <>
                   {/* 已预定区域 */}
                   <div className="cd-section-label">
@@ -643,12 +766,7 @@ export default function Photography() {
                     <span className="cd-section-label__count">{bookedList.length}</span>
                   </div>
                   {bookedList.map(item => (
-                    <div
-                      key={item.slug}
-                      className="cd-card cd-card--booked"
-                      data-scroll-id={item.slug}
-                      onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}
-                    >
+                    <div key={item.slug} className="cd-card cd-card--booked" data-scroll-id={item.slug} onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}>
                       <div className="cd-card__img-wrap">
                         <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
                         <div className="cd-card__img-overlay" />
@@ -668,11 +786,7 @@ export default function Photography() {
                       <div className="cd-card__body">
                         <h3 className="cd-card__name">{item.name}</h3>
                         <p className="cd-card__tagline">{item.tagline}</p>
-                        <div className="cd-card__styles">
-                          {item.photoStyles.slice(0, 3).map(s => (
-                            <span key={s} className="cd-card__style-tag">{s}</span>
-                          ))}
-                        </div>
+                        <div className="cd-card__styles">{item.photoStyles.slice(0, 3).map(s => <span key={s} className="cd-card__style-tag">{s}</span>)}</div>
                         <div className="cd-card__footer">
                           <span className="cd-card__price">€{item.price ?? 250}起</span>
                           <span className="cd-card__arrow">查看详情 →</span>
@@ -680,7 +794,6 @@ export default function Photography() {
                       </div>
                     </div>
                   ))}
-
                   {/* 其他摄影师区域 */}
                   {otherList.length > 0 && (
                     <>
@@ -689,7 +802,7 @@ export default function Photography() {
                         <span>其他</span>
                         <span className="cd-section-label__count">{otherList.length}</span>
                       </div>
-                      {groupedWithVisibility.map((group, gi) => (
+                      {visibleGroups.map((group) => (
                         <Fragment key={group.country}>
                           <div className="cd-country-header" style={{ gridColumn: '1 / -1' }}>
                             <h2 className="cd-country-header__title">{group.country}</h2>
@@ -698,12 +811,7 @@ export default function Photography() {
                             <span className="cd-country-header__count">{group.items.length} 位摄影师</span>
                           </div>
                           {group.visibleItems.map(item => (
-                            <div
-                              key={item.slug}
-                              className="cd-card"
-                              data-scroll-id={item.slug}
-                              onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}
-                            >
+                            <div key={item.slug} className="cd-card" data-scroll-id={item.slug} onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}>
                               <div className="cd-card__img-wrap">
                                 <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
                                 <div className="cd-card__img-overlay" />
@@ -711,11 +819,7 @@ export default function Photography() {
                               <div className="cd-card__body">
                                 <h3 className="cd-card__name">{item.name}</h3>
                                 <p className="cd-card__tagline">{item.tagline}</p>
-                                <div className="cd-card__styles">
-                                  {item.photoStyles.slice(0, 3).map(s => (
-                                    <span key={s} className="cd-card__style-tag">{s}</span>
-                                  ))}
-                                </div>
+                                <div className="cd-card__styles">{item.photoStyles.slice(0, 3).map(s => <span key={s} className="cd-card__style-tag">{s}</span>)}</div>
                                 <div className="cd-card__footer">
                                   <span className="cd-card__price">€{item.price ?? 250}起</span>
                                   <span className="cd-card__arrow">查看详情 →</span>
@@ -725,24 +829,9 @@ export default function Photography() {
                           ))}
                           {group.hasMore && (
                             <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                              <button className="cd-section-more__btn" onClick={() => loadMoreCountry(group.country)}>
-                                查看更多 ({group.hiddenCount})
-                              </button>
+                              <button className="cd-section-more__btn" onClick={() => loadMoreCountry(group.country)}>查看更多 ({group.hiddenCount})</button>
                             </div>
                           )}
-                          {listLoading && gi === visibleGroupedByCountry.length - 1 && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-                            <div key={`skel-${i}`} className="cd-card cd-card--skeleton">
-                              <div className="cd-card__img-wrap">
-                                <div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} />
-                              </div>
-                              <div className="cd-card__body">
-                                <div className="cd-skeleton__line cd-skeleton__title" />
-                                <div className="cd-skeleton__line cd-skeleton__tagline" />
-                                <div className="cd-skeleton__line cd-skeleton__text--short" />
-                                <div className="cd-skeleton__line cd-skeleton__price" />
-                              </div>
-                            </div>
-                          ))}
                         </Fragment>
                       ))}
                     </>
@@ -750,7 +839,7 @@ export default function Photography() {
                 </>
               ) : (
                 /* 无已预定时，按国家分组展示 */
-                groupedWithVisibility.map((group, gi) => (
+                visibleGroups.map((group) => (
                   <Fragment key={group.country}>
                     <div className="cd-country-header" style={{ gridColumn: '1 / -1' }}>
                       <h2 className="cd-country-header__title">{group.country}</h2>
@@ -759,11 +848,7 @@ export default function Photography() {
                       <span className="cd-country-header__count">{group.items.length} 位摄影师</span>
                     </div>
                     {group.visibleItems.map(item => (
-                      <div
-                        key={item.slug}
-                        className="cd-card"
-                        onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}
-                      >
+                      <div key={item.slug} className="cd-card" data-scroll-id={item.slug} onClick={() => navFromList('/photography', `/photography/${item.slug}`, navigate)}>
                         <div className="cd-card__img-wrap">
                           <FallbackImage src={proxyImage(item.cover)} alt={item.name} className="cd-card__img" />
                           <div className="cd-card__img-overlay" />
@@ -771,11 +856,7 @@ export default function Photography() {
                         <div className="cd-card__body">
                           <h3 className="cd-card__name">{item.name}</h3>
                           <p className="cd-card__tagline">{item.tagline}</p>
-                          <div className="cd-card__styles">
-                            {item.photoStyles.slice(0, 3).map(s => (
-                              <span key={s} className="cd-card__style-tag">{s}</span>
-                            ))}
-                          </div>
+                          <div className="cd-card__styles">{item.photoStyles.slice(0, 3).map(s => <span key={s} className="cd-card__style-tag">{s}</span>)}</div>
                           <div className="cd-card__footer">
                             <span className="cd-card__price">€{item.price ?? 250}起</span>
                             <span className="cd-card__arrow">查看详情 →</span>
@@ -785,31 +866,18 @@ export default function Photography() {
                     ))}
                     {group.hasMore && (
                       <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                        <button className="cd-section-more__btn" onClick={() => loadMoreCountry(group.country)}>
-                          查看更多 ({group.hiddenCount})
-                        </button>
+                        <button className="cd-section-more__btn" onClick={() => loadMoreCountry(group.country)}>查看更多 ({group.hiddenCount})</button>
                       </div>
                     )}
-                    {listLoading && gi === visibleGroupedByCountry.length - 1 && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-                      <div key={`skel-${i}`} className="cd-card cd-card--skeleton">
-                        <div className="cd-card__img-wrap">
-                          <div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} />
-                        </div>
-                        <div className="cd-card__body">
-                          <div className="cd-skeleton__line cd-skeleton__title" />
-                          <div className="cd-skeleton__line cd-skeleton__tagline" />
-                          <div className="cd-skeleton__line cd-skeleton__text--short" />
-                          <div className="cd-skeleton__line cd-skeleton__price" />
-                        </div>
-                      </div>
-                    ))}
                   </Fragment>
                 ))
               )}
 
-              {!hasMoreItems && !listLoading && (
-                <div className="cd-load-end">
-                  <span>— 已展示全部 {filteredList.length} 位摄影师 —</span>
+              {hasMoreGroups && sortMode === 'default' && (
+                <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
+                  <button className="cd-section-more__btn" onClick={handleLoadMoreGroups}>
+                    加载更多摄影师…
+                  </button>
                 </div>
               )}
             </>

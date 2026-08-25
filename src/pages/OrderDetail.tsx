@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client'
 import { getSelectedProducts, removeSelectedProduct, clearSelectedProducts, loadSelectedProductsFromServer } from '../utils/selectedProducts'
 import { removeWishlistFromServer } from '../utils/wishlistSync'
 import { exportOrderPDF } from '../utils/exportPDF'
-import LoginForm from '../components/LoginForm'
+import LoginModal from '../components/LoginModal'
 import type { SelectedItem } from '../utils/selectedProducts'
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -455,15 +455,7 @@ export default function OrderDetail() {
 
       {/* 登录弹窗 */}
       {showLoginModal && (
-        <>
-          <div className="login-modal-backdrop" onClick={() => setShowLoginModal(false)} />
-          <div className="login-modal">
-            <button type="button" className="login-modal__close" onClick={() => setShowLoginModal(false)}>✕</button>
-            <h3 className="login-modal__title">欢迎</h3>
-            <p className="login-modal__desc">登录后即可咨询婚礼顾问</p>
-            <LoginForm onSuccess={() => { setShowLoginModal(false); setLoggedIn(true) }} />
-          </div>
-        </>
+        <LoginModal onClose={() => setShowLoginModal(false)} onSuccess={() => { setShowLoginModal(false); setLoggedIn(true) }} title="欢迎" desc="登录后即可咨询婚礼顾问" />
       )}
     </div>
   )

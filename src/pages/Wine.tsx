@@ -89,11 +89,19 @@ const WIDE_LIMIT = 10   // 宽屏每个模块最多展示
 const NARROW_LIMIT = 3  // 窄屏每个模块最多展示
 const NARROW_MORE = 10  // 窄屏点击更多后追加
 
+// 筛选/排序缓存
+let _cachedSelectedRegions: string[] | null = null
+let _cachedSelectedTypes: string[] | null = null
+let _cachedSelectedVintages: string[] | null = null
+let _cachedSearchFilter: string | null = null
+let _cachedSortMode: string | null = null
+
 export default function Wine() {
   const navigate = useNavigate()
   const [products, setProducts] = useState<WineProduct[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchFilter, setSearchFilter] = useState(() => _cachedSearchFilter ?? '')
   const [isNarrow, setIsNarrow] = useState(() => window.innerWidth <= 900)
 
   // 每个分组的展开页数（从 sessionStorage 恢复）
@@ -140,14 +148,17 @@ export default function Wine() {
   })
 
   // 筛选用 Set 支持多选，和其他模块一致
-  const [selectedRegions, setSelectedRegions] = useState<Set<string>>(new Set())
-  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set())
-  const [selectedVintages, setSelectedVintages] = useState<Set<string>>(new Set())
+  const [selectedRegions, setSelectedRegions] = useState<Set<string>>(() => new Set(_cachedSelectedRegions ?? []))
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(() => new Set(_cachedSelectedTypes ?? []))
+  const [selectedVintages, setSelectedVintages] = useState<Set<string>>(() => new Set(_cachedSelectedVintages ?? []))
 
   // 筛选组展开状态
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({ region: true, type: true, vintage: true })
   const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>({})
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
+  const [sortMode, setSortMode] = useState<string>(() => _cachedSortMode ?? 'default')
+  const [bottomSheet, setBottomSheet] = useState<'sort' | 'region' | 'filter' | null>(null)
+  const [pendingRegions, setPendingRegions] = useState<Set<string> | null>(null)
 
   const toggleGroup = (key: string) => setOpenGroups(prev => ({ ...prev, [key]: !prev[key] }))
   const toggleExpandFilter = (key: string) => setExpandedFilters(prev => ({ ...prev, [key]: !prev[key] }))
@@ -162,7 +173,14 @@ export default function Wine() {
     setSelectedVintages(prev => { const n = new Set(prev); n.has(v) ? n.delete(v) : n.add(v); return n })
   }, [])
 
-  const totalFilters = selectedRegions.size + selectedTypes.size + selectedVintages.size
+  const totalFilters = selectedRegions.size + selectedTypes.size + selectedVintages.size + (searchFilter ? 1 : 0)
+
+  const sortOptions = [
+    { value: 'default', label: '默认排序' },
+    { value: 'price-asc', label: '价格低→高' },
+    { value: 'price-desc', label: '价格高→低' },
+    { value: 'name', label: '名称 A→Z' },
+  ]
 
   const clearAllFilters = () => {
     setSelectedRegions(new Set())
@@ -244,19 +262,22 @@ export default function Wine() {
 
   const filteredList = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
-    return products.filter(p => {
-      if (q && !(
-        p.name.toLowerCase().includes(q) ||
-        p.nameEn.toLowerCase().includes(q) ||
-        (p.tagline || '').toLowerCase().includes(q) ||
-        (p.description || '').toLowerCase().includes(q)
-      )) return false
+    let list = products.filter(p => {
+      if (q && !(p.name.toLowerCase().includes(q) || p.nameEn.toLowerCase().includes(q) || (p.tagline || '').toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q))) return false
       if (selectedRegions.size > 0 && !selectedRegions.has(p.tags?.region || '')) return false
       if (selectedTypes.size > 0 && !selectedTypes.has(p.tags?.type || '')) return false
       if (selectedVintages.size > 0 && !selectedVintages.has(p.tags?.vintage || '')) return false
       return true
     })
-  }, [products, searchQuery, selectedRegions, selectedTypes, selectedVintages])
+    if (sortMode === 'price-asc') {
+      list = [...list].sort((a, b) => ((a.price ?? 100)) - ((b.price ?? 100)))
+    } else if (sortMode === 'price-desc') {
+      list = [...list].sort((a, b) => ((b.price ?? 100)) - ((a.price ?? 100)))
+    } else if (sortMode === 'name') {
+      list = [...list].sort((a, b) => a.nameEn.localeCompare(b.nameEn))
+    }
+    return list
+  }, [products, searchQuery, selectedRegions, selectedTypes, selectedVintages, sortMode])
 
   // 按类型分组（过滤已加入意向单的商品）+ 可见性控制
   const groupedByType = useMemo(() => {
@@ -285,13 +306,22 @@ export default function Wine() {
     setTypePages(prev => ({ ...prev, [type]: (prev[type] || 1) + 1 }))
   }
 
-  // 筛选变化时重置展开状态（跳过首次挂载，避免覆盖 sessionStorage 恢复值）
+  // 筛选/排序变化时重置展开状态（跳过首次挂载）并滚回顶部
   const isFirstMount = useRef(true)
   useEffect(() => {
     if (isFirstMount.current) { isFirstMount.current = false; return }
     setTypePages({})
     sessionStorage.removeItem('wine_type_pages')
-  }, [searchQuery, selectedRegions, selectedTypes, selectedVintages])
+    // 滚回顶部
+    document.documentElement.scrollTop = 0
+  }, [searchQuery, selectedRegions, selectedTypes, selectedVintages, sortMode])
+
+  // 筛选/排序状态同步到模块级缓存
+  useEffect(() => { _cachedSelectedRegions = Array.from(selectedRegions) }, [selectedRegions])
+  useEffect(() => { _cachedSelectedTypes = Array.from(selectedTypes) }, [selectedTypes])
+  useEffect(() => { _cachedSelectedVintages = Array.from(selectedVintages) }, [selectedVintages])
+  useEffect(() => { _cachedSearchFilter = searchQuery }, [searchQuery])
+  useEffect(() => { _cachedSortMode = sortMode }, [sortMode])
 
   // 渲染筛选组（复用 ph-filter-group 样式）
   const renderFilterGroup = (
@@ -357,7 +387,11 @@ export default function Wine() {
           <h1 className="cd-list-hero__title">酒水宴席</h1>
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
-            {products.length > 0 ? `共收录 ${products.length} 项宴席服务` : '精选婚宴佳酿与米其林级飨宴'}
+            {products.length > 0
+              ? (totalFilters > 0 || sortMode !== 'default')
+                ? `找到 ${filteredList.length} 项宴席服务`
+                : `共收录 ${products.length} 项宴席服务`
+              : '精选婚宴佳酿与米其林级飨宴'}
           </p>
         </div>
       </section>
@@ -382,13 +416,10 @@ export default function Wine() {
         </div>
       </div>
 
-      {/* 移动端筛选栏 */}
-      <div className="ph-mobile-filter-bar">
-        <span className="ph-mobile-filter-bar__count">
-          共 <strong>{filteredList.length}</strong> 项宴席服务
-        </span>
-        <button type="button" className="ph-mobile-filter-btn" onClick={() => setFilterDrawerOpen(true)}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {/* 窄屏底部操作栏 */}
+      <div className="dest-bottom-bar">
+        <button type="button" className="dest-bottom-bar__btn" onClick={() => setBottomSheet('filter')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
             <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
             <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
@@ -396,36 +427,127 @@ export default function Wine() {
             <line x1="17" y1="16" x2="23" y2="16"/>
           </svg>
           <span>筛选</span>
-          {totalFilters > 0 && <span className="ph-mobile-filter-btn__badge">{totalFilters}</span>}
+          {totalFilters > 0 && <span className="dest-bottom-bar__badge">{totalFilters}</span>}
+        </button>
+        <button type="button" className="dest-bottom-bar__btn" onClick={() => setBottomSheet('sort')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h18M6 12h12M9 18h6"/>
+          </svg>
+          <span>{sortOptions.find(o => o.value === sortMode)?.label ?? '排序'}</span>
+          {sortMode !== 'default' && <span className="dest-bottom-bar__badge">1</span>}
+        </button>
+        <button type="button" className="dest-bottom-bar__btn" onClick={() => setBottomSheet('region')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          <span>产地</span>
+          {selectedRegions.size > 0 && <span className="dest-bottom-bar__badge">{selectedRegions.size}</span>}
         </button>
       </div>
 
-      {/* 移动端筛选抽屉 */}
-      {filterDrawerOpen && (
-        <div className="ph-drawer-overlay" onClick={() => setFilterDrawerOpen(false)}>
-          <div className="ph-drawer" onClick={e => e.stopPropagation()}>
-            <div className="ph-drawer__header">
-              <h4 className="ph-drawer__title">筛选</h4>
-              <button className="ph-drawer__close" onClick={() => setFilterDrawerOpen(false)}>✕</button>
+      {/* 排序 ActionSheet */}
+      {bottomSheet === 'sort' && (
+        <div className="dest-sheet-overlay" onClick={() => setBottomSheet(null)}>
+          <div className="dest-sheet" onClick={e => e.stopPropagation()}>
+            <div className="dest-sheet__header">
+              <h4>排序方式</h4>
+              <button type="button" className="dest-sheet__close" onClick={() => setBottomSheet(null)}>✕</button>
             </div>
-            <div className="ph-drawer__body">
-              <div className="ph-filter-section">
-                <div className="ph-filter-section__title">
-                  <span>筛选</span>
-                  <span className="ph-filter-section__en">Filter</span>
-                </div>
-                {renderFilterGroup('region', '产地', 'Region', filterOptions.regions, selectedRegions, toggleRegion)}
-                {renderFilterGroup('type', '类型', 'Type', filterOptions.types, selectedTypes, toggleType)}
-                {renderFilterGroup('vintage', '年份', 'Vintage', filterOptions.vintages, selectedVintages, toggleVintage)}
+            <div className="dest-sheet__body">
+              {sortOptions.map(opt => (
+                <button key={opt.value} type="button" className={`dest-sheet__option${sortMode === opt.value ? ' dest-sheet__option--active' : ''}`} onClick={() => { setSortMode(opt.value); setBottomSheet(null) }}>
+                  <span>{opt.label}</span>{sortMode === opt.value && <span className="dest-sheet__check">✓</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 产地快选 ActionSheet */}
+      {bottomSheet === 'region' && (() => {
+        const current = pendingRegions ?? selectedRegions
+        return (
+        <div className="dest-sheet-overlay" onClick={() => { setBottomSheet(null); setPendingRegions(null) }}>
+          <div className="dest-sheet dest-sheet--tall" onClick={e => e.stopPropagation()}>
+            <div className="dest-sheet__header">
+              <h4>选择产地</h4>
+              <button type="button" className="dest-sheet__close" onClick={() => { setBottomSheet(null); setPendingRegions(null) }}>✕</button>
+            </div>
+            <div className="dest-sheet__body">
+              {filterOptions.regions.map(r => {
+                const count = products.filter(p => p.tags?.region === r).length
+                const active = current.has(r)
+                return (
+                  <button key={r} type="button" className={`dest-sheet__option${active ? ' dest-sheet__option--active' : ''}`} onClick={() => {
+                    const base = pendingRegions ?? selectedRegions
+                    const next = new Set(base)
+                    next.has(r) ? next.delete(r) : next.add(r)
+                    setPendingRegions(next)
+                  }}>
+                    <span>{r} <em>({count})</em></span>
+                    <span className="dest-sheet__check">{active ? '✓' : ''}</span>
+                  </button>
+                )
+              })}
+            </div>
+            <div className="dest-sheet__footer">
+              <button type="button" className="dest-sheet__confirm" onClick={() => {
+                if (pendingRegions) setSelectedRegions(pendingRegions)
+                setPendingRegions(null)
+                setBottomSheet(null)
+              }}>
+                查看 {(() => {
+                  let list = products
+                  if (current.size > 0) list = list.filter(p => current.has(p.tags?.region || ''))
+                  if (selectedTypes.size > 0) list = list.filter(p => selectedTypes.has(p.tags?.type || ''))
+                  if (selectedVintages.size > 0) list = list.filter(p => selectedVintages.has(p.tags?.vintage || ''))
+                  return list.length
+                })()} 项宴席服务
+              </button>
+            </div>
+          </div>
+        </div>
+        )
+      })()}
+
+      {/* 筛选 ActionSheet */}
+      {bottomSheet === 'filter' && (
+        <div className="dest-sheet-overlay" onClick={() => setBottomSheet(null)}>
+          <div className="dest-sheet dest-sheet--tall" onClick={e => e.stopPropagation()}>
+            <div className="dest-sheet__header">
+              <h4>筛选条件</h4>
+              <button type="button" className="dest-sheet__close" onClick={() => setBottomSheet(null)}>✕</button>
+            </div>
+            <div className="dest-sheet__body">
+              <div className="dest-sheet__section-title">产地 <span>Region</span></div>
+              <div className="dest-sheet__chips">
+                {filterOptions.regions.map(r => {
+                  const count = products.filter(p => p.tags?.region === r).length
+                  const active = selectedRegions.has(r)
+                  return <button key={r} type="button" className={`dest-sheet__chip${active ? ' dest-sheet__chip--active' : ''}`} onClick={() => toggleRegion(r)}>{r} <em>({count})</em></button>
+                })}
+              </div>
+              <div className="dest-sheet__section-title">类型 <span>Type</span></div>
+              <div className="dest-sheet__chips">
+                {filterOptions.types.map(t => {
+                  const count = products.filter(p => p.tags?.type === t).length
+                  const active = selectedTypes.has(t)
+                  return <button key={t} type="button" className={`dest-sheet__chip${active ? ' dest-sheet__chip--active' : ''}`} onClick={() => toggleType(t)}>{t} <em>({count})</em></button>
+                })}
+              </div>
+              <div className="dest-sheet__section-title">年份 <span>Vintage</span></div>
+              <div className="dest-sheet__chips">
+                {filterOptions.vintages.map(v => {
+                  const count = products.filter(p => p.tags?.vintage === v).length
+                  const active = selectedVintages.has(v)
+                  return <button key={v} type="button" className={`dest-sheet__chip${active ? ' dest-sheet__chip--active' : ''}`} onClick={() => toggleVintage(v)}>{v} <em>({count})</em></button>
+                })}
               </div>
             </div>
-            <div className="ph-drawer__footer">
-              {totalFilters > 0 && (
-                <button className="ph-drawer__clear" onClick={clearAllFilters}>清除全部</button>
-              )}
-              <button className="ph-drawer__confirm" onClick={() => setFilterDrawerOpen(false)}>
-                查看 {filteredList.length} 项宴席服务
-              </button>
+            <div className="dest-sheet__footer">
+              {totalFilters > 0 && <button type="button" className="dest-sheet__clear" onClick={clearAllFilters}>清除全部</button>}
+              <button type="button" className="dest-sheet__confirm" onClick={() => setBottomSheet(null)}>查看 {filteredList.length} 项宴席服务</button>
             </div>
           </div>
         </div>
@@ -489,11 +611,6 @@ export default function Wine() {
                         <div className="cd-card__body">
                           <h3 className="cd-card__name">{item.name}</h3>
                           <p className="cd-card__tagline">{item.nameEn}</p>
-                          {item.options && (
-                            <p className="cd-card__desc" style={{ fontSize: '0.78rem', color: '#888' }}>
-                              {Object.values(item.options).map((o: any) => `${o.name} ×${o.qty}`).join('、')}
-                            </p>
-                          )}
                           <div className="cd-card__footer">
                             <span className="cd-card__price">{item.unit}{(item.totalPrice || item.basePrice || 0).toLocaleString()}</span>
                             <span className="cd-card__arrow">查看 →</span>
@@ -505,46 +622,73 @@ export default function Wine() {
                 </>
               )}
 
-              {groupedByType.map(group => (
-                <Fragment key={group.type}>
-                  <div className="cd-section-label">
-                    <span className="cd-section-label__icon">✦</span>
-                    <span>{group.type}</span>
-                    <span className="cd-section-label__count">{group.items.length}</span>
-                  </div>
-                  {group.visibleItems.map(item => (
-                    <div key={item.productId} className="cd-card" data-scroll-id={item.productId} onClick={() => navFromList('/wine', `/wine/${item.productId}`, navigate)}>
-                      <div className="cd-card__img-wrap">
-                        <FallbackImage src={item.image} alt={item.name} className="cd-card__img" />
-                        <div className="cd-card__img-overlay" />
-                      </div>
-                      <div className="cd-card__body">
-                        <h3 className="cd-card__name">{item.name}</h3>
-                        <p className="cd-card__tagline">{item.tagline || item.nameEn}</p>
-                        {item.highlights && item.highlights.length > 0 && (
-                          <div className="cd-card__styles">
-                            {item.highlights.slice(0, 3).map(h => <span key={h} className="cd-card__style-tag">{h}</span>)}
-                          </div>
-                        )}
-                        <div className="cd-card__footer">
-                          <span className="cd-card__price">{item.price > 0 ? `£${item.price.toLocaleString()}起` : '需咨询'}</span>
-                          <span className="cd-card__arrow">查看详情 →</span>
+              {sortMode !== 'default' ? (
+                /* 排序模式：扁平列表 */
+                filteredList.filter(p => !bookedProducts.has(p.productId)).map(item => (
+                  <div key={item.productId} className="cd-card" data-scroll-id={item.productId} onClick={() => navFromList('/wine', `/wine/${item.productId}`, navigate)}>
+                    <div className="cd-card__img-wrap">
+                      <FallbackImage src={item.image} alt={item.name} className="cd-card__img" />
+                      <div className="cd-card__img-overlay" />
+                    </div>
+                    <div className="cd-card__body">
+                      <h3 className="cd-card__name">{item.name}</h3>
+                      <p className="cd-card__tagline">{item.tagline || item.nameEn}</p>
+                      {item.highlights && item.highlights.length > 0 && (
+                        <div className="cd-card__styles">
+                          {item.highlights.slice(0, 3).map(h => <span key={h} className="cd-card__style-tag">{h}</span>)}
                         </div>
+                      )}
+                      <div className="cd-card__footer">
+                        <span className="cd-card__price">{item.price > 0 ? `£${item.price.toLocaleString()}起` : '需咨询'}</span>
+                        <span className="cd-card__arrow">查看详情 →</span>
                       </div>
                     </div>
+                  </div>
+                ))
+              ) : (
+                <>
+                  {groupedByType.map(group => (
+                    <Fragment key={group.type}>
+                      <div className="cd-section-label">
+                        <span className="cd-section-label__icon">✦</span>
+                        <span>{group.type}</span>
+                        <span className="cd-section-label__count">{group.items.length}</span>
+                      </div>
+                      {group.visibleItems.map(item => (
+                        <div key={item.productId} className="cd-card" data-scroll-id={item.productId} onClick={() => navFromList('/wine', `/wine/${item.productId}`, navigate)}>
+                          <div className="cd-card__img-wrap">
+                            <FallbackImage src={item.image} alt={item.name} className="cd-card__img" />
+                            <div className="cd-card__img-overlay" />
+                          </div>
+                          <div className="cd-card__body">
+                            <h3 className="cd-card__name">{item.name}</h3>
+                            <p className="cd-card__tagline">{item.tagline || item.nameEn}</p>
+                            {item.highlights && item.highlights.length > 0 && (
+                              <div className="cd-card__styles">
+                                {item.highlights.slice(0, 3).map(h => <span key={h} className="cd-card__style-tag">{h}</span>)}
+                              </div>
+                            )}
+                            <div className="cd-card__footer">
+                              <span className="cd-card__price">{item.price > 0 ? `£${item.price.toLocaleString()}起` : '需咨询'}</span>
+                              <span className="cd-card__arrow">查看详情 →</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {group.hasMore && (
+                        <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
+                          <button className="cd-section-more__btn" onClick={() => loadMoreType(group.type)}>
+                            查看更多 ({group.hiddenCount})
+                          </button>
+                        </div>
+                      )}
+                    </Fragment>
                   ))}
-                  {group.hasMore && (
-                    <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                      <button className="cd-section-more__btn" onClick={() => loadMoreType(group.type)}>
-                        查看更多 ({group.hiddenCount})
-                      </button>
-                    </div>
-                  )}
-                </Fragment>
-              ))}
-              <div className="cd-load-end">
-                <span>— 已展示全部 {filteredList.filter(p => !bookedProducts.has(p.productId)).length} 项服务 —</span>
-              </div>
+                  <div className="cd-load-end">
+                    <span>— 已展示全部 {filteredList.filter(p => !bookedProducts.has(p.productId)).length} 项服务 —</span>
+                  </div>
+                </>
+              )}
               {filteredList.filter(p => !bookedProducts.has(p.productId)).length === 0 && wishlistItems.length === 0 && (
                 <div className="cd-filter__empty" style={{ gridColumn: '1 / -1' }}>
                   <span className="cd-filter__empty-icon">✦</span>

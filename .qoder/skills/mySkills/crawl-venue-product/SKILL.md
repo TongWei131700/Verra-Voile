@@ -13,6 +13,17 @@
 - Puppeteer 已安装在前端项目（`/Users/hongli/WorkSpace/Verra-Voile/node_modules/puppeteer`）
 - 数据库：localhost, root, 无密码, verra_voile
 
+## 批量爬取模式
+当用户提供多个场地时，可并行爬取：
+- 每个场地启动 2 个 Browser Agent（文字提取 + 图片 URL 收集），多场地同时执行
+- 图片下载脚本也可并行运行（每个场地一个 Node 进程）
+- **注意**：Browser Agent 对重定向的判断不可靠，关键信息（如场地地址、坐标）必须用 WebFetch 交叉验证，不要盲信 Agent 报告的"重定向"结论
+
+## 图片数量控制
+每个场地下载 **40-50 张**即可，不需要全部下载。精选时优先保留：
+- Hero/Drone 全景图、外观、仪式区、宴会厅、花园、套房
+- 排除：卧室细节、食物特写、纯装饰细节、重复角度的照片
+
 ## ⛔ 爬取只能在本地执行，严禁在服务器上操作
 
 ---
@@ -85,6 +96,12 @@ await conn.query(
 - `tagline` / `tagline_cn`：中英文宣传语（≤30字）
 - `phone`：联系电话（可选）
 - `price_unit`：使用货币符号（`€`、`$`、`£`），不用货币代码（EUR、USD、GBP）
+- `price`：起步价（整数）。若数据源未提供价格，须自行评估给出最低起步价：
+  - 用 WebSearch 搜索同地区同类场地（château/villa/mas）的婚礼租赁价格
+  - 参考 2-3 个可比场地的起步价，取最低档作为本场地价格
+  - 评估依据：地区消费水平、场地规模（床位数/接待面积）、设施档次
+  - 常见地区参考区间：法国南部 €8,000-€15,000 / 希腊 €5,000-€10,000 / 西班牙 €6,000-€12,000 / 葡萄牙 €5,000-€10,000
+  - **禁止 price 留 null 或 0**，必须有值
 
 ### 插入数据库
 写一个 Node.js 脚本 `scripts/insert-{venue-slug}.cjs`：
@@ -133,6 +150,29 @@ require('dotenv').config();
 - 其他：直接从页面 `<img>` 标签和 CSS 背景中提取
 
 ### 2.2 下载图片到后端
+
+**必须使用并发下载**（5 路同时），顺序下载因国际延迟极慢（每张 3-10 秒）：
+```javascript
+const CONCURRENCY = 5; // 同时下载 5 张
+
+async function downloadBatch(urls, startIdx) {
+  const results = [];
+  for (let i = 0; i < urls.length; i += CONCURRENCY) {
+    const batch = urls.slice(i, i + CONCURRENCY);
+    const batchResults = await Promise.all(
+      batch.map((url, j) => {
+        const idx = startIdx + i + j;
+        const ext = url.includes('.webp') ? '.webp' : '.jpg';
+        const filepath = path.join(SAVE_DIR, `${PREFIX}-${String(idx).padStart(3, '0')}${ext}`);
+        return download(url, filepath).then(() => `✓ #${idx}`).catch(e => `✗ #${idx}: ${e.message}`);
+      })
+    );
+    results.push(...batchResults);
+    console.log(`Progress: ${Math.min(i + CONCURRENCY, urls.length)}/${urls.length}`);
+  }
+  return results;
+}
+```
 
 **无 CDN 防盗链的站点**：直接用 Node.js https 模块下载（更快更简单）：
 ```javascript
@@ -340,3 +380,15 @@ WeddingWire CDN 和部分官网返回的图片实际是 WebP 格式但保存为 
 ### amenities items 为字符串数组时渲染空白
 插入数据时 amenities 的 items 存为字符串数组 `["玻璃幕墙宴会厅", ...]`，但前端渲染访问 `item.labelCn` 属性（期望对象格式），导致场地特色区域显示空白。
 **解决**：在 `mapApiDetail` 中增加自动转换逻辑——`typeof item === 'string' ? { labelCn: item, label: item } : item`，兼容两种数据格式。插入新数据时仍应尽量使用标准对象格式。
+
+### 顺序下载图片极慢
+国际链路（法国/意大利/希腊服务器）顺序下载每张 3-10 秒，45 张需 5-10 分钟。
+**解决**：必须用并发下载（`Promise.all` 分批，每批 5 张同时下载），45 张只需 30-60 秒。
+
+### Browser Agent 误报重定向
+Browser Agent 访问场地官网时错误报告"页面重定向到其他网站"，实际上两个场地完全独立。Agent 对 URL 跳转的判断不可靠。
+**解决**：关键信息（地址、坐标、场地名称）必须用 WebFetch 直接验证，不盲信 Agent 的结论。
+
+### 列表页无限滚动与分组渲染冲突
+Destinations/WeddingTeam/Photography 列表页使用国家分组布局，但全局无限滚动（`visibleCount` 按平面列表切片）会导致新场地插入后渲染位置错乱——滑到底部才在顶部渲染出新卡片。
+**解决**：移除全局 `visibleCount` 无限滚动，改为**国家分组级别分页**：`GROUPS_PER_PAGE = 5` 控制每次显示几个国家分组，每组内部已有"查看更多"展开机制。底部用"加载更多…"按钮替代 scroll 事件监听。新场地入库只影响其所在国家分组，不打乱其他分组。

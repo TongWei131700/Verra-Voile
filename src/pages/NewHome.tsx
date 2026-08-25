@@ -7,7 +7,7 @@ import coverFloral from '../assets/cover-floral.jpg'
 import coverWine from '../assets/cover-wine-dining.jpg'
 import coverDress from '../assets/cover-wedding-dress.jpg'
 import coverPhoto from '../assets/cover-wedding-photography.jpg'
-import LoginForm from '../components/LoginForm'
+import LoginModal from '../components/LoginModal'
 import Seo from '../components/Seo'
 import { getSelectedProducts } from '../utils/selectedProducts'
 
@@ -352,15 +352,7 @@ export default function NewHome() {
 
       {/* 登录/注册弹窗 */}
       {showLoginModal && (
-        <>
-          <div className="login-modal-backdrop" onClick={() => setShowLoginModal(false)} />
-          <div className="login-modal">
-            <button type="button" className="login-modal__close" onClick={() => setShowLoginModal(false)}>✕</button>
-            <h3 className="login-modal__title">登录</h3>
-            <p className="login-modal__desc">登录后即可查看订单</p>
-            <LoginForm onSuccess={() => { setShowLoginModal(false); navigate('/order') }} />
-          </div>
-        </>
+        <LoginModal onClose={() => setShowLoginModal(false)} onSuccess={() => { setShowLoginModal(false); setIsLoggedIn(true); setUserAccount(localStorage.getItem('userPhone') || localStorage.getItem('userEmail') || '') }} />
       )}
     </>
   )

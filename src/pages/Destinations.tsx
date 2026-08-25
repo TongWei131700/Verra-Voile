@@ -10,6 +10,9 @@ import Seo from '../components/Seo'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
+// 新上架场地 slug（列表页显示 NEW 角标）
+const NEW_VENUE_SLUGS = new Set(['pieve-del-castello', 'villa-porta', 'hotel-vis-a-vis'])
+
 // 列表项（与 API 返回字段对应）
 interface VenueItem {
   slug: string
@@ -51,6 +54,13 @@ function mapApiItem(row: any): VenueItem {
 
 // 模块级缓存：从详情返回列表页时复用，避免重复请求
 let _cachedVenues: VenueItem[] | null = null
+let _cachedCountryLimits: Record<string, number> | null = null
+let _cachedVisibleGroupCount: number | null = null
+// 筛选/排序缓存：返回列表页时恢复用户之前的筛选状态
+let _cachedSelectedCountries: string[] | null = null
+let _cachedSelectedVenueTypes: string[] | null = null
+let _cachedSearchFilter: string | null = null
+let _cachedSortMode: string | null = null
 
 // 从数据中动态提取去重后的选项列表
 function extractUnique<T>(items: VenueItem[], getter: (c: VenueItem) => T | T[]): T[] {
@@ -69,21 +79,23 @@ export default function Destinations() {
   const [dataLoading, setDataLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchSubmitted, setSearchSubmitted] = useState(false)
-  const [searchFilter, setSearchFilter] = useState('')
   const [searchFocused, setSearchFocused] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const filterBodyRef = useRef<HTMLDivElement>(null)
-  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(new Set())
-  const [selectedVenueTypes, setSelectedVenueTypes] = useState<Set<string>>(new Set())
+  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => new Set(_cachedSelectedCountries ?? []))
+  const [selectedVenueTypes, setSelectedVenueTypes] = useState<Set<string>>(() => new Set(_cachedSelectedVenueTypes ?? []))
   const [openGroups, setOpenGroups] = useState({ country: true, venueType: true })
   const [expandedFilters, setExpandedFilters] = useState({ country: false, venueType: false })
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
-  const ITEMS_PER_PAGE = 6
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
-  const [listLoading, setListLoading] = useState(false)
+  const [sortMode, setSortMode] = useState<string>(() => _cachedSortMode ?? 'default')
+  const [searchFilter, setSearchFilter] = useState(() => _cachedSearchFilter ?? '')
+  const [bottomSheet, setBottomSheet] = useState<'sort' | 'country' | 'filter' | null>(null)
+  const [pendingCountries, setPendingCountries] = useState<Set<string> | null>(null)
+  const GROUPS_PER_PAGE = 5
+  const [visibleGroupCount, setVisibleGroupCount] = useState(_cachedVisibleGroupCount ?? GROUPS_PER_PAGE)
 
   // 从 API 加载数据（有缓存则复用）
   useEffect(() => {
@@ -125,6 +137,13 @@ export default function Destinations() {
   const allCountries = useMemo(() => extractUnique(allVenues, c => c.country), [allVenues])
   const allVenueTypes = useMemo(() => extractUnique(allVenues, c => c.venueTypes), [allVenues])
 
+  const sortOptions = [
+    { value: 'default', label: '默认排序' },
+    { value: 'price-asc', label: '价格低→高' },
+    { value: 'price-desc', label: '价格高→低' },
+    { value: 'name', label: '名称 A→Z' },
+  ]
+
   const filteredList = useMemo(() => {
     let list = allVenues
     if (selectedCountries.size > 0) {
@@ -145,8 +164,15 @@ export default function Destinations() {
         c.tagline.toLowerCase().includes(q)
       )
     }
+    if (sortMode === 'price-asc') {
+      list = [...list].sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity))
+    } else if (sortMode === 'price-desc') {
+      list = [...list].sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
+    } else if (sortMode === 'name') {
+      list = [...list].sort((a, b) => a.nameEn.localeCompare(b.nameEn))
+    }
     return list
-  }, [selectedCountries, selectedVenueTypes, searchFilter, allVenues])
+  }, [selectedCountries, selectedVenueTypes, searchFilter, sortMode, allVenues])
 
   // 搜索推荐条目
   const searchSuggestions = useMemo(() => {
@@ -167,16 +193,14 @@ export default function Destinations() {
     return items.slice(0, 10)
   }, [searchQuery, allCountries, allVenueTypes])
 
-  const bookedList = useMemo(() => filteredList.filter(c => bookedSlugs.has(c.slug)), [filteredList, bookedSlugs])
+  const bookedList = useMemo(() => allVenues.filter(c => bookedSlugs.has(c.slug)), [allVenues, bookedSlugs])
   const otherList = useMemo(() => filteredList.filter(c => !bookedSlugs.has(c.slug)), [filteredList, bookedSlugs])
-  const visibleOtherList = useMemo(() => otherList.slice(0, visibleCount), [otherList, visibleCount])
-  const hasMoreItems = visibleCount < otherList.length
 
   // 按国家分组（保持首次出现顺序）
   const visibleGroupedByCountry = useMemo(() => {
     const groups: { country: string; countryEn: string; items: VenueItem[] }[] = []
     const map = new Map<string, { country: string; countryEn: string; items: VenueItem[] }>()
-    visibleOtherList.forEach(item => {
+    otherList.forEach(item => {
       if (!map.has(item.country)) {
         const group = { country: item.country, countryEn: item.countryEn, items: [] }
         map.set(item.country, group)
@@ -185,45 +209,68 @@ export default function Destinations() {
       map.get(item.country)!.items.push(item)
     })
     return groups
-  }, [visibleOtherList])
+  }, [otherList])
 
-  // 每个国家分组默认显示两行，超出显示"查看更多"
-  const [expandedCountries, setExpandedCountries] = useState<Set<string>>(new Set())
-  const colsPerRow = useMemo(() => {
-    if (typeof window === 'undefined') return 3
+  // 每个国家分组初始显示数量 + 加载更多增量
+  const INITIAL_PER_COUNTRY = useMemo(() => {
+    if (typeof window === 'undefined') return 6
     const w = window.innerWidth
-    if (w < 640) return 1
-    if (w < 1000) return 2
-    if (w < 1400) return 3
-    return 4
+    if (w < 640) return 6
+    if (w < 1000) return 8
+    if (w < 1400) return 9
+    return 10
   }, [])
-  const MAX_COUNTRY_ITEMS = colsPerRow * 2
-  const groupedWithVisibility = useMemo(() => {
-    return visibleGroupedByCountry.map(group => ({
-      ...group,
-      visibleItems: expandedCountries.has(group.country)
-        ? group.items
-        : group.items.slice(0, MAX_COUNTRY_ITEMS),
-      hasMore: group.items.length > MAX_COUNTRY_ITEMS && !expandedCountries.has(group.country),
-      hiddenCount: group.items.length - MAX_COUNTRY_ITEMS,
-    }))
-  }, [visibleGroupedByCountry, expandedCountries, MAX_COUNTRY_ITEMS])
+  const LOAD_MORE_STEP = 20
+  const [countryLimits, setCountryLimits] = useState<Record<string, number>>(_cachedCountryLimits ?? {})
 
-  const toggleCountryExpand = (country: string) => {
-    setExpandedCountries(prev => {
-      const next = new Set(prev)
-      next.has(country) ? next.delete(country) : next.add(country)
+  const loadMoreCountry = (country: string) => {
+    setCountryLimits(prev => {
+      const next = { ...prev, [country]: (prev[country] ?? INITIAL_PER_COUNTRY) + LOAD_MORE_STEP }
+      _cachedCountryLimits = next
       return next
     })
   }
 
-  // 筛选变化时重置分页
+  const groupedWithExpansion = useMemo(() => {
+    return visibleGroupedByCountry.map(group => {
+      const limit = countryLimits[group.country] ?? INITIAL_PER_COUNTRY
+      return {
+        ...group,
+        visibleItems: group.items.slice(0, limit),
+        hasMore: group.items.length > limit,
+        hiddenCount: group.items.length - limit,
+      }
+    })
+  }, [visibleGroupedByCountry, countryLimits, INITIAL_PER_COUNTRY])
+
+  const visibleGroups = useMemo(() => {
+    return groupedWithExpansion.slice(0, visibleGroupCount)
+  }, [groupedWithExpansion, visibleGroupCount])
+
+  const hasMoreGroups = visibleGroupCount < groupedWithExpansion.length
+
+  // 筛选/排序变化时重置分页并滚回顶部（跳过首次挂载，保留从详情返回时的缓存状态）
+  const isFirstMount = useRef(true)
   useEffect(() => {
-    setVisibleCount(ITEMS_PER_PAGE)
-    setExpandedCountries(new Set())
-  }, [selectedCountries, selectedVenueTypes, searchFilter])
+    if (isFirstMount.current) {
+      isFirstMount.current = false
+      return
+    }
+    setVisibleGroupCount(GROUPS_PER_PAGE)
+    setCountryLimits({})
+    _cachedCountryLimits = null
+    _cachedVisibleGroupCount = null
+    // 滚回顶部
+    document.documentElement.scrollTop = 0
+  }, [selectedCountries, selectedVenueTypes, searchFilter, sortMode])
 
   const totalFilters = selectedCountries.size + selectedVenueTypes.size + (searchFilter ? 1 : 0)
+
+  // 筛选/排序状态变化时同步写入模块级缓存，返回列表页时恢复
+  useEffect(() => { _cachedSelectedCountries = Array.from(selectedCountries) }, [selectedCountries])
+  useEffect(() => { _cachedSelectedVenueTypes = Array.from(selectedVenueTypes) }, [selectedVenueTypes])
+  useEffect(() => { _cachedSearchFilter = searchFilter }, [searchFilter])
+  useEffect(() => { _cachedSortMode = sortMode }, [sortMode])
 
   const toggleCountry = (c: string) => {
     setSelectedCountries(prev => {
@@ -295,23 +342,14 @@ export default function Destinations() {
     return () => el.removeEventListener('wheel', preventScroll)
   }, [])
 
-  // 无限滚动
-  useEffect(() => {
-    const onScroll = () => {
-      if (listLoading || !hasMoreItems) return
-      const scrollBottom = window.innerHeight + window.scrollY
-      const docHeight = document.documentElement.scrollHeight
-      if (scrollBottom >= docHeight - 400) {
-        setListLoading(true)
-        setTimeout(() => {
-          setVisibleCount(prev => prev + ITEMS_PER_PAGE)
-          setListLoading(false)
-        }, 400)
-      }
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [hasMoreItems, listLoading])
+  // 加载更多国家分组
+  const handleLoadMoreGroups = () => {
+    setVisibleGroupCount(prev => {
+      const next = prev + GROUPS_PER_PAGE
+      _cachedVisibleGroupCount = next
+      return next
+    })
+  }
 
   // 回车确认搜索
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
@@ -375,7 +413,11 @@ export default function Destinations() {
           <h1 className="cd-list-hero__title">目的地婚礼</h1>
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
-            {allVenues.length > 0 ? `共收录 ${allVenues.length} 处精选婚礼场地` : '精选全球婚礼场地，为您打造梦想中的目的地婚礼'}
+            {allVenues.length > 0
+              ? (totalFilters > 0 || sortMode !== 'default')
+                ? `找到 ${filteredList.length} 处婚礼场地`
+                : `共收录 ${allVenues.length} 处精选婚礼场地`
+              : '精选全球婚礼场地，为您打造梦想中的目的地婚礼'}
           </p>
         </div>
       </section>
@@ -405,8 +447,6 @@ export default function Destinations() {
                   <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
                   <div className="cd-card__body">
                     <div className="cd-skeleton__line cd-skeleton__title" />
-                    <div className="cd-skeleton__line cd-skeleton__tagline" />
-                    <div className="cd-skeleton__line cd-skeleton__text--short" />
                     <div className="cd-skeleton__line cd-skeleton__price" />
                   </div>
                 </div>
@@ -570,6 +610,169 @@ export default function Destinations() {
         </div>
       )}
 
+      {/* 窄屏底部操作栏 */}
+      <div className="dest-bottom-bar">
+        <button type="button" className="dest-bottom-bar__btn" onClick={() => setBottomSheet('filter')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+            <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+            <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/>
+            <line x1="17" y1="16" x2="23" y2="16"/>
+          </svg>
+          <span>筛选</span>
+          {totalFilters > 0 && <span className="dest-bottom-bar__badge">{totalFilters}</span>}
+        </button>
+        <button type="button" className="dest-bottom-bar__btn" onClick={() => setBottomSheet('sort')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h18M6 12h12M9 18h6"/>
+          </svg>
+          <span>{sortOptions.find(o => o.value === sortMode)?.label ?? '排序'}</span>
+          {sortMode !== 'default' && <span className="dest-bottom-bar__badge">1</span>}
+        </button>
+        <button type="button" className="dest-bottom-bar__btn" onClick={() => setBottomSheet('country')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          <span>国家</span>
+          {selectedCountries.size > 0 && <span className="dest-bottom-bar__badge">{selectedCountries.size}</span>}
+        </button>
+      </div>
+
+      {/* 排序 ActionSheet */}
+      {bottomSheet === 'sort' && (
+        <div className="dest-sheet-overlay" onClick={() => setBottomSheet(null)}>
+          <div className="dest-sheet" onClick={e => e.stopPropagation()}>
+            <div className="dest-sheet__header">
+              <h4>排序方式</h4>
+              <button type="button" className="dest-sheet__close" onClick={() => setBottomSheet(null)}>✕</button>
+            </div>
+            <div className="dest-sheet__body">
+              {sortOptions.map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className={`dest-sheet__option${sortMode === opt.value ? ' dest-sheet__option--active' : ''}`}
+                  onClick={() => { setSortMode(opt.value); setBottomSheet(null) }}
+                >
+                  <span>{opt.label}</span>
+                  {sortMode === opt.value && <span className="dest-sheet__check">✓</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 国家快选 ActionSheet */}
+      {bottomSheet === 'country' && (() => {
+        const current = pendingCountries ?? selectedCountries
+        return (
+        <div className="dest-sheet-overlay" onClick={() => { setBottomSheet(null); setPendingCountries(null) }}>
+          <div className="dest-sheet dest-sheet--tall" onClick={e => e.stopPropagation()}>
+            <div className="dest-sheet__header">
+              <h4>选择国家</h4>
+              <button type="button" className="dest-sheet__close" onClick={() => { setBottomSheet(null); setPendingCountries(null) }}>✕</button>
+            </div>
+            <div className="dest-sheet__body">
+              {allCountries.map(c => {
+                const count = allVenues.filter(v => v.country === c).length
+                const active = current.has(c)
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    className={`dest-sheet__option${active ? ' dest-sheet__option--active' : ''}`}
+                    onClick={() => {
+                      const base = pendingCountries ?? selectedCountries
+                      const next = new Set(base)
+                      next.has(c) ? next.delete(c) : next.add(c)
+                      setPendingCountries(next)
+                    }}
+                  >
+                    <span>{c} <em>({count})</em></span>
+                    <span className="dest-sheet__check">{active ? '✓' : ''}</span>
+                  </button>
+                )
+              })}
+            </div>
+            <div className="dest-sheet__footer">
+              <button type="button" className="dest-sheet__confirm" onClick={() => {
+                if (pendingCountries) setSelectedCountries(pendingCountries)
+                setPendingCountries(null)
+                setBottomSheet(null)
+              }}>
+                查看 {(() => {
+                  let list = allVenues
+                  if (current.size > 0) list = list.filter(c => current.has(c.country))
+                  if (selectedVenueTypes.size > 0) list = list.filter(c => c.venueTypes.some(s => selectedVenueTypes.has(s)))
+                  return list.length
+                })()} 处场地
+              </button>
+            </div>
+          </div>
+        </div>
+        )
+      })()}
+
+      {/* 筛选 ActionSheet */}
+      {bottomSheet === 'filter' && (
+        <div className="dest-sheet-overlay" onClick={() => setBottomSheet(null)}>
+          <div className="dest-sheet dest-sheet--tall" onClick={e => e.stopPropagation()}>
+            <div className="dest-sheet__header">
+              <h4>筛选条件</h4>
+              <button type="button" className="dest-sheet__close" onClick={() => setBottomSheet(null)}>✕</button>
+            </div>
+            <div className="dest-sheet__body">
+              {/* 国家 */}
+              <div className="dest-sheet__section-title">国家 <span>Country</span></div>
+              <div className="dest-sheet__chips">
+                {allCountries.map(c => {
+                  const count = allVenues.filter(v => v.country === c).length
+                  const active = selectedCountries.has(c)
+                  return (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`dest-sheet__chip${active ? ' dest-sheet__chip--active' : ''}`}
+                      onClick={() => toggleCountry(c)}
+                    >
+                      {c} <em>({count})</em>
+                    </button>
+                  )
+                })}
+              </div>
+              {/* 场地类型 */}
+              <div className="dest-sheet__section-title">场地类型 <span>Venue Type</span></div>
+              <div className="dest-sheet__chips">
+                {allVenueTypes.map(s => {
+                  const count = allVenues.filter(v => v.venueTypes.includes(s)).length
+                  const active = selectedVenueTypes.has(s)
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      className={`dest-sheet__chip${active ? ' dest-sheet__chip--active' : ''}`}
+                      onClick={() => toggleVenueType(s)}
+                    >
+                      {s} <em>({count})</em>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+            <div className="dest-sheet__footer">
+              {totalFilters > 0 && (
+                <button type="button" className="dest-sheet__clear" onClick={clearAllFilters}>清除全部</button>
+              )}
+              <button type="button" className="dest-sheet__confirm" onClick={() => setBottomSheet(null)}>
+                查看 {filteredList.length} 处场地
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 筛选 + 卡片布局 */}
       <div className="cd-filter-layout">
         {/* 左侧筛选栏 */}
@@ -648,7 +851,87 @@ export default function Destinations() {
         <div className="cd-list">
           {filteredList.length > 0 ? (
             <>
-              {bookedList.length > 0 ? (
+              {sortMode !== 'default' ? (
+                /* 排序模式：扁平列表，无国家分组 */
+                <>
+                  {bookedList.length > 0 && (
+                    <>
+                      <div className="cd-section-label">
+                        <span className="cd-section-label__icon">✦</span>
+                        <span>意向单</span>
+                        <span className="cd-section-label__count">{bookedList.length}</span>
+                      </div>
+                      {bookedList.map(item => (
+                        <div
+                          key={item.slug}
+                          className="cd-card cd-card--booked"
+                          data-scroll-id={item.slug}
+                          onClick={() => navFromList('/destinations', `/destinations/${item.slug}`, navigate)}
+                        >
+                          <div className="cd-card__img-wrap">
+                            <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
+                            <div className="cd-card__img-overlay" />
+                            <span className="cd-card__booked-badge">
+                              <svg className="cd-card__booked-wreath" viewBox="0 0 80 80" width="36" height="36">
+                                <path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                                <path d="M60 62 C72 52, 76 38, 68 24 C64 17, 58 12, 50 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                              </svg>
+                              <svg className="cd-card__booked-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </span>
+                          </div>
+                          <div className="cd-card__body">
+                            <h3 className="cd-card__name">{item.name}</h3>
+                            <p className="cd-card__tagline">{item.tagline}</p>
+                            <div className="cd-card__styles">
+                              {item.venueTypes.slice(0, 3).map(s => (
+                                <span key={s} className="cd-card__style-tag">{s}</span>
+                              ))}
+                            </div>
+                            <div className="cd-card__footer">
+                              <span className="cd-card__price">{formatPrice(item)}</span>
+                              <span className="cd-card__arrow">查看详情 →</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                  {otherList.length > 0 && bookedList.length > 0 && (
+                    <div className="cd-section-label cd-section-label--rest">
+                      <span className="cd-section-label__icon">✦</span>
+                      <span>其他</span>
+                      <span className="cd-section-label__count">{otherList.length}</span>
+                    </div>
+                  )}
+                  {otherList.map(item => (
+                  <div
+                    key={item.slug}
+                    className="cd-card"
+                    data-scroll-id={item.slug}
+                    onClick={() => navFromList('/destinations', `/destinations/${item.slug}`, navigate)}
+                  >
+                    <div className="cd-card__img-wrap">
+                      <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
+                      <div className="cd-card__img-overlay" />
+                      {NEW_VENUE_SLUGS.has(item.slug) && <span className="cd-card__new-badge">NEW</span>}
+                    </div>
+                    <div className="cd-card__body">
+                      <h3 className="cd-card__name">{item.name}</h3>
+                      <p className="cd-card__tagline">{item.tagline}</p>
+                      <div className="cd-card__styles">
+                        {item.venueTypes.slice(0, 3).map(s => (
+                          <span key={s} className="cd-card__style-tag">{s}</span>
+                        ))}
+                      </div>
+                      <div className="cd-card__footer">
+                        <span className="cd-card__price">{formatPrice(item)}</span>
+                        <span className="cd-card__arrow">查看详情 →</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                </>
+              ) : bookedList.length > 0 ? (
                 <>
                   {/* 已预定区域 */}
                   <div className="cd-section-label">
@@ -663,7 +946,7 @@ export default function Destinations() {
                       data-scroll-id={item.slug}
                       onClick={() => navFromList('/destinations', `/destinations/${item.slug}`, navigate)}
                     >
-                      <div className="cd-card__img-wrap">
+                        <div className="cd-card__img-wrap">
                         <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
                         <div className="cd-card__img-overlay" />
                         <span className="cd-card__booked-badge">
@@ -678,11 +961,11 @@ export default function Destinations() {
                             <polyline points="30 42 38 50 52 32" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
                         </span>
+                        
                       </div>
                       <div className="cd-card__body">
                         <h3 className="cd-card__name">{item.name}</h3>
                         <p className="cd-card__tagline">{item.tagline}</p>
-                        <p className="cd-card__desc">{item.desc}</p>
                         <div className="cd-card__styles">
                           {item.venueTypes.slice(0, 3).map(s => (
                             <span key={s} className="cd-card__style-tag">{s}</span>
@@ -704,7 +987,7 @@ export default function Destinations() {
                         <span>其他</span>
                         <span className="cd-section-label__count">{otherList.length}</span>
                       </div>
-                      {groupedWithVisibility.map((group, gi) => (
+                      {visibleGroups.map((group, gi) => (
                         <Fragment key={group.country}>
                           <div className="cd-country-header" style={{ gridColumn: '1 / -1' }}>
                             <h2 className="cd-country-header__title">{group.country}</h2>
@@ -722,11 +1005,11 @@ export default function Destinations() {
                               <div className="cd-card__img-wrap">
                                 <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
                                 <div className="cd-card__img-overlay" />
+                                {NEW_VENUE_SLUGS.has(item.slug) && <span className="cd-card__new-badge">NEW</span>}
                               </div>
                               <div className="cd-card__body">
                                 <h3 className="cd-card__name">{item.name}</h3>
                                 <p className="cd-card__tagline">{item.tagline}</p>
-                                <p className="cd-card__desc">{item.desc}</p>
                                 <div className="cd-card__styles">
                                   {item.venueTypes.slice(0, 3).map(s => (
                                     <span key={s} className="cd-card__style-tag">{s}</span>
@@ -741,29 +1024,18 @@ export default function Destinations() {
                           ))}
                           {group.hasMore && (
                             <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                              <button className="cd-section-more__btn" onClick={() => toggleCountryExpand(group.country)}>
-                                查看更多 ({group.hiddenCount})
+                              <button className="cd-section-more__btn" onClick={() => loadMoreCountry(group.country)}>
+                                加载更多 ({group.hiddenCount})
                               </button>
                             </div>
                           )}
-                          {listLoading && gi === visibleGroupedByCountry.length - 1 && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-                            <div key={`skel-${i}`} className="cd-card cd-card--skeleton">
-                              <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
-                              <div className="cd-card__body">
-                                <div className="cd-skeleton__line cd-skeleton__title" />
-                                <div className="cd-skeleton__line cd-skeleton__tagline" />
-                                <div className="cd-skeleton__line cd-skeleton__text--short" />
-                                <div className="cd-skeleton__line cd-skeleton__price" />
-                              </div>
-                            </div>
-                          ))}
                         </Fragment>
                       ))}
                     </>
                   )}
                 </>
               ) : (
-                groupedWithVisibility.map((group, gi) => (
+                visibleGroups.map((group, gi) => (
                   <Fragment key={group.country}>
                     <div className="cd-country-header" style={{ gridColumn: '1 / -1' }}>
                       <h2 className="cd-country-header__title">{group.country}</h2>
@@ -780,11 +1052,11 @@ export default function Destinations() {
                         <div className="cd-card__img-wrap">
                           <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
                           <div className="cd-card__img-overlay" />
+                          {NEW_VENUE_SLUGS.has(item.slug) && <span className="cd-card__new-badge">NEW</span>}
                         </div>
                         <div className="cd-card__body">
                           <h3 className="cd-card__name">{item.name}</h3>
                           <p className="cd-card__tagline">{item.tagline}</p>
-                          <p className="cd-card__desc">{item.desc}</p>
                           <div className="cd-card__styles">
                             {item.venueTypes.slice(0, 3).map(s => (
                               <span key={s} className="cd-card__style-tag">{s}</span>
@@ -799,29 +1071,20 @@ export default function Destinations() {
                     ))}
                     {group.hasMore && (
                       <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                        <button className="cd-section-more__btn" onClick={() => toggleCountryExpand(group.country)}>
-                          查看更多 ({group.hiddenCount})
+                        <button className="cd-section-more__btn" onClick={() => loadMoreCountry(group.country)}>
+                          加载更多 ({group.hiddenCount})
                         </button>
                       </div>
                     )}
-                    {listLoading && gi === visibleGroupedByCountry.length - 1 && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-                      <div key={`skel-${i}`} className="cd-card cd-card--skeleton">
-                        <div className="cd-card__img-wrap"><div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} /></div>
-                        <div className="cd-card__body">
-                          <div className="cd-skeleton__line cd-skeleton__title" />
-                          <div className="cd-skeleton__line cd-skeleton__tagline" />
-                          <div className="cd-skeleton__line cd-skeleton__text--short" />
-                          <div className="cd-skeleton__line cd-skeleton__price" />
-                        </div>
-                      </div>
-                    ))}
                   </Fragment>
                 ))
               )}
 
-              {!hasMoreItems && !listLoading && (
-                <div className="cd-load-end">
-                  <span>— 已展示全部 {filteredList.length} 处婚礼场地 —</span>
+              {hasMoreGroups && (
+                <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
+                  <button className="cd-section-more__btn" onClick={handleLoadMoreGroups}>
+                    加载更多场地…
+                  </button>
                 </div>
               )}
             </>

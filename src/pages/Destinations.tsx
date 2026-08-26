@@ -10,8 +10,6 @@ import Seo from '../components/Seo'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
-// 新上架场地 slug（列表页显示 NEW 角标）
-const NEW_VENUE_SLUGS = new Set(['pieve-del-castello', 'villa-porta', 'hotel-vis-a-vis'])
 
 // 国家 → URL slug 映射（用于 SEO 落地页）
 const COUNTRY_SLUG_MAP: Record<string, string> = {
@@ -297,6 +295,21 @@ export default function Destinations() {
   useEffect(() => { _cachedSelectedVenueTypes = Array.from(selectedVenueTypes) }, [selectedVenueTypes])
   useEffect(() => { _cachedSearchFilter = searchFilter }, [searchFilter])
   useEffect(() => { _cachedSortMode = sortMode }, [sortMode])
+
+  // 国家筛选变化时同步写入 URL（路径式 /destinations/france）
+  const _isInitialMount = useRef(true)
+  useEffect(() => {
+    if (_isInitialMount.current) { _isInitialMount.current = false; return }
+    if (selectedCountries.size === 1) {
+      const country = Array.from(selectedCountries)[0]
+      const slug = COUNTRY_SLUG_MAP[country]
+      if (slug && location.pathname !== `/destinations/${slug}`) {
+        navigate(`/destinations/${slug}`, { replace: true })
+      }
+    } else if (location.pathname !== '/destinations') {
+      navigate('/destinations', { replace: true })
+    }
+  }, [selectedCountries]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleCountry = (c: string) => {
     setSelectedCountries(prev => {
@@ -967,7 +980,6 @@ export default function Destinations() {
                     <div className="cd-card__img-wrap">
                       <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
                       <div className="cd-card__img-overlay" />
-                      {NEW_VENUE_SLUGS.has(item.slug) && <span className="cd-card__new-badge">NEW</span>}
                     </div>
                     <div className="cd-card__body">
                       <h3 className="cd-card__name">{item.name}</h3>
@@ -1059,7 +1071,6 @@ export default function Destinations() {
                               <div className="cd-card__img-wrap">
                                 <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
                                 <div className="cd-card__img-overlay" />
-                                {NEW_VENUE_SLUGS.has(item.slug) && <span className="cd-card__new-badge">NEW</span>}
                               </div>
                               <div className="cd-card__body">
                                 <h3 className="cd-card__name">{item.name}</h3>
@@ -1106,7 +1117,7 @@ export default function Destinations() {
                         <div className="cd-card__img-wrap">
                           <FallbackImage src={proxyImage(item.cover)} alt={item.nameEn} className="cd-card__img" />
                           <div className="cd-card__img-overlay" />
-                          {NEW_VENUE_SLUGS.has(item.slug) && <span className="cd-card__new-badge">NEW</span>}
+                          
                         </div>
                         <div className="cd-card__body">
                           <h3 className="cd-card__name">{item.name}</h3>

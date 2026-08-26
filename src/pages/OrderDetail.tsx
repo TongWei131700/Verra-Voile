@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { io, Socket } from 'socket.io-client'
-import { getSelectedProducts, removeSelectedProduct, clearSelectedProducts, loadSelectedProductsFromServer } from '../utils/selectedProducts'
+import { getSelectedProducts, removeSelectedProduct, clearSelectedProducts, loadSelectedProductsFromServer, syncCartToServer } from '../utils/selectedProducts'
 import { removeWishlistFromServer } from '../utils/wishlistSync'
 import { exportOrderPDF } from '../utils/exportPDF'
 import LoginModal from '../components/LoginModal'
@@ -96,57 +96,81 @@ export default function OrderDetail() {
     }
   }, [])
 
-  // 初始化 WebSocket 连接
+  // 初始化 WebSocket 连接（登录用户用真实 token，访客自动获取临时 token）
   useEffect(() => {
     if (!showChat) return
-    const token = localStorage.getItem('token')
-    if (!token) return
 
-    const socket = io({
-      auth: { token },
-    })
-    socketRef.current = socket
+    const connectSocket = (token: string) => {
+      const socket = io({ auth: { token, channel: 'order' } })
+      socketRef.current = socket
 
-    socket.on('connect', () => {
-      setSocketConnected(true)
-    })
+      socket.on('connect', () => setSocketConnected(true))
+      socket.on('disconnect', () => setSocketConnected(false))
 
-    socket.on('disconnect', () => {
-      setSocketConnected(false)
-    })
+      socket.on('chat_history', (history: ChatMessage[]) => {
+        setMessages(history)
+        isInitialLoad.current = false
+        setTimeout(() => chatEndRef.current?.scrollIntoView(), 50)
+      })
 
-    socket.on('chat_history', (history: ChatMessage[]) => {
-      setMessages(history)
-      isInitialLoad.current = false
-      // 初始加载后滚动到底部
-      setTimeout(() => chatEndRef.current?.scrollIntoView(), 50)
-    })
+      socket.on('more_history', (older: ChatMessage[]) => {
+        if (older.length < 20) setHasMoreHistory(false)
+        const container = chatMessagesRef.current
+        const prevScrollHeight = container?.scrollHeight || 0
+        setMessages(prev => [...older, ...prev])
+        setTimeout(() => {
+          if (container) container.scrollTop = container.scrollHeight - prevScrollHeight
+        }, 50)
+        setLoadingMore(false)
+      })
 
-    socket.on('more_history', (older: ChatMessage[]) => {
-      if (older.length < 20) setHasMoreHistory(false)
-      // 记录当前第一条消息的位置，插入后保持滚动位置
-      const container = chatMessagesRef.current
-      const prevScrollHeight = container?.scrollHeight || 0
-      setMessages(prev => [...older, ...prev])
-      setTimeout(() => {
-        if (container) {
-          container.scrollTop = container.scrollHeight - prevScrollHeight
+      socket.on('receive_message', (msg: ChatMessage) => {
+        setMessages(prev => [...prev, msg])
+      })
+
+      socket.on('connect_error', (err: Error) => {
+        console.error('WebSocket 连接失败:', err.message)
+        setSocketConnected(false)
+      })
+
+      return socket
+    }
+
+    // 已登录：直接用真实 token
+    const realToken = localStorage.getItem('token')
+    if (realToken) {
+      const socket = connectSocket(realToken)
+      return () => { socket.disconnect(); socketRef.current = null }
+    }
+
+    // 未登录：获取/复用访客 token
+    let cancelled = false
+    const getGuestToken = async () => {
+      let guestToken = sessionStorage.getItem('guest_token')
+      if (!guestToken) {
+        try {
+          const res = await fetch('/api/auth/guest-token', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+          const data = await res.json()
+          if (data.success && data.data.token) {
+            const newToken: string = data.data.token
+            guestToken = newToken
+            sessionStorage.setItem('guest_token', newToken)
+          }
+        } catch (e) {
+          console.error('获取访客 token 失败:', e)
+          return
         }
-      }, 50)
-      setLoadingMore(false)
-    })
-
-    socket.on('receive_message', (msg: ChatMessage) => {
-      setMessages(prev => [...prev, msg])
-    })
-
-    socket.on('connect_error', (err: Error) => {
-      console.error('WebSocket 连接失败:', err.message)
-      setSocketConnected(false)
-    })
+      }
+      if (cancelled || !guestToken) return
+      // 访客 token 就绪后，补同步购物车到服务器（之前加入的商品因无 token 未能同步）
+      syncCartToServer()
+      connectSocket(guestToken)
+    }
+    getGuestToken()
 
     return () => {
-      socket.disconnect()
+      cancelled = true
+      socketRef.current?.disconnect()
       socketRef.current = null
     }
   }, [showChat])
@@ -185,16 +209,15 @@ export default function OrderDetail() {
     socketRef.current.emit('send_message', { content })
     setChatInput('')
 
-    // 首次发起咨询时发送提醒邮件
+    // 首次发起咨询时发送提醒邮件（支持登录用户和访客）
     if (!sessionStorage.getItem('order_first_chat_notified')) {
       sessionStorage.setItem('order_first_chat_notified', '1')
-      const token = localStorage.getItem('token')
-      // 从 token 解析用户信息（此处仅传展示用信息，后端通过 socket 可获取更准确数据）
+      const token = localStorage.getItem('token') || sessionStorage.getItem('guest_token')
       fetch('/api/chat/notify-first-message', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ content }),
       }).catch(e => console.error('发送咨询提醒邮件失败:', e))
@@ -267,11 +290,8 @@ export default function OrderDetail() {
           ← 返回
         </button>
         <h1 className="order-detail-title">我的订单</h1>
-        <button className="order-detail-chat-toggle" onClick={() => {
-          if (!loggedIn) { setShowLoginModal(true); return }
-          setShowChat(v => !v)
-        }}>
-          💬 {!loggedIn ? '发起咨询' : showChat ? '收起咨询' : '咨询客服'}
+        <button className="order-detail-chat-toggle" onClick={() => setShowChat(v => !v)}>
+          💬 {showChat ? '收起咨询' : '咨询客服'}
         </button>
       </div>
 
@@ -380,16 +400,7 @@ export default function OrderDetail() {
 
         {/* 右侧：聊天面板（始终渲染，避免布局抖动） */}
         <div className={`order-chat-panel ${showChat ? '' : 'order-chat-panel--hidden'}`}>
-          {!loggedIn ? (
-            <div className="order-chat-login-prompt">
-              <div className="order-chat-login-prompt__icon">💬</div>
-              <h3>发起咨询</h3>
-              <p>登录后即可咨询客服</p>
-              <button className="order-chat-login-prompt__btn" onClick={() => setShowLoginModal(true)}>
-                登录 / 注册
-              </button>
-            </div>
-          ) : !showChat ? (
+          {!showChat ? (
             <div className="order-chat-login-prompt">
               <div className="order-chat-login-prompt__icon">💬</div>
               <h3>需要帮助？</h3>

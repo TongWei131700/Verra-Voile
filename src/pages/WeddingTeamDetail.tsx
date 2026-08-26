@@ -272,22 +272,14 @@ export default function WeddingTeamDetail() {
 
   // 咨询按钮
   const handleConsult = useCallback(() => {
-    if (!isLoggedIn()) {
-      setShowLoginModal(true)
-      return
-    }
     if (detail) {
-      setSelectedItem({
-        categoryId: 'wedding-team',
-        productId: detail.slug,
-        name: detail.name,
-        nameEn: detail.nameEn,
-        price: detail.price || 0,
-        unit: getCurrencySymbol(detail.country),
-        image: detail.cover,
-      })
+      sessionStorage.setItem('consult_context', JSON.stringify({
+        name: detail.name, nameEn: detail.nameEn, image: detail.cover,
+        price: detail.price, unit: getCurrencySymbol(detail.country), type: '婚礼团队',
+        slug: detail.slug, route: `/wedding-team/${detail.slug}`,
+      }))
     }
-    navigate('/order')
+    navigate('/consult')
   }, [detail, navigate])
 
   const onScroll = useCallback(() => setScrollY(window.scrollY), [])

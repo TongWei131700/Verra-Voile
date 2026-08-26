@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Fragment } from 'react'
 import { io, Socket } from 'socket.io-client'
 
 interface Reservation {
@@ -35,11 +35,12 @@ interface ChatUser {
 
 interface ChatMessage {
   id: number
-  sender_type: 'user' | 'admin'
+  sender_type: 'user' | 'admin' | 'system'
   content: string
   created_at: string
   user_id?: number
   user_phone?: string
+  channel?: string
 }
 
 interface UserProduct {
@@ -975,16 +976,59 @@ export default function Admin() {
                     {chatMessages.length === 0 && (
                       <div className="admin-chat-empty">加载中...</div>
                     )}
-                    {chatMessages.map(msg => (
-                      <div key={msg.id} className={`admin-chat-bubble admin-chat-bubble--${msg.sender_type}`}>
-                        <div className="admin-chat-bubble__content">
-                          <p>{msg.content}</p>
-                          <span className="admin-chat-bubble__time">
-                            {new Date(msg.created_at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                    {chatMessages.map((msg, idx) => {
+                      // 渠道切换分隔线
+                      const prevChannel = idx > 0 ? chatMessages[idx - 1]?.channel : undefined
+                      const showChannelLabel = msg.channel && msg.channel !== prevChannel
+                      const channelLabel = msg.channel === 'consult' ? '💬 咨询' : '📋 订单'
+
+                      // 系统消息：商品咨询上下文
+                      if (msg.sender_type === 'system') {
+                        let ctx: { name?: string; nameEn?: string; image?: string; price?: number; unit?: string; type?: string; route?: string } | null = null
+                        try { ctx = JSON.parse(msg.content) } catch {}
+                        if (!ctx || !ctx.name) return null
+                        return (
+                          <Fragment key={msg.id}>
+                            {showChannelLabel && (
+                              <div className="admin-chat-channel-divider"><span>{channelLabel}</span></div>
+                            )}
+                            <div className="admin-chat-system-msg">
+                              <span className="admin-chat-system-msg__label">🛍️ 用户正在咨询</span>
+                              <div
+                                className="admin-chat-system-msg__card"
+                                style={ctx.route ? { cursor: 'pointer' } : undefined}
+                                onClick={() => ctx.route && window.open(ctx.route, '_blank')}
+                              >
+                                {ctx.image && <img src={ctx.image} alt={ctx.name} className="admin-chat-system-msg__img" />}
+                                <div className="admin-chat-system-msg__info">
+                                  <span className="admin-chat-system-msg__type">{ctx.type}</span>
+                                  <span className="admin-chat-system-msg__name">{ctx.name}</span>
+                                  {ctx.nameEn && <span className="admin-chat-system-msg__name-en">{ctx.nameEn}</span>}
+                                  {ctx.price && ctx.price > 0 && (
+                                    <span className="admin-chat-system-msg__price">{ctx.unit}{ctx.price?.toLocaleString()}</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </Fragment>
+                        )
+                      }
+                      return (
+                        <Fragment key={msg.id}>
+                          {showChannelLabel && (
+                            <div className="admin-chat-channel-divider"><span>{channelLabel}</span></div>
+                          )}
+                          <div className={`admin-chat-bubble admin-chat-bubble--${msg.sender_type}`}>
+                            <div className="admin-chat-bubble__content">
+                              <p>{msg.content}</p>
+                              <span className="admin-chat-bubble__time">
+                                {new Date(msg.created_at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                          </div>
+                        </Fragment>
+                      )
+                    })}
                     <div ref={chatEndRef} />
                   </div>
                   {/* 用户已选商品面板 */}

@@ -5529,6 +5529,210 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
   }
 }
 
+/* ========== 独立咨询页 ========== */
+.consult-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(160deg, #f5f0ea 0%, #faf8f5 40%, #f0ebe4 100%);
+}
+
+/* 宽屏：居中卡片式布局 */
+@media (min-width: 769px) {
+  .consult-page {
+    padding: 24px;
+    align-items: center;
+  }
+  .consult-page > .consult-header,
+  .consult-page > .consult-messages,
+  .consult-page > .consult-input {
+    width: 100%;
+    max-width: 720px;
+    border-radius: 16px;
+  }
+  .consult-page > .consult-header {
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -2px 16px rgba(0,0,0,0.04);
+  }
+  .consult-page > .consult-messages {
+    border-radius: 0;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(8px);
+    border-left: 1px solid rgba(176,141,87,0.08);
+    border-right: 1px solid rgba(176,141,87,0.08);
+  }
+  .consult-page > .consult-input {
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+}
+
+.consult-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 28px;
+  background: #fff;
+  border-bottom: 1px solid rgba(176,141,87,0.1);
+  flex-shrink: 0;
+}
+
+.consult-back {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #888;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.consult-back:hover {
+  color: #b08d57;
+  background: rgba(176,141,87,0.06);
+}
+
+.consult-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c2c2c;
+  flex: 1;
+  letter-spacing: 0.3px;
+}
+
+.consult-status {
+  font-size: 12px;
+  color: #bbb;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.03);
+}
+.consult-status--online {
+  color: #52c41a;
+  background: rgba(82,196,26,0.08);
+}
+
+.consult-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.consult-input {
+  display: flex;
+  gap: 12px;
+  padding: 18px 28px;
+  background: #fff;
+  border-top: 1px solid rgba(176,141,87,0.08);
+  flex-shrink: 0;
+}
+.consult-input textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid rgba(176,141,87,0.15);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  background: #faf8f5;
+  transition: border-color 0.2s, background 0.2s;
+}
+.consult-input textarea:focus {
+  border-color: #b08d57;
+  background: #fff;
+}
+
+/* 咨询页系统消息气泡（商品咨询上下文） */
+.consult-system-product {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0;
+}
+.consult-system-product__label {
+  font-size: 11px;
+  color: #999;
+  letter-spacing: 0.5px;
+}
+.consult-system-product__card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid rgba(176, 141, 87, 0.15);
+  border-radius: 10px;
+  max-width: 320px;
+  width: 100%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.consult-system-product__card[style*="cursor"]:hover {
+  border-color: rgba(176, 141, 87, 0.4);
+  box-shadow: 0 2px 8px rgba(176, 141, 87, 0.12);
+}
+.consult-system-product__img {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.consult-system-product__info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+.consult-system-product__type {
+  font-size: 10px;
+  color: #b08d57;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.consult-system-product__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.consult-system-product__name-en {
+  font-size: 11px;
+  color: #aaa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.consult-system-product__price {
+  font-size: 12px;
+  color: #b08d57;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .consult-page { padding: 0; }
+  .consult-messages { padding: 16px 4%; }
+  .consult-input { padding: 12px 4%; }
+  .consult-header { padding: 12px 4%; }
+}
+
+/* 消息区滚动条 */
+.consult-messages::-webkit-scrollbar { width: 4px; }
+.consult-messages::-webkit-scrollbar-track { background: transparent; }
+.consult-messages::-webkit-scrollbar-thumb { background: rgba(176,141,87,0.15); border-radius: 2px; }
+.consult-messages::-webkit-scrollbar-thumb:hover { background: rgba(176,141,87,0.3); }
+
 /* ========== 管理后台聊天界面 ========== */
 .admin-chat-layout {
   display: flex;
@@ -5752,6 +5956,101 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
 }
 .admin-chat-placeholder p:first-child {
   font-size: 48px;
+}
+
+/* 管理后台渠道分隔线 */
+.admin-chat-channel-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0 6px;
+  position: relative;
+}
+.admin-chat-channel-divider::before,
+.admin-chat-channel-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(176, 141, 87, 0.15);
+}
+.admin-chat-channel-divider span {
+  padding: 2px 12px;
+  font-size: 11px;
+  color: #999;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* 管理后台系统消息气泡（商品咨询上下文） */
+.admin-chat-system-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 10px 0;
+}
+.admin-chat-system-msg__label {
+  font-size: 11px;
+  color: #999;
+  letter-spacing: 0.5px;
+}
+.admin-chat-system-msg__card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #faf8f5;
+  border: 1px solid rgba(176, 141, 87, 0.12);
+  border-radius: 10px;
+  max-width: 300px;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.admin-chat-system-msg__card[style*="cursor"]:hover {
+  border-color: rgba(176, 141, 87, 0.4);
+  box-shadow: 0 2px 8px rgba(176, 141, 87, 0.12);
+}
+.admin-chat-system-msg__img {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.admin-chat-system-msg__info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+.admin-chat-system-msg__type {
+  font-size: 10px;
+  color: #b08d57;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.admin-chat-system-msg__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.admin-chat-system-msg__name-en {
+  font-size: 11px;
+  color: #aaa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.admin-chat-system-msg__price {
+  font-size: 12px;
+  color: #b08d57;
+  font-weight: 500;
+  margin-top: 2px;
 }
 
 /* 用户商品面板 */
@@ -7198,17 +7497,6 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
   display: block;
 }
 
-.cd-card__new-badge {
-  position: absolute; top: 12px; left: 12px;
-  padding: 4px 12px;
-  background: linear-gradient(135deg, #c9a96e 0%, #d4af37 100%);
-  color: #1a1714;
-  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-  border-radius: 3px;
-  box-shadow: 0 2px 8px rgba(201, 169, 110, 0.4);
-  z-index: 2;
-  text-transform: uppercase;
-}
 
 /* 已预定选中态 */
 .cd-card--selected {

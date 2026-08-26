@@ -19,7 +19,7 @@ interface ModuleDef {
 
 // 六个固定模块，路由与 Listing 页保持一致
 const MODULES: ModuleDef[] = [
-  { id: 'destination', title: '目的地', route: '/destinations' },
+  { id: 'destination', title: '欧洲城堡', route: '/destinations' },
   { id: 'team', title: '婚礼团队', route: '/wedding-team' },
   { id: 'floral', title: '花卉', route: '/flowers' },
   { id: 'dress', title: '礼服', route: '/dresses' },
@@ -160,11 +160,7 @@ export default function NewHome() {
       : { backgroundColor: '#2a2723' }
 
   const handleConsult = () => {
-    if (isLoggedIn) {
-      navigate('/order')
-    } else {
-      setShowLoginModal(true)
-    }
+    navigate('/consult')
   }
 
   // 从首页进入列表页：清除缓存位置，确保列表页从顶部开始

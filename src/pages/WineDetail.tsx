@@ -179,22 +179,14 @@ export default function WineDetail() {
 
   // 咨询按钮
   const handleConsult = useCallback(() => {
-    if (!isLoggedIn()) {
-      setShowLoginModal(true)
-      return
-    }
     if (detail) {
-      setSelectedItem({
-        categoryId: 'wine',
-        productId: detail.productId,
-        name: detail.name,
-        nameEn: detail.nameEn,
-        price: detail.price || 0,
-        unit: detail.unit || '£',
-        image: detail.image,
-      })
+      sessionStorage.setItem('consult_context', JSON.stringify({
+        name: detail.name, nameEn: detail.nameEn, image: detail.image,
+        price: detail.price, unit: detail.unit || '£', type: '酒水',
+        slug: productId, route: `/wine/${productId}`,
+      }))
     }
-    navigate('/order')
+    navigate('/consult')
   }, [detail, navigate])
 
   const imgUrl = (path: string) => {

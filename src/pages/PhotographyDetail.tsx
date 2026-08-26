@@ -152,22 +152,14 @@ export default function PhotographyDetail() {
 
   // 咨询按钮
   const handleConsult = useCallback(() => {
-    if (!isLoggedIn()) {
-      setShowLoginModal(true)
-      return
-    }
     if (detail) {
-      setSelectedItem({
-        categoryId: 'photography',
-        productId: detail.slug,
-        name: detail.name,
-        nameEn: detail.nameEn,
-        price: detail.price || 0,
-        unit: '€',
-        image: detail.cover,
-      })
+      sessionStorage.setItem('consult_context', JSON.stringify({
+        name: detail.name, nameEn: detail.nameEn, image: detail.cover,
+        price: detail.price, unit: '€', type: '摄影',
+        slug: detail.slug, route: `/photography/${detail.slug}`,
+      }))
     }
-    navigate('/order')
+    navigate('/consult')
   }, [detail, navigate])
 
   const onScroll = useCallback(() => setScrollY(window.scrollY), [])

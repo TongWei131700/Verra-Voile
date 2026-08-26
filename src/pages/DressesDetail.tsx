@@ -134,22 +134,14 @@ export default function DressesDetail() {
 
   // 咨询按钮
   const handleConsult = useCallback(() => {
-    if (!isLoggedIn()) {
-      setShowLoginModal(true)
-      return
-    }
     if (detail) {
-      setSelectedItem({
-        categoryId: 'dress',
-        productId: detail.slug,
-        name: detail.name,
-        nameEn: detail.nameEn,
-        price: detail.price || 0,
-        unit: '€',
-        image: detail.cover,
-      })
+      sessionStorage.setItem('consult_context', JSON.stringify({
+        name: detail.name, nameEn: detail.nameEn, image: detail.cover,
+        price: detail.price, unit: '€', type: '礼服',
+        slug: detail.slug, route: `/dresses/${detail.slug}`,
+      }))
     }
-    navigate('/order')
+    navigate('/consult')
   }, [detail, navigate])
 
   // 视频加载：3s 超时回退轮播（已加载则跳过）

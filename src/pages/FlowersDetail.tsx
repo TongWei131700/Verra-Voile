@@ -311,15 +311,14 @@ export default function FlowersDetail() {
 
   // 咨询按钮
   const handleConsult = useCallback(() => {
-    if (!isLoggedIn()) { setShowLoginModal(true); return }
     if (detail) {
-      setSelectedItem({
-        categoryId: 'floral', productId: detail.slug,
-        name: detail.name, nameEn: detail.nameEn,
-        price: detail.price || 0, unit: '£', image: detail.cover,
-      })
+      sessionStorage.setItem('consult_context', JSON.stringify({
+        name: detail.name, nameEn: detail.nameEn, image: detail.cover,
+        price: detail.price, unit: '£', type: '花卉',
+        slug: detail.slug, route: `/flowers/${detail.slug}`,
+      }))
     }
-    navigate('/order')
+    navigate('/consult')
   }, [detail, navigate])
 
   const onScroll = useCallback(() => setScrollY(window.scrollY), [])

@@ -47,10 +47,11 @@ function saveSelectedProducts(items: SelectedItem[]): void {
 
 /**
  * 将当前 sessionStorage 中的购物车同步到后端。
- * 仅在用户已登录时执行，失败时静默忽略。
+ * 登录用户和访客均会同步，失败时静默忽略。
  */
 export function syncCartToServer(): void {
-  const token = localStorage.getItem('token')
+  // 支持登录用户（localStorage）和访客（sessionStorage）
+  const token = localStorage.getItem('token') || sessionStorage.getItem('guest_token')
   if (!token) return
   const items = getSelectedProducts()
   fetch(`${API_BASE}/api/cart/sync`, {

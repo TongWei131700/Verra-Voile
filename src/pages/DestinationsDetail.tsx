@@ -275,22 +275,14 @@ export default function DestinationsDetail() {
 
   // 咨询按钮
   const handleConsult = useCallback(() => {
-    if (!isLoggedIn()) {
-      setShowLoginModal(true)
-      return
-    }
     if (venue) {
-      setSelectedItem({
-        categoryId: CATEGORY_ID,
-        productId: venue.slug,
-        name: venue.name,
-        nameEn: venue.nameEn,
-        price: venue.price || 0,
-        unit: venue.priceUnit,
-        image: venue.coverImage,
-      })
+      sessionStorage.setItem('consult_context', JSON.stringify({
+        name: venue.name, nameEn: venue.nameEn, image: venue.coverImage,
+        price: venue.price, unit: venue.priceUnit, type: '目的地',
+        slug: venue.slug, route: `/destinations/${venue.slug}`,
+      }))
     }
-    navigate('/order')
+    navigate('/consult')
   }, [venue, navigate])
 
   if (loading) {

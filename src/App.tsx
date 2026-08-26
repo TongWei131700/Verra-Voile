@@ -9,6 +9,7 @@ import Upload from './pages/Upload'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import OrderDetail from './pages/OrderDetail'
+import Consult from './pages/Consult'
 
 import Destinations from './pages/Destinations'
 import DestinationsDetail from './pages/DestinationsDetail'
@@ -170,8 +171,14 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/order" element={<OrderDetail />} />
+        <Route path="/consult" element={<Consult />} />
 
         <Route path="/destinations" element={<Destinations />} />
+        <Route path="/destinations/france" element={<Destinations />} />
+        <Route path="/destinations/italy" element={<Destinations />} />
+        <Route path="/destinations/greece" element={<Destinations />} />
+        <Route path="/destinations/spain" element={<Destinations />} />
+        <Route path="/destinations/portugal" element={<Destinations />} />
         <Route path="/destinations/:slug" element={<DestinationsDetail />} />
         <Route path="/flowers" element={<Flowers />} />
         <Route path="/flowers/product/:slug" element={<FlowerProductDetail />} />
@@ -186,8 +193,8 @@ export default function App() {
         <Route path="/wedding-team/:slug" element={<WeddingTeamDetail />} />
       </Routes>
       {/* 公共精简头部：仅在业务模块页面显示（首页/订单/管理页除外） */}
-      {!['/', '/new-home', '/old-home', '/order', '/admin', '/upload', '/login', '/register'].includes(pathname) && <AppHeader />}
-      {pathname !== '/order' && <Footer />}
+      {!['/', '/new-home', '/old-home', '/order', '/consult', '/admin', '/upload', '/login', '/register'].includes(pathname) && <AppHeader />}
+      {pathname !== '/order' && pathname !== '/consult' && <Footer />}
     </>
   )
 }

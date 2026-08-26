@@ -257,6 +257,34 @@ export default function DressesDetail() {
         description={detail?.desc?.slice(0, 150) || `精选欧洲高定婚纱礼服，为目的地婚礼打造完美造型。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。`}
         keywords={`婚纱礼服, 高定婚纱, ${detail?.categoryCn || ''}礼服, 目的地婚礼婚纱`}
         ogImage={detail?.cover}
+        structuredData={detail ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": detail.nameEn || detail.name,
+            "alternateName": detail.name,
+            "description": detail.desc?.slice(0, 200),
+            "image": detail.cover,
+            "url": `https://europewedding.cn/dresses/${detail.slug}`,
+            "category": detail.categoryCn || "婚纱礼服",
+            "brand": { "@type": "Brand", "name": "EuropeWedding" },
+            "offers": detail.price ? {
+              "@type": "Offer",
+              "price": detail.price,
+              "priceCurrency": "EUR",
+              "availability": "https://schema.org/InStock"
+            } : undefined
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://europewedding.cn/" },
+              { "@type": "ListItem", "position": 2, "name": "婚纱礼服", "item": "https://europewedding.cn/dresses" },
+              { "@type": "ListItem", "position": 3, "name": detail.name }
+            ]
+          }
+        ] : undefined}
       />
       {/* ===== 1. Hero 区域（wt-hero 轮播风格） ===== */}
       <section className="wt-hero">

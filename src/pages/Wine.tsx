@@ -372,6 +372,19 @@ export default function Wine() {
         title="酒水宴席"
         description="精选欧洲各产区葡萄酒与香槟，为婚礼宴席提供专业酒水搭配方案。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
         keywords="婚礼酒水, 婚礼香槟, 欧洲婚礼用酒, 目的地婚礼宴席, 葡萄酒"
+        structuredData={products.length > 0 ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "婚礼酒水",
+          "numberOfItems": products.length,
+          "itemListElement": products.slice(0, 20).map((p, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": p.nameEn || p.name,
+            "url": `https://europewedding.cn/wine/${p.productId}`,
+            "image": p.image || undefined
+          }))
+        } : undefined}
       />
       {/* 首屏 */}
       <section className="cd-list-hero">

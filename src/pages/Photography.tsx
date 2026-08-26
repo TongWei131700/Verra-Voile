@@ -372,6 +372,19 @@ export default function Photography() {
         title="婚礼摄影"
         description="欧洲专业婚礼摄影师团队，提供婚礼跟拍、航拍、婚纱照等全方位影像服务。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
         keywords="婚礼摄影, 婚礼跟拍, 欧洲婚礼摄影, 目的地婚礼跟拍, 婚礼航拍"
+        structuredData={allProducts.length > 0 ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "婚礼摄影师",
+          "numberOfItems": allProducts.length,
+          "itemListElement": allProducts.slice(0, 20).map((p, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": p.nameEn || p.name,
+            "url": `https://europewedding.cn/photography/${p.slug}`,
+            "image": p.cover || undefined
+          }))
+        } : undefined}
       />
       {/* 首屏 */}
       <section className="cd-list-hero">

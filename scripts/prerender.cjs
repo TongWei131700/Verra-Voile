@@ -57,6 +57,16 @@ async function prefetchAllData() {
     apiCache['/api/products/crawled-venues'] = { success: true, data: items }
     // 列表页
     routeMap['/destinations'] = ['/api/products/crawled-venues']
+    // 国家落地页（SEO）
+    const countrySlugMap = { '法国': 'france', '意大利': 'italy', '希腊': 'greece', '西班牙': 'spain', '葡萄牙': 'portugal' }
+    const uniqueCountries = [...new Set(items.map(v => v.country_cn || v.country).filter(Boolean))]
+    for (const country of uniqueCountries) {
+      const slug = countrySlugMap[country]
+      if (slug) {
+        routeMap[`/destinations/${slug}`] = ['/api/products/crawled-venues']
+      }
+    }
+    console.log(`  国家落地页: ${uniqueCountries.filter(c => countrySlugMap[c]).length}`)
     for (const v of items) {
       if (v.slug) {
         const route = `/destinations/${v.slug}`
@@ -282,7 +292,9 @@ function saveHtml(route, html) {
     // 首页先存到临时文件，最后再覆盖到 index.html
     filePath = path.join(DIST_DIR, '_home_rendered.html')
   } else {
-    const parts = route.split('/').filter(Boolean)
+    // 去掉 query string 处理路径
+    const cleanRoute = route.split('?')[0]
+    const parts = cleanRoute.split('/').filter(Boolean)
     const dir = path.join(DIST_DIR, ...parts.slice(0, -1))
     fs.mkdirSync(dir, { recursive: true })
     filePath = path.join(dir, parts[parts.length - 1] + '.html')

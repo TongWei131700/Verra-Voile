@@ -313,6 +313,29 @@ export default function PhotographyDetail() {
         description={detail?.desc?.slice(0, 150) || `欧洲专业婚礼摄影师，提供目的地婚礼跟拍、航拍、婚纱照服务。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。`}
         keywords={`婚礼摄影, 婚礼跟拍, ${detail?.nameEn || ''}, 目的地婚礼摄影, 婚礼航拍`}
         ogImage={detail?.cover}
+        structuredData={detail ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "ProfessionalService",
+            "name": detail.nameEn || detail.name,
+            "alternateName": detail.name,
+            "description": detail.desc?.slice(0, 200),
+            "image": detail.cover,
+            "logo": detail.headshot || undefined,
+            "url": detail.website || `https://europewedding.cn/photography/${detail.slug}`,
+            "priceRange": detail.price ? `€${detail.price}起` : undefined,
+            "serviceType": detail.categoryCn || "婚礼摄影"
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://europewedding.cn/" },
+              { "@type": "ListItem", "position": 2, "name": "婚礼摄影", "item": "https://europewedding.cn/photography" },
+              { "@type": "ListItem", "position": 3, "name": detail.name }
+            ]
+          }
+        ] : undefined}
       />
       {/* ===== 1. Hero 区域 ===== */}
       <section className="photo-hero">

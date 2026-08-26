@@ -379,6 +379,19 @@ export default function Dresses() {
         title="婚纱礼服"
         description="精选欧洲顶级婚纱品牌高定礼服，为新娘打造完美婚纱。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式目的地婚礼服务。"
         keywords="婚纱礼服, 欧洲婚纱, 高定礼服, 目的地婚礼婚纱, 新娘礼服"
+        structuredData={allProducts.length > 0 ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "婚纱礼服",
+          "numberOfItems": allProducts.length,
+          "itemListElement": allProducts.slice(0, 20).map((p, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": p.nameEn || p.name,
+            "url": `https://europewedding.cn/dresses/${p.slug}`,
+            "image": p.cover || undefined
+          }))
+        } : undefined}
       />
       {/* 首屏 */}
       <section className="cd-list-hero">

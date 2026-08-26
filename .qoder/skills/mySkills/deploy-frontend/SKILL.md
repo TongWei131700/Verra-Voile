@@ -5,6 +5,24 @@ description: 将前端代码构建并部署到远程服务器，包括 git 版�
 
 # 部署前端服务
 
+## ⚠️⚠️⚠️ 前端必须使用 SSG 预渲染部署
+
+**禁止使用 `npm run build`（纯 SPA 模式），必须使用 `npm run build:seo`（SSG 预渲染）！**
+
+```bash
+# ✅ 正确：SSG 预渲染（生成所有动态页面的静态 HTML，确保 SEO）
+VITE_API_URL=https://europewedding.cn npm run build:seo
+
+# ❌ 禁止：纯 SPA 构建（无预渲染，搜索引擎无法抓取动态内容）
+npm run build
+```
+
+- `build:seo` = `vite build` + `node scripts/prerender.cjs`（Puppeteer 预渲染全部页面）
+- 预渲染耗时约 15-20 分钟，需提前告知用户预计时间
+- 必须设置 `VITE_API_URL=https://europewedding.cn` 环境变量，确保预渲染时 API 请求指向线上
+
+---
+
 ## ⚠️⚠️⚠️ 部署前必读：Git 分支操作
 
 **每次部署前后都必须执行 Git 分支操作，绝对不能忘记！**
@@ -31,13 +49,13 @@ description: 将前端代码构建并部署到远程服务器，包括 git 版�
 
 使用 `AskUserQuestion` 告知用户即将部署，确认继续。
 
-### 2. 本地构建
+### 2. 本地 SSG 构建（⚠️ 必须用 build:seo）
 
 ```bash
-cd /Users/hongli/WorkSpace/Verra-Voile && npm run build
+cd /Users/hongli/WorkSpace/Verra-Voile && VITE_API_URL=https://europewedding.cn npm run build:seo
 ```
 
-等待构建完成，确认 `dist/` 包含 `index.html` 和 `assets/`。
+等待 Vite 构建 + Puppeteer 预渲染完成（约 15-20 分钟），确认 `dist/` 包含所有预渲染的静态 HTML 页面。
 
 ### 3. 上传到服务器
 

@@ -461,6 +461,19 @@ export default function Flowers() {
         title="婚礼花卉"
         description="欧洲顶级花艺师团队，为目的地婚礼打造精致花卉装饰，从手捧花到宴会花艺设计。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
         keywords="婚礼花卉, 婚礼花艺, 欧洲婚礼花束, 目的地婚礼花卉, 手捧花"
+        structuredData={allCompanies.length > 0 ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "婚礼花艺工作室",
+          "numberOfItems": allCompanies.length,
+          "itemListElement": allCompanies.slice(0, 20).map((c, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": c.name,
+            "url": `https://europewedding.cn/flowers/${c.slug}`,
+            "image": c.cover || undefined
+          }))
+        } : undefined}
       />
       {/* 首屏 */}
       <section className="cd-list-hero">

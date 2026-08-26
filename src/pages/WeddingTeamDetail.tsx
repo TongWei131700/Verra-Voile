@@ -403,6 +403,35 @@ export default function WeddingTeamDetail() {
           return baseKeywords.join(', ')
         })()}
         ogImage={detail?.cover}
+        structuredData={detail ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": detail.nameEn || detail.name,
+            "alternateName": detail.name,
+            "description": detail.desc?.slice(0, 200),
+            "url": detail.website || `https://europewedding.cn/wedding-team/${detail.slug}`,
+            "image": detail.cover,
+            "logo": detail.headshot || undefined,
+            "foundingDate": detail.foundedYear ? String(detail.foundedYear) : undefined,
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": detail.cityEn || detail.city,
+              "addressCountry": detail.countryEn || detail.country
+            },
+            "priceRange": detail.price ? `€${detail.price}起` : undefined,
+            "areaServed": detail.country ? { "@type": "Country", "name": detail.countryEn || detail.country } : undefined
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://europewedding.cn/" },
+              { "@type": "ListItem", "position": 2, "name": "婚礼团队", "item": "https://europewedding.cn/wedding-team" },
+              { "@type": "ListItem", "position": 3, "name": detail.name }
+            ]
+          }
+        ] : undefined}
       />
       {/* ===== 1. Hero 区域：全屏图片 + 居中信息 ===== */}
       <section className="wt-hero" ref={heroRef}>

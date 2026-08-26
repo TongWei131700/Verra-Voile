@@ -441,6 +441,36 @@ export default function FlowersDetail() {
           return baseKeywords.join(', ')
         })()}
         ogImage={detail?.cover}
+        structuredData={detail ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": detail.nameEn || detail.name,
+            "alternateName": detail.name,
+            "description": detail.desc?.slice(0, 200),
+            "url": `https://europewedding.cn/flowers/${detail.slug}`,
+            "image": detail.cover,
+            "telephone": detail.phone || undefined,
+            "email": detail.email || undefined,
+            "address": detail.address ? {
+              "@type": "PostalAddress",
+              "streetAddress": detail.address,
+              "addressLocality": detail.city,
+              "addressCountry": detail.countryEn || detail.country
+            } : undefined,
+            "priceRange": detail.price ? `€${detail.price}起` : undefined,
+            "areaServed": detail.country ? { "@type": "Country", "name": detail.country } : undefined
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://europewedding.cn/" },
+              { "@type": "ListItem", "position": 2, "name": "婚礼花卉", "item": "https://europewedding.cn/flowers" },
+              { "@type": "ListItem", "position": 3, "name": detail.name }
+            ]
+          }
+        ] : undefined}
       />
       {/* ===== 1. Hero 区域 ===== */}
       <section className="wt-hero" ref={heroRef}>

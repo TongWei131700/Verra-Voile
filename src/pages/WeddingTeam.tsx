@@ -400,6 +400,19 @@ export default function WeddingTeam() {
         title="婚礼团队"
         description="欧洲专业婚礼策划团队，提供一站式目的地婚礼服务，从场地甄选到全程执行。EuropeWedding 涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块。"
         keywords="婚礼团队, 婚礼策划, 欧洲婚礼策划, 目的地婚礼团队, 婚礼统筹"
+        structuredData={allCompanies.length > 0 ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "婚礼策划团队",
+          "numberOfItems": allCompanies.length,
+          "itemListElement": allCompanies.slice(0, 20).map((c, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": c.nameEn || c.name,
+            "url": `https://europewedding.cn/wedding-team/${c.slug}`,
+            "image": c.cover || undefined
+          }))
+        } : undefined}
       />
       {/* 首屏 */}
       <section className="cd-list-hero">

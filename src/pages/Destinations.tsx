@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { navFromList } from '../utils/navigateFromList'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
@@ -12,6 +12,21 @@ const API_BASE = import.meta.env.VITE_API_URL || ''
 
 // 新上架场地 slug（列表页显示 NEW 角标）
 const NEW_VENUE_SLUGS = new Set(['pieve-del-castello', 'villa-porta', 'hotel-vis-a-vis'])
+
+// 国家 → URL slug 映射（用于 SEO 落地页）
+const COUNTRY_SLUG_MAP: Record<string, string> = {
+  '法国': 'france',
+  '意大利': 'italy',
+  '希腊': 'greece',
+  '西班牙': 'spain',
+  '葡萄牙': 'portugal',
+}
+const SLUG_TO_COUNTRY: Record<string, string> = Object.fromEntries(
+  Object.entries(COUNTRY_SLUG_MAP).map(([k, v]) => [v, k])
+)
+
+// URL 国家参数是否已消费（防止从详情页返回时重复读取 URL）
+let _urlCountryUsed = false
 
 // 列表项（与 API 返回字段对应）
 interface VenueItem {
@@ -75,6 +90,7 @@ function extractUnique<T>(items: VenueItem[], getter: (c: VenueItem) => T | T[])
 
 export default function Destinations() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [allVenues, setAllVenues] = useState<VenueItem[]>([])
   const [dataLoading, setDataLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -83,7 +99,17 @@ export default function Destinations() {
   const searchRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const filterBodyRef = useRef<HTMLDivElement>(null)
-  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => new Set(_cachedSelectedCountries ?? []))
+  // URL 国家参数优先（SEO 落地页），否则从缓存恢复
+  const initialCountries = useMemo(() => {
+    const pathParts = location.pathname.split('/').filter(Boolean)
+    const urlSlug = pathParts.length > 1 && pathParts[0] === 'destinations' ? pathParts[1] : null
+    if (urlSlug && SLUG_TO_COUNTRY[urlSlug] && !_urlCountryUsed) {
+      _urlCountryUsed = true
+      return new Set([SLUG_TO_COUNTRY[urlSlug]])
+    }
+    return new Set(_cachedSelectedCountries ?? [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => initialCountries)
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<Set<string>>(() => new Set(_cachedSelectedVenueTypes ?? []))
   const [openGroups, setOpenGroups] = useState({ country: true, venueType: true })
   const [expandedFilters, setExpandedFilters] = useState({ country: false, venueType: false })
@@ -387,17 +413,43 @@ export default function Destinations() {
   return (
     <div className="cd-page">
       <Seo
-        title="目的地婚礼场地"
-        description="精选欧洲12国50+城市目的地婚礼场地，涵盖意大利、法国、西班牙、希腊等浪漫婚礼目的地。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
+        title={selectedCountries.size === 1
+          ? `${Array.from(selectedCountries)[0]}目的地婚礼场地`
+          : '目的地婚礼场地'}
+        description={(() => {
+          if (selectedCountries.size === 1) {
+            const country = Array.from(selectedCountries)[0]
+            const count = allVenues.filter(v => v.country === country).length
+            return `精选${country}${count}处目的地婚礼场地，涵盖城堡、别墅、庄园等多种类型。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。`
+          }
+          return '精选欧洲12国50+城市目的地婚礼场地，涵盖意大利、法国、西班牙、希腊等浪漫婚礼目的地。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。'
+        })()}
         keywords={(() => {
           const baseKeywords = ['目的地婚礼', '欧洲婚礼', '海外婚礼', '目的地婚礼场地']
-          // 从 allVenues 中提取所有国家
-          const countries = Array.from(new Set(allVenues.map((v: VenueItem) => v.country).filter(Boolean)))
-          countries.forEach(country => {
+          if (selectedCountries.size === 1) {
+            const country = Array.from(selectedCountries)[0]
             baseKeywords.push(`${country}婚礼`, `${country}旅拍`, `${country}目的地婚礼`)
-          })
+          } else {
+            const countries = Array.from(new Set(allVenues.map((v: VenueItem) => v.country).filter(Boolean)))
+            countries.forEach(country => {
+              baseKeywords.push(`${country}婚礼`, `${country}旅拍`, `${country}目的地婚礼`)
+            })
+          }
           return baseKeywords.join(', ')
         })()}
+        structuredData={allVenues.length > 0 ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "目的地婚礼场地",
+          "numberOfItems": allVenues.length,
+          "itemListElement": allVenues.slice(0, 20).map((v: VenueItem, i: number) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": v.name,
+            "url": `https://europewedding.cn/destinations/${v.slug}`,
+            "image": v.cover || undefined
+          }))
+        } : undefined}
       />
       {/* 首屏 */}
       <section className="cd-list-hero">
@@ -410,7 +462,9 @@ export default function Destinations() {
         <BackButton />
         <div className="cd-list-hero__content">
           <p className="cd-list-hero__sub">Destination Venues</p>
-          <h1 className="cd-list-hero__title">目的地婚礼</h1>
+          <h1 className="cd-list-hero__title">
+            {selectedCountries.size === 1 ? `${Array.from(selectedCountries)[0]}目的地婚礼` : '目的地婚礼'}
+          </h1>
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
             {allVenues.length > 0

@@ -84,11 +84,10 @@ async function prefetchAllData() {
     console.log(`  目的地场地: ${items.length}`)
   } catch (e) { console.error('  获取目的地失败:', e.message) }
 
-  // 花卉
+  // 花卉（仅列表页，不预渲染详情页）
   try {
     const florists = await fetchApi('/crawled-florists')
     const items = Array.isArray(florists) ? florists : []
-    // 花卉列表页直接用后端分类型接口（数据中无 type 字段，后端有自己的过滤逻辑）
     const [serviceRes, productRes] = await Promise.all([
       fetch(`${API_BASE}/api/products/crawled-florists?type=service`).then(r => r.json()),
       fetch(`${API_BASE}/api/products/crawled-florists?type=product`).then(r => r.json()),
@@ -96,48 +95,17 @@ async function prefetchAllData() {
     apiCache['/api/products/crawled-florists?type=service'] = serviceRes
     apiCache['/api/products/crawled-florists?type=product'] = productRes
     apiCache['/api/products/crawled-florists'] = { success: true, data: [...(serviceRes.data || []), ...(productRes.data || [])] }
-    // 列表页
     routeMap['/flowers'] = ['/api/products/crawled-florists?type=service', '/api/products/crawled-florists?type=product']
-    for (const f of items) {
-      if (!f.slug) continue
-      const detailKey = `/api/products/crawled-florists/${f.slug}`
-      // 额外请求详情接口获取完整数据（列表接口只有 description_preview）
-      try {
-        const detailData = await fetchApi(`/crawled-florists/${f.slug}`)
-        apiCache[detailKey] = { success: true, data: detailData }
-      } catch {
-        apiCache[detailKey] = { success: true, data: f }
-      }
-      if (f.type === 'product') {
-        routeMap[`/flowers/product/${f.slug}`] = [detailKey]
-      } else {
-        routeMap[`/flowers/${f.slug}`] = [detailKey]
-      }
-    }
-    console.log(`  花卉: ${items.length}`)
+    console.log(`  花卉: 仅列表页（${items.length} 个商品跳过详情预渲染）`)
   } catch (e) { console.error('  获取花卉失败:', e.message) }
 
-  // 礼服
+  // 礼服（仅列表页，不预渲染详情页）
   try {
     const dresses = await fetchApi('/crawled-dresses')
     const items = Array.isArray(dresses) ? dresses : []
     apiCache['/api/products/crawled-dresses'] = { success: true, data: items }
-    // 列表页
     routeMap['/dresses'] = ['/api/products/crawled-dresses']
-    for (const d of items) {
-      if (d.slug) {
-        const detailKey = `/api/products/crawled-dresses/${d.slug}`
-        // 额外请求详情接口获取完整数据
-        try {
-          const detailData = await fetchApi(`/crawled-dresses/${d.slug}`)
-          apiCache[detailKey] = { success: true, data: detailData }
-        } catch {
-          apiCache[detailKey] = { success: true, data: d }
-        }
-        routeMap[`/dresses/${d.slug}`] = [detailKey]
-      }
-    }
-    console.log(`  礼服: ${items.length}`)
+    console.log(`  礼服: 仅列表页（${items.length} 个商品跳过详情预渲染）`)
   } catch (e) { console.error('  获取礼服失败:', e.message) }
 
   // 摄影师
@@ -186,19 +154,13 @@ async function prefetchAllData() {
     console.log(`  婚礼团队: ${items.length}`)
   } catch (e) { console.error('  获取婚礼团队失败:', e.message) }
 
-  // 酒水
+  // 酒水（仅列表页，不预渲染详情页）
   try {
     const wineData = await fetchApi('/wine')
     const products = wineData.products || []
     apiCache['/api/products/wine'] = { success: true, data: wineData }
-    // 列表页
     routeMap['/wine'] = ['/api/products/wine']
-    for (const w of products) {
-      if (w.productId) {
-        routeMap[`/wine/${w.productId}`] = ['/api/products/wine']
-      }
-    }
-    console.log(`  酒水: ${products.length}`)
+    console.log(`  酒水: 仅列表页（${products.length} 个商品跳过详情预渲染）`)
   } catch (e) { console.error('  获取酒水失败:', e.message) }
 
   console.log(`\n  API 缓存条目: ${Object.keys(apiCache).length}`)

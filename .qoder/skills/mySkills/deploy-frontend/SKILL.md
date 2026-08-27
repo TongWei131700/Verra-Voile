@@ -17,9 +17,23 @@ VITE_API_URL=https://europewedding.cn npm run build:seo
 npm run build
 ```
 
-- `build:seo` = `vite build` + `node scripts/prerender.cjs`（Puppeteer 预渲染全部页面）
-- 预渲染耗时约 15-20 分钟，需提前告知用户预计时间
+- `build:seo` = `vite build` + `node scripts/prerender.cjs`（Puppeteer 预渲染页面）
+- 预渲染耗时约 10-15 分钟，需提前告知用户预计时间
 - 必须设置 `VITE_API_URL=https://europewedding.cn` 环境变量，确保预渲染时 API 请求指向线上
+
+### SSG 预渲染范围规则
+
+**仅预渲染以下模块的列表页 + 详情页：**
+- Destinations（目的地场地）：列表页 + 国家落地页 + 所有场地详情页
+- Photography（摄影师）：列表页 + 所有摄影师详情页
+- Wedding Team（婚礼团队）：列表页 + 所有团队详情页
+
+**以下模块仅预渲染列表页，跳过详情页：**
+- Flowers（花卉）：仅列表页
+- Dresses（礼服）：仅列表页
+- Wine（酒水宴席）：仅列表页
+
+> 礼服、花卉、酒水的详情页由 SPA fallback 处理，用户访问时动态加载，不影响用户体验。此规则已写入 `scripts/prerender.cjs`。
 
 ---
 

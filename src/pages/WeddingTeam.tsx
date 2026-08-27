@@ -110,6 +110,7 @@ export default function WeddingTeam() {
   const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => new Set(_cachedSelectedCountries ?? []))
   const [selectedSpecialties, setSelectedSpecialties] = useState<Set<string>>(() => new Set(_cachedSelectedSpecialties ?? []))
   const [openGroups, setOpenGroups] = useState({ country: true, specialty: true })
+    const [sortOpen, setSortOpen] = useState(false)
   const [expandedFilters, setExpandedFilters] = useState({ country: false, specialty: false })
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
@@ -661,6 +662,24 @@ export default function WeddingTeam() {
         {/* 左侧筛选栏 */}
         <aside className="ph-filter">
           <div className="ph-filter__body" ref={filterBodyRef}>
+            {/* 排序（可折叠） */}
+            <div className="ph-filter-sort">
+              <button type="button" className="ph-filter-sort__header" onClick={() => setSortOpen(!sortOpen)}>
+                <span>排序</span>
+                <span className="ph-filter-sort__en">Sort</span>
+                <span className={`ph-filter-sort__arrow${sortOpen ? ' ph-filter-sort__arrow--open' : ''}`}>▾</span>
+              </button>
+              {sortOpen && (
+                <ul className="ph-filter-sort__list">
+                  {sortOptions.map(opt => (
+                    <li key={opt.value} className={`ph-filter-sort__item${sortMode === opt.value ? ' ph-filter-sort__item--active' : ''}`} onClick={() => setSortMode(opt.value)}>
+                      <span className="ph-filter-sort__radio">{sortMode === opt.value ? '●' : '○'}</span>
+                      <span>{opt.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             <div className="ph-filter-section">
               <div className="ph-filter-section__title">
                 <span>筛选</span>

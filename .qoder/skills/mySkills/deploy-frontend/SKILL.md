@@ -63,6 +63,31 @@ npm run build
 
 使用 `AskUserQuestion` 告知用户即将部署，确认继续。
 
+### 1.5 罗列 SSG 页面明细（⚠️ 必须执行，不可跳过！）
+
+**构建前必须先查询本地数据库各模块数据量，罗列 SSG 页面明细表供用户确认，用户同意后才开始构建！**
+
+```bash
+mysql -u root verra_voile -e "
+  SELECT 'venues' AS module, COUNT(*) AS cnt FROM crawled_venues
+  UNION ALL SELECT 'photographers', COUNT(*) FROM crawled_photographers
+  UNION ALL SELECT 'teams', COUNT(*) FROM crawled_wedding_teams;
+"
+```
+
+根据查询结果计算 SSG 页面总数并展示明细表：
+
+| 模块 | 页面构成 | 页面数 |
+|------|----------|--------|
+| 首页 | 1 | 1 |
+| 目的地 | 列表页 1 + 国家落地页 5 + 场地详情 N | 6 + N |
+| 摄影师 | 列表页 1 + 摄影师详情 M | 1 + M |
+| 婚礼团队 | 列表页 1 + 团队详情 K | 1 + K |
+| 花卉 / 礼服 / 酒水 | 各仅列表页 | 3 |
+| **合计** | | **12 + N + M + K** |
+
+> 用户确认明细后才执行 `npm run build:seo`，避免构建完成后发现数量不对。
+
 ### 2. 本地 SSG 构建（⚠️ 必须用 build:seo）
 
 ```bash

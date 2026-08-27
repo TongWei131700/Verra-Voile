@@ -6927,6 +6927,54 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
   font-size: 11px; color: var(--muted); flex-shrink: 0;
 }
 
+/* 侧栏排序选项 */
+.ph-filter-sort {
+  padding: 0 0 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.ph-filter-sort__header {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%; padding: 14px 20px;
+  background: none; border: none; cursor: pointer;
+  font-size: 15px; font-weight: 600; color: var(--charcoal);
+  letter-spacing: 1px; text-align: left;
+  transition: background 0.2s;
+}
+.ph-filter-sort__header:hover {
+  background: rgba(212, 175, 55, 0.04);
+}
+.ph-filter-sort__en {
+  font-size: 11px; font-weight: 400; color: var(--muted);
+}
+.ph-filter-sort__arrow {
+  margin-left: auto; font-size: 11px; color: var(--muted);
+  transition: transform 0.25s ease;
+  transform: rotate(-90deg);
+}
+.ph-filter-sort__arrow--open {
+  transform: rotate(0deg);
+}
+.ph-filter-sort__list {
+  list-style: none; padding: 0 12px; margin: 0;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.ph-filter-sort__item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px; cursor: pointer;
+  font-size: 14px; color: var(--charcoal);
+  transition: all 0.2s;
+}
+.ph-filter-sort__item:hover {
+  background: rgba(212, 175, 55, 0.06);
+}
+.ph-filter-sort__item--active {
+  background: rgba(212, 175, 55, 0.1); font-weight: 500;
+}
+.ph-filter-sort__radio {
+  font-size: 16px; color: var(--rose-gold); flex-shrink: 0;
+  line-height: 1;
+}
+
 /* ===== 移动端筛选栏 & 抽屉 ===== */
 .ph-mobile-filter-bar {
   display: none;
@@ -10232,8 +10280,29 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
   padding: 0;
 }
 
+/* 桌面端第一行底部滚动引导 */
+.nh-desktop-scroll-hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  animation: nh-scroll-bounce 2s ease-in-out infinite;
+}
+.nh-desktop-scroll-hint .nh-scroll-arrow {
+  width: 28px;
+  height: 28px;
+  color: #d4b896;
+  filter: drop-shadow(0 0 8px rgba(212, 184, 150, 0.6));
+  animation: nh-arrow-pulse 2s ease-in-out infinite;
+}
+
 /* 桌面端：每屏三块面板并排，整行占满全屏 */
 .nh-desktop-only {
+  position: relative;
   height: 100vh;
   height: 100dvh;
   height: 100svh;

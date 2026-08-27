@@ -45,16 +45,30 @@ function extractUnique<T>(products: PhotographerItem[], getter: (p: Photographer
   return Array.from(set).sort()
 }
 
+// 国家英文名 → 中文名映射
+const COUNTRY_CN: Record<string, string> = {
+  'Italy': '意大利', 'Greece': '希腊', 'France': '法国', 'Spain': '西班牙',
+  'United Kingdom': '英国', 'Portugal': '葡萄牙', 'Norway': '挪威',
+  'Iceland': '冰岛', 'Austria': '奥地利', 'Germany': '德国',
+  'Switzerland': '瑞士', 'Belgium': '比利时', 'Netherlands': '荷兰',
+  'Turkey': '土耳其', 'Croatia': '克罗地亚', 'Czech Republic': '捷克',
+  'Denmark': '丹麦', 'Sweden': '瑞典', 'Finland': '芬兰', 'Ireland': '爱尔兰',
+  'Poland': '波兰', 'Hungary': '匈牙利', 'Romania': '罗马尼亚',
+  'Slovenia': '斯洛文尼亚', 'Morocco': '摩洛哥', 'USA': '美国',
+}
+
 // 将 API 返回的 snake_case 数据转为前端 camelCase
 function mapApiItem(row: any): PhotographerItem {
   let styles: string[] = []
   try { styles = typeof row.photo_styles === 'string' ? JSON.parse(row.photo_styles) : (row.photo_styles || []) } catch { /* ignore */ }
+  const rawCountry = row.country || ''
+  const country = COUNTRY_CN[rawCountry] || rawCountry
   return {
     slug: row.slug,
     name: row.name_cn || row.name,
     nameEn: row.name,
-    country: row.country,
-    countryEn: row.country_en || '',
+    country,
+    countryEn: row.country_en || rawCountry,
     photoStyles: styles,
     tagline: row.tagline || '',
     cover: row.cover_image || '',
@@ -76,6 +90,7 @@ export default function Photography() {
   const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => new Set(_cachedSelectedCountries ?? []))
   const [selectedStyles, setSelectedStyles] = useState<Set<string>>(() => new Set(_cachedSelectedStyles ?? []))
   const [openGroups, setOpenGroups] = useState({ country: true, style: true })
+    const [sortOpen, setSortOpen] = useState(false)
   const [expandedFilters, setExpandedFilters] = useState({ country: false, style: false })
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
@@ -599,6 +614,24 @@ export default function Photography() {
         {/* 左侧筛选栏 */}
         <aside className="ph-filter">
           <div className="ph-filter__body" ref={filterBodyRef}>
+            {/* 排序（可折叠） */}
+            <div className="ph-filter-sort">
+              <button type="button" className="ph-filter-sort__header" onClick={() => setSortOpen(!sortOpen)}>
+                <span>排序</span>
+                <span className="ph-filter-sort__en">Sort</span>
+                <span className={`ph-filter-sort__arrow${sortOpen ? ' ph-filter-sort__arrow--open' : ''}`}>▾</span>
+              </button>
+              {sortOpen && (
+                <ul className="ph-filter-sort__list">
+                  {sortOptions.map(opt => (
+                    <li key={opt.value} className={`ph-filter-sort__item${sortMode === opt.value ? ' ph-filter-sort__item--active' : ''}`} onClick={() => setSortMode(opt.value)}>
+                      <span className="ph-filter-sort__radio">{sortMode === opt.value ? '●' : '○'}</span>
+                      <span>{opt.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             {/* 筛选分区 */}
             <div className="ph-filter-section">
               <div className="ph-filter-section__title">

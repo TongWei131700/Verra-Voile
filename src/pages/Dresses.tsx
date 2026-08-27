@@ -69,6 +69,7 @@ export default function Dresses() {
   const [selectedSeries, setSelectedSeries] = useState<Set<string>>(() => new Set(_cachedSelectedSeries ?? []))
   const [selectedStyles, setSelectedStyles] = useState<Set<string>>(() => new Set(_cachedSelectedStyles ?? []))
   const [openGroups, setOpenGroups] = useState({ series: true, style: true })
+    const [sortOpen, setSortOpen] = useState(false)
   const [expandedFilters, setExpandedFilters] = useState({ series: false, style: false })
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
@@ -284,7 +285,26 @@ export default function Dresses() {
 
   // ===== 筛选栏渲染（桌面侧栏 & 移动抽屉复用） =====
   const renderFilterGroups = () => (
-    <div className="ph-filter-section">
+    <>
+      {/* 排序（可折叠） */}
+      <div className="ph-filter-sort">
+        <button type="button" className="ph-filter-sort__header" onClick={() => setSortOpen(!sortOpen)}>
+          <span>排序</span>
+          <span className="ph-filter-sort__en">Sort</span>
+          <span className={`ph-filter-sort__arrow${sortOpen ? ' ph-filter-sort__arrow--open' : ''}`}>▾</span>
+        </button>
+        {sortOpen && (
+          <ul className="ph-filter-sort__list">
+            {sortOptions.map(opt => (
+              <li key={opt.value} className={`ph-filter-sort__item${sortMode === opt.value ? ' ph-filter-sort__item--active' : ''}`} onClick={() => setSortMode(opt.value)}>
+                <span className="ph-filter-sort__radio">{sortMode === opt.value ? '●' : '○'}</span>
+                <span>{opt.label}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div className="ph-filter-section">
       <div className="ph-filter-section__title"><span>筛选</span><span className="ph-filter-section__en">Filter</span></div>
       {/* 系列 */}
       <div className="ph-filter-group">
@@ -342,7 +362,8 @@ export default function Dresses() {
           </ul>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 
   // ===== 卡片渲染 =====

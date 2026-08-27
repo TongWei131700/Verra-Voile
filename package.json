@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:seo": "vite build && node scripts/prerender.cjs",
+    "build:home": "vite build && node scripts/prerender.cjs --only /",
     "preview": "vite preview"
   },
   "keywords": [],

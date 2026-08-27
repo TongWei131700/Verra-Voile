@@ -373,8 +373,10 @@ export default function NewHome() {
             </div>
             {idx < MODULES.length - 1 && (
               <div className="nh-scroll-hint">
-                <div className="nh-scroll-line" />
-                <span className="nh-scroll-text">Scroll</span>
+                <svg className="nh-scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+                <span className="nh-scroll-text">滑动探索</span>
               </div>
             )}
           </section>

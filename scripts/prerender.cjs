@@ -3,7 +3,10 @@
  * 策略：先预取所有 API 数据，然后在 Puppeteer 中拦截 API 请求直接返回缓存数据
  * 这样页面渲染无需等待网络请求，速度极快
  *
- * 用法: VITE_API_URL=https://europewedding.cn node scripts/prerender.cjs
+ * 用法:
+ *   全量渲染: VITE_API_URL=https://europewedding.cn node scripts/prerender.cjs
+ *   单页渲染: VITE_API_URL=https://europewedding.cn node scripts/prerender.cjs --only /
+ *   单页渲染: VITE_API_URL=https://europewedding.cn node scripts/prerender.cjs --only /destinations
  */
 const http = require('http')
 const fs = require('fs')
@@ -277,20 +280,45 @@ ${urls}
   console.log(`  sitemap.xml: ${routes.length} 个 URL`)
 }
 
+// ---------- 解析 --only 参数 ----------
+function parseOnlyArg() {
+  const idx = process.argv.indexOf('--only')
+  if (idx === -1) return null
+  // 支持 --only / 或 --only /,/destinations 逗号分隔多个
+  const val = process.argv[idx + 1]
+  if (!val) {
+    console.error('  ✗ --only 需要指定路径，如 --only / 或 --only /,/destinations')
+    process.exit(1)
+  }
+  return val.split(',').map(s => s.trim()).filter(Boolean)
+}
+
 // ---------- 主流程 ----------
 async function main() {
+  const onlyRoutes = parseOnlyArg()
+  const isSingleMode = onlyRoutes !== null
+
   console.log('=== SSG 预渲染 ===')
   console.log(`  API: ${API_BASE}`)
-  console.log(`  dist: ${DIST_DIR}\n`)
+  console.log(`  dist: ${DIST_DIR}`)
+  if (isSingleMode) console.log(`  模式: 仅渲染 ${onlyRoutes.join(', ')}`)
+  console.log()
 
   if (!fs.existsSync(path.join(DIST_DIR, 'index.html'))) {
     console.error('  ✗ dist/index.html 不存在，请先运行 vite build')
     process.exit(1)
   }
 
-  // 1. 预取所有 API 数据
-  console.log('[1/4] 预取 API 数据...')
-  const routeMap = await prefetchAllData()
+  // 1. 预取 API 数据（单页模式跳过）
+  let routeMap
+  if (isSingleMode) {
+    console.log('[1/4] 跳过 API 数据预取（单页模式）')
+    routeMap = {}
+    for (const r of onlyRoutes) routeMap[r] = []
+  } else {
+    console.log('[1/4] 预取 API 数据...')
+    routeMap = await prefetchAllData()
+  }
   const routes = Object.keys(routeMap)
   console.log(`\n  共 ${routes.length} 个页面待渲染\n`)
 
@@ -348,9 +376,13 @@ async function main() {
     server.close()
   }
 
-  // 5. 生成 sitemap
-  console.log('\n[5/5] 生成 sitemap.xml...')
-  generateSitemap(routes)
+  // 5. 生成 sitemap（单页模式跳过）
+  if (!isSingleMode) {
+    console.log('\n[5/5] 生成 sitemap.xml...')
+    generateSitemap(routes)
+  } else {
+    console.log('\n[5/5] 跳过 sitemap 生成（单页模式）')
+  }
 
   // 清理模板文件，恢复首页渲染结果
   try { fs.unlinkSync(TEMPLATE_PATH) } catch {}

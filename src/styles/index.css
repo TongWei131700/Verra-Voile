@@ -10318,6 +10318,7 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
   height: 100svh;
   height: calc(var(--vh, 1vh) * 100);
   width: 100%;
+  margin: 0 auto;
   display: none;
   align-items: center;
   justify-content: center;
@@ -10359,23 +10360,24 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
   }
 }
 
-/* 移动端滑动引导动画 */
+/* 移动端滑动引导箭头 */
 .nh-scroll-hint {
   position: absolute;
-  bottom: 40px;
+  bottom: 32px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   animation: nh-scroll-bounce 2s ease-in-out infinite;
 }
-.nh-scroll-line {
-  width: 1px;
-  height: 44px;
-  background: linear-gradient(to bottom, transparent, #d4b896 40%);
-  border-radius: 1px;
+.nh-scroll-arrow {
+  width: 28px;
+  height: 28px;
+  color: #d4b896;
+  filter: drop-shadow(0 0 8px rgba(212, 184, 150, 0.6));
+  animation: nh-arrow-pulse 2s ease-in-out infinite;
 }
 .nh-scroll-text {
   font-size: 11px;
@@ -10383,11 +10385,16 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
   letter-spacing: 3px;
   text-transform: uppercase;
   color: #d4b896;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.4);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
+  font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
 }
 @keyframes nh-scroll-bounce {
-  0%, 100% { opacity: 0.35; transform: translateX(-50%) translateY(-6px); }
-  50% { opacity: 0.8; transform: translateX(-50%) translateY(6px); }
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) translateY(-4px); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(8px); }
+}
+@keyframes nh-arrow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(212, 184, 150, 0.4)); }
+  50% { filter: drop-shadow(0 0 16px rgba(212, 184, 150, 0.9)); }
 }
 
 /* 手机 */

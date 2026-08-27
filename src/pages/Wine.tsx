@@ -85,9 +85,6 @@ const HERO_IMG = 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w
 import Seo from '../components/Seo'
 
 const MAX_VISIBLE_FILTERS = 5
-const WIDE_LIMIT = 10   // 宽屏每个模块最多展示
-const NARROW_LIMIT = 3  // 窄屏每个模块最多展示
-const NARROW_MORE = 10  // 窄屏点击更多后追加
 
 // 筛选/排序缓存
 let _cachedSelectedRegions: string[] | null = null
@@ -95,6 +92,7 @@ let _cachedSelectedTypes: string[] | null = null
 let _cachedSelectedVintages: string[] | null = null
 let _cachedSearchFilter: string | null = null
 let _cachedSortMode: string | null = null
+let _cachedTypeLimits: Record<string, number> | null = null
 
 export default function Wine() {
   const navigate = useNavigate()
@@ -102,24 +100,18 @@ export default function Wine() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchFilter, setSearchFilter] = useState(() => _cachedSearchFilter ?? '')
-  const [isNarrow, setIsNarrow] = useState(() => window.innerWidth <= 900)
 
-  // 每个分组的展开页数（从 sessionStorage 恢复）
-  const [typePages, setTypePages] = useState<Record<string, number>>(() => {
-    try { return JSON.parse(sessionStorage.getItem('wine_type_pages') || '{}') } catch { return {} }
-  })
-
-  // 监听窗口宽度变化
-  useEffect(() => {
-    const fn = () => setIsNarrow(window.innerWidth <= 900)
-    window.addEventListener('resize', fn)
-    return () => window.removeEventListener('resize', fn)
+  // 分组展示（所有分组一次性展示，每组内按屏幕宽度控制初始显示数量）
+  const INITIAL_PER_TYPE = useMemo(() => {
+    if (typeof window === 'undefined') return 6
+    const w = window.innerWidth
+    if (w < 640) return 6
+    if (w < 1000) return 8
+    if (w < 1400) return 9
+    return 10
   }, [])
-
-  // typePages 变化时持久化到 sessionStorage
-  useEffect(() => {
-    sessionStorage.setItem('wine_type_pages', JSON.stringify(typePages))
-  }, [typePages])
+  const LOAD_MORE_STEP = 20
+  const [typeLimits, setTypeLimits] = useState<Record<string, number>>(_cachedTypeLimits ?? {})
 
   // 跟踪已加入意向单的商品
   const [bookedProducts, setBookedProducts] = useState<Set<string>>(() => {
@@ -279,40 +271,49 @@ export default function Wine() {
     return list
   }, [products, searchQuery, selectedRegions, selectedTypes, selectedVintages, sortMode])
 
-  // 按类型分组（过滤已加入意向单的商品）+ 可见性控制
-  const groupedByType = useMemo(() => {
-    const groups: { type: string; items: WineProduct[]; visibleItems: WineProduct[]; hasMore: boolean; hiddenCount: number }[] = []
+  // 按类型分组（过滤已加入意向单的商品）
+  const groupedByTypeRaw = useMemo(() => {
+    const groups: { type: string; items: WineProduct[] }[] = []
     const map = new Map<string, WineProduct[]>()
     filteredList.forEach(p => {
       if (bookedProducts.has(p.productId)) return
       const t = p.tags?.type || '其他'
-      if (!map.has(t)) map.set(t, [])
+      if (!map.has(t)) {
+        const arr: WineProduct[] = []
+        map.set(t, arr)
+        groups.push({ type: t, items: arr })
+      }
       map.get(t)!.push(p)
     })
-    map.forEach((items, type) => {
-      const pages = typePages[type] || 1
-      const limit = isNarrow
-        ? (pages === 1 ? NARROW_LIMIT : NARROW_LIMIT + (pages - 1) * NARROW_MORE)
-        : pages * WIDE_LIMIT
-      const visibleItems = items.slice(0, limit)
-      const hasMore = items.length > limit
-      const hiddenCount = Math.max(0, items.length - limit)
-      groups.push({ type, items, visibleItems, hasMore, hiddenCount })
-    })
     return groups
-  }, [filteredList, bookedProducts, typePages, isNarrow])
+  }, [filteredList, bookedProducts])
+
+  const groupedByType = useMemo(() => {
+    return groupedByTypeRaw.map(group => {
+      const limit = typeLimits[group.type] ?? INITIAL_PER_TYPE
+      return {
+        ...group,
+        visibleItems: group.items.slice(0, limit),
+        hasMore: group.items.length > limit,
+        hiddenCount: group.items.length - limit,
+      }
+    })
+  }, [groupedByTypeRaw, typeLimits, INITIAL_PER_TYPE])
 
   const loadMoreType = (type: string) => {
-    setTypePages(prev => ({ ...prev, [type]: (prev[type] || 1) + 1 }))
+    setTypeLimits(prev => {
+      const next = { ...prev, [type]: (prev[type] ?? INITIAL_PER_TYPE) + LOAD_MORE_STEP }
+      _cachedTypeLimits = next
+      return next
+    })
   }
 
   // 筛选/排序变化时重置展开状态（跳过首次挂载）并滚回顶部
   const isFirstMount = useRef(true)
   useEffect(() => {
     if (isFirstMount.current) { isFirstMount.current = false; return }
-    setTypePages({})
-    sessionStorage.removeItem('wine_type_pages')
-    // 滚回顶部
+    setTypeLimits({})
+    _cachedTypeLimits = null
     document.documentElement.scrollTop = 0
   }, [searchQuery, selectedRegions, selectedTypes, selectedVintages, sortMode])
 

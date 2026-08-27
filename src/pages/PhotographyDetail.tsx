@@ -1,13 +1,11 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
-import BackButton from '../components/common/BackButton'
 import LoginModal from '../components/LoginModal'
 import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
 import { proxyImage } from '../utils/imageProxy'
-import ewLogo from '../assets/europewedding-logo.png'
-import defaultHeadshot from '../assets/default-photographer-headshot.jpg'
 import Seo from '../components/Seo'
+import { CardHero } from '../components/DetailHero'
 
 function isLoggedIn() {
   return !!localStorage.getItem('token')
@@ -50,12 +48,23 @@ function mapApiDetail(row: any): PhotographerDetail {
     desc: row.description || '',
     photoStyles: parseJSON(row.photo_styles),
     highlights: parseJSON(row.highlights),
-    style: parseJSON(row.style, undefined),
+    style: (() => {
+      const raw = parseJSON(row.style, undefined)
+      if (!raw || !Array.isArray(raw)) return undefined
+      return raw.map((g: any) => ({
+        title: g.title || g.name || '',
+        items: Array.isArray(g.items)
+          ? g.items
+          : Array.isArray(g.values)
+            ? g.values.map((v: string) => ({ label: v }))
+            : []
+      }))
+    })(),
     cover: row.cover_image || '',
     images: parseJSON(row.images),
     headshot: row.headshot || undefined,
     price: row.price ?? undefined,
-    website: row.website || undefined,
+    website: row.website || row.source_url || undefined,
     source: { name: row.source_name || '', url: row.source_url || '' },
   }
 }
@@ -69,18 +78,12 @@ export default function PhotographyDetail() {
   const [showBar, setShowBar] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [isBooked, setIsBooked] = useState(false)
-  const [heroSlide, setHeroSlide] = useState(0)
-  const [heroPrev, setHeroPrev] = useState<number | null>(null)
-  const [heroPaused, setHeroPaused] = useState(false)
-  const [heroLightbox, setHeroLightbox] = useState(false)
   const [galleryPage, setGalleryPage] = useState(1)
   const [galleryLoading, setGalleryLoading] = useState(false)
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
   const [galleryCols, setGalleryCols] = useState(3)
   const [isBooking, setIsBooking] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
-  const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const heroTouchX = useRef<number | null>(null)
   const aboutRef = useRef<HTMLElement>(null)
 
   // 从 API 加载摄影师详情
@@ -173,40 +176,6 @@ export default function PhotographyDetail() {
     window.scrollTo({ top: 0 })
   }, [])
 
-  // Hero 轮播自动切换
-  useEffect(() => {
-    if (!detail || heroPaused) return
-    const total = Math.min(detail.images.length, 3)
-    const timer = setInterval(() => {
-      setHeroSlide(prev => {
-        setHeroPrev(prev)
-        setTimeout(() => setHeroPrev(null), 650)
-        return (prev + 1) % total
-      })
-    }, 4000)
-    return () => clearInterval(timer)
-  }, [detail, heroPaused])
-
-  // 手动操作后暂停 5 秒
-  const pauseHeroCarousel = useCallback(() => {
-    setHeroPaused(true)
-    if (heroTimerRef.current) clearTimeout(heroTimerRef.current)
-    heroTimerRef.current = setTimeout(() => setHeroPaused(false), 5000)
-  }, [])
-
-  // 切换幻灯片（新图覆盖旧图）
-  const goHeroSlide = useCallback((idx: number) => {
-    if (idx === heroSlide) return
-    setHeroPrev(heroSlide)
-    setHeroSlide(idx)
-    pauseHeroCarousel()
-    setTimeout(() => setHeroPrev(null), 650)
-  }, [heroSlide, pauseHeroCarousel])
-
-  useEffect(() => {
-    return () => { if (heroTimerRef.current) clearTimeout(heroTimerRef.current) }
-  }, [])
-
   // 作品展滚动加载：窗口滚动到底部附近时追加一批图片
   useEffect(() => {
     if (!detail) return
@@ -229,59 +198,21 @@ export default function PhotographyDetail() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [detail, galleryLoading, galleryPage])
 
-  // 触摸滑动支持
-  const onCarouselTouchStart = (e: React.TouchEvent) => {
-    heroTouchX.current = e.touches[0].clientX
-  }
-  const onCarouselTouchEnd = (e: React.TouchEvent) => {
-    if (heroTouchX.current === null || !detail) return
-    const diff = e.changedTouches[0].clientX - heroTouchX.current
-    heroTouchX.current = null
-    if (Math.abs(diff) < 40) return
-    const total = Math.min(detail.images.length, 3)
-    if (diff < 0) goHeroSlide((heroSlide + 1) % total)
-    else goHeroSlide((heroSlide - 1 + total) % total)
-  }
-
-  useEffect(() => {
-    if (!aboutRef.current) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting || entry.boundingClientRect.top < 0) setShowBar(true)
-        else setShowBar(false)
-      },
-      { threshold: 0 }
-    )
-    observer.observe(aboutRef.current)
-    return () => observer.disconnect()
-  }, [detail])
-
   if (dataLoading) {
     return (
       <div className="cd-page">
-        <section className="photo-hero">
-          <div className="photo-hero__card">
-            {/* 左侧：轮播区占位 */}
-            <div className="photo-hero__carousel">
-              <div className="photo-hero__slide photo-hero__slide--active">
+        <section className="card-hero">
+          <div className="card-hero__card">
+            <div className="card-hero__carousel">
+              <div className="card-hero__slide card-hero__slide--active">
                 <div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} />
               </div>
             </div>
-            {/* 右侧：信息面板占位 */}
-            <div className="photo-hero__info" style={{ position: 'relative' }}>
-              <div className="photo-hero__skeleton" style={{ zIndex: 0 }}>
-                <div className="photo-hero__skeleton-shimmer" />
-              </div>
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div className="photo-hero__headshot">
-                  <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
-                </div>
-                <div className="photo-hero__meta">
-                  <div style={{ height: 18, width: '40%', borderRadius: 4, marginBottom: 14, background: 'rgba(255,255,255,0.04)' }} />
-                  <div style={{ height: 14, width: '70%', borderRadius: 4, marginBottom: 10, background: 'rgba(255,255,255,0.04)' }} />
-                  <div style={{ height: 14, width: '45%', borderRadius: 4, background: 'rgba(255,255,255,0.04)' }} />
-                </div>
-              </div>
+            <div className="card-hero__info" style={{ position: 'relative' }}>
+              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', marginBottom: 24 }} />
+              <div style={{ height: 14, width: '40%', borderRadius: 4, marginBottom: 14, background: 'rgba(255,255,255,0.04)' }} />
+              <div style={{ height: 22, width: '70%', borderRadius: 4, marginBottom: 10, background: 'rgba(255,255,255,0.04)' }} />
+              <div style={{ height: 14, width: '45%', borderRadius: 4, background: 'rgba(255,255,255,0.04)' }} />
             </div>
           </div>
         </section>
@@ -330,109 +261,22 @@ export default function PhotographyDetail() {
         ] : undefined}
       />
       {/* ===== 1. Hero 区域 ===== */}
-      <section className="photo-hero">
-        <div className="photo-hero__card">
-          <div className="photo-hero__carousel" onTouchStart={onCarouselTouchStart} onTouchEnd={onCarouselTouchEnd}>
-            {detail.images.slice(0, 3).map((img, i) => (
-              <div
-                key={i}
-                className={`photo-hero__slide${i === heroSlide ? ' photo-hero__slide--active' : ''}${i === heroPrev ? ' photo-hero__slide--prev' : ''}`}
-              >
-                <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${i + 1}`} className="photo-hero__img" onClick={() => setHeroLightbox(true)} style={{ cursor: 'zoom-in' }} />
-              </div>
-            ))}
-            <button className="photo-hero__arrow photo-hero__arrow--left" onClick={() => goHeroSlide((heroSlide - 1 + 3) % 3)}>
-              <svg width="24" height="24" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
-            </button>
-            <button className="photo-hero__arrow photo-hero__arrow--right" onClick={() => goHeroSlide((heroSlide + 1) % 3)}>
-              <svg width="24" height="24" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
-            </button>
-            <div className="photo-hero__dots">
-              {detail.images.slice(0, 3).map((_, i) => (
-                <button
-                  key={i}
-                  className={`photo-hero__dot${i === heroSlide ? ' photo-hero__dot--active' : ''}`}
-                  onClick={() => goHeroSlide(i)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Lightbox 放大查看 */}
-          {heroLightbox && (
-            <div className="photo-hero__lightbox" onClick={() => setHeroLightbox(false)}>
-              <button className="photo-hero__lightbox-close" onClick={() => setHeroLightbox(false)}>
-                <svg width="28" height="28" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="#fff" strokeWidth="2" fill="none" /></svg>
-              </button>
-              <button className="photo-hero__lightbox-arrow photo-hero__lightbox-arrow--left" onClick={e => { e.stopPropagation(); goHeroSlide((heroSlide - 1 + 3) % 3) }}>
-                <svg width="28" height="28" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="#fff" strokeWidth="2" fill="none" /></svg>
-              </button>
-              <img src={proxyImage(detail.images[heroSlide])} alt="" className="photo-hero__lightbox-img" onClick={e => e.stopPropagation()} />
-              <button className="photo-hero__lightbox-arrow photo-hero__lightbox-arrow--right" onClick={e => { e.stopPropagation(); goHeroSlide((heroSlide + 1) % 3) }}>
-                <svg width="28" height="28" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="#fff" strokeWidth="2" fill="none" /></svg>
-              </button>
-              <div className="photo-hero__lightbox-counter">{heroSlide + 1} / 3</div>
-            </div>
-          )}
-
-        {/* 右侧：摄影师信息 */}
-        <div className={`photo-hero__info${isBooked ? ' photo-hero__info--booked' : ''}`}>
-          {/* 已预定徽章 — 右上角 */}
-          {isBooked && (
-            <div className="photo-booked-badge">
-              <svg className="photo-booked-badge__svg" viewBox="0 0 80 80" width="120" height="120">
-                {/* 左半花环 */}
-                <path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-                <path d="M14 50 C10 46, 9 40, 12 35" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
-                <path d="M10 42 C8 38, 8 32, 11 28" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
-                {/* 右半花环 */}
-                <path d="M60 62 C72 52, 76 38, 68 24 C64 17, 58 12, 50 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-                <path d="M66 50 C70 46, 71 40, 68 35" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
-                <path d="M70 42 C72 38, 72 32, 69 28" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
-                {/* 小叶片装饰 - 左 */}
-                <ellipse cx="11" cy="44" rx="3" ry="1.5" transform="rotate(-30 11 44)" fill="currentColor" opacity="0.15"/>
-                <ellipse cx="9" cy="35" rx="2.5" ry="1.3" transform="rotate(-15 9 35)" fill="currentColor" opacity="0.15"/>
-                <ellipse cx="14" cy="52" rx="3" ry="1.5" transform="rotate(-45 14 52)" fill="currentColor" opacity="0.15"/>
-                {/* 小叶片装饰 - 右 */}
-                <ellipse cx="69" cy="44" rx="3" ry="1.5" transform="rotate(30 69 44)" fill="currentColor" opacity="0.15"/>
-                <ellipse cx="71" cy="35" rx="2.5" ry="1.3" transform="rotate(15 71 35)" fill="currentColor" opacity="0.15"/>
-                <ellipse cx="66" cy="52" rx="3" ry="1.5" transform="rotate(45 66 52)" fill="currentColor" opacity="0.15"/>
-                {/* 顶部小星点 */}
-                <circle cx="40" cy="8" r="1.5" fill="currentColor" opacity="0.3"/>
-                <circle cx="34" cy="10" r="0.8" fill="currentColor" opacity="0.2"/>
-                <circle cx="46" cy="10" r="0.8" fill="currentColor" opacity="0.2"/>
-              </svg>
-              <div className="photo-booked-badge__check">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </div>
-              <span className="photo-booked-badge__text">已加入意向单</span>
-            </div>
-          )}
-          <BackButton to="/photography" />
-          <div className="photo-hero__headshot">
-            <img src={proxyImage(detail.headshot || defaultHeadshot)} alt={detail.nameEn} className="photo-hero__headshot-img" />
-          </div>
-          <div className="photo-hero__meta">
-            <span className="photo-hero__badge">{detail.categoryCn}</span>
-            <h1 className="photo-hero__name">{detail.name}</h1>
-            <p className="photo-hero__name-en">{detail.nameEn}</p>
-            <div className="photo-hero__divider" />
-            <p className="photo-hero__tagline">{detail.tagline}</p>
-            {detail.website && (
-              <a href={detail.website} target="_blank" rel="noreferrer" className="photo-hero__website">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z" />
-                </svg>
-                Visit Website
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-      </section>
+      <CardHero
+        images={detail.images}
+        name={detail.name}
+        nameEn={detail.nameEn}
+        badge={detail.categoryCn}
+        tagline={detail.tagline}
+        headshot={detail.headshot}
+        cover={detail.cover}
+        website={detail.website}
+        backTo="/photography"
+        isBooked={isBooked}
+        isBooking={isBooking}
+        isCanceling={isCanceling}
+        aboutRef={aboutRef}
+        onSetShowBar={setShowBar}
+      />
 
       {/* ===== 内容区 ===== */}
       <div className="cd-content">
@@ -578,21 +422,7 @@ export default function PhotographyDetail() {
       {showLoginModal && (
         <LoginModal onClose={() => setShowLoginModal(false)} onSuccess={() => { setShowLoginModal(false); handleConsult() }} desc="登录后即可咨询订单" />
       )}
-      {/* 预定/取消加载动画 */}
-      {(isBooking || isCanceling) && (
-        <div className="photo-booking-overlay">
-          <div className="photo-booking-gift">
-            <div className="photo-booking-gift__lid" />
-            <div className="photo-booking-gift__box">
-              <img src={ewLogo} alt="" className="photo-booking-gift__logo" />
-            </div>
-            <div className="photo-booking-gift__sparkles">
-              <span /><span /><span /><span /><span /><span />
-            </div>
-          </div>
-          <p className="photo-booking-text">{isCanceling ? '正在移出意向单…' : '正在加入意向单…'}</p>
-        </div>
-      )}
+
     </div>
   )
 }

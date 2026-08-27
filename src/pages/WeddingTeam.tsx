@@ -48,6 +48,7 @@ let _cachedSelectedCountries: string[] | null = null
 let _cachedSelectedSpecialties: string[] | null = null
 let _cachedSearchFilter: string | null = null
 let _cachedSortMode: string | null = null
+let _cachedCountryLimits: Record<string, number> | null = null
 
 // 将 API 返回的 snake_case 数据转为前端 camelCase
 function mapApiItem(row: any): WeddingTeamCompany {
@@ -116,22 +117,17 @@ export default function WeddingTeam() {
   const [sortMode, setSortMode] = useState<string>(() => _cachedSortMode ?? 'default')
   const [bottomSheet, setBottomSheet] = useState<'sort' | 'country' | 'filter' | null>(null)
   const [pendingCountries, setPendingCountries] = useState<Set<string> | null>(null)
-  const GROUPS_PER_PAGE = 5
-  const [visibleGroupCount, setVisibleGroupCount] = useState(GROUPS_PER_PAGE)
-
-  // 列表展示规则：宽屏10 / 窄屏3+追加10 / sessionStorage 持久化
-  const WIDE_LIMIT = 10
-  const NARROW_LIMIT = 3
-  const NARROW_MORE = 10
-  const [isNarrow, setIsNarrow] = useState(() => window.innerWidth <= 900)
-  useEffect(() => {
-    const fn = () => setIsNarrow(window.innerWidth <= 900)
-    window.addEventListener('resize', fn)
-    return () => window.removeEventListener('resize', fn)
+  // 分组展示（所有分组一次性展示，每组内按屏幕宽度控制初始显示数量）
+  const INITIAL_PER_COUNTRY = useMemo(() => {
+    if (typeof window === 'undefined') return 6
+    const w = window.innerWidth
+    if (w < 640) return 6
+    if (w < 1000) return 8
+    if (w < 1400) return 9
+    return 10
   }, [])
-  const [countryPages, setCountryPages] = useState<Record<string, number>>(() => {
-    try { return JSON.parse(sessionStorage.getItem('team_country_pages') || '{}') } catch { return {} }
-  })
+  const LOAD_MORE_STEP = 20
+  const [countryLimits, setCountryLimits] = useState<Record<string, number>>(_cachedCountryLimits ?? {})
 
   // 从 API 加载数据（有缓存则复用）
   useEffect(() => {
@@ -232,12 +228,12 @@ export default function WeddingTeam() {
   const otherList = useMemo(() => filteredList.filter(c => !bookedSlugs.has(c.slug)), [filteredList, bookedSlugs])
 
   // 按国家分组（保持首次出现顺序）
-  const visibleGroupedByCountry = useMemo(() => {
+  const groupedByCountry = useMemo(() => {
     const groups: { country: string; countryEn: string; items: WeddingTeamCompany[] }[] = []
     const map = new Map<string, { country: string; countryEn: string; items: WeddingTeamCompany[] }>()
     otherList.forEach(item => {
       if (!map.has(item.country)) {
-        const group = { country: item.country, countryEn: item.countryEn, items: [] }
+        const group = { country: item.country, countryEn: item.countryEn, items: [] as WeddingTeamCompany[] }
         map.set(item.country, group)
         groups.push(group)
       }
@@ -246,40 +242,34 @@ export default function WeddingTeam() {
     return groups
   }, [otherList])
 
-  // 页式"查看更多"
-  const groupedWithExpansion = useMemo(() => {
-    return visibleGroupedByCountry.map(group => {
-      const pages = countryPages[group.country] || 1
-      const limit = isNarrow
-        ? (pages === 1 ? NARROW_LIMIT : NARROW_LIMIT + (pages - 1) * NARROW_MORE)
-        : pages * WIDE_LIMIT
-      const visibleItems = group.items.slice(0, limit)
-      return { ...group, visibleItems, hasMore: group.items.length > limit, hiddenCount: Math.max(0, group.items.length - limit) }
+  const groupsWithExpansion = useMemo(() => {
+    return groupedByCountry.map(group => {
+      const limit = countryLimits[group.country] ?? INITIAL_PER_COUNTRY
+      return {
+        ...group,
+        visibleItems: group.items.slice(0, limit),
+        hasMore: group.items.length > limit,
+        hiddenCount: group.items.length - limit,
+      }
     })
-  }, [visibleGroupedByCountry, countryPages, isNarrow])
+  }, [groupedByCountry, countryLimits, INITIAL_PER_COUNTRY])
 
-  const visibleGroups = useMemo(() => {
-    return groupedWithExpansion.slice(0, visibleGroupCount)
-  }, [groupedWithExpansion, visibleGroupCount])
-
-  const hasMoreGroups = visibleGroupCount < groupedWithExpansion.length
+  const visibleGroups = groupsWithExpansion
 
   const loadMoreCountry = (country: string) => {
-    setCountryPages(prev => {
-      const next = { ...prev, [country]: (prev[country] || 1) + 1 }
-      sessionStorage.setItem('team_country_pages', JSON.stringify(next))
+    setCountryLimits(prev => {
+      const next = { ...prev, [country]: (prev[country] ?? INITIAL_PER_COUNTRY) + LOAD_MORE_STEP }
+      _cachedCountryLimits = next
       return next
     })
   }
 
-  // 筛选/排序变化时重置（跳过首次挂载）并滚回顶部
+  // 筛选/排序变化时重置分页并滚回顶部（跳过首次挂载）
   const isFirstMount = useRef(true)
   useEffect(() => {
     if (isFirstMount.current) { isFirstMount.current = false; return }
-    setCountryPages({})
-    sessionStorage.removeItem('team_country_pages')
-    setVisibleGroupCount(GROUPS_PER_PAGE)
-    // 滚回顶部
+    setCountryLimits({})
+    _cachedCountryLimits = null
     document.documentElement.scrollTop = 0
   }, [selectedCountries, selectedSpecialties, searchFilter, sortMode])
 
@@ -361,10 +351,6 @@ export default function WeddingTeam() {
     return () => el.removeEventListener('wheel', preventScroll)
   }, [])
 
-  // 加载更多国家分组
-  const handleLoadMoreGroups = () => {
-    setVisibleGroupCount(prev => prev + GROUPS_PER_PAGE)
-  }
 
   // 回车确认搜索
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
@@ -860,13 +846,12 @@ export default function WeddingTeam() {
                         <span>其他</span>
                         <span className="cd-section-label__count">{otherList.length}</span>
                       </div>
-                      {visibleGroups.map((group, gi) => (
+                      {groupsWithExpansion.map((group, gi) => (
                         <Fragment key={group.country}>
-                          <div className="cd-country-header" style={{ gridColumn: '1 / -1' }}>
-                            <h2 className="cd-country-header__title">{group.country}</h2>
-                            <span className="cd-country-header__en">{group.countryEn}</span>
-                            <div className="cd-country-header__line" />
-                            <span className="cd-country-header__count">{group.items.length} 家团队</span>
+                          <div className="cd-section-label">
+                            <span className="cd-section-label__icon">✦</span>
+                            <span>{group.country}</span>
+                            <span className="cd-section-label__count">{group.items.length}</span>
                           </div>
                           {group.visibleItems.map(item => (
                             <div
@@ -910,11 +895,10 @@ export default function WeddingTeam() {
               ) : (
                 visibleGroups.map((group, gi) => (
                   <Fragment key={group.country}>
-                    <div className="cd-country-header" style={{ gridColumn: '1 / -1' }}>
-                      <h2 className="cd-country-header__title">{group.country}</h2>
-                      <span className="cd-country-header__en">{group.countryEn}</span>
-                      <div className="cd-country-header__line" />
-                      <span className="cd-country-header__count">{group.items.length} 家团队</span>
+                    <div className="cd-section-label">
+                      <span className="cd-section-label__icon">✦</span>
+                      <span>{group.country}</span>
+                      <span className="cd-section-label__count">{group.items.length}</span>
                     </div>
                     {group.visibleItems.map(item => (
                       <div
@@ -953,13 +937,7 @@ export default function WeddingTeam() {
                 ))
               )}
 
-              {hasMoreGroups && sortMode === 'default' && (
-                <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                  <button className="cd-section-more__btn" onClick={handleLoadMoreGroups}>
-                    加载更多策划公司…
-                  </button>
-                </div>
-              )}
+
             </>
           ) : (
             <div className="cd-filter__empty" style={{ gridColumn: '1 / -1' }}>

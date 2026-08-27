@@ -35,10 +35,43 @@ description: 从婚礼策划公司官网或第三方平台爬取数据，下载�
 - 示例：`https://la-fete.com/about/`、`https://aimeedunne.com/`
 - 使用 Browser Agent 爬取全部页面
 
-#### 类型 B：第三方平台
-从 Junebug Weddings 等平台获取基础数据，再补充官网信息。
-- 示例：`https://junebugweddings.com/vendors/wedding-planners/united-kingdom/london/La-Fete`
+#### 类型 B：第三方平台（Junebug 专用，禁止使用 Browser Agent / WebFetch）
+从 Junebug Weddings 获取数据。**必须且只能用 Puppeteer 脚本**，禁止使用 Browser Agent（太慢）或 WebFetch（被 Cloudflare 拦截 403）。
+- 示例：`https://junebugweddings.com/vendors/wedding-planners/italy/central-italy/THEKNOTINITALY`
 - 图片质量高（平台提供高清图片）
+- **无需再爬官网**：直接用 Junebug 数据即可
+
+**Junebug 供应商页面结构**（已验证）：
+```
+页面从上到下：
+├── 轮播图（class: vendor__slide）     → 3 张
+├── 基本信息（名称、Tagline、Logo、位置、链接）
+├── Why book? 描述文字
+├── 画廊（class: gallery__card）        → 初始显示 9 张，点击 "View more +" 后共 21 张
+├── Features 文章配图（class: features-item__image） → 不下载，跳过
+├── 客户评价（Reviews）
+└── 底部推荐
+```
+
+**⚠️ 重要：Junebug 页面没有「服务项目」数据**
+Junebug 供应商页面不包含 services 信息。服务项目必须在编写 insert 脚本时，根据团队描述（description）、特色标签（specialties）、所在地（city/country）和评价内容**推导生成**。详见下方「服务项目生成规范」。
+
+**唯一执行方案 — 单个 Puppeteer 脚本**：
+编写 `scripts/extract-junebug-{slug}.cjs`，一个脚本完成全部工作：
+1. 启动 Puppeteer 浏览器，访问 Junebug 页面
+2. 通过 `page.on('response')` 拦截 `images.junebugweddings.com` 的图片 buffer
+3. 滚动页面 + 循环点击 `.load-more.is-visible` 按钮加载全部画廊图片
+4. 提取页面 DOM 中的所有文字数据（名称、tagline、描述、评价、网站链接、社交媒体等）
+5. 提取画廊图片 URL 列表（`.gallery__card` 的 img src）
+6. 将拦截到的图片 buffer 写入 `uploads/crawled/{slug}/` 目录
+7. 将所有提取的数据输出为 JSON 文件 `scripts/junebug-{slug}-data.json`
+8. 复制图片到前端目录
+
+**禁止的方案**（每次必须遵守）：
+- ❌ 禁止用 Browser Agent（启动慢、提取慢）
+- ❌ 禁止用 WebFetch（Cloudflare 返回 403）
+- ❌ 禁止用 curl / http.get 下载 Junebug 图片（Cloudflare 返回 403）
+- ❌ 禁止分两步脚本（先提取再下载），必须一个脚本搞定
 
 ### Step 1：使用 Browser Agent 爬取官网
 
@@ -103,7 +136,25 @@ Important notes:
 
 ### 常见建站平台提取技巧
 
-#### Squarespace（最常见）
+#### Junebug Weddings（类型 B 数据源）
+- **页面 URL 格式**：`junebugweddings.com/vendors/{category}/{country}/{region}/{vendor-name}`
+- **图片 URL 特征**：`images.junebugweddings.com/xx/xx/xxxxxxxxxxxx.jpg`
+- **Cloudflare 防护**：所有服务器端请求返回 403，必须用 Puppeteer 浏览器拦截方式下载
+- **画廊懒加载**：初始只显示 9 张，有 "View more +" 按钮（class: `load-more`），需反复点击直到按钮消失
+- **DOM 选择器**：
+  - 轮播图：`.vendor__slide img`
+  - 画廊：`.gallery__card`（img 元素，src 即图片 URL）
+  - 加载更多：`.load-more.is-visible`（点击后按钮可能重新变为可见，需循环处理）
+  - Features（不下载）：`.features-item__image`
+  - **官网链接：`.see-website a`**（Junebug 标准 "Visit Website" 按钮，⚠️ 必须用此选择器）
+- **数据提取**：
+  - 名称：页面标题或 `.main__vendor-name` 区域
+  - Tagline/描述："Why book?" 段落文字
+  - 评价：Reviews 区域，包含作者、评分（全部 5 星）、内容
+  - 官网链接：`.see-website a` 的 href 属性（⚠️ 禁止用通用选择器抓取，否则会抓到 `photobugcommunity.com` 广告链接或 Pinterest 等社交媒体链接）
+  - 社交媒体：页面中的 Instagram/Facebook/Pinterest 链接
+
+#### Squarespace（类型 A 官网常见）
 - **图片 URL 特征**：`images.squarespace-cdn.com/content/v1/...`
 - **获取高清版**：URL 末尾加 `?format=1500w` 或 `?format=2500w`
 - **懒加载**：Squarespace 大量使用懒加载，必须滚动到页面底部
@@ -129,9 +180,56 @@ Important notes:
 |---------|---------|------|
 | 作品集图片 | 15-20 张 | 精选质量最好的，不要凑数 |
 | 团队成员 | 1-5 人 | 小型团队通常 1-3 人 |
-| 服务类别 | 2-4 个 | 每个类别 3-7 个具体项目 |
+| 服务类别 | 2-4 个 | 每个类别 3-7 个具体项目（**必填，不可为空**） |
 | 客户评价 | 3-5 条 | 选择内容最丰富的 |
 | 特色标签 | 4-6 个 | 概括核心服务特色 |
+
+### 服务项目生成规范（⚠️ 强制执行）
+
+**核心原则：services 字段绝不允许为空数组 `[]`。**
+
+当数据源（如 Junebug）未提供服务项目信息时，必须根据以下信息推导生成：
+
+1. **团队描述（description）**：从中提取核心服务类型
+2. **特色标签（specialties）**：每个标签可对应一个服务项
+3. **所在地（city/country）**：决定目的地婚礼、场地推荐等服务
+4. **评价内容（testimonials）**：从客户评价中提取实际提供的服务
+
+**生成规则**：
+- 最少 2 个服务类别，最多 4 个
+- 每个类别包含 3-7 个具体项目
+- 必须包含「婚礼策划」类（核心业务）和「目的地/场地」类（地域特色）
+- 服务项目名称要具体，不要泛泛而谈
+
+**标准模板**（根据团队实际情况调整）：
+```json
+[
+  {
+    "title": "Wedding Planning",
+    "title_cn": "婚礼策划",
+    "items": [
+      { "label": "Full Wedding Planning", "label_cn": "全程婚礼策划", "desc": "From concept to completion...", "desc_cn": "从构思到完成的全方位策划服务" },
+      { "label": "Day-of Coordination", "label_cn": "婚礼当天统筹", "desc": "Seamless execution...", "desc_cn": "确保婚礼当天每个环节无缝衔接" },
+      { "label": "Wedding Design", "label_cn": "婚礼设计", "desc": "Creative vision...", "desc_cn": "打造独特的婚礼视觉风格和主题" }
+    ]
+  },
+  {
+    "title": "Destination Services",
+    "title_cn": "目的地服务",
+    "items": [
+      { "label": "Venue Selection", "label_cn": "场地推荐", "desc": "Curated venue portfolio...", "desc_cn": "精选当地优质婚礼场地资源" },
+      { "label": "Vendor Coordination", "label_cn": "供应商协调", "desc": "Trusted vendor network...", "desc_cn": "可靠本地供应商网络与协调管理" },
+      { "label": "Guest Management", "label_cn": "宾客管理", "desc": "Accommodation and logistics...", "desc_cn": "宾客住宿、交通和活动安排" }
+    ]
+  }
+]
+```
+
+**检查清单**（insert 脚本执行前必须确认）：
+- [ ] `services` 不是空数组
+- [ ] 至少有 2 个服务类别
+- [ ] 每个类别至少有 3 个具体项目
+- [ ] 所有文本已翻译为中文（`_cn` 字段）
 
 ### 中文名翻译规范
 
@@ -139,6 +237,11 @@ Important notes:
 - **人名**：标准音译，如 `Laura Gonzalez` → `劳拉·冈萨雷斯`
 - **城市名**：使用官方中文名，如 `Aberdeen` → `阿伯丁`
 - **Tagline**：意译为主，保持简洁优美，如 `苏格兰私密婚礼专家 · 高地城堡与湖泊的浪漫庆典`
+- **Tagline 长度规范**：必须控制在 **22-30 字**，格式为「核心定位 · 亮点特色」。参考现有数据：
+  - 斯波夏莫薇: 意大利奢华目的地婚礼策划 · Vogue 推荐顶级策划团队 (29字)
+  - 拉费特: 英国奢华婚礼与活动策划 · 精通法意西四国语言 (23字)
+  - 艾米·邓恩: 伦敦奢华婚礼与活动策划 · 十年高端策划经验 (22字)
+  - 狂野之心: 苏格兰私密婚礼专家 · 高地城堡与湖泊的浪漫庆典 (24字)
 
 ---
 
@@ -550,7 +653,35 @@ Hero 区域（轮播图 + 信息面板）
 
 ### Squarespace 懒加载导致图片遗漏
 **问题**：Browser Agent 爬取时只获取了首屏图片，滚动后才加载的图片被遗漏。
-**解决**：Browser Agent 提示词中明确要求“滚动到页面底部”，等待懒加载完成后再提取图片 URL。
+**解决**：Browser Agent 提示词中明确要求"滚动到页面底部"，等待懒加载完成后再提取图片 URL。
+
+### Junebug "View more +" 按钮导致图片数量严重不足
+**问题**：Junebug 画廊初始只显示 9 张图片，未点击 "View more +" 按钮导致只下载到 9 张（实际有 21 张）。
+**解决**：用 Puppeteer 循环点击 `.load-more.is-visible` 按钮，每轮点击后等待 2 秒，直到没有可见的按钮为止。最终可获取全部 21 张画廊图片。
+
+### Junebug 图片下载返回 403 Forbidden
+**问题**：`images.junebugweddings.com` 有 Cloudflare 防护，curl/Node http 等服务器端请求全部返回 403。
+**解决**：必须用 Puppeteer 启动浏览器访问页面获取 Cloudflare clearance，然后通过 `page.on('response')` 拦截网络响应获取图片 buffer 写入文件。不能用传统的 http.get() 方式下载。
+
+### Junebug tagline 字段存了英文未翻译
+**问题**：插入脚本中 tagline 直接存了英文原文，前端显示英文。
+**解决**：tagline 字段直接存中文翻译，数据库无 `tagline_cn` 列。所有面向用户显示的文本字段都必须存中文。
+
+### Junebug 批量爬取时 services 字段被遗漏
+**问题**：批量爬取 41 个 Junebug 团队时，insert 脚本全部写入 `services: []` 空数组，导致详情页「服务项目」模块不显示。
+**根因**：Junebug 页面本身不包含 services 数据，提取脚本正确返回空值。但编写 insert 脚本时未根据团队描述、特色标签和所在地推导生成服务项目。
+**解决**：编写 insert 脚本时，**必须**根据以下信息推导生成 2-4 个服务类别：
+- 团队描述（description）→ 提取核心服务类型
+- 特色标签（specialties）→ 每个标签对应一个服务项
+- 所在地（city/country）→ 目的地婚礼、场地推荐等服务
+- 评价内容（testimonials）→ 实际提供的服务
+**流程更新**：在 SKILL.md Type B checklist 第 5 步增加强制检查项，insert 脚本执行前必须确认 services 非空。
+
+### Junebug website 字段提取选择器错误
+**问题**：批量爬取 46 个 Junebug 团队时，website 字段全部为空或存了错误的 Pinterest/Vimeo 链接，导致详情页「Visit Website」按钮不显示或跳转错误。
+**根因**：提取脚本中使用了通用选择器抓取外部链接，结果抓到的是 `photobugcommunity.com`（Junebug 广告链接）或 Pinterest 社交媒体链接，而非供应商真实官网。为避免存错数据，insert 脚本直接留空。
+**解决**：Junebug 页面的 "Visit Website" 按钮有固定选择器 **`.see-website a`**，必须用此选择器提取 href。禁止用通用外部链接选择器，否则会抓到广告或社交媒体链接。
+**流程更新**：在 DOM 选择器列表中明确标注官网链接选择器为 `.see-website a`，并在数据提取说明中增加警告。
 
 ### 下载脚本与插入脚本分离导致流程碎片化
 **问题**：早期将图片下载和数据插入分成两个脚本，执行时容易漏掉其中一步。
@@ -561,16 +692,35 @@ Hero 区域（轮播图 + 信息面板）
 ## 完整流程（Checklist）
 
 ```
-1. [ ] 获取目标网站 URL
+类型 A（官网）流程：
+1. [ ] 获取目标官网 URL
 2. [ ] 使用 Browser Agent 爬取全部页面数据（基础信息、团队、服务、图片、评价）
 3. [ ] 翻译所有文本内容为中文
 4. [ ] 精选 15-20 张最佳作品图片
 5. [ ] 编写合并脚本 scripts/insert-{slug}.cjs（含图片下载 + 数据插入）
+     - ⚠️ 必须包含 services 数据（最少 2 个类别，每类最少 3 个项目）
 6. [ ] 执行脚本，验证全部图片下载成功（0 失败）
 7. [ ] 复制图片到前端目录：cp -r 后端uploads → 前端uploads
 8. [ ] 验证 API 返回：curl http://localhost:3000/api/products/crawled-wedding-teams/{slug}
-9. [ ] 验证图片可访问：curl -I http://localhost:5173/uploads/crawled/{slug}/cover/cover.jpg
-10. [ ] 访问 /wedding-team/{slug} 查看页面效果
+9. [ ] 访问 /wedding-team/{slug} 查看页面效果
+
+类型 B（Junebug）流程 — 固定方案，禁止使用其他方法：
+1. [ ] 获取 Junebug 供应商 URL
+2. [ ] 编写单个 Puppeteer 脚本 scripts/extract-junebug-{slug}.cjs
+     - 访问页面 + page.on('response') 拦截图片 buffer
+     - 滚动 + 循环点击 .load-more.is-visible 加载全部画廊
+     - 提取 DOM 文字数据（名称、tagline、描述、评价、网站、社交媒体）
+     - 提取画廊图片 URL 列表（.gallery__card img src）
+     - 保存图片到 uploads/crawled/{slug}/ + 输出 JSON 数据文件
+3. [ ] 执行脚本，验证图片全部下载成功
+4. [ ] 复制图片到前端目录：cp -r 后端uploads → 前端uploads
+5. [ ] 根据 JSON 数据翻译为中文，编写 insert-{slug}.cjs 插入数据库
+     - ⚠️ **必须生成 services 数据**（Junebug 页面不提供，需根据描述/特色/所在地推导）
+     - ⚠️ services 绝不允许为空数组，最少 2 个类别，每类最少 3 个项目
+     - 参考上方「服务项目生成规范」的标准模板
+6. [ ] 执行插入脚本前检查：services 非空、team_members/testimonials 尽量填充
+7. [ ] 执行插入脚本，验证数据入库
+8. [ ] 验证 API 返回：curl http://localhost:3000/api/products/crawled-wedding-teams/{slug}
 ```
 
 ### 验证步骤示例
@@ -610,7 +760,7 @@ Content-Length: 172345
 ### 后端
 - 数据库路由：`/Users/hongli/WorkSpace/Verra-Voile-End/src/routes/products.js`
 - 图片代理：`/Users/hongli/WorkSpace/Verra-Voile-End/src/routes/imageProxy.js`
-- 合并脚本（下载+插入）：`/Users/hongli/WorkSpace/Verra-Voile-End/scripts/insert-{slug}.cjs`
+- 插入脚本（类型 A）：`/Users/hongli/WorkSpace/Verra-Voile-End/insert-{slug}.cjs`
 - 图片目录：`/Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/{slug}/`
 
 ### 前端
@@ -619,9 +769,11 @@ Content-Length: 172345
 - 全局样式：`/Users/hongli/WorkSpace/Verra-Voile/src/styles/index.css`
 - 图片目录：`/Users/hongli/WorkSpace/Verra-Voile/uploads/crawled/{slug}/`
 - 路由配置：`/Users/hongli/WorkSpace/Verra-Voile/src/App.tsx`
+- Puppeteer 下载脚本（类型 B）：`/Users/hongli/WorkSpace/Verra-Voile/scripts/download-{slug}-images.cjs`
 
 ### 现有数据参考
-- sposiamovi（意大利，€5,000）：`scripts/insert-sposiamovi.cjs`
-- la-fete（英国，€15,000）：`scripts/insert-la-fete.cjs`
-- aimee-dunne（英国，€12,000）：`scripts/insert-aimee-dunne.cjs`
-- wild-hearts-elopements（英国，€5,000）：`scripts/insert-wild-hearts.cjs`
+- sposiamovi（意大利，€5,000）：`insert-sposiamovi.cjs`
+- la-fete（英国，€15,000）：`insert-la-fete.cjs`
+- aimee-dunne（英国，€12,000）：`insert-aimee-dunne.cjs`
+- wild-hearts-elopements（英国，€5,000）：`insert-wild-hearts.cjs`
+- the-knot-in-italy（意大利，€15,000，类型 B Junebug）：`insert-theknotinitay.cjs` + `download-theknot-images.cjs`

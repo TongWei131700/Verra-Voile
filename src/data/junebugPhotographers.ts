@@ -373,7 +373,7 @@ export const photographerProducts: PhotographerProduct[] = [
     photoStyles: ['永恒优雅', '现代时尚', '多元文化', '目的地婚礼'],
     tagline: '英国及目的地婚礼摄影师 | 永恒优雅与现代时尚的完美结合',
     price: 280,
-    desc: 'Nicole Lamparska Photography 是一位英国及目的地婚礼摄影师，以融合永恒优雅与现代时尚感的风格而闻名。无论是大型融合庆典还是经典仪式，Nicole 对旅行和不同文化的热爱都深深体现在她的作品中。她擅长捕捉多元文化婚礼，为来自不同文化背景的新人记录美好时刻。她的个人风格永恒、优雅、精致，致力于让每对新人在镜头前展现最好的一面。从全天豪华婚礼到简短甜蜜的私奔仪式，她确保每一个笑声、每一滴泪水、每一个细节都被完美定格。',
+    desc: 'Nicole Lamparska Photography 是一位英国及目的地婚礼摄影师，以融合永恒优雅与现代时尚感的风格而闻名。无论是大型融合庆典还是经典仪式，Nicole 对旅行和不同文化的热爱都深深体现在她的作品中。她擅长捕捉多元文化婚礼，为来自不同文化背景的新人记录美好时刻。她的个人风格永恒、优雅、精致，致力于让每对新人在镜头前展现最好的一面。从全天豪华婚礼到简短甜蜜的私密婚礼仪式，她确保每一个笑声、每一滴泪水、每一个细节都被完美定格。',
     style: [
       { title: '风格定位', items: [
         { label: '永恒优雅', desc: '经典不过时的影像风格' },
@@ -733,5 +733,45 @@ export const photographerProducts: PhotographerProduct[] = [
     headshot: '/uploads/crawled/photographers/paluzzis-wedding-memories/headshot.jpg',
     website: 'https://paluzzis.com/',
     source: { name: 'Junebug Weddings', url: 'https://junebugweddings.com/vendors/wedding-photographers/italy/central-italy/Paluzzis---Wedding-Memories' },
+  },
+  {
+    slug: 'spazio46',
+    name: '斯帕齐奥46',
+    nameEn: 'Spazio46',
+    category: 'italy',
+    categoryCn: '意大利 · 南意婚礼',
+    country: '意大利',
+    countryEn: 'Italy',
+    photoStyles: ['纪实叙事', '自然光', '坦率抓拍', '细节捕捉'],
+    tagline: '那不勒斯纪实婚礼摄影 · 用自然光捕捉最真实的情感',
+    price: 260,
+    desc: `Spazio46 的核心摄影师 Viviane 扎根于意大利那不勒斯，以独特的纪实视角记录每一场婚礼。她深受人性、个性以及两个独特灵魂相遇相爱的奇妙瞬间所启发，将纪实手法与专业引导相结合——既捕捉身边自然发生的一切，又确保每一张画面都具备登上杂志封面的品质。
+
+这种创作方式让她能够呈现婚礼当天最真实、最诚实的情感，记录的不仅是婚礼的模样，更是身临其境的感受。凭借对自然光的敏锐运用和对细节的极致关注，Viviane 的影像如同你们的爱情故事一样独一无二。`,
+    style: [
+      { title: '风格定位', items: [
+        { label: '纪实叙事', desc: '观察并捕捉周围自然发生的一切，拒绝刻意摆拍' },
+        { label: '自然光运用', desc: '以自然光为核心，呈现柔和真实的影像质感' },
+        { label: '情感驱动', desc: '专注于人物情感与互动，还原身临其境的感受' },
+      ]},
+      { title: '服务特色', items: [
+        { label: '专业引导', desc: '在纪实基础上提供专家级指导，确保每张作品都值得封面展示' },
+        { label: '细节至上', desc: '捕捉容易被忽略的背景细节，用专业赋予其意义' },
+        { label: '南意目的地专家', desc: '深谙那不勒斯及南意大利的光线与场地' },
+      ]},
+    ],
+    highlights: ['那不勒斯在地摄影师', '自然光纪实风格', '细节控的极致关注', '真实情感捕捉'],
+    cover: `${LOCAL}/spazio46/00.jpg`,
+    images: [
+      // 前 3 张：vendor 展示照
+      `${LOCAL}/spazio46/00.jpg`,
+      `${LOCAL}/spazio46/01.jpg`,
+      `${LOCAL}/spazio46/02.jpg`,
+      // 作品集
+      ...Array.from({ length: 40 }, (_, i) => `${LOCAL}/spazio46/${String(i + 3).padStart(2, '0')}.jpg`),
+    ],
+    headshot: 'https://static.junebugweddings.com/hotlists/acct5361/logo/Spazio46-logo-20230727-1ac993ca95.png',
+    website: 'https://photobugcommunity.com/',
+    source: { name: 'Junebug Weddings', url: 'https://junebugweddings.com/vendors/wedding-photographers/italy/southern-italy/Spazio46' },
   },
 ]

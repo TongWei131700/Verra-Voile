@@ -1,13 +1,12 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
-import BackButton from '../components/common/BackButton'
 import LoginModal from '../components/LoginModal'
 import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
 import { proxyImage } from '../utils/imageProxy'
-import ewLogo from '../assets/europewedding-logo.png'
-import defaultHeadshot from '../assets/default-headshot.jpg'
 import Seo from '../components/Seo'
+import { CardHero } from '../components/DetailHero'
+import defaultHeadshot from '../assets/default-headshot.jpg'
 
 function isLoggedIn() {
   return !!localStorage.getItem('token')
@@ -159,9 +158,6 @@ export default function WeddingTeamDetail() {
   const [showBar, setShowBar] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [isBooked, setIsBooked] = useState(false)
-  const [heroSlide, setHeroSlide] = useState(0)
-  const [heroPrev, setHeroPrev] = useState<number | null>(null)
-  const [heroPaused, setHeroPaused] = useState(false)
   const [galleryPage, setGalleryPage] = useState(1)
   const [galleryLoading, setGalleryLoading] = useState(false)
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null)
@@ -171,8 +167,6 @@ export default function WeddingTeamDetail() {
   const [openFaq, setOpenFaq] = useState<Set<number>>(new Set())
   const [showAllMembers, setShowAllMembers] = useState(false)
   const [showAllServices, setShowAllServices] = useState(false)
-  const heroTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const observerRef = useRef<IntersectionObserver | null>(null)
   const aboutRef = useRef<HTMLElement>(null)
   const heroRef = useRef<HTMLElement>(null)
 
@@ -290,50 +284,7 @@ export default function WeddingTeamDetail() {
 
   useEffect(() => { window.scrollTo({ top: 0 }) }, [])
 
-  // Hero 轮播自动切换
-  useEffect(() => {
-    if (!detail || heroPaused) return
-    const total = Math.min(detail.images.length, 3)
-    const timer = setInterval(() => {
-      setHeroSlide(prev => {
-        setHeroPrev(prev)
-        setTimeout(() => setHeroPrev(null), 650)
-        return (prev + 1) % total
-      })
-    }, 4000)
-    return () => clearInterval(timer)
-  }, [detail, heroPaused])
 
-  const pauseHeroCarousel = useCallback(() => {
-    setHeroPaused(true)
-    if (heroTimerRef.current) clearTimeout(heroTimerRef.current)
-    heroTimerRef.current = setTimeout(() => setHeroPaused(false), 5000)
-  }, [])
-
-  const goHeroSlide = useCallback((idx: number) => {
-    if (idx === heroSlide) return
-    setHeroPrev(heroSlide)
-    setHeroSlide(idx)
-    pauseHeroCarousel()
-    setTimeout(() => setHeroPrev(null), 650)
-  }, [heroSlide, pauseHeroCarousel])
-
-  useEffect(() => {
-    return () => { if (heroTimerRef.current) clearTimeout(heroTimerRef.current) }
-  }, [])
-
-  useEffect(() => {
-    if (!aboutRef.current) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting || entry.boundingClientRect.top < 0) setShowBar(true)
-        else setShowBar(false)
-      },
-      { threshold: 0 }
-    )
-    observer.observe(aboutRef.current)
-    return () => observer.disconnect()
-  }, [detail])
 
   const toggleFaq = (idx: number) => {
     setOpenFaq(prev => {
@@ -346,22 +297,18 @@ export default function WeddingTeamDetail() {
   if (dataLoading) {
     return (
       <div className="cd-page">
-        <section className="wt-hero">
-          <div className="wt-hero__bg">
-            <div className="wt-hero__shimmer" />
-            <div className="wt-hero__overlay" />
-          </div>
-          <BackButton to="/wedding-team" />
-          <div className="wt-hero__info">
-            <div className="wt-hero__headshot">
-              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+        <section className="card-hero">
+          <div className="card-hero__card">
+            <div className="card-hero__carousel">
+              <div className="card-hero__slide card-hero__slide--active">
+                <div className="cd-skeleton__img" style={{ width: '100%', height: '100%' }} />
+              </div>
             </div>
-            <div className="wt-hero__meta">
-              <div style={{ height: 14, width: '35%', borderRadius: 4, marginBottom: 12, background: 'rgba(255,255,255,0.06)' }} />
-              <div style={{ height: 22, width: '50%', borderRadius: 4, marginBottom: 8, background: 'rgba(255,255,255,0.06)' }} />
-              <div style={{ height: 14, width: '30%', borderRadius: 4, marginBottom: 14, background: 'rgba(255,255,255,0.06)' }} />
-              <div style={{ height: 1, width: '40%', background: 'rgba(255,255,255,0.08)', marginBottom: 14 }} />
-              <div style={{ height: 14, width: '60%', borderRadius: 4, background: 'rgba(255,255,255,0.06)' }} />
+            <div className="card-hero__info" style={{ position: 'relative' }}>
+              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', marginBottom: 24 }} />
+              <div style={{ height: 14, width: '40%', borderRadius: 4, marginBottom: 14, background: 'rgba(255,255,255,0.04)' }} />
+              <div style={{ height: 22, width: '70%', borderRadius: 4, marginBottom: 10, background: 'rgba(255,255,255,0.04)' }} />
+              <div style={{ height: 14, width: '45%', borderRadius: 4, background: 'rgba(255,255,255,0.04)' }} />
             </div>
           </div>
         </section>
@@ -425,94 +372,24 @@ export default function WeddingTeamDetail() {
           }
         ] : undefined}
       />
-      {/* ===== 1. Hero 区域：全屏图片 + 居中信息 ===== */}
-      <section className="wt-hero" ref={heroRef}>
-        {/* 全屏背景轮播 */}
-        <div className="wt-hero__bg">
-          {detail.images.slice(0, 3).map((img, i) => (
-            <div
-              key={i}
-              className={`wt-hero__slide${i === heroSlide ? ' wt-hero__slide--active' : ''}${i === heroPrev ? ' wt-hero__slide--prev' : ''}`}
-            >
-              <FallbackImage src={proxyImage(img)} alt={`${detail.nameEn} 作品 ${i + 1}`} className="wt-hero__img" />
-            </div>
-          ))}
-          {/* 渐变遮罩 */}
-          <div className="wt-hero__overlay" />
-
-          {/* 已加入意向单标记 */}
-          {isBooked && (
-            <div className="photo-booked-badge">
-              <svg className="photo-booked-badge__svg" viewBox="0 0 80 80" width="120" height="120">
-                <path d="M20 62 C8 52, 4 38, 12 24 C16 17, 22 12, 30 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-                <path d="M14 50 C10 46, 9 40, 12 35" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
-                <path d="M60 62 C72 52, 76 38, 68 24 C64 17, 58 12, 50 10" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-                <path d="M66 50 C70 46, 71 40, 68 35" fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.6"/>
-                <ellipse cx="11" cy="44" rx="3" ry="1.5" transform="rotate(-30 11 44)" fill="currentColor" opacity="0.15"/>
-                <ellipse cx="69" cy="44" rx="3" ry="1.5" transform="rotate(30 69 44)" fill="currentColor" opacity="0.15"/>
-                <circle cx="40" cy="8" r="1.5" fill="currentColor" opacity="0.3"/>
-              </svg>
-              <div className="photo-booked-badge__check">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </div>
-              <span className="photo-booked-badge__text">已加入意向单</span>
-            </div>
-          )}
-        </div>
-
-        {/* 返回按钮 */}
-        <BackButton to="/wedding-team" />
-
-        {/* 居中信息面板 */}
-        <div className={`wt-hero__info${isBooked ? ' wt-hero__info--booked' : ''}`}>
-          <div className="wt-hero__headshot">
-            <FallbackImage src={proxyImage(detail.headshot || detail.cover)} alt={detail.nameEn} className="wt-hero__headshot-img" />
-          </div>
-          <div className="wt-hero__meta">
-            <span className="wt-hero__badge">
-              {detail.country}{detail.city ? ` · ${detail.city}` : ''}
-              {detail.foundedYear ? ` · 成立于${detail.foundedYear}` : ''}
-            </span>
-            <h1 className="wt-hero__name">{detail.name}</h1>
-            <p className="wt-hero__name-en">{detail.nameEn}</p>
-            <div className="wt-hero__divider" />
-            <p className="wt-hero__tagline">{detail.tagline}</p>
-            {detail.website && (
-              <a href={detail.website} target="_blank" rel="noreferrer" className="wt-hero__website">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z" />
-                </svg>
-                Visit Website
-              </a>
-            )}
-          </div>
-        </div>
-
-        {/* 向下引导线 */}
-        <div className="wt-hero__scroll-hint">
-          <div className="wt-hero__scroll-line" />
-          <span className="wt-hero__scroll-text">Scroll</span>
-        </div>
-
-        {/* 预定/取消加载动画 */}
-        {(isBooking || isCanceling) && (
-          <div className="photo-booking-overlay">
-            <div className="photo-booking-gift">
-              <div className="photo-booking-gift__lid" />
-              <div className="photo-booking-gift__box">
-                <img src={ewLogo} alt="" className="photo-booking-gift__logo" />
-              </div>
-              <div className="photo-booking-gift__sparkles">
-                <span /><span /><span /><span /><span /><span />
-              </div>
-            </div>
-            <p className="photo-booking-text">{isCanceling ? '正在移出意向单…' : '正在加入意向单…'}</p>
-          </div>
-        )}
-      </section>
+      {/* ===== 1. Hero 区域：CardHero 组件 ===== */}
+      <CardHero
+        images={detail.images}
+        name={detail.name}
+        nameEn={detail.nameEn}
+        badge={`${detail.country}${detail.city ? ` · ${detail.city}` : ''}${detail.foundedYear ? ` · 成立于${detail.foundedYear}` : ''}`}
+        tagline={detail.tagline}
+        headshot={detail.headshot}
+        cover={detail.cover}
+        website={detail.website || undefined}
+        backTo="/wedding-team"
+        isBooked={isBooked}
+        isBooking={isBooking}
+        isCanceling={isCanceling}
+        heroRef={heroRef}
+        aboutRef={aboutRef}
+        onSetShowBar={setShowBar}
+      />
 
       {/* ===== 内容区 ===== */}
       <div className="cd-content">

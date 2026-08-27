@@ -193,3 +193,13 @@ for d in data:
 - 下载失败的图片保留原始外部URL，不影响其他图片
 - 部署后本地图片自动通过 `https://www.europewedding.cn/uploads/...` 访问
 - 每次爬取新目的地后都要运行 `node scripts/download-images-puppeteer.cjs`
+- **官网爬取超时剔除规则**：如果某场地的官网连续 2 次 BrowserAgent 执行失败或被取消，直接剔除该场地，不再重试。不能在一个场地商品上浪费过多时间，立即进入下一个场地
+- **amenities 字段格式规范**：`amenities` 字段必须是**多分组对象数组**格式，前端按 `{titleCn, title, items: [{labelCn, label}]}` 结构渲染。**禁止使用简单字符串数组**（如 `["花园","泳池"]`），也**禁止只给一个笼统分组**。必须按类别拆分为 3+ 个分组，例如：
+  ```json
+  [
+    {"titleCn":"仪式与宴会场地","title":"Ceremony & Reception","items":[{"labelCn":"花园仪式区","label":"Garden Ceremony"},{"labelCn":"宴会厅","label":"Banquet Hall"}]},
+    {"titleCn":"餐饮服务","title":"Dining","items":[{"labelCn":"定制菜单","label":"Custom Menus"},{"labelCn":"米其林餐厅","label":"Michelin Restaurant"}]},
+    {"titleCn":"设施与服务","title":"Facilities & Services","items":[{"labelCn":"泳池","label":"Pool"},{"labelCn":"停车场","label":"Parking"},{"labelCn":"住宿","label":"Accommodation"}]}
+  ]
+  ```
+  分组类别应根据场地实际特色划分（如"仪式场地"、"餐饮服务"、"设施"、"特色体验"等），每个分组下包含 3-6 个具体项目

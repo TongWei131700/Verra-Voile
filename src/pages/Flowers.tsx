@@ -64,6 +64,7 @@ let _cachedSelectedCountries: string[] | null = null
 let _cachedSelectedSpecialties: string[] | null = null
 let _cachedSearchFilter: string | null = null
 let _cachedSortMode: string | null = null
+let _cachedCategoryLimits: Record<string, number> | null = null
 
 // 从数据中动态提取去重后的选项列表
 function extractUnique<T>(items: FloristCompany[], getter: (c: FloristCompany) => T | T[]): T[] {
@@ -244,6 +245,58 @@ export default function Flowers() {
     return list
   }, [florajetProducts, sortMode])
 
+  // 分类分组展示（所有分类一次性展示，每组内按屏幕宽度控制初始显示数量）
+  const INITIAL_PER_CATEGORY = useMemo(() => {
+    if (typeof window === 'undefined') return 6
+    const w = window.innerWidth
+    if (w < 640) return 6
+    if (w < 1000) return 8
+    if (w < 1400) return 9
+    return 10
+  }, [])
+  const LOAD_MORE_STEP = 20
+  const [categoryLimits, setCategoryLimits] = useState<Record<string, number>>(_cachedCategoryLimits ?? {})
+
+  const loadMoreCategory = (category: string) => {
+    setCategoryLimits(prev => {
+      const next = { ...prev, [category]: (prev[category] ?? INITIAL_PER_CATEGORY) + LOAD_MORE_STEP }
+      _cachedCategoryLimits = next
+      return next
+    })
+  }
+
+  // 三步 memo（与目的地 groupedWithExpansion / visibleGroups 一致）
+  const otherProductList = useMemo(() => sortedFlorajetProducts.filter(p => !bookedProducts.has(p.slug)), [sortedFlorajetProducts, bookedProducts])
+
+  const groupedByCategory = useMemo(() => {
+    const groups: { category: string; items: typeof otherProductList }[] = []
+    const map = new Map<string, { category: string; items: typeof otherProductList }>()
+    otherProductList.forEach(p => {
+      const cat = p.category || '其他'
+      if (!map.has(cat)) {
+        const group = { category: cat, items: [] as typeof otherProductList }
+        map.set(cat, group)
+        groups.push(group as any)
+      }
+      map.get(cat)!.items.push(p)
+    })
+    return groups
+  }, [otherProductList])
+
+  const categoryGroupsWithExpansion = useMemo(() => {
+    return groupedByCategory.map(group => {
+      const limit = categoryLimits[group.category] ?? INITIAL_PER_CATEGORY
+      return {
+        ...group,
+        visibleItems: group.items.slice(0, limit),
+        hasMore: group.items.length > limit,
+        hiddenCount: group.items.length - limit,
+      }
+    })
+  }, [groupedByCategory, categoryLimits, INITIAL_PER_CATEGORY])
+
+  const visibleCategoryGroups = categoryGroupsWithExpansion
+
   // 登录状态下从服务端恢复意向单数据到 sessionStorage，再刷新列表状态
   useEffect(() => {
     if (!localStorage.getItem('token')) return
@@ -330,12 +383,14 @@ export default function Flowers() {
     sessionStorage.setItem('flower_section_pages', JSON.stringify(sectionPages))
   }, [sectionPages])
 
-  // 筛选/排序变化时重置各模块显示数量（跳过首次挂载，避免覆盖 sessionStorage 恢复值）并滚回顶部
+  // 筛选/排序变化时重置分页并滚回顶部（跳过首次挂载，保留从详情返回时的缓存状态）
   const isFirstMount = useRef(true)
   useEffect(() => {
     if (isFirstMount.current) { isFirstMount.current = false; return }
     setSectionPages({})
     sessionStorage.removeItem('flower_section_pages')
+    setCategoryLimits({})
+    _cachedCategoryLimits = null
     // 滚回顶部
     document.documentElement.scrollTop = 0
   }, [selectedCountries, selectedSpecialties, searchFilter, sortMode])
@@ -857,57 +912,83 @@ export default function Flowers() {
                 </>
               )}
 
-              {/* Section 1: 鲜花花束系列 - 过滤已加入意向单的商品 */}
-              {(() => {
-                const allProducts = sortedFlorajetProducts.filter(p => !bookedProducts.has(p.slug))
-                const pages = sectionPages['product'] || 1
-                const limit = isNarrow
-                  ? (pages === 1 ? NARROW_LIMIT : NARROW_LIMIT + (pages - 1) * NARROW_MORE)
-                  : pages * WIDE_LIMIT
-                const visibleProducts = allProducts.slice(0, limit)
-                const hiddenCount = Math.max(0, allProducts.length - limit)
-                const hasMore = allProducts.length > limit
-                return visibleProducts.length > 0 ? (
-                <>
-                  <div className="cd-section-label">
-                    <span className="cd-section-label__icon">✦</span>
-                    <span>鲜花花束系列</span>
-                    <span className="cd-section-label__count">{allProducts.length}</span>
+              {/* Section 1: 鲜花商品（排序时切换扁平列表，与目的地一致） */}
+              {sortMode !== 'default' ? (
+                /* 排序模式：扁平列表，无分类分组 */
+                otherProductList.map((product, idx) => (
+                  <div
+                    key={product.slug}
+                    className="cd-card"
+                    data-scroll-id={product.slug}
+                    onClick={() => navFromList('/flowers', `/flowers/product/${product.slug}`, navigate)}
+                  >
+                    <div className="cd-card__img-wrap">
+                      <FallbackImage
+                        src={product.image?.startsWith('/') ? `${API_BASE}${product.image}` : (product.image || '')}
+                        alt={product.name_cn || product.name}
+                        className="cd-card__img"
+                      />
+                      <div className="cd-card__img-overlay" />
+                      <span className="cd-card__country">法国</span>
+                    </div>
+                    <div className="cd-card__body">
+                      <h3 className="cd-card__name">{product.name_cn || product.name}</h3>
+                      <p className="cd-card__tagline">{product.name}</p>
+                      <div className="cd-card__footer">
+                        <span className="cd-card__price">€{product.price}{product.price_from ? '起' : ''}</span>
+                        <span className="cd-card__arrow">查看详情 →</span>
+                      </div>
+                    </div>
                   </div>
-                  {visibleProducts.map((product, idx) => (
-                    <div
-                      key={idx}
-                      className="cd-card"
-                      data-scroll-id={product.slug}
-                      onClick={() => navFromList('/flowers', `/flowers/product/${product.slug}`, navigate)}
-                    >
-                      <div className="cd-card__img-wrap">
-                        <FallbackImage
-                          src={product.image?.startsWith('/') ? `${API_BASE}${product.image}` : (product.image || '')}
-                          alt={product.name_cn || product.name}
-                          className="cd-card__img"
-                        />
-                        <div className="cd-card__img-overlay" />
-                        <span className="cd-card__country">法国</span>
+                ))
+              ) : (
+                /* 默认模式：按分类分组展示 */
+                <>
+                  {visibleCategoryGroups.map(group => (
+                    <div key={group.category} style={{ display: 'contents' }}>
+                      <div className="cd-section-label" key={`label-${group.category}`}>
+                        <span className="cd-section-label__icon">✦</span>
+                        <span>{group.category}</span>
+                        <span className="cd-section-label__count">{group.items.length}</span>
                       </div>
-                      <div className="cd-card__body">
-                        <h3 className="cd-card__name">{product.name_cn || product.name}</h3>
-                        <p className="cd-card__tagline">{product.name}</p>
-                        <div className="cd-card__footer">
-                          <span className="cd-card__price">€{product.price}{product.price_from ? '起' : ''}</span>
-                          <span className="cd-card__arrow">查看详情 →</span>
+                      {group.visibleItems.map((product, idx) => (
+                        <div
+                          key={`${group.category}-${idx}`}
+                          className="cd-card"
+                          data-scroll-id={product.slug}
+                          onClick={() => navFromList('/flowers', `/flowers/product/${product.slug}`, navigate)}
+                        >
+                          <div className="cd-card__img-wrap">
+                            <FallbackImage
+                              src={product.image?.startsWith('/') ? `${API_BASE}${product.image}` : (product.image || '')}
+                              alt={product.name_cn || product.name}
+                              className="cd-card__img"
+                            />
+                            <div className="cd-card__img-overlay" />
+                            <span className="cd-card__country">法国</span>
+                          </div>
+                          <div className="cd-card__body">
+                            <h3 className="cd-card__name">{product.name_cn || product.name}</h3>
+                            <p className="cd-card__tagline">{product.name}</p>
+                            <div className="cd-card__footer">
+                              <span className="cd-card__price">€{product.price}{product.price_from ? '起' : ''}</span>
+                              <span className="cd-card__arrow">查看详情 →</span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      ))}
+                      {group.hasMore && (
+                        <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
+                          <button className="cd-section-more__btn" onClick={() => loadMoreCategory(group.category)}>
+                            加载更多 ({group.hiddenCount})
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
-                  {hasMore && (
-                    <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                      <button className="cd-section-more__btn" onClick={() => loadMoreSection('product')}>查看更多 ({hiddenCount})</button>
-                    </div>
-                  )}
+
                 </>
-                ) : null
-              })()}
+              )}
 
               {/* Section 2: 花艺服务团队 - 过滤已加入意向单的商品 */}
               {(() => {

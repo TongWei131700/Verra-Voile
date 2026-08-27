@@ -24,6 +24,9 @@ npm-debug.log*
 # TypeScript
 *.tsbuildinfo
 
+# Uploads (all images served from backend)
+uploads/
+
 # Screenshots
 *.png
 *.jpg

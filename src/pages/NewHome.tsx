@@ -174,7 +174,7 @@ export default function NewHome() {
     <div className="nh-content">
       <h2>{m.title}</h2>
       <div className="nh-wrapper">
-        <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>定制</Link>
+        <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>查看</Link>
         <button type="button" onClick={handleConsult}>咨询</button>
       </div>
     </div>
@@ -305,7 +305,7 @@ export default function NewHome() {
                   <div className="nh-content">
                     <h2>{m.title}</h2>
                     <div className="nh-wrapper">
-                      <button type="button">定制</button>
+                      <button type="button">查看</button>
                       <button type="button">咨询</button>
                     </div>
                   </div>
@@ -319,7 +319,7 @@ export default function NewHome() {
                   <div className="nh-content">
                     <h2>{m.title}</h2>
                     <div className="nh-wrapper">
-                      <button type="button">定制</button>
+                      <button type="button">查看</button>
                       <button type="button">咨询</button>
                     </div>
                   </div>
@@ -332,7 +332,7 @@ export default function NewHome() {
                 <div className="nh-mobile-container">
                   <h2>{m.title}</h2>
                   <div className="nh-wrapper">
-                    <button type="button">定制</button>
+                    <button type="button">查看</button>
                     <button type="button">咨询</button>
                   </div>
                 </div>
@@ -367,7 +367,7 @@ export default function NewHome() {
             <div className="nh-mobile-container">
               <h2>{m.title}</h2>
               <div className="nh-wrapper">
-                <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>定制</Link>
+                <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>查看</Link>
                 <button type="button" onClick={handleConsult}>咨询</button>
               </div>
             </div>

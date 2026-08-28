@@ -301,18 +301,18 @@
 
 ## 冰岛 Iceland (12)
 
-📋 hallgrimskirkja | 哈尔格林姆斯教堂 | 雷克雅未克
-📋 blue-lagoon | 蓝湖温泉 | 雷克雅未克
-📋 gullfoss | 黄金瀑布 | 黄金圈
-📋 reynisfjara | 雷尼斯黑沙滩 | 南部
-📋 jokulsarlon | 杰古沙龙冰河湖 | 东南部
-📋 thingvellir | 辛格韦德利 | 黄金圈
-📋 geysir | 间歇泉 | 黄金圈
-📋 seljalandsfoss | 塞里雅兰瀑布 | 南部
-📋 skogafoss | 斯科加瀑布 | 南部
-📋 vik-i-mydal | 维克小镇 | 南部
-📋 akureyri | 阿库雷里 | 北部
-📋 snæfellsjokull | 斯奈山冰川 | 西部
+✅ hallgrimskirkja | 哈尔格林姆斯教堂 | 雷克雅未克
+✅ blue-lagoon | 蓝湖温泉 | 雷克雅未克
+✅ gullfoss | 黄金瀑布 | 黄金圈
+✅ reynisfjara | 雷尼斯黑沙滩 | 南部
+✅ jokulsarlon | 杰古沙龙冰河湖 | 东南部
+✅ thingvellir | 辛格韦德利 | 黄金圈
+✅ geysir | 间歇泉 | 黄金圈
+✅ seljalandsfoss | 塞里雅兰瀑布 | 南部
+✅ skogafoss | 斯科加瀑布 | 南部
+✅ vik-i-mydal | 维克小镇 | 南部
+✅ akureyri | 阿库雷里 | 北部
+✅ snæfellsjokull | 斯奈山冰川 | 西部
 
 ## 瑞典 Sweden (12)
 

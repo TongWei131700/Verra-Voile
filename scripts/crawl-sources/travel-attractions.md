@@ -344,16 +344,16 @@
 
 ## 丹麦 Denmark (10)
 
-📋 nyhavn | 新港 | 哥本哈根
-📋 little-mermaid | 小美人鱼像 | 哥本哈根
-📋 rosenborg-castle | 罗森堡城堡 | 哥本哈根
-📋 tivoli-gardens | 趣伏里乐园 | 哥本哈根
-📋 kronborg-castle | 克伦堡城堡 | 赫尔辛格
-📋 roskilde-cathedral | 罗斯基勒大教堂 | 西兰
-📋 aalborg-waterfront | 奥尔堡海滨 | 北日德兰
-📋 arhus-old-town | 奥胡斯老城 | 中日德兰
-📋 bornholm-round-church | 博恩霍尔姆圆教堂 | 博恩霍尔姆
-📋 skagen-beach | 斯卡恩海滩 | 北日德兰
+✅ nyhavn | 新港 | 哥本哈根
+✅ little-mermaid | 小美人鱼像 | 哥本哈根
+✅ rosenborg-castle | 罗森堡城堡 | 哥本哈根
+✅ tivoli-gardens | 趣伏里乐园 | 哥本哈根
+✅ kronborg-castle | 克伦堡城堡 | 赫尔辛格
+✅ roskilde-cathedral | 罗斯基勒大教堂 | 西兰
+✅ aalborg-waterfront | 奥尔堡海滨 | 北日德兰
+✅ arhus-old-town | 奥胡斯老城 | 中日德兰
+✅ bornholm-round-church | 博恩霍尔姆圆教堂 | 博恩霍尔姆
+✅ skagen-beach | 斯卡恩海滩 | 北日德兰
 
 ## 捷克 Czech (10)
 

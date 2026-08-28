@@ -3,6 +3,11 @@ node_modules/
 
 # Build output
 dist/
+dist.tar.gz
+
+# Deploy scripts
+scripts/deploy.sh
+scripts/merge-and-clean.sh
 
 # IDE
 .vscode/

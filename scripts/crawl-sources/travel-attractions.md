@@ -357,16 +357,16 @@
 
 ## 捷克 Czech (10)
 
-📋 prague-charles-bridge | 查理大桥 | 布拉格
-📋 prague-castle | 布拉格城堡 | 布拉格
-📋 old-town-square | 老城广场 | 布拉格
-📋 astronomical-clock | 天文钟 | 布拉格
-📋 st-vitus-cathedral | 圣维特大教堂 | 布拉格
-📋 john-lennon-wall | 列侬墙 | 布拉格
-📋 cesky-krumlov | 克鲁姆洛夫 | 南波希米亚
-📋 kutna-hora-bones | 人骨教堂 | 中波希米亚
-📋 karlovy-vary | 卡罗维发利 | 西波希米亚
-📋 telc-square | 泰尔奇广场 | 维索基纳
+✅ prague-charles-bridge | 查理大桥 | 布拉格
+✅ prague-castle | 布拉格城堡 | 布拉格
+✅ old-town-square | 老城广场 | 布拉格
+✅ astronomical-clock | 天文钟 | 布拉格
+✅ st-vitus-cathedral | 圣维特大教堂 | 布拉格
+✅ john-lennon-wall | 列侬墙 | 布拉格
+✅ cesky-krumlov | 克鲁姆洛夫 | 南波希米亚
+✅ kutna-hora-bones | 人骨教堂 | 中波希米亚
+✅ karlovy-vary | 卡罗维发利 | 西波希米亚
+✅ telc-square | 泰尔奇广场 | 维索基纳
 
 ## 波兰 Poland (10)
 

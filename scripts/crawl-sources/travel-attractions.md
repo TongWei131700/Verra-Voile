@@ -370,16 +370,16 @@
 
 ## 波兰 Poland (10)
 
-📋 wawel-castle | 瓦维尔城堡 | 克拉科夫
-📋 krakow-old-town | 克拉科夫老城 | 克拉科夫
-📋 auschwitz-memorial | 奥斯维辛集中营 | 小波兰
-📋 wieliczka-salt-mine | 维利奇卡盐矿 | 小波兰
-📋 warsaw-old-town | 华沙老城 | 华沙
-📋 wroclaw-market-square | 弗罗茨瓦夫广场 | 下西里西亚
-📋 wroclaw-dwarfs | 弗罗茨瓦夫小矮人 | 下西里西亚
-📋 gdańsk-old-town | 格但斯克老城 | 波美拉尼亚
-📋 malbork-castle | 马尔堡城堡 | 波美拉尼亚
-📋 zakopane-tatras | 扎科帕内塔特拉山 | 小波兰
+✅ wawel-castle | 瓦维尔城堡 | 克拉科夫
+✅ krakow-old-town | 克拉科夫老城 | 克拉科夫
+✅ auschwitz-memorial | 奥斯维辛集中营 | 小波兰
+✅ wieliczka-salt-mine | 维利奇卡盐矿 | 小波兰
+✅ warsaw-old-town | 华沙老城 | 华沙
+✅ wroclaw-market-square | 弗罗茨瓦夫广场 | 下西里西亚
+✅ wroclaw-dwarfs | 弗罗茨瓦夫小矮人 | 下西里西亚
+✅ gdańsk-old-town | 格但斯克老城 | 波美拉尼亚
+✅ malbork-castle | 马尔堡城堡 | 波美拉尼亚
+✅ zakopane-tatras | 扎科帕内塔特拉山 | 小波兰
 
 ## 匈牙利 Hungary (10)
 

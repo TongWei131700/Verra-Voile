@@ -224,7 +224,7 @@
 ✅ rhine-falls | 莱茵瀑布 | 沙夫豪森
 ✅ appenzell | 阿彭策尔 | 阿彭策尔
 
-## 葡萄牙 Portugal (18)
+## 葡萄牙 Portugal (17)
 
 ✅ belem-tower | 贝伦塔 | 里斯本
 ✅ jeronimos-monastery | 热罗尼莫斯修道院 | 里斯本
@@ -241,7 +241,6 @@
 ✅ batalha-monastery | 巴塔利亚修道院 | 中部
 ✅ alcobaca-monastery | 阿尔科巴萨修道院 | 中部
 ✅ tomar-templars | 托马尔骑士团城堡 | 中部
-✅ evora-chapel-bones | 埃武拉人骨教堂 | 阿连特茹
 ✅ algarve-benagil | 贝纳吉尔洞 | 阿尔加维
 ✅ madeira-funchal | 丰沙尔 | 马德拉
 
@@ -355,7 +354,7 @@
 ✅ bornholm-round-church | 博恩霍尔姆圆教堂 | 博恩霍尔姆
 ✅ skagen-beach | 斯卡恩海滩 | 北日德兰
 
-## 捷克 Czech (10)
+## 捷克 Czech (9)
 
 ✅ prague-charles-bridge | 查理大桥 | 布拉格
 ✅ prague-castle | 布拉格城堡 | 布拉格
@@ -364,16 +363,13 @@
 ✅ st-vitus-cathedral | 圣维特大教堂 | 布拉格
 ✅ john-lennon-wall | 列侬墙 | 布拉格
 ✅ cesky-krumlov | 克鲁姆洛夫 | 南波希米亚
-✅ kutna-hora-bones | 人骨教堂 | 中波希米亚
 ✅ karlovy-vary | 卡罗维发利 | 西波希米亚
 ✅ telc-square | 泰尔奇广场 | 维索基纳
 
-## 波兰 Poland (10)
+## 波兰 Poland (8)
 
 ✅ wawel-castle | 瓦维尔城堡 | 克拉科夫
 ✅ krakow-old-town | 克拉科夫老城 | 克拉科夫
-✅ auschwitz-memorial | 奥斯维辛集中营 | 小波兰
-✅ wieliczka-salt-mine | 维利奇卡盐矿 | 小波兰
 ✅ warsaw-old-town | 华沙老城 | 华沙
 ✅ wroclaw-market-square | 弗罗茨瓦夫广场 | 下西里西亚
 ✅ wroclaw-dwarfs | 弗罗茨瓦夫小矮人 | 下西里西亚
@@ -422,79 +418,116 @@
 
 ## 爱尔兰 Ireland (12)
 
-📋 cliff-moher | 莫赫悬崖 | 克莱尔
-📋 ring-of-kerry | 凯里环 | 凯里
-📋 gallarus-oratory | 加拉鲁斯礼拜堂 | 凯里
-📋 killarney-lakes | 基拉尼湖 | 凯里
-📋 blarney-castle | 布拉尼城堡 | 科克
-📋 cobh | 科夫小镇 | 科克
-📋 dingle-peninsula | 丁格尔半岛 | 凯里
-📋 connemara | 康尼马拉 | 戈尔韦
-📋 Kylemore-abbey | 凯尔莫修道院 | 戈尔韦
-📋 giants-causeway | 巨人之路 | 北爱尔兰
-📋 dark-hedges | 黑暗树篱 | 北爱尔兰
-📋 belfast-titanic | 贝尔法斯特泰坦尼克区 | 北爱尔兰
+✅ cliff-moher | 莫赫悬崖 | 克莱尔
+✅ ring-of-kerry | 凯里环 | 凯里
+✅ gallarus-oratory | 加拉鲁斯礼拜堂 | 凯里
+✅ killarney-lakes | 基拉尼湖 | 凯里
+✅ blarney-castle | 布拉尼城堡 | 科克
+✅ cobh | 科夫小镇 | 科克
+✅ dingle-peninsula | 丁格尔半岛 | 凯里
+✅ connemara | 康尼马拉 | 戈尔韦
+✅ Kylemore-abbey | 凯尔莫修道院 | 戈尔韦
+✅ giants-causeway | 巨人之路 | 北爱尔兰
+✅ dark-hedges | 黑暗树篱 | 北爱尔兰
+✅ belfast-titanic | 贝尔法斯特泰坦尼克区 | 北爱尔兰
 
 ## 爱沙尼亚 Estonia (5)
 
-📋 tallinn-old-town | 塔林老城 | 塔林
-📋 tallinn-cathedral | 塔林大教堂 | 塔林
-📋 saaremaa-island | 萨列马岛 | 萨列
-📋 lahemaa-park | 拉赫马国家公园 | 北部
-📋 tartu-old-town | 塔尔图老城 | 塔尔图
+✅ tallinn-old-town | 塔林老城 | 塔林
+✅ tallinn-cathedral | 塔林大教堂 | 塔林
+✅ saaremaa-island | 萨列马岛 | 萨列
+✅ lahemaa-park | 拉赫马国家公园 | 北部
+✅ tartu-old-town | 塔尔图老城 | 塔尔图
 
 ## 拉脱维亚 Latvia (5)
 
-📋 riga-old-town | 里加老城 | 里加
-📋 riga-art-nouveau | 里加新艺术区 | 里加
-📋 jurmala-beach | 尤尔马拉海滩 | 尤尔马拉
-📋 rundale-palace | 隆代莱宫 | 南部
-📋 sigulda-castle | 锡古尔达城堡 | 中部
+✅ riga-old-town | 里加老城 | 里加
+✅ riga-art-nouveau | 里加新艺术区 | 里加
+✅ jurmala-beach | 尤尔马拉海滩 | 尤尔马拉
+✅ rundale-palace | 隆代莱宫 | 南部
+✅ sigulda-castle | 锡古尔达城堡 | 中部
 
 ## 立陶宛 Lithuania (5)
 
-📋 vilnius-old-town | 维尔纽斯老城 | 维尔纽斯
-📋 gediminas-tower | 格迪米纳斯塔 | 维尔纽斯
-📋 trakai-castle | 特拉凯城堡 | 特拉凯
-📋 hill-of-crosses | 十字架山 | 希奥利艾
-📋 kaunas-old-town | 考纳斯老城 | 考纳斯
+✅ vilnius-old-town | 维尔纽斯老城 | 维尔纽斯
+✅ gediminas-tower | 格迪米纳斯塔 | 维尔纽斯
+✅ trakai-castle | 特拉凯城堡 | 特拉凯
+✅ hill-of-crosses | 十字架山 | 希奥利艾
+✅ kaunas-old-town | 考纳斯老城 | 考纳斯
 
 ## 斯洛伐克 Slovakia (5)
 
-📋 bratislava-old-town | 布拉迪斯拉发老城 | 布拉迪斯拉发
-📋 bratislava-castle | 布拉迪斯拉发城堡 | 布拉迪斯拉发
-📋 high-tatras | 高塔特拉山 | 北部
-📋 kosice-cathedral | 科希策大教堂 | 科希策
-📋 spissky-hrad | 斯皮什城堡 | 东部
+✅ bratislava-old-town | 布拉迪斯拉发老城 | 布拉迪斯拉发
+✅ bratislava-castle | 布拉迪斯拉发城堡 | 布拉迪斯拉发
+✅ high-tatras | 高塔特拉山 | 北部
+✅ kosice-cathedral | 科希策大教堂 | 科希策
+✅ spissky-hrad | 斯皮什城堡 | 东部
 
 ## 斯洛文尼亚 Slovenia (6)
 
-📋 ljubljana-old-town | 卢布尔雅那老城 | 卢布尔雅那
-📋 bled-lake | 布莱德湖 | 上卡尼奥拉
-📋 postojna-cave | 波斯托伊纳溶洞 | 内卡尼奥拉
-📋 piran-old-town | 皮兰老城 | 沿海
-📋 triglav-national | 特里格拉夫国家公园 | 朱利安阿尔卑斯
-📋 maribor-old-town | 马里博尔老城 | 施蒂利亚
+✅ ljubljana-old-town | 卢布尔雅那老城 | 卢布尔雅那
+✅ bled-lake | 布莱德湖 | 上卡尼奥拉
+✅ postojna-cave | 波斯托伊纳溶洞 | 内卡尼奥拉
+✅ piran-old-town | 皮兰老城 | 沿海
+✅ triglav-national | 特里格拉夫国家公园 | 朱利安阿尔卑斯
+✅ maribor-old-town | 马里博尔老城 | 施蒂利亚
 
 ## 卢森堡 Luxembourg (4)
 
-📋 luxembourg-old-town | 卢森堡老城 | 卢森堡
-📋 grand-ducal-palace | 大公宫 | 卢森堡
-📋 vianden-castle | 菲安登城堡 | 菲安登
-📋 mullerthal-trail | 穆勒塔尔小径 | 东部
+✅ luxembourg-old-town | 卢森堡老城 | 卢森堡
+✅ grand-ducal-palace | 大公宫 | 卢森堡
+✅ vianden-castle | 菲安登城堡 | 菲安登
+✅ mullerthal-trail | 穆勒塔尔小径 | 东部
 
 ## 马耳他 Malta (4)
 
-📋 valletta-old-town | 瓦莱塔老城 | 瓦莱塔
-📋 st-johns-co-cathedral | 圣约翰大教堂 | 瓦莱塔
-📋 blue-grotto-malta | 蓝洞 | 南部
-📋 mdina-silent-city | 姆迪纳静城 | 中部
+✅ valletta-old-town | 瓦莱塔老城 | 瓦莱塔
+✅ st-johns-co-cathedral | 圣约翰大教堂 | 瓦莱塔
+✅ blue-grotto-malta | 蓝洞 | 南部
+✅ mdina-silent-city | 姆迪纳静城 | 中部
 
 ## 列支敦士登 Liechtenstein (3)
 
-📋 vaduz-castle | 瓦杜兹城堡 | 瓦杜兹
-📋 rhine-valley-liechtenstein | 莱茵河谷 | 瓦杜兹
-📋 malbun-village | 马尔本村 | 特里森贝格
+✅ vaduz-castle | 瓦杜兹城堡 | 瓦杜兹
+✅ rhine-valley-liechtenstein | 莱茵河谷 | 瓦杜兹
+✅ malbun-village | 马尔本村 | 特里森贝格
+
+## 英国 United Kingdom (34)
+
+✅ stonehenge | 巨石阵 | 威尔特郡
+✅ tower-of-london | 伦敦塔 | 伦敦
+✅ buckingham-palace | 白金汉宫 | 伦敦
+✅ big-ben | 大本钟 | 伦敦
+✅ westminster-abbey | 威斯敏斯特教堂 | 伦敦
+✅ st-pauls-cathedral | 圣保罗大教堂 | 伦敦
+✅ tower-bridge | 塔桥 | 伦敦
+✅ british-museum | 大英博物馆 | 伦敦
+✅ bath-roman-baths | 巴斯罗马浴场 | 萨默塞特
+✅ oxford-university | 牛津大学 | 牛津
+✅ cambridge-colleges | 剑桥大学学院 | 剑桥
+✅ cotswolds-village | 科茨沃尔德村庄 | 格洛斯特
+✅ edinburgh-castle | 爱丁堡城堡 | 苏格兰
+✅ highlands-scotland | 苏格兰高地 | 苏格兰
+✅ lake-district | 湖区 | 坎布里亚
+✅ london-eye | 伦敦眼 | 伦敦
+✅ trafalgar-square | 特拉法加广场 | 伦敦
+✅ piccadilly-circus | 皮卡迪利广场 | 伦敦
+✅ notting-hill | 诺丁山 | 伦敦
+✅ regents-park | 摄政公园 | 伦敦
+✅ richmond-park | 里士满公园 | 伦敦
+✅ greenwich-observatory | 格林威治天文台 | 伦敦
+✅ kensington-palace | 肯辛顿宫 | 伦敦
+✅ windsor-castle | 温莎城堡 | 伯克郡
+✅ canterbury-cathedral | 坎特伯雷大教堂 | 肯特
+✅ york-minster | 约克大教堂 | 约克郡
+✅ white-cliffs-dover | 多佛白崖 | 肯特
+✅ brighton-pavilion | 布莱顿皇家行宫 | 东萨塞克斯
+✅ st-ives-cornwall | 圣艾夫斯 | 康沃尔
+✅ durham-cathedral | 达勒姆大教堂 | 达勒姆
+✅ isle-of-skye | 天空岛 | 苏格兰
+✅ eilean-donan-castle | 艾琳多南城堡 | 苏格兰
+✅ snowdonia-wales | 斯诺登尼亚 | 威尔士
+✅ glenfinnan-viaduct | 格伦芬南高架桥 | 苏格兰
 
 ---
-# 合计: 约 450 个景点 (26 国)
+# 合计: 约 440 个景点 (27 国)

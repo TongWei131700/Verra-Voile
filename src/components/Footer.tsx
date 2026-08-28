@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom'
 
 export default function Footer() {
   const { pathname } = useLocation()
-  if (pathname === '/' || pathname === '/new-home') return null
+  if (pathname === '/') return null
 
   return (
     <footer className="site-footer">

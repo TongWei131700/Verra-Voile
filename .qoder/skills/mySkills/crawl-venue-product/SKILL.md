@@ -341,9 +341,9 @@ Squarespace CDN、WeddingWire CDN（cdn0.bodas.net / cdn0.weddingwire.com）有 
 puppeteer 安装在 `/Users/hongli/WorkSpace/Verra-Voile/node_modules/`，从 `/tmp` 或后端目录运行会找不到模块。
 **解决**：`require('/Users/hongli/WorkSpace/Verra-Voile/node_modules/puppeteer')`
 
-### 图片必须存储在后端目录
+### 图片必须存储到独立图片仓库
 之前图片存在前端 `uploads/crawled/`，后端通过符号链接引用。前端目录被清空后符号链接断裂，390 张图片全部 404。
-**解决**：图片全部下载到后端 `uploads/crawled/`，禁止使用符号链接。
+**现架构**：图片统一下载到独立 Git 仓库 `Verra-Voile-Uploads/crawled/`，后端通过符号链接引用。下载后必须在图片仓库执行 `git add + git commit`。
 
 ### WebP 格式伪装为 JPEG
 WeddingWire CDN 和部分官网返回的图片实际是 WebP 格式但保存为 .jpg 扩展名，前端无法渲染。

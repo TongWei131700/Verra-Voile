@@ -166,6 +166,47 @@ async function prefetchAllData() {
     console.log(`  酒水: 仅列表页（${products.length} 个商品跳过详情预渲染）`)
   } catch (e) { console.error('  获取酒水失败:', e.message) }
 
+  // 旅拍景点
+  try {
+    const attractions = await fetchApi('/crawled-travel-attractions')
+    const items = Array.isArray(attractions) ? attractions : []
+    apiCache['/api/products/crawled-travel-attractions'] = { success: true, data: items }
+    // 列表页
+    routeMap['/travel-photo'] = ['/api/products/crawled-travel-attractions']
+    // 国家落地页（SEO）
+    const tpCountrySlugMap = {
+      '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '英国': 'united-kingdom',
+      '德国': 'germany', '希腊': 'greece', '瑞士': 'switzerland', '葡萄牙': 'portugal',
+      '奥地利': 'austria', '挪威': 'norway', '荷兰': 'netherlands', '冰岛': 'iceland',
+      '爱尔兰': 'ireland', '瑞典': 'sweden', '丹麦': 'denmark', '比利时': 'belgium',
+      '匈牙利': 'hungary', '克罗地亚': 'croatia', '芬兰': 'finland', '捷克': 'czech',
+      '波兰': 'poland', '斯洛文尼亚': 'slovenia', '爱沙尼亚': 'estonia', '拉脱维亚': 'latvia',
+      '立陶宛': 'lithuania', '斯洛伐克': 'slovakia', '卢森堡': 'luxembourg', '马耳他': 'malta',
+      '列支敦士登': 'liechtenstein', '梵蒂冈': 'vatican', '摩纳哥': 'monaco',
+    }
+    const tpUniqueCountries = [...new Set(items.map(a => a.country).filter(Boolean))]
+    for (const country of tpUniqueCountries) {
+      const slug = tpCountrySlugMap[country]
+      if (slug) {
+        routeMap[`/travel-photo/${slug}`] = ['/api/products/crawled-travel-attractions']
+      }
+    }
+    console.log(`  旅拍景点: ${items.length}，国家落地页: ${tpUniqueCountries.filter(c => tpCountrySlugMap[c]).length}`)
+    // 详情页
+    for (const a of items) {
+      if (a.slug) {
+        const detailKey = `/api/products/crawled-travel-attractions/${a.slug}`
+        try {
+          const detailData = await fetchApi(`/crawled-travel-attractions/${a.slug}`)
+          apiCache[detailKey] = { success: true, data: detailData }
+        } catch {
+          apiCache[detailKey] = { success: true, data: a }
+        }
+        routeMap[`/travel-photo/${a.slug}`] = [detailKey]
+      }
+    }
+  } catch (e) { console.error('  获取旅拍景点失败:', e.message) }
+
   console.log(`\n  API 缓存条目: ${Object.keys(apiCache).length}`)
   return routeMap
 }

@@ -15,7 +15,7 @@ description: 从婚礼策划公司官网或第三方平台爬取数据，下载�
 
 ## 架构特点
 - **数据库驱动**：数据存储在 `crawled_wedding_teams` 表，前端通过 API 动态获取
-- **图片本地化**：所有图片下载到本地 `uploads/crawled/{slug}/` 目录，不依赖外部 URL
+- **图片本地化**：所有图片下载到独立 Git 仓库 `Verra-Voile-Uploads/crawled/{slug}/`，不依赖外部 URL
 - **零前端改动**：新增/更新婚礼团队只需数据库操作，前端自动适配
 - **双语支持**：所有文本字段支持中英文（`_cn` 后缀），中文直接存入主字段
 
@@ -63,9 +63,9 @@ Junebug 供应商页面不包含 services 信息。服务项目必须在编写 i
 3. 滚动页面 + 循环点击 `.load-more.is-visible` 按钮加载全部画廊图片
 4. 提取页面 DOM 中的所有文字数据（名称、tagline、描述、评价、网站链接、社交媒体等）
 5. 提取画廊图片 URL 列表（`.gallery__card` 的 img src）
-6. 将拦截到的图片 buffer 写入 `uploads/crawled/{slug}/` 目录
+6. 将拦截到的图片 buffer 写入 `/Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/{slug}/` 目录
 7. 将所有提取的数据输出为 JSON 文件 `scripts/junebug-{slug}-data.json`
-8. 复制图片到前端目录
+8. 在图片仓库执行 `git add + git commit`
 
 **禁止的方案**（每次必须遵守）：
 - ❌ 禁止用 Browser Agent（启动慢、提取慢）
@@ -249,11 +249,17 @@ Important notes:
 
 ### 目录结构
 ```
-uploads/crawled/{slug}/
+/Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/{slug}/
 ├── cover/cover.jpg          # 封面图
 ├── headshot/headshot.jpg    # 头像
+├── team/                    # 团队成员头像（可选）
 └── portfolio/01.jpg ~ N.jpg # 作品集（15-20 张）
 ```
+
+**⚠️ 图片必须下载到独立 Git 仓库，不是后端目录！**
+- 仓库位置：`/Users/hongli/WorkSpace/Verra-Voile-Uploads/`
+- 后端通过符号链接引用：`Verra-Voile-End/uploads/crawled` → `Verra-Voile-Uploads/crawled`
+- 无需复制到前端目录（Vite 代理 `/uploads` 到后端）
 
 ### 下载脚本模板
 
@@ -267,7 +273,7 @@ const fs = require('fs')
 const path = require('path')
 const mysql = require('mysql2/promise')
 
-const BASE_DIR = path.join(__dirname, '../uploads/crawled/{slug}')
+const BASE_DIR = path.join('/Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/{slug}')
 
 async function download(url, dest) {
   return new Promise((resolve, reject) => {
@@ -355,15 +361,15 @@ async function main() {
 main().catch(e => { console.error('❌', e.message); process.exit(1) })
 ```
 
-### 下载后必须复制到前端目录
+### 下载后必须提交到图片仓库
 
 ```bash
-# 后端目录 → 前端目录（Vite sirv 从前端目录提供静态文件）
-cp -r /Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/{slug} \
-      /Users/hongli/WorkSpace/Verra-Voile/uploads/crawled/{slug}
+cd /Users/hongli/WorkSpace/Verra-Voile-Uploads
+git add crawled/{slug}/
+git commit -m "feat: 添加婚礼团队 {name} 图片"
 ```
 
-**原因**：前端 Vite dev server 用 `sirv` 中间件从前端 `uploads/` 目录提供静态文件，后端 `uploads/` 目录的图片前端无法直接访问。
+**原因**：图片存储在独立 Git 仓库（Verra-Voile-Uploads），后端通过符号链接引用。新增图片必须 commit 才有版本控制备份。无需复制到前端或后端目录。
 
 ### 图片代理白名单
 
@@ -605,7 +611,7 @@ Hero 区域（轮播图 + 信息面板）
 
 ### 图片
 5. **必须本地化**：图片下载到本地，不依赖外部 URL
-6. **前后端同步**：下载后必须 `cp -r` 复制到前端 `uploads/` 目录
+6. **提交到图片仓库**：下载后必须在 `Verra-Voile-Uploads` 仓库执行 `git add + git commit`
 7. **防盗链**：如果保留外部 URL，需将域名加入图片代理白名单
 8. **Cloudflare 防护**：受 Cloudflare 保护的站点图片必须下载到本地
 
@@ -623,9 +629,9 @@ Hero 区域（轮播图 + 信息面板）
 
 ## 踩坑记录
 
-### 前端无法访问后端 uploads 目录的图片
-**问题**：图片下载到后端 `Verra-Voile-End/uploads/`，但 Vite sirv 从前端 `Verra-Voile/uploads/` 提供静态文件。
-**解决**：下载后必须 `cp -r` 复制到前端目录。
+### 前端无法访问图片（已解决）
+**旧问题**：图片下载到后端，但 Vite 从前端目录提供静态文件，需要手动复制。
+**现架构**：图片统一存储在独立 Git 仓库 `Verra-Voile-Uploads/`，后端通过符号链接引用，Vite 代理 `/uploads` 到后端。无需复制。
 
 ### 图片代理返回 403
 **问题**：外部图片域名不在 `ALLOWED_DOMAINS` 白名单中。
@@ -700,7 +706,7 @@ Hero 区域（轮播图 + 信息面板）
 5. [ ] 编写合并脚本 scripts/insert-{slug}.cjs（含图片下载 + 数据插入）
      - ⚠️ 必须包含 services 数据（最少 2 个类别，每类最少 3 个项目）
 6. [ ] 执行脚本，验证全部图片下载成功（0 失败）
-7. [ ] 复制图片到前端目录：cp -r 后端uploads → 前端uploads
+7. [ ] 在图片仓库提交：cd Verra-Voile-Uploads && git add crawled/{slug}/ && git commit
 8. [ ] 验证 API 返回：curl http://localhost:3000/api/products/crawled-wedding-teams/{slug}
 9. [ ] 访问 /wedding-team/{slug} 查看页面效果
 
@@ -711,9 +717,9 @@ Hero 区域（轮播图 + 信息面板）
      - 滚动 + 循环点击 .load-more.is-visible 加载全部画廊
      - 提取 DOM 文字数据（名称、tagline、描述、评价、网站、社交媒体）
      - 提取画廊图片 URL 列表（.gallery__card img src）
-     - 保存图片到 uploads/crawled/{slug}/ + 输出 JSON 数据文件
+     - 保存图片到 Verra-Voile-Uploads/crawled/{slug}/ + 输出 JSON 数据文件
 3. [ ] 执行脚本，验证图片全部下载成功
-4. [ ] 复制图片到前端目录：cp -r 后端uploads → 前端uploads
+4. [ ] 在图片仓库提交：cd Verra-Voile-Uploads && git add crawled/{slug}/ && git commit
 5. [ ] 根据 JSON 数据翻译为中文，编写 insert-{slug}.cjs 插入数据库
      - ⚠️ **必须生成 services 数据**（Junebug 页面不提供，需根据描述/特色/所在地推导）
      - ⚠️ services 绝不允许为空数组，最少 2 个类别，每类最少 3 个项目
@@ -751,7 +757,7 @@ HTTP/1.1 200 OK
 Content-Type: image/jpeg
 Content-Length: 172345
 ```
-如果返回 `text/html` 或 404，说明图片未复制到前端目录。
+如果返回 `text/html` 或 404，说明图片仓库符号链接断裂或文件不存在。检查 `ls -lh Verra-Voile-End/uploads/crawled`。
 
 ---
 
@@ -763,13 +769,15 @@ Content-Length: 172345
 - 插入脚本（类型 A）：`/Users/hongli/WorkSpace/Verra-Voile-End/insert-{slug}.cjs`
 - 图片目录：`/Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/{slug}/`
 
+### 图片仓库
+- 图片统一存储：`/Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/{slug}/`
+- 后端符号链接：`Verra-Voile-End/uploads/crawled` → `Verra-Voile-Uploads/crawled`
+
 ### 前端
 - 列表页：`/Users/hongli/WorkSpace/Verra-Voile/src/pages/WeddingTeam.tsx`
 - 详情页：`/Users/hongli/WorkSpace/Verra-Voile/src/pages/WeddingTeamDetail.tsx`
 - 全局样式：`/Users/hongli/WorkSpace/Verra-Voile/src/styles/index.css`
-- 图片目录：`/Users/hongli/WorkSpace/Verra-Voile/uploads/crawled/{slug}/`
 - 路由配置：`/Users/hongli/WorkSpace/Verra-Voile/src/App.tsx`
-- Puppeteer 下载脚本（类型 B）：`/Users/hongli/WorkSpace/Verra-Voile/scripts/download-{slug}-images.cjs`
 
 ### 现有数据参考
 - sposiamovi（意大利，€5,000）：`insert-sposiamovi.cjs`

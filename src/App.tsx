@@ -21,10 +21,11 @@ import Dresses from './pages/Dresses'
 import DressesDetail from './pages/DressesDetail'
 import Photography from './pages/Photography'
 import PhotographyDetail from './pages/PhotographyDetail'
-import NewHome from './pages/NewHome'
 import Wine from './pages/Wine'
 import WineDetail from './pages/WineDetail'
 import FlowerProductDetail from './pages/FlowerProductDetail'
+import TravelPhoto from './pages/TravelPhoto'
+import TravelPhotoDetail from './pages/TravelPhotoDetail'
 
 const scrollCache: Record<string, number> = {}
 
@@ -158,9 +159,7 @@ export default function App() {
     <>
       <ScrollRestoration />
       <Routes>
-        <Route path="/" element={<NewHome />} />
-        <Route path="/new-home" element={<NewHome />} />
-        <Route path="/old-home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         {/* Listing 页面已下线，统一重定向到首页 */}
         <Route path="/listing" element={<Navigate to="/" replace />} />
         <Route path="/listing/destination" element={<Navigate to="/" replace />} />
@@ -191,9 +190,42 @@ export default function App() {
         <Route path="/wine/:productId" element={<WineDetail />} />
         <Route path="/wedding-team" element={<WeddingTeam />} />
         <Route path="/wedding-team/:slug" element={<WeddingTeamDetail />} />
+        <Route path="/travel-photo" element={<TravelPhoto />} />
+        <Route path="/travel-photo/france" element={<TravelPhoto />} />
+        <Route path="/travel-photo/italy" element={<TravelPhoto />} />
+        <Route path="/travel-photo/spain" element={<TravelPhoto />} />
+        <Route path="/travel-photo/united-kingdom" element={<TravelPhoto />} />
+        <Route path="/travel-photo/germany" element={<TravelPhoto />} />
+        <Route path="/travel-photo/greece" element={<TravelPhoto />} />
+        <Route path="/travel-photo/switzerland" element={<TravelPhoto />} />
+        <Route path="/travel-photo/portugal" element={<TravelPhoto />} />
+        <Route path="/travel-photo/austria" element={<TravelPhoto />} />
+        <Route path="/travel-photo/norway" element={<TravelPhoto />} />
+        <Route path="/travel-photo/netherlands" element={<TravelPhoto />} />
+        <Route path="/travel-photo/iceland" element={<TravelPhoto />} />
+        <Route path="/travel-photo/ireland" element={<TravelPhoto />} />
+        <Route path="/travel-photo/sweden" element={<TravelPhoto />} />
+        <Route path="/travel-photo/denmark" element={<TravelPhoto />} />
+        <Route path="/travel-photo/belgium" element={<TravelPhoto />} />
+        <Route path="/travel-photo/hungary" element={<TravelPhoto />} />
+        <Route path="/travel-photo/croatia" element={<TravelPhoto />} />
+        <Route path="/travel-photo/finland" element={<TravelPhoto />} />
+        <Route path="/travel-photo/czech" element={<TravelPhoto />} />
+        <Route path="/travel-photo/poland" element={<TravelPhoto />} />
+        <Route path="/travel-photo/slovenia" element={<TravelPhoto />} />
+        <Route path="/travel-photo/estonia" element={<TravelPhoto />} />
+        <Route path="/travel-photo/latvia" element={<TravelPhoto />} />
+        <Route path="/travel-photo/lithuania" element={<TravelPhoto />} />
+        <Route path="/travel-photo/slovakia" element={<TravelPhoto />} />
+        <Route path="/travel-photo/luxembourg" element={<TravelPhoto />} />
+        <Route path="/travel-photo/malta" element={<TravelPhoto />} />
+        <Route path="/travel-photo/liechtenstein" element={<TravelPhoto />} />
+        <Route path="/travel-photo/vatican" element={<TravelPhoto />} />
+        <Route path="/travel-photo/monaco" element={<TravelPhoto />} />
+        <Route path="/travel-photo/:slug" element={<TravelPhotoDetail />} />
       </Routes>
       {/* 公共精简头部：仅在业务模块页面显示（首页/订单/管理页除外） */}
-      {!['/', '/new-home', '/old-home', '/order', '/consult', '/admin', '/upload', '/login', '/register'].includes(pathname) && <AppHeader />}
+      {!['/', '/order', '/consult', '/admin', '/upload', '/login', '/register'].includes(pathname) && <AppHeader />}
       {pathname !== '/order' && pathname !== '/consult' && <Footer />}
     </>
   )

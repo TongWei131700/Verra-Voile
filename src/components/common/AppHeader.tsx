@@ -5,7 +5,7 @@ import LoginModal from '../LoginModal'
 
 /** 判断当前页面是否显示返回按钮（首页不显示） */
 function shouldShowBack(pathname: string): boolean {
-  return !['/', '/new-home', '/old-home'].includes(pathname)
+  return !['/'].includes(pathname)
 }
 
 /** 判断当前是否为列表页（单段路径） */

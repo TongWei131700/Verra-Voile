@@ -128,9 +128,24 @@ export default function OrderDetail() {
         setMessages(prev => [...prev, msg])
       })
 
-      socket.on('connect_error', (err: Error) => {
+      socket.on('connect_error', async (err: Error) => {
         console.error('WebSocket 连接失败:', err.message)
         setSocketConnected(false)
+        // Token 过期/无效 → 自动获取新 token 并重连
+        if (err.message === 'Token 无效或已过期') {
+          sessionStorage.removeItem('guest_token')
+          try {
+            const res = await fetch('/api/auth/guest-token', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+            const data = await res.json()
+            if (data.success && data.data.token) {
+              sessionStorage.setItem('guest_token', data.data.token)
+              socket.auth = { token: data.data.token, channel: 'order' }
+              socket.connect()
+            }
+          } catch (e) {
+            console.error('自动刷新 token 失败:', e)
+          }
+        }
       })
 
       return socket

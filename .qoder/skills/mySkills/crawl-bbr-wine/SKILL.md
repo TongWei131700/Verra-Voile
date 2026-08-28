@@ -52,26 +52,29 @@ Take screenshots of the full page and the About tab. Report ALL data precisely.
 
 ```bash
 # 主产品图（944x944 高清）
+# 下载到图片仓库
 curl -sL "{主图URL}?fmt=auto&qlt=default&w=944&h=944" \
-  -o /Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/wine/{slug}.jpg
+  -o /Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/wine/{slug}.jpg
 
 # About 图文卡片（500x500）
 curl -sL "{品种图URL}?w=500&fmt=auto&qlt=default&sm=aspect&aspect=1:1" \
-  -o /Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/wine/{grape-slug}-grape.jpg
+  -o /Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/wine/{grape-slug}-grape.jpg
 
 curl -sL "{酒庄图URL}?w=500&fmt=auto&qlt=default&sm=aspect&aspect=1:1" \
-  -o /Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/wine/{producer-slug}-producer.jpg
+  -o /Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/wine/{producer-slug}-producer.jpg
+
+# 提交到图片仓库
+cd /Users/hongli/WorkSpace/Verra-Voile-Uploads
+git add crawled/wine/{slug}.jpg crawled/wine/{grape-slug}-grape.jpg crawled/wine/{producer-slug}-producer.jpg
+git commit -m "添加 BBR 商品图片: {slug}"
 ```
 
-**同步到前端：**
-```bash
-cp /Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/wine/{所有新图片}.jpg \
-   /Users/hongli/WorkSpace/Verra-Voile/uploads/crawled/wine/
-```
+> 后端通过符号链接引用图片仓库，Vite 代理 `/uploads` 到后端，无需复制到前端或后端目录。
 
 **图片复用：**
 - 同一品种（如 Pinot Noir）可复用已有图片，无需重复下载
 - 已有品种图片：`pinot-noir-grape.jpg`、`chardonnay-grape.jpg`、`grenache-grape.jpg`
+- 图片仓库路径：`/Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/wine/`
 
 ### 第三步：数据库入库
 

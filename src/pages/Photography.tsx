@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { navFromList } from '../utils/navigateFromList'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
@@ -78,6 +78,7 @@ function mapApiItem(row: any): PhotographerItem {
 
 export default function Photography() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [allProducts, setAllProducts] = useState<PhotographerItem[]>([])
   const [dataLoading, setDataLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -87,7 +88,15 @@ export default function Photography() {
   const searchRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const filterBodyRef = useRef<HTMLDivElement>(null)
-  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => new Set(_cachedSelectedCountries ?? []))
+  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => {
+    // URL 参数 ?country=Norway 优先于缓存
+    const urlCountry = searchParams.get('country')
+    if (urlCountry) {
+      const cn = COUNTRY_CN[urlCountry] || urlCountry
+      return new Set([cn])
+    }
+    return new Set(_cachedSelectedCountries ?? [])
+  })
   const [selectedStyles, setSelectedStyles] = useState<Set<string>>(() => new Set(_cachedSelectedStyles ?? []))
   const [openGroups, setOpenGroups] = useState({ country: true, style: true })
     const [sortOpen, setSortOpen] = useState(false)

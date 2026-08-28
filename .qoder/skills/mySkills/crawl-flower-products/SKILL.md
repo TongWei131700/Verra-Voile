@@ -114,18 +114,24 @@
 // - 花材组成 composition
 ```
 
-#### 步骤 2: 下载图片到本地
+#### 步骤 2: 下载图片到独立图片仓库
+
+**⚠️ 图片统一存储到独立 Git 仓库，不再存到后端目录！**
 
 ```bash
-# 后端目录
-cd /Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/florajet/products
+# 下载到图片仓库
+cd /Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/florajet/products
 curl -sL -o {slug}.jpg "{图片URL}"
 curl -sL -o {slug}-2.jpg "{图片URL2}"
 # ... 下载所有图片
 
-# 同步到前端
-cp {slug}*.jpg /Users/hongli/WorkSpace/Verra-Voile/uploads/crawled/florajet/products/
+# 提交到图片仓库
+cd /Users/hongli/WorkSpace/Verra-Voile-Uploads
+git add crawled/florajet/products/{slug}*.jpg
+git commit -m "添加 florajet 商品图片: {slug}"
 ```
+
+> 后端通过符号链接引用图片仓库，Vite 代理 `/uploads` 到后端，无需复制到前端或后端目录。
 
 #### 步骤 3: 插入数据库
 

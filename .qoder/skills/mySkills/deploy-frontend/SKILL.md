@@ -23,27 +23,24 @@ npm run build
 
 ### SSG 预渲染范围规则
 
-**仅预渲染以下模块的列表页 + 详情页：**
+**预渲染列表页 + 详情页的模块：**
 - Destinations（目的地场地）：列表页 + 国家落地页 + 所有场地详情页
 - Photography（摄影师）：列表页 + 所有摄影师详情页
 - Wedding Team（婚礼团队）：列表页 + 所有团队详情页
+- Travel Photo（旅拍景点）：列表页 + 国家落地页 + 所有景点详情页
 
-**以下模块仅预渲染列表页，跳过详情页：**
+**仅预渲染列表页的模块：**
 - Flowers（花卉）：仅列表页
 - Dresses（礼服）：仅列表页
 - Wine（酒水宴席）：仅列表页
 
-> 礼服、花卉、酒水的详情页由 SPA fallback 处理，用户访问时动态加载，不影响用户体验。此规则已写入 `scripts/prerender.cjs`。
+> 花卉、礼服、酒水的详情页由 SPA fallback 处理，用户访问时动态加载，不影响用户体验。
 
 ---
 
 ## ⚠️⚠️⚠️ 部署前必读：Git 分支操作
 
-**每次部署前后都必须执行 Git 分支操作，绝对不能忘记！**
-
-部署流程中的 Git 步骤：
-1. **部署前**：确认当前分支，确保所有改动已提交
-2. **部署后**：提交改动 → 合并到 main → 创建下一版本分支
+**每次部署前必须先执行 Git 操作（提交 → 合并 → 创建新分支），确保代码版本锁定！**
 
 > 忘记做 Git 操作会导致代码版本混乱，下次部署时找不到正确的改动记录。
 
@@ -63,7 +60,50 @@ npm run build
 
 使用 `AskUserQuestion` 告知用户即将部署，确认继续。
 
-### 1.5 罗列 SSG 页面明细（⚠️ 必须执行，不可跳过！）
+### 2. Git 版本控制（⚠️ 第一步执行！不可跳过！）
+
+**这是部署流程的第一步，确保代码版本锁定后再开始构建和上传！**
+
+```bash
+cd /Users/hongli/WorkSpace/Verra-Voile
+
+# 1. 确认当前分支和改动
+git branch
+git status
+
+# 2. 提交所有改动
+git add -A
+git commit -m "feat: 部署更新"
+
+# 3. 合并到 main
+git checkout main
+git merge <当前分支> --no-edit
+git push origin main
+
+# 4. 版本号递增（根据当前分支号 +1）
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+CURRENT_VERSION=$(echo "$CURRENT_BRANCH" | sed 's/daily\///')
+IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+NEXT_BRANCH="daily/${MAJOR}.${MINOR}.$((PATCH + 1))"
+
+# 5. 创建并切换到下一版本分支
+git checkout -b $NEXT_BRANCH
+git push origin $NEXT_BRANCH
+```
+
+**分支命名规范**: `daily/x.y.z`（不使用 fe/ 或 be/ 前缀）
+
+> ⚠️ Git 操作完成后，在后续 SSG 构建期间**不要切换分支**。构建期间代码改动不会影响当前部署。
+
+### 3. 同步本地数据库到服务器（⚠️ 必须在 SSG 构建前完成！）
+
+**SSG 预渲染从生产 API 拉取数据，如果数据库未同步，预渲染的 HTML 将包含旧数据！**
+
+数据库同步是后端部署流程的一部分（见 deploy-backend Skill），但**必须在 SSG 构建前完成**，确保构建时能拉到最新数据。
+
+> 如果本次部署不涉及后端代码变更，也至少需要执行数据库同步步骤。
+
+### 4. 罗列 SSG 页面明细（⚠️ 必须执行，不可跳过！）
 
 **构建前必须先查询本地数据库各模块数据量，罗列 SSG 页面明细表供用户确认，用户同意后才开始构建！**
 
@@ -71,7 +111,8 @@ npm run build
 mysql -u root verra_voile -e "
   SELECT 'venues' AS module, COUNT(*) AS cnt FROM crawled_venues
   UNION ALL SELECT 'photographers', COUNT(*) FROM crawled_photographers
-  UNION ALL SELECT 'teams', COUNT(*) FROM crawled_wedding_teams;
+  UNION ALL SELECT 'teams', COUNT(*) FROM crawled_wedding_teams
+  UNION ALL SELECT 'travel_attractions', COUNT(*) FROM crawled_travel_attractions;
 "
 ```
 
@@ -83,12 +124,13 @@ mysql -u root verra_voile -e "
 | 目的地 | 列表页 1 + 国家落地页 5 + 场地详情 N | 6 + N |
 | 摄影师 | 列表页 1 + 摄影师详情 M | 1 + M |
 | 婚礼团队 | 列表页 1 + 团队详情 K | 1 + K |
+| 旅拍景点 | 列表页 1 + 国家落地页 31 + 景点详情 P | 32 + P |
 | 花卉 / 礼服 / 酒水 | 各仅列表页 | 3 |
-| **合计** | | **12 + N + M + K** |
+| **合计** | | **44 + N + M + K + P** |
 
 > 用户确认明细后才执行 `npm run build:seo`，避免构建完成后发现数量不对。
 
-### 2. 本地 SSG 构建（⚠️ 必须用 build:seo）
+### 5. 本地 SSG 构建（⚠️ 必须用 build:seo）
 
 ```bash
 cd /Users/hongli/WorkSpace/Verra-Voile && VITE_API_URL=https://europewedding.cn npm run build:seo
@@ -96,7 +138,7 @@ cd /Users/hongli/WorkSpace/Verra-Voile && VITE_API_URL=https://europewedding.cn 
 
 等待 Vite 构建 + Puppeteer 预渲染完成（约 15-20 分钟），确认 `dist/` 包含所有预渲染的静态 HTML 页面。
 
-### 3. 上传到服务器
+### 6. 上传到服务器
 
 **⚠️ 必须分两步上传：先上传 assets，再上传 index.html！** 否则 index.html 先到位但 JS/CSS 还没传完，用户访问会白屏。
 
@@ -128,7 +170,7 @@ expect {
 EXPECT_EOF
 ```
 
-### 3.5 验证服务器文件完整性（必须执行）
+### 6.5 验证服务器文件完整性（必须执行）
 
 上传后**立即对比**服务器和本地的 JS/CSS 文件大小，防止 0 字节空文件导致白屏：
 
@@ -142,7 +184,7 @@ ls -la /Users/hongli/WorkSpace/Verra-Voile/dist/assets/index-*.js /Users/hongli/
 
 > 如果服务器上任何 JS/CSS 文件大小为 0 或与本地不一致，**必须重新上传该文件**，否则会导致白屏。
 
-### 3.6 缓存破坏（防止浏览器缓存旧版 JS）
+### 6.6 缓存破坏（防止浏览器缓存旧版 JS）
 
 如果之前部署出过 0 字节文件被浏览器缓存的情况，需要在 index.html 中给 JS 引用加缓存破坏参数：
 
@@ -153,7 +195,7 @@ ssh -o StrictHostKeyChecking=no root@47.99.138.250 "sed -i 's|index-\([a-zA-Z0-9
 
 > 每次部署如果怀疑有缓存问题，递增 `?v=3`、`?v=4` 等。
 
-### 4. 检查 Nginx 配置清洁度
+### 7. 检查 Nginx 配置清洁度
 
 **⚠️ 必须执行！** 每次前端部署后都要检查 `sites-enabled/` 下是否有冲突的配置文件，否则可能导致前端页面无法访问。
 
@@ -167,45 +209,13 @@ ssh -o StrictHostKeyChecking=no root@47.99.138.250 "rm -f /etc/nginx/sites-enabl
 
 > **踩坑记录**：`sites-enabled/` 下同时存在 `verra-voile` 和 `verra-voile.bak`，两者监听相同端口和 server_name，导致 Nginx 路由冲突，前端页面返回 404。
 
-### 5. 验证部署
+### 8. 验证部署
 
 ```bash
 curl -s -o /dev/null -w "HTTP Status: %{http_code}\nSize: %{size_download} bytes\n" https://www.europewedding.cn/
 ```
 
 确认 HTTP 200，报告访问 URL。
-
-### 6. Git 版本控制（⚠️ 必须执行，不可跳过！）
-
-**这是部署流程的必要组成部分，不是可选步骤！** 每次部署后都必须执行以下 Git 操作：
-
-部署成功后，将所有改动（包括部署过程中产生的新文件）提交并切换新分支：
-
-```bash
-cd /Users/hongli/WorkSpace/Verra-Voile
-
-# 1. 提交所有改动
-git add -A
-git commit -m "feat: 部署更新"
-
-# 2. 合并到 main
-git checkout main
-git merge <当前分支> --no-edit
-git push origin main
-
-# 3. 版本号递增（根据当前分支号 +1）
-# 例如当前 daily/0.0.6 → 下一版本 daily/0.0.7
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-CURRENT_VERSION=$(echo "$CURRENT_BRANCH" | sed 's/daily\///')
-IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-NEXT_BRANCH="daily/${MAJOR}.${MINOR}.$((PATCH + 1))"
-
-# 4. 创建并切换到下一版本分支
-git checkout -b $NEXT_BRANCH
-git push origin $NEXT_BRANCH
-```
-
-**分支命名规范**: `daily/x.y.z`（不使用 fe/ 或 be/ 前缀）
 
 ## Nginx 配置（已配置，无需重复）
 

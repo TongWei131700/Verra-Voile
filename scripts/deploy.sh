@@ -199,6 +199,12 @@ server {
     location ~ ^/wine/ {
         try_files \$uri.html /index.html;
     }
+    location = /travel-photo {
+        try_files /travel-photo.html /index.html;
+    }
+    location ~ ^/travel-photo/ {
+        try_files \$uri.html /index.html;
+    }
     
     # SPA 路由 fallback
     location / {

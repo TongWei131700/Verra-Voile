@@ -311,20 +311,22 @@ main().catch(e => { console.error('❌', e.message); process.exit(1) })
 - 前 3 张（00-02）：vendor 展示照（封面）
 - 后续（03+）：作品集图片
 
-### 图片目录同步
+### 图片目录（独立图片仓库）
 
-图片必须同时存在于前端和后端目录：
+**⚠️ 图片统一存储到独立 Git 仓库，不再存到前端/后端目录！**
+
 ```bash
-# 前端目录（Vite sirv 提供静态文件）
-/Users/hongli/WorkSpace/Verra-Voile/uploads/crawled/photographers/{slug}/
-# 后端目录（Express 提供静态文件）
-/Users/hongli/WorkSpace/Verra-Voile-End/uploads/crawled/photographers/{slug}/
+# 图片仓库目录（后端通过符号链接引用）
+/Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/photographers/{slug}/
 ```
+
+> 后端通过符号链接引用：`Verra-Voile-End/uploads/crawled` → `Verra-Voile-Uploads/crawled`
+> Vite 代理 `/uploads` 到后端，无需复制到前端或后端目录。
 
 ### 头像/Logo 处理（必须本地化）
 - **每次爬取都必须检查** `static.junebugweddings.com` 域名下是否有 headshot/logo 图片
 - **必须下载到本地**：`static.junebugweddings.com` 同样有 Cloudflare 防护，远程 URL 通过图片代理也会返回 403，必须用 Puppeteer 拦截 response buffer 下载到本地
-- 保存路径：`/uploads/crawled/photographers/{slug}/headshot.png`（或 `.jpg`）
+- 保存路径：`Verra-Voile-Uploads/crawled/photographers/{slug}/headshot.png`（或 `.jpg`）
 - 数据库 `headshot` 字段存储本地路径，如 `/uploads/crawled/photographers/spazio46/headshot.png`
 - 如果没有 headshot/logo → 不设置，前端自动 fallback 到默认头像
 - 下载方式：在 Puppeteer 脚本的 `page.on('response')` 中增加对 `static.junebugweddings.com` 的拦截，或在主脚本完成后单独编写下载脚本
@@ -624,7 +626,7 @@ Hero 区域（三态：骨架屏 → 视频背景 / 轮播图）
 
 ### 仅修改静态文件不会生效，必须插入数据库
 **问题**：摄影师数据已从静态 TS 文件迁移到数据库架构，列表页和详情页都从 API (`/api/products/crawled-photographers`) 加载数据。仅修改 `junebugPhotographers.ts` 静态文件不会在页面上显示新摄影师，访问详情页会显示“未找到该摄影师”。
-**解决**：爬取数据后必须编写插入脚本 `insert-{slug}.cjs` 将数据写入 `crawled_photographers` 数据库表，同时确保图片已同步到前端和后端 uploads 目录。新增摄影师无需重新构建/部署前端。
+**解决**：爬取数据后必须编写插入脚本 `insert-{slug}.cjs` 将数据写入 `crawled_photographers` 数据库表，同时确保图片已下载到图片仓库 `Verra-Voile-Uploads/crawled/photographers/{slug}/` 并 commit。新增摄影师无需重新构建/部署前端。
 
 ### 头像/Logo 远程 URL 被 Cloudflare 拦截
 **问题**：`static.junebugweddings.com` 同样有 Cloudflare 防护，将 headshot 字段存为远程 URL 后，前端通过图片代理加载返回 403，头像无法显示。
@@ -653,10 +655,10 @@ Junebug 页面 HTML 只包含 3 张 vendor 展示照（`.vendor__slide`），其
      - 在 page.evaluate 中调用 /ajax/vendor/portfolio API 获取完整作品集
      - 在 page.evaluate 中调用 /ajax/vendor/videos API 获取视频（YouTube 舍弃，仅保留 Vimeo）
      - 整理图片顺序：轮播图(前3张) + 画廊/作品集
-     - 保存拦截的图片到 uploads/crawled/photographers/{slug}/
+     - 保存拦截的图片到 Verra-Voile-Uploads/crawled/photographers/{slug}/
      - 输出 JSON 数据文件
 3. [ ] 执行脚本，验证图片全部下载成功（0 失败）
-4. [ ] 复制图片到后端目录：cp -r 前端 uploads → 后端 uploads
+4. [ ] 在图片仓库提交：cd Verra-Voile-Uploads && git add crawled/photographers/{slug}/ && git commit -m "添加摄影师图片: {slug}"
 5. [ ] 根据 JSON 数据翻译为中文，充实 style（≥3组≥8项，参考风格属性库）和 highlights（3-4个），编写插入脚本 insert-{slug}.cjs 写入 crawled_photographers 表
 6. [ ] 执行插入脚本，验证 API 返回：curl http://localhost:3000/api/products/crawled-photographers/{slug}
 7. [ ] 访问 /photography/{slug} 查看效果
@@ -675,7 +677,7 @@ Junebug 页面 HTML 只包含 3 张 vendor 展示照（`.vendor__slide`），其
 ### 脚本
 - Puppeteer 提取脚本：`/Users/hongli/WorkSpace/Verra-Voile/scripts/extract-junebug-{slug}.cjs`
 - 输出 JSON 数据：`/Users/hongli/WorkSpace/Verra-Voile/scripts/junebug-{slug}-data.json`
-- 图片目录：`/Users/hongli/WorkSpace/Verra-Voile/uploads/crawled/photographers/{slug}/`
+- 图片目录：`/Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/photographers/{slug}/`
 
 ### 前端页面
 - 摄影列表页：`/Users/hongli/WorkSpace/Verra-Voile/src/pages/Photography.tsx`

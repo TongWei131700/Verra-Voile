@@ -11,6 +11,7 @@ const products = [
   { id: 'wine', name: '酒水宴席', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&h=800&fit=crop', desc: '精选婚宴佳酿与米其林级飨宴' },
   { id: 'dress', name: '礼服', img: 'https://images.unsplash.com/photo-1594552072238-b8a33785b261?w=600&h=800&fit=crop', desc: '梦想中的嫁衣' },
   { id: 'photography', name: '摄影', img: coverPhotography, desc: '记录每一个珍贵瞬间' },
+  { id: 'travel-photo', name: '欧洲旅拍', img: coverPhotography, desc: '旅途中定格最美瞬间' },
   { id: 'other', name: '其他', img: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=600&h=800&fit=crop', desc: '包车及其他服务' },
 ]
 

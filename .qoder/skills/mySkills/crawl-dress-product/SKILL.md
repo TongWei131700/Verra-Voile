@@ -442,7 +442,8 @@ curl -sI https://www.europewedding.cn/uploads/crawled/dresses/wona-carat/images/
 ### 服务器
 - 后端目录：`/var/www/verra-voile-end/`
 - 前端目录：`/var/www/verra-voile/`
-- 图片目录：`/var/www/verra-voile-end/uploads/crawled/dresses/`
+- 图片仓库：`/Users/hongli/WorkSpace/Verra-Voile-Uploads/crawled/dresses/`（本地）
+- 服务器图片目录：`/var/www/verra-voile-end/uploads/crawled/dresses/`（部署时 rsync 同步）
 - 数据库：MySQL `verra_voile`，用户 `root`
 
 ### 现有数据参考

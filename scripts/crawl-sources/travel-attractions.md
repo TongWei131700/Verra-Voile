@@ -331,16 +331,16 @@
 
 ## 比利时 Belgium (10)
 
-📋 grand-place-brussels | 布鲁塞尔大广场 | 布鲁塞尔
-📋 atomium | 原子球塔 | 布鲁塞尔
-📋 manneken-pis | 小于廉 | 布鲁塞尔
-📋 bruges-canals | 布鲁日运河 | 布鲁日
-📋 bruges-belfry | 布鲁日钟楼 | 布鲁日
-📋 ghent-graslei | 根特谷物街 | 根特
-📋 antwerp-cathedral | 安特卫普大教堂 | 安特卫普
-📋 waterloo-lion-mound | 滑铁卢雄狮丘 | 瓦隆
-📋 dinant-citadel | 迪南城堡 | 那慕尔
-📋 spa-town | 斯帕温泉小镇 | 列日
+✅ grand-place-brussels | 布鲁塞尔大广场 | 布鲁塞尔
+✅ atomium | 原子球塔 | 布鲁塞尔
+✅ manneken-pis | 小于廉 | 布鲁塞尔
+✅ bruges-canals | 布鲁日运河 | 布鲁日
+✅ bruges-belfry | 布鲁日钟楼 | 布鲁日
+✅ ghent-graslei | 根特谷物街 | 根特
+✅ antwerp-cathedral | 安特卫普大教堂 | 安特卫普
+✅ waterloo-lion-mound | 滑铁卢雄狮丘 | 瓦隆
+✅ dinant-citadel | 迪南城堡 | 那慕尔
+✅ spa-town | 斯帕温泉小镇 | 列日
 
 ## 丹麦 Denmark (10)
 

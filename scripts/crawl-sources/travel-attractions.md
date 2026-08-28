@@ -383,16 +383,16 @@
 
 ## 匈牙利 Hungary (10)
 
-📋 budapest-parliament | 布达佩斯国会大厦 | 布达佩斯
-📋 fishermans-bastion | 渔人堡 | 布达佩斯
-📋 matthias-church | 马加什教堂 | 布达佩斯
-📋 chain-bridge | 链子桥 | 布达佩斯
-📋 buda-castle | 布达城堡 | 布达佩斯
-📋 thermal-baths | 塞切尼温泉 | 布达佩斯
-📋 lake-balaton | 巴拉顿湖 | 中部
-📋 tokaj-wine | 托卡伊酒庄 | 东北部
-📋 eger-castle | 埃格尔城堡 | 北部
-📋 pannonhalma-abbey | 潘农哈尔马修道院 | 西部
+✅ budapest-parliament | 布达佩斯国会大厦 | 布达佩斯
+✅ fishermans-bastion | 渔人堡 | 布达佩斯
+✅ matthias-church | 马加什教堂 | 布达佩斯
+✅ chain-bridge | 链子桥 | 布达佩斯
+✅ buda-castle | 布达城堡 | 布达佩斯
+✅ thermal-baths | 塞切尼温泉 | 布达佩斯
+✅ lake-balaton | 巴拉顿湖 | 中部
+✅ tokaj-wine | 托卡伊酒庄 | 东北部
+✅ eger-castle | 埃格尔城堡 | 北部
+✅ pannonhalma-abbey | 潘农哈尔马修道院 | 西部
 
 ## 克罗地亚 Croatia (10)
 

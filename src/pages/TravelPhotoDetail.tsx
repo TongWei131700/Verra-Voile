@@ -135,7 +135,7 @@ export default function TravelPhotoDetail() {
   }, [slug, detail, navigate])
 
   // 图片 URL 处理
-  const coverUrl = detail?.cover?.startsWith('/') ? `${API_BASE}${detail.cover}` : (detail?.cover || '')
+  const coverUrl = detail?.cover?.startsWith('/') ? `https://europewedding.cn${detail.cover}` : (detail?.cover || '')
 
   // 加载中 / 数据为空
   if (dataLoading) return null
@@ -256,6 +256,7 @@ export default function TravelPhotoDetail() {
             <h2 className="tpd-tips__title">拍摄建议</h2>
           </div>
           <p className="tpd-tips__text">{detail.photoTips}</p>
+                    <p className="tpd-tips__note">* 部分景点室内拍摄需额外申请或受限，具体以景点最新政策为准，我们的摄影师会提前确认。</p>
         </section>
       )}
 

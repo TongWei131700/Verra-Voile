@@ -203,13 +203,21 @@ async function prefetchAllData() {
     for (const a of items) {
       if (a.slug) {
         const detailKey = `/api/products/crawled-travel-attractions/${a.slug}`
+        const photogKey = `/api/products/crawled-travel-attractions/${a.slug}/photographers`
         try {
           const detailData = await fetchApi(`/crawled-travel-attractions/${a.slug}`)
           apiCache[detailKey] = { success: true, data: detailData }
         } catch {
           apiCache[detailKey] = { success: true, data: a }
         }
-        routeMap[`/travel-photo/${a.slug}`] = [detailKey]
+        // 预取推荐摄影师（否则 SSG 渲染时该请求未被拦截，摄影师卡片不会出现在 HTML 中）
+        try {
+          const photogData = await fetchApi(`/crawled-travel-attractions/${a.slug}/photographers`)
+          apiCache[photogKey] = { success: true, data: photogData, country: photogData.country }
+        } catch {
+          apiCache[photogKey] = { success: true, data: [], country: a.country_en || '' }
+        }
+        routeMap[`/travel-photo/${a.slug}`] = [detailKey, photogKey]
       }
     }
   } catch (e) { console.error('  获取旅拍景点失败:', e.message) }

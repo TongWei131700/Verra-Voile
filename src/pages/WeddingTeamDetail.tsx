@@ -412,7 +412,7 @@ export default function WeddingTeamDetail() {
             <div className="wt-team-wrapper">
               <div className="wt-team-grid">
                 {visible.map((m, i) => {
-                  const memberLink = m.link || detail.source.url || '#'
+                  const memberLink = detail.website || m.link || detail.source.url || '#'
                   return (
                     <div key={i} className="wt-team-card">
                       <a href={memberLink} target="_blank" rel="noopener noreferrer" className="wt-team-card__avatar-link">

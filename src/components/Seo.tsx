@@ -13,6 +13,14 @@ interface SeoProps {
 // 六大模块关键词（每页都包含，确保搜索引擎关联）
 const MODULE_KEYWORDS = '目的地婚礼, 婚礼团队, 花卉装饰, 婚纱礼服, 婚礼摄影, 酒水宴席'
 const BRAND = 'EuropeWedding'
+const SITE_URL = 'https://europewedding.cn'
+
+// 确保 og:image / 结构化数据图片使用绝对路径（社交平台爬虫无法解析相对路径）
+function absoluteUrl(path?: string): string | undefined {
+  if (!path) return undefined
+  if (path.startsWith('http://') || path.startsWith('https://')) return path
+  return `${SITE_URL}${path.startsWith('/') ? '' : '/'}${path}`
+}
 
 export default function Seo({ title, description, keywords, ogType = 'website', ogImage, structuredData }: SeoProps) {
   const { pathname } = useLocation()
@@ -52,7 +60,7 @@ export default function Seo({ title, description, keywords, ogType = 'website', 
       <meta property="og:description" content={fullDesc} />
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={currentUrl} />
-      {ogImage && <meta property="og:image" content={ogImage} />}
+      {ogImage && <meta property="og:image" content={absoluteUrl(ogImage)} />}
       <link rel="canonical" href={currentUrl} />
       {structuredData && (
         <>

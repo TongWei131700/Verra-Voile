@@ -14917,6 +14917,13 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
   border-radius: 8px;
   border: 1px solid rgba(212,175,55,0.12);
 }
+.tpd-tips__note {
+  font-size: 12px;
+  color: #8a7e72;
+  margin-top: 10px;
+  font-style: italic;
+  opacity: 0.85;
+}
 
 /* ===== 拍摄事项 ===== */
 .tpd-notice {

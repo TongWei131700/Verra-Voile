@@ -396,16 +396,16 @@
 
 ## 克罗地亚 Croatia (10)
 
-📋 dubrovnik-old-town | 杜布罗夫尼克老城 | 南部
-📋 dubrovnik-walls | 杜布罗夫尼克城墙 | 南部
-📋 split-diocletian-palace | 戴克里先宫 | 斯普利特
-📋 plitvice-lakes | 普利特维采湖群 | 中部
-📋 zagreb-cathedral | 萨格勒布大教堂 | 萨格勒布
-📋 hvar-island | 赫瓦尔岛 | 达尔马提亚
-📋 korcula-old-town | 科尔丘拉老城 | 达尔马提亚
-📋 zadar-sea-organ | 扎达尔海风琴 | 扎达尔
-📋 rovnik-amphitheatre | 罗维尼竞技场 | 伊斯特拉
-📋 motovun-hilltown | 莫托文山城 | 伊斯特拉
+✅ dubrovnik-old-town | 杜布罗夫尼克老城 | 南部
+✅ dubrovnik-walls | 杜布罗夫尼克城墙 | 南部
+✅ split-diocletian-palace | 戴克里先宫 | 斯普利特
+✅ plitvice-lakes | 普利特维采湖群 | 中部
+✅ zagreb-cathedral | 萨格勒布大教堂 | 萨格勒布
+✅ hvar-island | 赫瓦尔岛 | 达尔马提亚
+✅ korcula-old-town | 科尔丘拉老城 | 达尔马提亚
+✅ zadar-sea-organ | 扎达尔海风琴 | 扎达尔
+✅ rovnik-amphitheatre | 罗维尼竞技场 | 伊斯特拉
+✅ motovun-hilltown | 莫托文山城 | 伊斯特拉
 
 ## 芬兰 Finland (10)
 

@@ -409,16 +409,16 @@
 
 ## 芬兰 Finland (10)
 
-📋 helsinki-cathedral | 赫尔辛基大教堂 | 赫尔辛基
-📋 suomenlinna-fortress | 芬兰堡 | 赫尔辛基
-📋 rock-church | 岩石教堂 | 赫尔辛基
-📋 lapland-aurora | 拉普兰极光 | 拉普兰
-📋 santa-claus-village | 圣诞老人村 | 拉普兰
-📋 tampere-lakes | 坦佩雷湖区 | 皮尔坎马
-📋 turku-castle | 图尔库城堡 | 西南芬兰
-📋 porvoo-old-town | 波尔沃老城 | 乌西马
-📋 savonlinna-olavinlinna | 萨翁林纳城堡 | 萨沃
-📋 rovaniemi-glass-bridge | 罗瓦涅米玻璃桥 | 拉普兰
+✅ helsinki-cathedral | 赫尔辛基大教堂 | 赫尔辛基
+✅ suomenlinna-fortress | 芬兰堡 | 赫尔辛基
+✅ rock-church | 岩石教堂 | 赫尔辛基
+✅ lapland-aurora | 拉普兰极光 | 拉普兰
+✅ santa-claus-village | 圣诞老人村 | 拉普兰
+✅ tampere-lakes | 坦佩雷湖区 | 皮尔坎马
+✅ turku-castle | 图尔库城堡 | 西南芬兰
+✅ porvoo-old-town | 波尔沃老城 | 乌西马
+✅ savonlinna-olavinlinna | 萨翁林纳城堡 | 萨沃
+✅ rovaniemi-glass-bridge | 罗瓦涅米玻璃桥 | 拉普兰
 
 ## 爱尔兰 Ireland (12)
 

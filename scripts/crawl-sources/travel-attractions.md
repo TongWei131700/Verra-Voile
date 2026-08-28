@@ -316,18 +316,18 @@
 
 ## 瑞典 Sweden (12)
 
-📋 stockholm-gamla-stan | 斯德哥尔摩老城 | 斯德哥尔摩
-📋 stockholm-city-hall | 斯德哥尔摩市政厅 | 斯德哥尔摩
-📋 vasa-museum | 瓦萨沉船博物馆 | 斯德哥尔摩
-📋 abisko-aurora | 阿比斯库极光 | 北博滕
-📋 ice-hotel-jukkasjarvi | 冰酒店 | 北博滕
-📋 gotland-visby | 维斯比中世纪小镇 | 哥特兰
-📋 kiruna | 基律纳 | 北博滕
-📋 lapland-sami | 拉普兰萨米村 | 北博滕
-📋 drottningholm-palace | 王后岛宫 | 斯德哥尔摩
-📋 uppsala-cathedral | 乌普萨拉大教堂 | 乌普萨拉
-📋 gothenburg-archipelago | 哥德堡群岛 | 西约塔兰
-📋 malmo-turning-torso | 马尔默旋转大厦 | 斯科讷
+✅ stockholm-gamla-stan | 斯德哥尔摩老城 | 斯德哥尔摩
+✅ stockholm-city-hall | 斯德哥尔摩市政厅 | 斯德哥尔摩
+✅ vasa-museum | 瓦萨沉船博物馆 | 斯德哥尔摩
+✅ abisko-aurora | 阿比斯库极光 | 北博滕
+✅ ice-hotel-jukkasjarvi | 冰酒店 | 北博滕
+✅ gotland-visby | 维斯比中世纪小镇 | 哥特兰
+✅ kiruna | 基律纳 | 北博滕
+✅ lapland-sami | 拉普兰萨米村 | 北博滕
+✅ drottningholm-palace | 王后岛宫 | 斯德哥尔摩
+✅ uppsala-cathedral | 乌普萨拉大教堂 | 乌普萨拉
+✅ gothenburg-archipelago | 哥德堡群岛 | 西约塔兰
+✅ malmo-turning-torso | 马尔默旋转大厦 | 斯科讷
 
 ## 比利时 Belgium (10)
 

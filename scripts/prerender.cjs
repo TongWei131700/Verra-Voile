@@ -111,50 +111,57 @@ async function prefetchAllData() {
     console.log(`  礼服: 仅列表页（${items.length} 个商品跳过详情预渲染）`)
   } catch (e) { console.error('  获取礼服失败:', e.message) }
 
-  // 摄影师
+  // 摄影师（仅列表页，不预渲染详情页）
   try {
     const photographers = await fetchApi('/crawled-photographers')
     const items = Array.isArray(photographers) ? photographers : []
     apiCache['/api/products/crawled-photographers'] = { success: true, data: items }
     // 列表页
     routeMap['/photography'] = ['/api/products/crawled-photographers']
-    for (const p of items) {
-      if (p.slug) {
-        const detailKey = `/api/products/crawled-photographers/${p.slug}`
-        // 额外请求详情接口获取完整数据
-        try {
-          const detailData = await fetchApi(`/crawled-photographers/${p.slug}`)
-          apiCache[detailKey] = { success: true, data: detailData }
-        } catch {
-          apiCache[detailKey] = { success: true, data: p }
-        }
-        routeMap[`/photography/${p.slug}`] = [detailKey]
+    // 国家落地页（SEO）
+    const phCountrySlugMap = {
+      'France': 'france', 'Italy': 'italy', 'Spain': 'spain', 'United Kingdom': 'united-kingdom',
+      'Germany': 'germany', 'Greece': 'greece', 'Portugal': 'portugal', 'Austria': 'austria',
+      'Norway': 'norway', 'Iceland': 'iceland', 'Ireland': 'ireland', 'Croatia': 'croatia',
+      'Hungary': 'hungary',
+      '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '德国': 'germany',
+      '希腊': 'greece', '葡萄牙': 'portugal', '奥地利': 'austria', '挪威': 'norway',
+      '冰岛': 'iceland', '爱尔兰': 'ireland', '克罗地亚': 'croatia', '匈牙利': 'hungary',
+    }
+    const phUniqueCountries = [...new Set(items.map(p => p.country).filter(Boolean))]
+    for (const country of phUniqueCountries) {
+      const slug = phCountrySlugMap[country]
+      if (slug) {
+        routeMap[`/photography/${slug}`] = ['/api/products/crawled-photographers']
       }
     }
-    console.log(`  摄影师: ${items.length}`)
+    console.log(`  摄影师: 仅列表页（${items.length} 个详情跳过预渲染），国家落地页: ${phUniqueCountries.filter(c => phCountrySlugMap[c]).length}`)
   } catch (e) { console.error('  获取摄影师失败:', e.message) }
 
-  // 婚礼团队
+  // 婚礼团队（仅列表页，不预渲染详情页）
   try {
     const teams = await fetchApi('/crawled-wedding-teams')
     const items = Array.isArray(teams) ? teams : []
     apiCache['/api/products/crawled-wedding-teams'] = { success: true, data: items }
     // 列表页
     routeMap['/wedding-team'] = ['/api/products/crawled-wedding-teams']
-    for (const t of items) {
-      if (t.slug) {
-        const detailKey = `/api/products/crawled-wedding-teams/${t.slug}`
-        // 额外请求详情接口获取完整数据
-        try {
-          const detailData = await fetchApi(`/crawled-wedding-teams/${t.slug}`)
-          apiCache[detailKey] = { success: true, data: detailData }
-        } catch {
-          apiCache[detailKey] = { success: true, data: t }
-        }
-        routeMap[`/wedding-team/${t.slug}`] = [detailKey]
+    // 国家落地页（SEO）
+    const wtCountrySlugMap = {
+      'France': 'france', 'Italy': 'italy', 'Spain': 'spain', 'United Kingdom': 'united-kingdom',
+      'Germany': 'germany', 'Greece': 'greece', 'Portugal': 'portugal', 'Austria': 'austria',
+      'Norway': 'norway', 'Iceland': 'iceland', 'Croatia': 'croatia', 'Hungary': 'hungary',
+      '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '德国': 'germany',
+      '希腊': 'greece', '葡萄牙': 'portugal', '奥地利': 'austria', '挪威': 'norway',
+      '冰岛': 'iceland', '克罗地亚': 'croatia', '匈牙利': 'hungary',
+    }
+    const wtUniqueCountries = [...new Set(items.map(t => t.country).filter(Boolean))]
+    for (const country of wtUniqueCountries) {
+      const slug = wtCountrySlugMap[country]
+      if (slug) {
+        routeMap[`/wedding-team/${slug}`] = ['/api/products/crawled-wedding-teams']
       }
     }
-    console.log(`  婚礼团队: ${items.length}`)
+    console.log(`  婚礼团队: 仅列表页（${items.length} 个详情跳过预渲染），国家落地页: ${wtUniqueCountries.filter(c => wtCountrySlugMap[c]).length}`)
   } catch (e) { console.error('  获取婚礼团队失败:', e.message) }
 
   // 酒水（仅列表页，不预渲染详情页）

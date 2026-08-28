@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { navFromList } from '../utils/navigateFromList'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
@@ -57,6 +57,22 @@ const COUNTRY_CN: Record<string, string> = {
   'Slovenia': '斯洛文尼亚', 'Morocco': '摩洛哥', 'USA': '美国',
 }
 
+// 国家 → URL slug 映射（用于 SEO 落地页）
+const COUNTRY_SLUG_MAP: Record<string, string> = {
+  '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '英国': 'united-kingdom',
+  '德国': 'germany', '希腊': 'greece', '葡萄牙': 'portugal', '奥地利': 'austria',
+  '挪威': 'norway', '冰岛': 'iceland', '爱尔兰': 'ireland', '克罗地亚': 'croatia',
+  '匈牙利': 'hungary', '瑞士': 'switzerland', '比利时': 'belgium', '荷兰': 'netherlands',
+  '瑞典': 'sweden', '丹麦': 'denmark', '芬兰': 'finland', '捷克': 'czech',
+  '波兰': 'poland', '斯洛文尼亚': 'slovenia',
+}
+const SLUG_TO_COUNTRY: Record<string, string> = Object.fromEntries(
+  Object.entries(COUNTRY_SLUG_MAP).map(([k, v]) => [v, k])
+)
+
+// URL 国家参数是否已消费（防止从详情页返回时重复读取 URL）
+let _urlCountryUsed = false
+
 // 将 API 返回的 snake_case 数据转为前端 camelCase
 function mapApiItem(row: any): PhotographerItem {
   let styles: string[] = []
@@ -78,7 +94,7 @@ function mapApiItem(row: any): PhotographerItem {
 
 export default function Photography() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const location = useLocation()
   const [allProducts, setAllProducts] = useState<PhotographerItem[]>([])
   const [dataLoading, setDataLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -89,11 +105,12 @@ export default function Photography() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const filterBodyRef = useRef<HTMLDivElement>(null)
   const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => {
-    // URL 参数 ?country=Norway 优先于缓存
-    const urlCountry = searchParams.get('country')
-    if (urlCountry) {
-      const cn = COUNTRY_CN[urlCountry] || urlCountry
-      return new Set([cn])
+    // URL 路径 /photography/france 优先于缓存
+    const pathParts = location.pathname.split('/').filter(Boolean)
+    const urlSlug = pathParts.length > 1 && pathParts[0] === 'photography' ? pathParts[1] : null
+    if (urlSlug && SLUG_TO_COUNTRY[urlSlug] && !_urlCountryUsed) {
+      _urlCountryUsed = true
+      return new Set([SLUG_TO_COUNTRY[urlSlug]])
     }
     return new Set(_cachedSelectedCountries ?? [])
   })
@@ -268,6 +285,21 @@ export default function Photography() {
   useEffect(() => { _cachedSearchFilter = searchFilter }, [searchFilter])
   useEffect(() => { _cachedSortMode = sortMode }, [sortMode])
 
+  // 筛选变化时同步写入 URL（路径式 /photography/france）
+  const _isInitialMount = useRef(true)
+  useEffect(() => {
+    if (_isInitialMount.current) { _isInitialMount.current = false; return }
+    if (selectedCountries.size === 1) {
+      const country = Array.from(selectedCountries)[0]
+      const slug = COUNTRY_SLUG_MAP[country]
+      if (slug && location.pathname !== `/photography/${slug}`) {
+        navigate(`/photography/${slug}`, { replace: true })
+      }
+    } else if (location.pathname !== '/photography') {
+      navigate('/photography', { replace: true })
+    }
+  }, [selectedCountries]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const totalFilters = selectedCountries.size + selectedStyles.size + (searchFilter ? 1 : 0)
   const bookedCount = allProducts.filter((p: PhotographerItem) => bookedSlugs.has(p.slug)).length
 
@@ -379,8 +411,17 @@ export default function Photography() {
   return (
     <div className="cd-page">
       <Seo
-        title="婚礼摄影"
-        description="欧洲专业婚礼摄影师团队，提供婚礼跟拍、航拍、婚纱照等全方位影像服务。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
+        title={selectedCountries.size === 1
+          ? `${Array.from(selectedCountries)[0]}婚礼摄影 · 专业摄影师团队`
+          : '婚礼摄影'}
+        description={(() => {
+          if (selectedCountries.size === 1) {
+            const country = Array.from(selectedCountries)[0]
+            const count = allProducts.filter(p => p.country === country).length
+            return `精选${country}${count}位专业婚礼摄影师，提供婚礼跟拍、航拍、婚纱照等影像服务。EuropeWedding 在${country}为您安排资深摄影师，留下最美的婚礼回忆。`
+          }
+          return '欧洲专业婚礼摄影师团队，提供婚礼跟拍、航拍、婚纱照等全方位影像服务。EuropeWedding 提供场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。'
+        })()}
         keywords="婚礼摄影, 婚礼跟拍, 欧洲婚礼摄影, 目的地婚礼跟拍, 婚礼航拍"
         structuredData={allProducts.length > 0 ? {
           "@context": "https://schema.org",

@@ -185,10 +185,53 @@ export default function App() {
         <Route path="/dresses" element={<Dresses />} />
         <Route path="/dresses/:slug" element={<DressesDetail />} />
         <Route path="/photography" element={<Photography />} />
+        <Route path="/photography/france" element={<Photography />} />
+        <Route path="/photography/italy" element={<Photography />} />
+        <Route path="/photography/spain" element={<Photography />} />
+        <Route path="/photography/united-kingdom" element={<Photography />} />
+        <Route path="/photography/germany" element={<Photography />} />
+        <Route path="/photography/greece" element={<Photography />} />
+        <Route path="/photography/portugal" element={<Photography />} />
+        <Route path="/photography/austria" element={<Photography />} />
+        <Route path="/photography/norway" element={<Photography />} />
+        <Route path="/photography/iceland" element={<Photography />} />
+        <Route path="/photography/ireland" element={<Photography />} />
+        <Route path="/photography/croatia" element={<Photography />} />
+        <Route path="/photography/hungary" element={<Photography />} />
+        <Route path="/photography/switzerland" element={<Photography />} />
+        <Route path="/photography/belgium" element={<Photography />} />
+        <Route path="/photography/netherlands" element={<Photography />} />
+        <Route path="/photography/sweden" element={<Photography />} />
+        <Route path="/photography/denmark" element={<Photography />} />
+        <Route path="/photography/finland" element={<Photography />} />
+        <Route path="/photography/czech" element={<Photography />} />
+        <Route path="/photography/poland" element={<Photography />} />
+        <Route path="/photography/slovenia" element={<Photography />} />
         <Route path="/photography/:slug" element={<PhotographyDetail />} />
         <Route path="/wine" element={<Wine />} />
         <Route path="/wine/:productId" element={<WineDetail />} />
         <Route path="/wedding-team" element={<WeddingTeam />} />
+        <Route path="/wedding-team/france" element={<WeddingTeam />} />
+        <Route path="/wedding-team/italy" element={<WeddingTeam />} />
+        <Route path="/wedding-team/spain" element={<WeddingTeam />} />
+        <Route path="/wedding-team/united-kingdom" element={<WeddingTeam />} />
+        <Route path="/wedding-team/germany" element={<WeddingTeam />} />
+        <Route path="/wedding-team/greece" element={<WeddingTeam />} />
+        <Route path="/wedding-team/portugal" element={<WeddingTeam />} />
+        <Route path="/wedding-team/austria" element={<WeddingTeam />} />
+        <Route path="/wedding-team/norway" element={<WeddingTeam />} />
+        <Route path="/wedding-team/iceland" element={<WeddingTeam />} />
+        <Route path="/wedding-team/croatia" element={<WeddingTeam />} />
+        <Route path="/wedding-team/hungary" element={<WeddingTeam />} />
+        <Route path="/wedding-team/switzerland" element={<WeddingTeam />} />
+        <Route path="/wedding-team/belgium" element={<WeddingTeam />} />
+        <Route path="/wedding-team/netherlands" element={<WeddingTeam />} />
+        <Route path="/wedding-team/sweden" element={<WeddingTeam />} />
+        <Route path="/wedding-team/denmark" element={<WeddingTeam />} />
+        <Route path="/wedding-team/finland" element={<WeddingTeam />} />
+        <Route path="/wedding-team/czech" element={<WeddingTeam />} />
+        <Route path="/wedding-team/poland" element={<WeddingTeam />} />
+        <Route path="/wedding-team/slovenia" element={<WeddingTeam />} />
         <Route path="/wedding-team/:slug" element={<WeddingTeamDetail />} />
         <Route path="/travel-photo" element={<TravelPhoto />} />
         <Route path="/travel-photo/france" element={<TravelPhoto />} />

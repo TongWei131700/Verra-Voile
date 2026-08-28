@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { navFromList } from '../utils/navigateFromList'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
@@ -41,6 +41,33 @@ function getCurrencySymbol(country: string) {
   return country === 'United Kingdom' ? '£' : '€'
 }
 
+// 国家英文名 → 中文名映射
+const COUNTRY_CN: Record<string, string> = {
+  'Italy': '意大利', 'Greece': '希腊', 'France': '法国', 'Spain': '西班牙',
+  'United Kingdom': '英国', 'Portugal': '葡萄牙', 'Norway': '挪威',
+  'Iceland': '冰岛', 'Austria': '奥地利', 'Germany': '德国',
+  'Switzerland': '瑞士', 'Belgium': '比利时', 'Netherlands': '荷兰',
+  'Croatia': '克罗地亚', 'Czech Republic': '捷克', 'Denmark': '丹麦',
+  'Sweden': '瑞典', 'Finland': '芬兰', 'Ireland': '爱尔兰',
+  'Poland': '波兰', 'Hungary': '匈牙利', 'Slovenia': '斯洛文尼亚',
+}
+
+// 国家 → URL slug 映射（用于 SEO 落地页）
+const COUNTRY_SLUG_MAP: Record<string, string> = {
+  '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '英国': 'united-kingdom',
+  '德国': 'germany', '希腊': 'greece', '葡萄牙': 'portugal', '奥地利': 'austria',
+  '挪威': 'norway', '冰岛': 'iceland', '克罗地亚': 'croatia', '匈牙利': 'hungary',
+  '瑞士': 'switzerland', '比利时': 'belgium', '荷兰': 'netherlands',
+  '瑞典': 'sweden', '丹麦': 'denmark', '芬兰': 'finland', '捷克': 'czech',
+  '波兰': 'poland', '斯洛文尼亚': 'slovenia',
+}
+const SLUG_TO_COUNTRY: Record<string, string> = Object.fromEntries(
+  Object.entries(COUNTRY_SLUG_MAP).map(([k, v]) => [v, k])
+)
+
+// URL 国家参数是否已消费
+let _urlCountryUsed = false
+
 // 模块级缓存：从详情返回列表页时复用，避免重复请求
 let _cachedCompanies: WeddingTeamCompany[] | null = null
 // 筛选/排序缓存：返回列表页时恢复用户之前的筛选状态
@@ -56,11 +83,13 @@ function mapApiItem(row: any): WeddingTeamCompany {
   let serviceAreas: any[] = []
   try { specialties = typeof row.specialties === 'string' ? JSON.parse(row.specialties) : (row.specialties || []) } catch { /* ignore */ }
   try { serviceAreas = typeof row.service_areas === 'string' ? JSON.parse(row.service_areas) : (row.service_areas || []) } catch { /* ignore */ }
+  const rawCountry = row.country || ''
+  const country = COUNTRY_CN[rawCountry] || row.country_cn || rawCountry
   return {
     slug: row.slug,
     name: row.name_cn || row.name,
     nameEn: row.name,
-    country: row.country_cn || row.country || '',
+    country,
     countryEn: row.country || '',
     city: row.city_cn || row.city || '',
     cityEn: row.city || '',
@@ -98,6 +127,7 @@ function extractUnique<T>(companies: WeddingTeamCompany[], getter: (c: WeddingTe
 
 export default function WeddingTeam() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [allCompanies, setAllCompanies] = useState<WeddingTeamCompany[]>([])
   const [dataLoading, setDataLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -107,7 +137,16 @@ export default function WeddingTeam() {
   const searchRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const filterBodyRef = useRef<HTMLDivElement>(null)
-  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => new Set(_cachedSelectedCountries ?? []))
+  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => {
+    // URL 路径 /wedding-team/france 优先于缓存
+    const pathParts = location.pathname.split('/').filter(Boolean)
+    const urlSlug = pathParts.length > 1 && pathParts[0] === 'wedding-team' ? pathParts[1] : null
+    if (urlSlug && SLUG_TO_COUNTRY[urlSlug] && !_urlCountryUsed) {
+      _urlCountryUsed = true
+      return new Set([SLUG_TO_COUNTRY[urlSlug]])
+    }
+    return new Set(_cachedSelectedCountries ?? [])
+  })
   const [selectedSpecialties, setSelectedSpecialties] = useState<Set<string>>(() => new Set(_cachedSelectedSpecialties ?? []))
   const [openGroups, setOpenGroups] = useState({ country: true, specialty: true })
     const [sortOpen, setSortOpen] = useState(false)
@@ -280,6 +319,21 @@ export default function WeddingTeam() {
   useEffect(() => { _cachedSearchFilter = searchFilter }, [searchFilter])
   useEffect(() => { _cachedSortMode = sortMode }, [sortMode])
 
+  // 筛选变化时同步写入 URL（路径式 /wedding-team/france）
+  const _isInitialMount = useRef(true)
+  useEffect(() => {
+    if (_isInitialMount.current) { _isInitialMount.current = false; return }
+    if (selectedCountries.size === 1) {
+      const country = Array.from(selectedCountries)[0]
+      const slug = COUNTRY_SLUG_MAP[country]
+      if (slug && location.pathname !== `/wedding-team/${slug}`) {
+        navigate(`/wedding-team/${slug}`, { replace: true })
+      }
+    } else if (location.pathname !== '/wedding-team') {
+      navigate('/wedding-team', { replace: true })
+    }
+  }, [selectedCountries]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const totalFilters = selectedCountries.size + selectedSpecialties.size + (searchFilter ? 1 : 0)
 
   const toggleCountry = (c: string) => {
@@ -384,8 +438,17 @@ export default function WeddingTeam() {
   return (
     <div className="cd-page">
       <Seo
-        title="婚礼团队"
-        description="欧洲专业婚礼策划团队，提供一站式目的地婚礼服务，从场地甄选到全程执行。EuropeWedding 涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块。"
+        title={selectedCountries.size === 1
+          ? `${Array.from(selectedCountries)[0]}婚礼团队 · 专业策划执行`
+          : '婚礼团队'}
+        description={(() => {
+          if (selectedCountries.size === 1) {
+            const country = Array.from(selectedCountries)[0]
+            const count = allCompanies.filter(c => c.country === country).length
+            return `精选${country}${count}支专业婚礼团队，提供从场地甄选到全程执行的一站式服务。EuropeWedding 在${country}热门城市为您安排资深策划团队。`
+          }
+          return '欧洲专业婚礼策划团队，提供一站式目的地婚礼服务，从场地甄选到全程执行。EuropeWedding 涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块。'
+        })()}
         keywords="婚礼团队, 婚礼策划, 欧洲婚礼策划, 目的地婚礼团队, 婚礼统筹"
         structuredData={allCompanies.length > 0 ? {
           "@context": "https://schema.org",

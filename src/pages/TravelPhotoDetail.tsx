@@ -152,26 +152,43 @@ export default function TravelPhotoDetail() {
         })()}
         ogImage={coverUrl || undefined}
         structuredData={detail ? [
-          // TouristAttraction Schema
+          // 1. TouristAttraction Schema（增强版：含拍摄建议、价格、摄影师推荐）
           {
             "@context": "https://schema.org",
             "@type": "TouristAttraction",
             "name": detail.name,
-            "description": detail.description,
+            "alternateName": detail.nameEn || undefined,
+            "description": detail.description?.slice(0, 300),
             "address": {
               "@type": "PostalAddress",
               "addressLocality": detail.location,
-              "addressCountry": detail.country
+              "addressRegion": detail.country,
+              "addressCountry": "欧洲"
             },
-            "image": coverUrl,
+            "image": coverUrl ? [coverUrl] : undefined,
             "url": `https://europewedding.cn/travel-photo/${detail.slug}`,
-            "offers": detail.price > 0 ? {
+            // 价格/服务报价
+            "offers": {
               "@type": "Offer",
-              "price": detail.price,
-              "priceCurrency": "EUR"
-            } : undefined
+              "price": detail.price > 0 ? detail.price : 0,
+              "priceCurrency": "EUR",
+              "availability": "https://schema.org/InStock",
+              "description": detail.price > 0
+                ? `${detail.name}旅拍服务`
+                : `联系咨询${detail.location}旅拍价格`
+            },
+            // 拍摄建议
+            "tourBookingInfo": detail.photoTips || undefined,
+            // 推荐摄影师（作为关联服务提供者）
+            "provider": photographers.length > 0 ? photographers.map(p => ({
+              "@type": "ProfessionalService",
+              "name": p.nameCn || p.name,
+              "url": `https://europewedding.cn/photography/${p.slug}`,
+              "image": p.headshot || p.coverImage || undefined,
+              "priceRange": p.price > 0 ? `€${p.price}起` : undefined
+            })) : undefined
           },
-          // BreadcrumbList Schema
+          // 2. BreadcrumbList Schema
           {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
@@ -321,8 +338,8 @@ export default function TravelPhotoDetail() {
       <div className={`cd-book-bar${showBar ? ' cd-book-bar--visible' : ''}`}>
         <div className="cd-book-bar__inner">
           <div className="cd-book-bar__price">
-            <span className="cd-book-bar__price-label">价格 <span className="cd-book-bar__note">（具体费用请联系摄影师）</span></span>
-            <span className="cd-book-bar__price-value">€0</span>
+            <span className="cd-book-bar__price-label">起步价</span>
+            <span className="cd-book-bar__price-value cd-book-bar__price-value--gold cd-book-bar__price-value--sm">€{detail.price || 0}起</span>
           </div>
           <div className="cd-book-bar__actions">
             <button className="cd-book-bar__consult" onClick={handleConsult}>

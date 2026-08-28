@@ -20,6 +20,7 @@ interface Attraction {
   cover: string
   tagline: string
   tags: string[]
+  price: number
 }
 
 // 将 API snake_case 数据转为前端格式
@@ -39,6 +40,7 @@ function mapApiItem(row: any): Attraction {
     cover: row.cover_image || '',
     tagline: row.tagline || '',
     tags,
+    price: row.price || 0,
   }
 }
 
@@ -337,9 +339,23 @@ export default function TravelPhoto() {
           "itemListElement": filteredList.slice(0, 20).map((a, i) => ({
             "@type": "ListItem",
             "position": i + 1,
-            "name": a.name,
-            "url": `https://europewedding.cn/travel-photo/${a.slug}`,
-            "image": a.cover || undefined
+            "item": {
+              "@type": "TouristAttraction",
+              "name": a.name,
+              "url": `https://europewedding.cn/travel-photo/${a.slug}`,
+              "image": a.cover ? `https://europewedding.cn${a.cover}` : undefined,
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": a.location,
+                "addressRegion": a.country
+              },
+              "offers": {
+                "@type": "Offer",
+                "price": a.price || 0,
+                "priceCurrency": "EUR",
+                "availability": "https://schema.org/InStock"
+              }
+            }
           }))
         } : undefined}
       />
@@ -711,7 +727,7 @@ export default function TravelPhoto() {
                         </div>
                       )}
                       <div className="cd-card__footer">
-                        <span className="cd-card__price">€0起</span>
+                        <span className="cd-card__price">€{item.price || 0}起</span>
                         <span className="cd-card__arrow">查看详情 →</span>
                       </div>
                     </div>

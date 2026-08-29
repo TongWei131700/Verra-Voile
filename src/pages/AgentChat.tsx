@@ -266,31 +266,15 @@ export default function AgentChat() {
     }, 100)
   }
 
-  /* ── 逐字打回复（纯打字动画，表格在完成后统一渲染） ── */
+  /* ── 回复直接打印（跳过逐字动画，思考速度不变） ── */
   const startReply = () => {
     if (isRpyRef.current || !rpyRawRef.current) return
     rpyStartedRef.current = true
     isRpyRef.current = true
     rpyRawRef.current.style.display = ''
-    rpyRawRef.current.textContent = ''
-
-    let idx = 0
-
-    const tick = () => {
-      const full = fullReplyRef.current
-      idx++
-      if (rpyRawRef.current) {
-        rpyRawRef.current.textContent = full.slice(0, idx)
-      }
-      if (idx >= full.length) {
-        if (rpyTimerRef.current) clearInterval(rpyTimerRef.current)
-        rpyTimerRef.current = null
-        isRpyRef.current = false
-        finishReply()
-      }
-    }
-
-    rpyTimerRef.current = window.setInterval(tick, 30)
+    rpyRawRef.current.textContent = fullReplyRef.current
+    isRpyRef.current = false
+    finishReply()
   }
 
   const finishReply = () => {
@@ -690,20 +674,54 @@ export default function AgentChat() {
     <div className="agent-chat-page">
       <Seo
         title="AI欧洲婚礼规划助手 - 智能目的地婚礼策划"
-        description="EuropeWedding AI 婚礼规划助手，一键获取欧洲目的地婚礼方案。智能推荐法国城堡、意大利庄园、希腊海岛等场地，提供预算规划、场地对比、花艺酒水一站式建议。"
-        keywords="AI婚礼策划,欧洲婚礼规划,目的地婚礼AI,法国婚礼,意大利婚礼,希腊婚礼,婚礼预算规划,婚礼场地推荐,智能婚礼助手,EuropeWedding"
-        ogType="website"
-        structuredData={{
-          '@context': 'https://schema.org',
-          '@type': 'WebApplication',
-          name: 'AI欧洲婚礼规划助手',
-          description: '智能AI婚礼策划助手，提供欧洲目的地婚礼的场地推荐、预算规划、花艺酒水建议等一站式服务',
-          url: 'https://europewedding.cn/agent-chat',
-          applicationCategory: 'LifestyleApplication',
-          operatingSystem: 'Web',
-          offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-          provider: { '@type': 'Organization', name: 'EuropeWedding', url: 'https://europewedding.cn' }
-        }}
+        description="EuropeWedding AI 婚礼规划助手，基于欧洲 12 国 50+ 城市真实婚礼数据，提供场地甄选、摄影师推荐、花卉方案、酒水搭配、礼服选择及预算规划等一站式智能策划服务。"
+        keywords="AI婚礼策划, 智能婚礼助手, 欧洲婚礼场地推荐, 目的地婚礼预算, 婚礼花卉方案, 婚礼摄影师推荐, 婚礼礼服选择"
+        structuredData={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "AI欧洲婚礼规划助手",
+            "url": "https://europewedding.cn/agent-chat",
+            "description": "基于欧洲 12 国真实婚礼数据的智能婚礼策划助手，提供场地甄选、摄影师推荐、花卉方案、预算规划等一站式服务。",
+            "applicationCategory": "TravelApplication",
+            "operatingSystem": "Web",
+            "provider": {
+              "@type": "Organization",
+              "name": "EuropeWedding",
+              "url": "https://europewedding.cn"
+            },
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+            "featureList": [
+              "欧洲 12 国城堡庄园场地推荐",
+              "驻场摄影师风格匹配",
+              "Florajet 46 款花卉商品智能搭配",
+              "66 款酒水选品推荐",
+              "婚礼礼服个性化推荐",
+              "婚礼预算智能分配计算"
+            ]
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "AI 婚礼规划助手能做什么？",
+                "acceptedAnswer": { "@type": "Answer", "text": "AI 助手可以基于欧洲 12 国 50+ 城市的真实婚礼数据，为您推荐场地、摄影师、花卉方案、酒水和礼服，并根据您的预算和人数智能规划婚礼方案。" }
+              },
+              {
+                "@type": "Question",
+                "name": "使用 AI 助手需要付费吗？",
+                "acceptedAnswer": { "@type": "Answer", "text": "完全免费。AI 婚礼规划助手是 EuropeWedding 为所有客户提供的一项增值服务，帮助您快速了解欧洲目的地婚礼的可行方案。" }
+              },
+              {
+                "@type": "Question",
+                "name": "AI 助手推荐的数据准确吗？",
+                "acceptedAnswer": { "@type": "Answer", "text": "所有推荐均基于平台真实商品数据，包括场地价格、花卉商品、酒水酒单和礼服款式，价格信息与实际情况一致。" }
+              }
+            ]
+          }
+        ]}
       />
       <div className="agent-header">
         <button className="agent-back" onClick={() => navigate(-1)}>← 返回</button>
@@ -814,6 +832,30 @@ export default function AgentChat() {
         <button className="agent-send" onClick={sendMsg} disabled={!inputVal.trim()}>
           发送
         </button>
+      </div>
+
+      {/* SEO 内容区：为搜索引擎提供丰富的可索引文本 */}
+      <div className="agent-seo-content">
+        <h2>AI 智能婚礼策划 — 欧洲 12 国一站式目的地婚礼规划</h2>
+        <p>EuropeWedding AI 婚礼规划助手覆盖法国、意大利、西班牙、希腊、葡萄牙等欧洲 12 国 50+ 城市的真实婚礼数据，为您提供从场地甄选到婚礼落地的全程智能策划服务。</p>
+        <div className="agent-seo-content__features">
+          <div>
+            <h3>场地甄选</h3>
+            <p>法国城堡、意大利庄园、西班牙花园、希腊圣托里尼悬崖酒店……基于各国场地真实数据，按预算、人数、风格智能匹配最适合您的婚礼场地。</p>
+          </div>
+          <div>
+            <h3>摄影师推荐</h3>
+            <p>各国驻场婚礼摄影师，涵盖纪实、浪漫、艺术等多种风格，根据您喜欢的摄影风格精准推荐。</p>
+          </div>
+          <div>
+            <h3>花卉与酒水方案</h3>
+            <p>46 款 Florajet 鲜花商品智能搭配，66 款欧洲酒水推荐，从花束到宴席用酒一站式规划。</p>
+          </div>
+          <div>
+            <h3>礼服与预算</h3>
+            <p>多款婚礼礼服个性化推荐，智能预算分配计算，让您的每一分钱都花在刀刃上。</p>
+          </div>
+        </div>
       </div>
     </div>
   )

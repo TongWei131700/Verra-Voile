@@ -53,7 +53,7 @@ async function prefetchAllData() {
   // 首页不需要 API 拦截（它自己会加载各模块概览）
   routeMap['/'] = []
 
-  // AI 婚礼规划助手（无需 API 数据，纯 SEO 预渲染）
+  // AI Agent 聊天页面（无 API 数据，纯 SEO）
   routeMap['/agent-chat'] = []
 
   // 目的地

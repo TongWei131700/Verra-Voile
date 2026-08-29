@@ -90,7 +90,7 @@ interface DeployVersion {
   rolled_back: number
 }
 
-type Tab = 'overview' | 'reservations' | 'users' | 'chat' | 'products' | 'version' | 'db-version'
+type Tab = 'overview' | 'reservations' | 'users' | 'chat' | 'products' | 'version' | 'db-version' | 'agent-chat'
 
 export default function Admin() {
   const [authed, setAuthed] = useState(!!localStorage.getItem('admin_token'))
@@ -155,6 +155,10 @@ export default function Admin() {
   const [dbSaving, setDbSaving] = useState(false)
   const [dbRestoreConfirm, setDbRestoreConfirm] = useState<{id: number; name: string} | null>(null)
   const [dbRestoring, setDbRestoring] = useState(false)
+  // AI 对话管理状态
+  const [agentSessions, setAgentSessions] = useState<{user_token: string; message_count: number; last_message_at: string; first_message_at: string}[]>([])
+  const [agentSelectedUser, setAgentSelectedUser] = useState<string | null>(null)
+  const [agentMessages, setAgentMessages] = useState<any[]>([])
   const moreRef = useRef<HTMLDivElement>(null)
 
   const handleAdminLogin = async (e: React.FormEvent) => {
@@ -464,7 +468,29 @@ export default function Admin() {
   useEffect(() => {
     if (tab === 'version' && authed) fetchVersions()
     if (tab === 'db-version' && authed) fetchDbTables()
+    if (tab === 'agent-chat' && authed) fetchAgentSessions()
   }, [tab, authed])
+
+  // AI 对话管理函数
+  const fetchAgentSessions = async () => {
+    try {
+      const res = await fetch('/api/admin/agent-sessions', { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` } })
+      const data = await res.json()
+      if (data.success) setAgentSessions(data.data)
+    } catch (e) {
+      console.error('获取 AI 会话列表失败:', e)
+    }
+  }
+
+  const fetchAgentMessages = async (userToken: string) => {
+    try {
+      const res = await fetch(`/api/admin/agent-messages/${encodeURIComponent(userToken)}`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` } })
+      const data = await res.json()
+      if (data.success) setAgentMessages(data.data)
+    } catch (e) {
+      console.error('获取 AI 对话详情失败:', e)
+    }
+  }
 
   // 数据库版本控制函数
   const fetchDbTables = async () => {
@@ -661,6 +687,7 @@ export default function Admin() {
     { key: 'products', label: ' 商品管理' },
     { key: 'version', label: '🚀 版本控制' },
     { key: 'db-version', label: '🗄️ 数据库' },
+    { key: 'agent-chat', label: '🤖 AI 对话' },
   ]
 
   const MAX_VISIBLE_TABS = 4
@@ -1498,6 +1525,82 @@ export default function Admin() {
               </div>
             </>
           )}
+        </div>
+      )}
+
+      {/* AI 对话管理 */}
+      {tab === 'agent-chat' && (
+        <div className="dashboard-content">
+          <div className="dash-section">
+            <h3>🤖 AI 助手对话记录</h3>
+            <p style={{ color: '#666', fontSize: 14, marginBottom: 16 }}>查看用户使用 AI 婚礼规划助手的对话历史</p>
+            
+            {agentSessions.length === 0 ? (
+              <p style={{ color: '#999', textAlign: 'center', padding: 40 }}>暂无对话记录</p>
+            ) : (
+              <div className="agent-admin-layout">
+                {/* 左侧：用户列表 */}
+                <div className="agent-admin-sidebar">
+                  <h4>用户列表 ({agentSessions.length})</h4>
+                  <div className="agent-admin-user-list">
+                    {agentSessions.map(s => (
+                      <button
+                        key={s.user_token}
+                        className={`agent-admin-user-item ${agentSelectedUser === s.user_token ? 'active' : ''}`}
+                        onClick={() => { setAgentSelectedUser(s.user_token); fetchAgentMessages(s.user_token) }}
+                      >
+                        <div className="agent-admin-user-token">{s.user_token}</div>
+                        <div className="agent-admin-user-meta">
+                          <span>{s.message_count} 条对话</span>
+                          <span>{new Date(s.last_message_at).toLocaleDateString('zh-CN')}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* 右侧：对话详情 */}
+                <div className="agent-admin-main">
+                  {agentSelectedUser ? (
+                    <>
+                      <h4>对话详情 - {agentSelectedUser}</h4>
+                      {agentMessages.length === 0 ? (
+                        <p style={{ color: '#999', padding: 20 }}>加载中...</p>
+                      ) : (
+                        <div className="agent-admin-messages">
+                          {agentMessages.map((msg, idx) => (
+                            <div key={idx} className="agent-admin-conversation">
+                              <div className="agent-admin-msg-time">{new Date(msg.created_at).toLocaleString('zh-CN')}</div>
+                              <div className="agent-admin-msg agent-admin-msg--user">
+                                <div className="agent-admin-msg-label">用户提问</div>
+                                <div className="agent-admin-msg-content">{msg.user_message}</div>
+                              </div>
+                              <div className="agent-admin-msg agent-admin-msg--ai">
+                                <div className="agent-admin-msg-label">AI 回复</div>
+                                <div className="agent-admin-msg-content">{msg.ai_reply}</div>
+                              </div>
+                              {msg.thinking_steps && msg.thinking_steps.length > 0 && (
+                                <details className="agent-admin-thinking">
+                                  <summary>思考过程 ({msg.thinking_steps.length} 步)</summary>
+                                  <div className="agent-admin-thinking-content">
+                                    {msg.thinking_steps.map((step: string, i: number) => (
+                                      <div key={i} className="agent-admin-thinking-step">{step}</div>
+                                    ))}
+                                  </div>
+                                </details>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <p style={{ color: '#999', padding: 40, textAlign: 'center' }}>← 请选择一个用户查看对话详情</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

@@ -10,6 +10,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import OrderDetail from './pages/OrderDetail'
 import Consult from './pages/Consult'
+import AgentChat from './pages/AgentChat'
 
 import Destinations from './pages/Destinations'
 import DestinationsDetail from './pages/DestinationsDetail'
@@ -171,6 +172,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/order" element={<OrderDetail />} />
         <Route path="/consult" element={<Consult />} />
+        <Route path="/agent-chat" element={<AgentChat />} />
 
         <Route path="/destinations" element={<Destinations />} />
         <Route path="/destinations/france" element={<Destinations />} />
@@ -268,8 +270,8 @@ export default function App() {
         <Route path="/travel-photo/:slug" element={<TravelPhotoDetail />} />
       </Routes>
       {/* 公共精简头部：仅在业务模块页面显示（首页/订单/管理页除外） */}
-      {!['/', '/order', '/consult', '/admin', '/upload', '/login', '/register'].includes(pathname) && <AppHeader />}
-      {pathname !== '/order' && pathname !== '/consult' && <Footer />}
+      {!['/', '/order', '/consult', '/admin', '/upload', '/login', '/register', '/agent-chat'].includes(pathname) && <AppHeader />}
+      {pathname !== '/order' && pathname !== '/consult' && pathname !== '/agent-chat' && <Footer />}
     </>
   )
 }

@@ -162,7 +162,7 @@ export default function Home() {
       : { backgroundColor: '#2a2723' }
 
   const handleConsult = () => {
-    navigate('/consult')
+    navigate('/agent-chat')
   }
 
   // 从首页进入列表页：清除缓存位置，确保列表页从顶部开始
@@ -177,7 +177,7 @@ export default function Home() {
       <h2>{m.title}</h2>
       <div className="nh-wrapper">
         <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>查看</Link>
-        <button type="button" onClick={handleConsult}>咨询</button>
+        <button type="button" onClick={handleConsult}>AI规划</button>
       </div>
     </div>
   )
@@ -308,7 +308,7 @@ export default function Home() {
                     <h2>{m.title}</h2>
                     <div className="nh-wrapper">
                       <button type="button">查看</button>
-                      <button type="button">咨询</button>
+                      <button type="button">AI规划</button>
                     </div>
                   </div>
                 </div>
@@ -322,7 +322,7 @@ export default function Home() {
                     <h2>{m.title}</h2>
                     <div className="nh-wrapper">
                       <button type="button">查看</button>
-                      <button type="button">咨询</button>
+                      <button type="button">AI规划</button>
                     </div>
                   </div>
                 </div>
@@ -336,7 +336,7 @@ export default function Home() {
                     <h2>{m.title}</h2>
                     <div className="nh-wrapper">
                       <button type="button">查看</button>
-                      <button type="button">咨询</button>
+                      <button type="button">AI规划</button>
                     </div>
                   </div>
                 </div>
@@ -349,7 +349,7 @@ export default function Home() {
                   <h2>{m.title}</h2>
                   <div className="nh-wrapper">
                     <button type="button">查看</button>
-                    <button type="button">咨询</button>
+                    <button type="button">AI规划</button>
                   </div>
                 </div>
               </section>
@@ -401,7 +401,7 @@ export default function Home() {
               <h2>{m.title}</h2>
               <div className="nh-wrapper">
                 <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>查看</Link>
-                <button type="button" onClick={handleConsult}>咨询</button>
+                <button type="button" onClick={handleConsult}>AI规划</button>
               </div>
             </div>
             {idx < MODULES.length - 1 && (

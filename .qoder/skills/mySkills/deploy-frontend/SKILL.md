@@ -140,7 +140,24 @@ cd /Users/hongli/WorkSpace/Verra-Voile && VITE_API_URL=https://europewedding.cn 
 
 ### 6. 上传到服务器
 
+**⚠️⚠️⚠️ 关键：SSG 文件必须直接部署到 Nginx root 目录（`/var/www/verra-voile/`），不是 `dist/` 子目录！**
+
+> Nginx `root` 指向 `/var/www/verra-voile`，所有 SSG 生成的 HTML 文件（travel-photo.html、destinations/ 等）必须直接放在该目录下。如果只上传到 `dist/` 子目录，Nginx 会 fallback 到旧的 index.html 或 SPA，导致价格显示为 0、SEO 内容缺失。
+
 **⚠️ 必须分两步上传：先上传 assets，再上传 index.html！** 否则 index.html 先到位但 JS/CSS 还没传完，用户访问会白屏。
+
+```bash
+# 打包 dist 内容（注意：打包 dist/ 内部内容，不是打包 dist 目录本身）
+cd /Users/hongli/WorkSpace/Verra-Voile && tar -czf dist.tar.gz -C dist .
+
+# 上传到服务器
+scp dist.tar.gz root@47.99.138.250:/tmp/dist.tar.gz
+
+# 在服务器上解压到 Nginx root（不是 dist/ 子目录！）
+ssh root@47.99.138.250 "cd /var/www/verra-voile && tar -xzf /tmp/dist.tar.gz"
+```
+
+**或者使用 expect 分步上传：**
 
 ```bash
 # 第一步：先上传 assets 目录（JS/CSS/图片等）
@@ -156,10 +173,11 @@ expect {
 }
 EXPECT_EOF
 
-# 第二步：上传 index.html（最后上传，确保所有资源已就位）
+# 第二步：上传 index.html + 所有 SSG HTML 文件（最后上传，确保资源已就位）
+# ⚠️ 必须上传所有 .html 文件和子目录（destinations/、travel-photo/ 等），不能只传 index.html
 expect << 'EXPECT_EOF'
-set timeout 30
-spawn scp -o StrictHostKeyChecking=no /Users/hongli/WorkSpace/Verra-Voile/dist/index.html root@47.99.138.250:/var/www/verra-voile/
+set timeout 60
+spawn rsync -avz --include='*.html' --include='*/' --exclude='*' -e 'ssh -o StrictHostKeyChecking=no' /Users/hongli/WorkSpace/Verra-Voile/dist/ root@47.99.138.250:/var/www/verra-voile/
 expect {
     "password:" {
         send "TongWei131700\r"
@@ -234,6 +252,7 @@ curl -s -o /dev/null -w "HTTP Status: %{http_code}\nSize: %{size_download} bytes
 | 1 | 前端页面 404 无法访问 | `sites-enabled/` 下有 `.bak` 冲突配置文件 | 部署后必须检查并清理 sites-enabled 下的多余文件 |
 | 2 | 前端上传后数据库导出静默失败 | 和数据库导出用 `&&` 串联，上传耗时导致后续命令被跳过 | 前后端部署的每个步骤**独立执行**，不要用 `&&` 串联长时间命令 |
 | 3 | 前端部署后白屏，JS 文件 0 字节 | `scp -r` 同时上传 index.html 和 assets 时，JS 文件在服务器上变成 0 字节；且浏览器会缓存这个 0 字节响应，即使后续重新上传正确文件，浏览器仍返回缓存的空文件 | 1. **分步上传**：先传 assets，验证文件大小正确后再传 index.html；2. 上传后立即对比服务器和本地的 JS/CSS 文件大小；3. 若已产生缓存问题，在 index.html 中给 JS 引用加 `?v=N` 缓存破坏参数 |
+| 4 | **SSG 页面价格显示为 0 / SEO 内容缺失** | SSG 生成的 HTML 文件上传到了 `dist/` 子目录，但 Nginx root 指向 `/var/www/verra-voile/`，Nginx 找不到文件 fallback 到 SPA 首页 | **SSG 文件必须直接部署到 Nginx root**：1. 打包用 `tar -czf dist.tar.gz -C dist .`（打包 dist 内部内容）；2. 解压到 `/var/www/verra-voile/`（不是 `dist/`）；3. 部署后 curl 验证 HTML 中价格是否正确 |
 
 ## 输出
 

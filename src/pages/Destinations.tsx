@@ -18,6 +18,29 @@ const COUNTRY_SLUG_MAP: Record<string, string> = {
   '希腊': 'greece',
   '西班牙': 'spain',
   '葡萄牙': 'portugal',
+  '奥地利': 'austria',
+  '瑞士': 'switzerland',
+  '德国': 'germany',
+  '荷兰': 'netherlands',
+  '丹麦': 'denmark',
+  '爱尔兰': 'ireland',
+  '瑞典': 'sweden',
+  '比利时': 'belgium',
+  '捷克': 'czech',
+  '克罗地亚': 'croatia',
+  '匈牙利': 'hungary',
+  '波兰': 'poland',
+  '挪威': 'norway',
+  '冰岛': 'iceland',
+  '斯洛文尼亚': 'slovenia',
+  '马耳他': 'malta',
+  '芬兰': 'finland',
+  '爱沙尼亚': 'estonia',
+  '拉脱维亚': 'latvia',
+  '立陶宛': 'lithuania',
+  '列支敦士登': 'liechtenstein',
+  '卢森堡': 'luxembourg',
+  '斯洛伐克': 'slovakia',
 }
 const SLUG_TO_COUNTRY: Record<string, string> = Object.fromEntries(
   Object.entries(COUNTRY_SLUG_MAP).map(([k, v]) => [v, k])
@@ -68,7 +91,7 @@ function mapApiItem(row: any): VenueItem {
 // 模块级缓存：从详情返回列表页时复用，避免重复请求
 let _cachedVenues: VenueItem[] | null = null
 let _cachedCountryLimits: Record<string, number> | null = null
-let _cachedVisibleGroupCount: number | null = null
+
 // 筛选/排序缓存：返回列表页时恢复用户之前的筛选状态
 let _cachedSelectedCountries: string[] | null = null
 let _cachedSelectedVenueTypes: string[] | null = null
@@ -119,8 +142,7 @@ export default function Destinations() {
   const [searchFilter, setSearchFilter] = useState(() => _cachedSearchFilter ?? '')
   const [bottomSheet, setBottomSheet] = useState<'sort' | 'country' | 'filter' | null>(null)
   const [pendingCountries, setPendingCountries] = useState<Set<string> | null>(null)
-  const GROUPS_PER_PAGE = 5
-  const [visibleGroupCount, setVisibleGroupCount] = useState(_cachedVisibleGroupCount ?? GROUPS_PER_PAGE)
+
 
   // 从 API 加载数据（有缓存则复用）
   useEffect(() => {
@@ -268,12 +290,6 @@ export default function Destinations() {
     })
   }, [visibleGroupedByCountry, countryLimits, INITIAL_PER_COUNTRY])
 
-  const visibleGroups = useMemo(() => {
-    return groupedWithExpansion.slice(0, visibleGroupCount)
-  }, [groupedWithExpansion, visibleGroupCount])
-
-  const hasMoreGroups = visibleGroupCount < groupedWithExpansion.length
-
   // 筛选/排序变化时重置分页并滚回顶部（跳过首次挂载，保留从详情返回时的缓存状态）
   const isFirstMount = useRef(true)
   useEffect(() => {
@@ -281,10 +297,8 @@ export default function Destinations() {
       isFirstMount.current = false
       return
     }
-    setVisibleGroupCount(GROUPS_PER_PAGE)
     setCountryLimits({})
     _cachedCountryLimits = null
-    _cachedVisibleGroupCount = null
     // 滚回顶部
     document.documentElement.scrollTop = 0
   }, [selectedCountries, selectedVenueTypes, searchFilter, sortMode])
@@ -382,14 +396,7 @@ export default function Destinations() {
     return () => el.removeEventListener('wheel', preventScroll)
   }, [])
 
-  // 加载更多国家分组
-  const handleLoadMoreGroups = () => {
-    setVisibleGroupCount(prev => {
-      const next = prev + GROUPS_PER_PAGE
-      _cachedVisibleGroupCount = next
-      return next
-    })
-  }
+
 
   // 回车确认搜索
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
@@ -1072,7 +1079,7 @@ export default function Destinations() {
                         <span>其他</span>
                         <span className="cd-section-label__count">{otherList.length}</span>
                       </div>
-                      {visibleGroups.map((group, gi) => (
+                      {groupedWithExpansion.map((group, gi) => (
                         <Fragment key={group.country}>
                           <div className="cd-country-header" style={{ gridColumn: '1 / -1' }}>
                             <h2 className="cd-country-header__title">{group.country}</h2>
@@ -1119,7 +1126,7 @@ export default function Destinations() {
                   )}
                 </>
               ) : (
-                visibleGroups.map((group, gi) => (
+                groupedWithExpansion.map((group, gi) => (
                   <Fragment key={group.country}>
                     <div className="cd-country-header" style={{ gridColumn: '1 / -1' }}>
                       <h2 className="cd-country-header__title">{group.country}</h2>
@@ -1164,13 +1171,7 @@ export default function Destinations() {
                 ))
               )}
 
-              {hasMoreGroups && (
-                <div className="cd-section-more" style={{ gridColumn: '1 / -1' }}>
-                  <button className="cd-section-more__btn" onClick={handleLoadMoreGroups}>
-                    加载更多场地…
-                  </button>
-                </div>
-              )}
+
             </>
           ) : (
             <div className="cd-filter__empty" style={{ gridColumn: '1 / -1' }}>

@@ -2,6 +2,19 @@ import { useState, useEffect, useRef, useLayoutEffect, Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { io, Socket } from 'socket.io-client'
 import Seo from '../components/Seo'
+import html2canvas from 'html2canvas'
+import { jsPDF } from 'jspdf'
+
+interface PlanItem {
+  category: string
+  categoryCn: string
+  name: string
+  nameEn: string
+  description: string
+  priceRange: string
+  image: string
+  link: string
+}
 
 interface Message {
   id: string
@@ -14,6 +27,7 @@ interface TurnData {
   thinkingLabels: string[]
   text: string
   tableData: Map<number, string>
+  planSummary?: PlanItem[]
 }
 
 export default function AgentChat() {
@@ -34,6 +48,13 @@ export default function AgentChat() {
     sessionStorage.getItem('agent_session_id') || ''
   )
 
+  /* ── 媒体上传状态 ── */
+  const mediaInputRef = useRef<HTMLInputElement>(null)
+  const [mediaId, setMediaId] = useState('')
+  const [mediaPreview, setMediaPreview] = useState('')
+  const [mediaUploading, setMediaUploading] = useState(false)
+  const [mediaType, setMediaType] = useState<'video' | 'image' | ''>('')
+
   /* ── Refs（高频变化，直接操作 DOM，不触发 re-render） ── */
   const socketRef = useRef<Socket | null>(null)
   const tkContainerRef = useRef<HTMLDivElement>(null)   // 思考步骤容器
@@ -50,6 +71,7 @@ export default function AgentChat() {
   const rpyStartedRef = useRef(false)
   const thinkingLabelsRef = useRef<string[]>([])            // 当前轮次的思考标签
   const tableDataRef = useRef<Map<number, string>>(new Map()) // 后端推送的表格数据 [TABLE_N] → content
+  const planSummaryRef = useRef<PlanItem[] | null>(null)       // 后端推送的方案摘要数据
   const dotsRef = useRef<HTMLDivElement>(null)             // 跳动点容器
   const dividerRef = useRef<HTMLDivElement>(null)          // 思考/回复分隔线
   const isPlaceholderRef = useRef(false)                   // 是否还在打前置占位
@@ -57,9 +79,9 @@ export default function AgentChat() {
 
   // turns 持久化：Map 不能直接 JSON，需序列化
   const serializeTurns = (turns: TurnData[]) =>
-    turns.map(t => ({ thinkingLabels: t.thinkingLabels, text: t.text, tableData: Array.from(t.tableData.entries()) }))
+    turns.map(t => ({ thinkingLabels: t.thinkingLabels, text: t.text, tableData: Array.from(t.tableData.entries()), planSummary: t.planSummary }))
   const deserializeTurns = (raw: any[]): TurnData[] =>
-    raw.map(t => ({ thinkingLabels: t.thinkingLabels || [], text: t.text || '', tableData: new Map(t.tableData || []) }))
+    raw.map(t => ({ thinkingLabels: t.thinkingLabels || [], text: t.text || '', tableData: new Map(t.tableData || []), planSummary: t.planSummary }))
   const saveTurns = () => {
     try { sessionStorage.setItem('agent_chat_turns', JSON.stringify(serializeTurns(turnsRef.current))) } catch {}
   }
@@ -131,7 +153,7 @@ export default function AgentChat() {
     const socket = socketRef.current
     if (!socket) return
 
-    const onEvent = (ev: { type: string; label?: string; content?: string; index?: number }) => {
+    const onEvent = (ev: { type: string; label?: string; content?: string; index?: number; items?: PlanItem[] }) => {
       switch (ev.type) {
         case 'thinking': {
           const label = ev.label || '思考中...'
@@ -177,6 +199,14 @@ export default function AgentChat() {
             console.log(`[Agent] ✅ 收到表格 #${ev.index}, 长度: ${ev.content.length}, 预览:`, ev.content.slice(0, 120))
           } else {
             console.warn('[Agent] ⚠️ table_data 事件数据异常:', ev)
+          }
+          break
+        }
+        case 'plan_summary': {
+          // 后端推送的方案摘要数据
+          if (ev.items && Array.isArray(ev.items)) {
+            planSummaryRef.current = ev.items
+            console.log('[Agent] 📋 收到方案摘要:', ev.items.length, '项')
           }
           break
         }
@@ -284,6 +314,7 @@ export default function AgentChat() {
       thinkingLabels: [...thinkingLabelsRef.current],
       text: fullReplyRef.current,
       tableData: new Map(tableDataRef.current),
+      planSummary: planSummaryRef.current || undefined,
     }]
     saveTurns()  // 持久化到 sessionStorage
     console.log(`[Agent] ✅ 回复完成，思考标签: ${thinkingLabelsRef.current.length} 个，轮次数: ${turnsRef.current.length}`)
@@ -320,6 +351,7 @@ export default function AgentChat() {
     fullReplyRef.current = ''
     thinkingLabelsRef.current = []
     tableDataRef.current = new Map()
+    planSummaryRef.current = null
     if (tkContainerRef.current) tkContainerRef.current.innerHTML = ''
     if (tkIconRef.current) { tkIconRef.current.src = '/agent-thinking.gif'; tkIconRef.current.style.display = 'none' }
     if (rpyRawRef.current) { rpyRawRef.current.textContent = ''; rpyRawRef.current.style.display = 'none' }
@@ -330,9 +362,62 @@ export default function AgentChat() {
     // 注意：不清空 turnsRef，保留之前轮次的回复
   }
 
+  /* ── 媒体上传处理 ── */
+  const handleMediaSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    // 重置 input 以便重复选择同一文件
+    e.target.value = ''
+
+    // 生成预览
+    const isVideo = file.type.startsWith('video/')
+    if (isVideo) {
+      const url = URL.createObjectURL(file)
+      setMediaPreview(url)
+      setMediaType('video')
+    } else {
+      const reader = new FileReader()
+      reader.onload = (ev) => { setMediaPreview(ev.target?.result as string); setMediaType('image') }
+      reader.readAsDataURL(file)
+    }
+
+    // 上传
+    setMediaUploading(true)
+    setMediaId('')
+    try {
+      const formData = new FormData()
+      formData.append('media', file)
+      const res = await fetch('/api/agent/upload-media', { method: 'POST', body: formData })
+      const json = await res.json()
+      if (json.success) {
+        const vid = json.data.videoId
+        setMediaId(vid)
+        console.log('[Agent] 媒体上传成功:', json.data)
+        // 上传成功后自动发送分析请求
+        setTimeout(() => doSend('请分析这个婚礼视频/图片的风格，并推荐匹配的场地、花艺和礼服方案', vid), 300)
+      } else {
+        console.error('[Agent] 媒体上传失败:', json.message)
+        setMediaPreview('')
+        setMediaType('')
+      }
+    } catch (err) {
+      console.error('[Agent] 媒体上传异常:', err)
+      setMediaPreview('')
+      setMediaType('')
+    } finally {
+      setMediaUploading(false)
+    }
+  }
+
+  const handleMediaRemove = () => {
+    if (mediaPreview && mediaPreview.startsWith('blob:')) URL.revokeObjectURL(mediaPreview)
+    setMediaId('')
+    setMediaPreview('')
+    setMediaType('')
+  }
+
   /* ── 发送消息 ── */
-  const sendMsg = () => {
-    const text = inputRef.current?.value.trim()
+  const doSend = (text: string, overrideMediaId?: string) => {
     if (!text || loadingRef.current) return
     resetForNewMsg()
     setMessages(prev => [...prev, {
@@ -341,13 +426,22 @@ export default function AgentChat() {
     if (inputRef.current) inputRef.current.value = ''
     setInputVal('')
     loadingRef.current = true
+    const currentMediaId = overrideMediaId || mediaId || undefined
     // 立即显示助手气泡 + 前置占位思考
     setShowAsst(true)
     isPlaceholderRef.current = true
-    tkgQueueRef.current = ['正在分析你的需求...', '提取关键信息...']
+    tkgQueueRef.current = [currentMediaId ? '正在分析你上传的婚礼媒体...' : '正在分析你的需求...', '提取关键信息...']
     if (dotsRef.current) dotsRef.current.style.display = ''
-    socketRef.current?.emit('chat', { message: text, sessionId: sessionId || undefined })
+    socketRef.current?.emit('chat', { message: text, sessionId: sessionId || undefined, mediaId: currentMediaId })
+    // 清除媒体状态
+    if (currentMediaId) handleMediaRemove()
     isPlaceholderRef.current = true  // 标记前置占位，等待真实 thinking/token 时清除
+  }
+
+  const sendMsg = () => {
+    const text = inputRef.current?.value.trim()
+    if (!text) return
+    doSend(text)
   }
 
   /* ── 输入框（需要按钮 enable/disable 响应） ── */
@@ -670,6 +764,202 @@ export default function AgentChat() {
     }
   }
 
+  /* ── 方案摘要渲染 + PDF 下载 ── */
+  const downloadPlanPDF = async (items: PlanItem[]) => {
+    // 预加载图片
+    const imgUrls = items.map(i => i.image).filter(Boolean)
+    await new Promise<void>(resolve => {
+      if (imgUrls.length === 0) return resolve()
+      let loaded = 0
+      for (const url of imgUrls) {
+        const img = new Image()
+        img.crossOrigin = 'anonymous'
+        img.onload = img.onerror = () => { loaded++; if (loaded >= imgUrls.length) resolve() }
+        img.src = url
+      }
+    })
+
+    const container = document.createElement('div')
+    container.style.cssText = `
+      position: fixed; left: -9999px; top: 0;
+      width: 800px; background: #fff;
+      font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      color: #333; padding: 0;
+    `
+    const today = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
+
+    // 构建每个分组（每项一个分组，保证不被跨页拆分）
+    const groupsHTML = items.map((item, idx) => {
+      const imgSrc = item.image || ''
+      const imgCell = imgSrc
+        ? `<img src="${imgSrc}" crossorigin="anonymous" style="width:48px;height:48px;object-fit:cover;border-radius:6px;display:block;" />`
+        : `<div style="width:48px;height:48px;border-radius:6px;background:#f5f0ea;display:flex;align-items:center;justify-content:center;font-size:18px;color:#ccc;">📷</div>`
+      return `
+        <div class="pdf-plan-group" data-group-index="${idx}" style="margin-bottom:28px;">
+          <div style="display:flex;align-items:center;margin-bottom:12px;">
+            <span style="font-size:16px;font-weight:600;color:#333;letter-spacing:1px;">${item.categoryCn}</span>
+            <span style="flex:1;height:1px;background:linear-gradient(to right, #b76e79 0%, transparent 100%);margin-left:16px;"></span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="background:#faf7f2;">
+                <th style="padding:8px 12px;text-align:left;font-size:12px;color:#999;font-weight:400;width:60px;">图片</th>
+                <th style="padding:8px 12px;text-align:left;font-size:12px;color:#999;font-weight:400;">英文名</th>
+                <th style="padding:8px 12px;text-align:left;font-size:12px;color:#999;font-weight:400;">名称</th>
+                <th style="padding:8px 12px;text-align:right;font-size:12px;color:#999;font-weight:400;">价格</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:10px 12px;border-bottom:1px solid #f0ebe3;">${imgCell}</td>
+                <td style="padding:10px 12px;border-bottom:1px solid #f0ebe3;font-size:13px;color:#888;">${item.nameEn || ''}</td>
+                <td style="padding:10px 12px;border-bottom:1px solid #f0ebe3;font-size:14px;font-weight:500;">${item.name}</td>
+                <td style="padding:10px 12px;border-bottom:1px solid #f0ebe3;font-size:14px;text-align:right;white-space:nowrap;color:#b76e79;font-weight:600;">${item.priceRange}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>`
+    }).join('')
+
+    container.innerHTML = `
+      <div id="pdf-header" style="padding:48px 48px 32px;text-align:center;border-bottom:2px solid #b76e79;">
+        <h1 style="margin:0;font-size:28px;font-weight:300;letter-spacing:6px;color:#b76e79;">EUROPE WEDDING</h1>
+        <p style="margin:8px 0 0;font-size:13px;color:#999;letter-spacing:2px;">婚礼推荐方案</p>
+      </div>
+      <div id="pdf-info" style="padding:24px 48px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0ebe3;">
+        <span style="font-size:13px;color:#888;">日期：${today}</span>
+        <span style="font-size:13px;color:#888;">共 ${items.length} 项服务</span>
+      </div>
+      <div id="pdf-groups-wrapper" style="padding:32px 48px 16px;">
+        ${groupsHTML}
+      </div>
+      <div id="pdf-footer" style="padding:24px 48px 40px;text-align:center;border-top:2px solid #b76e79;margin:0 48px;">
+        <p style="margin:0;font-size:11px;color:#bbb;letter-spacing:1px;">Europe Wedding — Your Dream Wedding, Perfectly Crafted</p>
+        <p style="margin:6px 0 0;font-size:11px;color:#bbb;">europewedding.cn</p>
+      </div>
+    `
+    document.body.appendChild(container)
+    try {
+      // 测量各区域高度
+      const headerEl = document.getElementById('pdf-header')!
+      const infoEl = document.getElementById('pdf-info')!
+      const footerEl = document.getElementById('pdf-footer')!
+      const groupEls = container.querySelectorAll('.pdf-plan-group')
+
+      const headerH = headerEl.offsetHeight
+      const infoH = infoEl.offsetHeight
+      const footerH = footerEl.offsetHeight
+
+      const groupHeights: number[] = []
+      groupEls.forEach(el => groupHeights.push((el as HTMLElement).offsetHeight + 28))
+
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = pdf.internal.pageSize.getHeight()
+      const pxPerMm = 800 / pdfWidth
+      const pagePx = pdfHeight * pxPerMm
+
+      // 智能分页：贪心算法
+      const firstFixed = headerH + infoH
+      const lastFixed = footerH + 40
+
+      const pages: number[][] = []
+      let curPage: number[] = []
+      let curHeight = firstFixed
+
+      for (let i = 0; i < items.length; i++) {
+        const gh = groupHeights[i]
+        if (curPage.length > 0) {
+          const wouldBeLast = curHeight + gh + lastFixed
+          if (wouldBeLast > pagePx) {
+            pages.push(curPage)
+            curPage = [i]
+            curHeight = gh
+          } else {
+            curPage.push(i)
+            curHeight += gh
+          }
+        } else {
+          curPage.push(i)
+          curHeight += gh
+        }
+      }
+      if (curPage.length > 0) pages.push(curPage)
+
+      // 逐页渲染
+      for (let p = 0; p < pages.length; p++) {
+        const pageSet = new Set(pages[p])
+        const isFirst = p === 0
+        const isLast = p === pages.length - 1
+
+        groupEls.forEach((el, idx) => {
+          ;(el as HTMLElement).style.display = pageSet.has(idx) ? '' : 'none'
+        })
+        headerEl.style.display = isFirst ? '' : 'none'
+        infoEl.style.display = isFirst ? '' : 'none'
+        footerEl.style.display = isLast ? '' : 'none'
+
+        const canvas = await html2canvas(container, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+        })
+        const imgData = canvas.toDataURL('image/jpeg', 0.92)
+        const imgH = (canvas.height * pdfWidth) / canvas.width
+
+        if (p > 0) pdf.addPage()
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgH)
+      }
+
+      // 恢复
+      groupEls.forEach(el => { ;(el as HTMLElement).style.display = '' })
+      headerEl.style.display = ''
+      infoEl.style.display = ''
+      footerEl.style.display = ''
+
+      pdf.save(`婚礼方案-${today.replace(/\//g, '-')}.pdf`)
+    } finally {
+      document.body.removeChild(container)
+    }
+  }
+
+  const renderPlanSummary = (items: PlanItem[], key: string) => (
+    <div key={key} className="agent-plan-summary" id={`plan-${key}`}>
+      <div className="agent-plan-summary__header">
+        <span className="agent-plan-summary__title">推荐方案</span>
+      </div>
+      <div className="agent-plan-summary__body">
+        <div className="agent-plan-row agent-plan-row--header">
+          <div className="agent-plan-row__label">类别</div>
+          <div className="agent-plan-row__card">推荐方案</div>
+          <div className="agent-plan-row__price">预算参考</div>
+        </div>
+        {items.map((item, i) => (
+          <div key={i} className="agent-plan-row">
+            <div className="agent-plan-row__label">{item.categoryCn}</div>
+            <div className="agent-plan-row__card">
+              <div className="agent-venue-card agent-plan-venue-card"
+                onClick={() => item.link && navigate(item.link)}
+                style={item.link ? { cursor: 'pointer' } : undefined}>
+                <img src={item.image || ''} alt={item.name} className="agent-venue-card__img" />
+                <div className="agent-venue-card__info">
+                  <div className="agent-venue-card__name">{item.name}</div>
+                  {item.description && <div className="agent-venue-card__desc">{item.description}</div>}
+                </div>
+                {item.link && <span className="agent-venue-card__arrow">→</span>}
+              </div>
+            </div>
+            <div className="agent-plan-row__price">{item.priceRange}</div>
+          </div>
+        ))}
+      </div>
+      <button className="agent-plan-summary__download" onClick={() => downloadPlanPDF(items)}>
+        📄 下载 PDF 方案
+      </button>
+    </div>
+  )
+
   return (
     <div className="agent-chat-page">
       <Seo
@@ -741,6 +1031,11 @@ export default function AgentChat() {
                   onClick={() => { if (inputRef.current) { inputRef.current.value = s; setInputVal(s); inputRef.current.focus() } }}>{s}</button>
               ))}
             </div>
+            <div className="agent-welcome__upload-hint">
+              <span className="agent-welcome__upload-icon">🎬</span>
+              <span>上传婚礼视频或图片，AI 自动识别风格，为你推荐同风格的场地、花艺和礼服方案</span>
+              <button className="agent-welcome__upload-btn" onClick={() => mediaInputRef.current?.click()}>上传视频/图片</button>
+            </div>
           </div>
         )}
 
@@ -774,6 +1069,9 @@ export default function AgentChat() {
                 <div className="agent-thinking-divider" />
                 <div className="agent-asst-reply__content">
                   {renderContent(turnsRef.current[idx].text, turnsRef.current[idx].tableData)}
+                  {turnsRef.current[idx].planSummary && turnsRef.current[idx].planSummary!.length > 0 &&
+                    renderPlanSummary(turnsRef.current[idx].planSummary!, `turn${idx}`)
+                  }
                 </div>
                 <div className="agent-reply-feedback">
                   {feedbackSent.has(idx) ? (
@@ -825,7 +1123,43 @@ export default function AgentChat() {
         })()}
       </div>
 
+      {/* 媒体预览条 */}
+      {mediaPreview && (
+        <div className="agent-media-preview">
+          {mediaType === 'video' ? (
+            <video src={mediaPreview} className="agent-media-preview__thumb" muted />
+          ) : (
+            <img src={mediaPreview} className="agent-media-preview__thumb" alt="" />
+          )}
+          <div className="agent-media-preview__info">
+            {mediaUploading ? (
+              <span className="agent-media-preview__status">上传中...</span>
+            ) : mediaId ? (
+              <span className="agent-media-preview__status agent-media-preview__status--ready">✓ 已就绪</span>
+            ) : (
+              <span className="agent-media-preview__status">处理中...</span>
+            )}
+          </div>
+          <button className="agent-media-preview__remove" onClick={handleMediaRemove} title="移除">×</button>
+        </div>
+      )}
+
       <div className="agent-input">
+        <input
+          ref={mediaInputRef}
+          type="file"
+          accept="video/*,image/*"
+          style={{ display: 'none' }}
+          onChange={handleMediaSelect}
+        />
+        <button
+          className="agent-media-btn"
+          onClick={() => mediaInputRef.current?.click()}
+          disabled={mediaUploading}
+          title="上传婚礼视频或图片"
+        >
+          {mediaUploading ? '⏳' : '📎'}
+        </button>
         <textarea ref={inputRef} value={inputVal}
           onChange={(e) => setInputVal(e.target.value)}
           onKeyDown={onKeyDown} placeholder="描述你的婚礼需求..." rows={1} />

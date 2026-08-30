@@ -243,6 +243,7 @@ curl -s -o /dev/null -w "HTTP Status: %{http_code}\nSize: %{size_download} bytes
 - SSL 证书: `/etc/letsencrypt/live/europewedding.cn/`
 - SPA 路由: `try_files $uri $uri/ /index.html`
 - API 代理: `/api/` → `http://127.0.0.1:3000`
+- **Nginx root**: `/var/www/verra-voile`（⚠️ 不是 `/var/www/verra-voile/dist`，SSG 文件直接解压到该目录）
 - 配置文件位置: `/etc/nginx/sites-enabled/verra-voile`
 
 ## ⚠️ 前端部署踩坑清单（必读）

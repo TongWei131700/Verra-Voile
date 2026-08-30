@@ -285,3 +285,68 @@
 
 ✅摄影师84:
 信息：https://junebugweddings.com/vendors/wedding-photographers/germany/Natalie-Heckmann-Photography
+
+---
+
+## 新增待爬取（2026-08-30 全站扫描发现）
+
+### 爱尔兰（新国家，4个）
+摄影师85:
+信息：https://junebugweddings.com/vendors/wedding-photographers/ireland/Caragh-Isla-Photography
+
+摄影师86:
+信息：https://junebugweddings.com/vendors/wedding-photographers/ireland/Louise-Scott-Photography
+
+摄影师87:
+信息：https://junebugweddings.com/vendors/wedding-photographers/ireland/Awake-and-Dreaming
+
+摄影师88:
+信息：https://junebugweddings.com/vendors/wedding-photographers/ireland/LIT-Photography-NI
+
+### 马耳他（新国家，1个）
+摄影师89:
+信息：https://junebugweddings.com/vendors/wedding-photographers/malta/FBalzan-Photography
+
+### 俄罗斯（新国家，1个）
+摄影师90:
+信息：https://junebugweddings.com/vendors/wedding-photographers/russia/moscow/Elvira-Azimova-Photography
+
+### 斯洛伐克（新国家，1个）
+摄影师91:
+信息：https://junebugweddings.com/vendors/wedding-photographers/slovakia/Still-and-Motion-Pictures
+
+### 斯洛文尼亚（新国家，1个）
+摄影师92:
+信息：https://junebugweddings.com/vendors/wedding-photographers/slovenia/Damian-Pristov-Photography
+
+### 瑞士（新国家，5个）
+摄影师93:
+信息：https://junebugweddings.com/vendors/wedding-photographers/switzerland/Eline-Tasma
+
+摄影师94:
+信息：https://junebugweddings.com/vendors/wedding-photographers/switzerland/Alexandre-Bourguet-Photography
+
+摄影师95:
+信息：https://junebugweddings.com/vendors/wedding-photographers/switzerland/Shawna-Rae-Photography
+
+摄影师96:
+信息：https://junebugweddings.com/vendors/wedding-photographers/switzerland/OljaDietikerPhotography
+
+摄影师97:
+信息：https://junebugweddings.com/vendors/wedding-photographers/switzerland/LEE-BY-LEE-KRAMER
+
+### 土耳其（新国家，1个）
+摄影师98:
+信息：https://junebugweddings.com/vendors/wedding-photographers/turkey/Julia-Ganch
+
+---
+
+## 无摄影师的欧洲国家（页面为空或仅分类页）
+- croatia（克罗地亚）
+- cyprus（塞浦路斯）
+- denmark（丹麦）
+- hungary（匈牙利）
+- montenegro（黑山）
+- netherlands（荷兰）
+- norway（挪威）⚠️ 之前有3个，现在页面为空
+- poland（波兰）

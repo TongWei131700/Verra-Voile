@@ -180,6 +180,8 @@ export default function App() {
         <Route path="/destinations/greece" element={<Destinations />} />
         <Route path="/destinations/spain" element={<Destinations />} />
         <Route path="/destinations/portugal" element={<Destinations />} />
+        <Route path="/destinations/austria" element={<Destinations />} />
+        <Route path="/destinations/switzerland" element={<Destinations />} />
         <Route path="/destinations/:slug" element={<DestinationsDetail />} />
         <Route path="/flowers" element={<Flowers />} />
         <Route path="/flowers/product/:slug" element={<FlowerProductDetail />} />

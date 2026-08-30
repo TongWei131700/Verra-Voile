@@ -140,53 +140,23 @@ cd /Users/hongli/WorkSpace/Verra-Voile && VITE_API_URL=https://europewedding.cn 
 
 ### 6. 上传到服务器
 
-**⚠️⚠️⚠️ 关键：SSG 文件必须直接部署到 Nginx root 目录（`/var/www/verra-voile/`），不是 `dist/` 子目录！**
-
-> Nginx `root` 指向 `/var/www/verra-voile`，所有 SSG 生成的 HTML 文件（travel-photo.html、destinations/ 等）必须直接放在该目录下。如果只上传到 `dist/` 子目录，Nginx 会 fallback 到旧的 index.html 或 SPA，导致价格显示为 0、SEO 内容缺失。
-
-**⚠️ 必须分两步上传：先上传 assets，再上传 index.html！** 否则 index.html 先到位但 JS/CSS 还没传完，用户访问会白屏。
+**Nginx root 已配置为 `/var/www/verra-voile/dist`，部署时只需替换整个 `dist/` 目录即可。**
 
 ```bash
-# 打包 dist 内容（注意：打包 dist/ 内部内容，不是打包 dist 目录本身）
-cd /Users/hongli/WorkSpace/Verra-Voile && tar -czf dist.tar.gz -C dist .
+# 1. 打包整个 dist 目录（注意：打包 dist 目录本身，不是其内容）
+cd /Users/hongli/WorkSpace/Verra-Voile && tar -czf dist.tar.gz dist/
 
-# 上传到服务器
-scp dist.tar.gz root@47.99.138.250:/tmp/dist.tar.gz
+# 2. 上传到服务器
+scp -o StrictHostKeyChecking=no dist.tar.gz root@47.99.138.250:/tmp/dist.tar.gz
 
-# 在服务器上解压到 Nginx root（不是 dist/ 子目录！）
-ssh root@47.99.138.250 "cd /var/www/verra-voile && tar -xzf /tmp/dist.tar.gz"
+# 3. 在服务器上替换整个 dist/ 目录
+ssh root@47.99.138.250 "cd /var/www/verra-voile && rm -rf dist && tar -xzf /tmp/dist.tar.gz && find . -name '._*' -delete && echo '✅ dist/ 已替换'"
+
+# 4. 验证关键文件存在
+ssh root@47.99.138.250 "ls /var/www/verra-voile/dist/index.html /var/www/verra-voile/dist/agent-chat.html /var/www/verra-voile/dist/agent-thinking.gif && echo '✅ 文件完整' || echo '❌ 文件缺失'"
 ```
 
-**或者使用 expect 分步上传：**
-
-```bash
-# 第一步：先上传 assets 目录（JS/CSS/图片等）
-expect << 'EXPECT_EOF'
-set timeout 120
-spawn scp -r -o StrictHostKeyChecking=no /Users/hongli/WorkSpace/Verra-Voile/dist/assets root@47.99.138.250:/var/www/verra-voile/
-expect {
-    "password:" {
-        send "TongWei131700\r"
-        exp_continue
-    }
-    eof
-}
-EXPECT_EOF
-
-# 第二步：上传 index.html + 所有 SSG HTML 文件（最后上传，确保资源已就位）
-# ⚠️ 必须上传所有 .html 文件和子目录（destinations/、travel-photo/ 等），不能只传 index.html
-expect << 'EXPECT_EOF'
-set timeout 60
-spawn rsync -avz --include='*.html' --include='*/' --exclude='*' -e 'ssh -o StrictHostKeyChecking=no' /Users/hongli/WorkSpace/Verra-Voile/dist/ root@47.99.138.250:/var/www/verra-voile/
-expect {
-    "password:" {
-        send "TongWei131700\r"
-        exp_continue
-    }
-    eof
-}
-EXPECT_EOF
-```
+> **优势**：Nginx root 直接指向 `dist/`，无需手动复制任何文件。HTML、JS/CSS、gif/png 等静态资源全部自动到位。
 
 ### 6.5 验证服务器文件完整性（必须执行）
 
@@ -194,38 +164,57 @@ EXPECT_EOF
 
 ```bash
 # 服务器端检查关键文件大小
-ssh -o StrictHostKeyChecking=no root@47.99.138.250 "ls -la /var/www/verra-voile/assets/index-*.js /var/www/verra-voile/assets/index-*.css"
+ssh -o StrictHostKeyChecking=no root@47.99.138.250 "ls -la /var/www/verra-voile/dist/assets/index-*.js /var/www/verra-voile/dist/assets/index-*.css"
 
 # 本地对比
 ls -la /Users/hongli/WorkSpace/Verra-Voile/dist/assets/index-*.js /Users/hongli/WorkSpace/Verra-Voile/dist/assets/index-*.css
 ```
 
-> 如果服务器上任何 JS/CSS 文件大小为 0 或与本地不一致，**必须重新上传该文件**，否则会导致白屏。
+> 如果服务器上任何 JS/CSS 文件大小为 0 或与本地不一致，**必须重新上传**，否则会导致白屏。
 
 ### 6.6 缓存破坏（防止浏览器缓存旧版 JS）
 
-如果之前部署出过 0 字节文件被浏览器缓存的情况，需要在 index.html 中给 JS 引用加缓存破坏参数：
+如果怀疑有缓存问题，在 index.html 中给 JS 引用加缓存破坏参数：
 
 ```bash
-# 在服务器上给 JS 文件加版本号参数，强制浏览器重新获取
-ssh -o StrictHostKeyChecking=no root@47.99.138.250 "sed -i 's|index-\([a-zA-Z0-9]*\)\.js|index-\1.js?v=2|g' /var/www/verra-voile/index.html"
+ssh root@47.99.138.250 "sed -i 's|index-\([a-zA-Z0-9]*\)\.js|index-\1.js?v=2|g' /var/www/verra-voile/dist/index.html"
 ```
 
 > 每次部署如果怀疑有缓存问题，递增 `?v=3`、`?v=4` 等。
 
-### 7. 检查 Nginx 配置清洁度
+### 7. 检查 Nginx 配置（⚠️ 新增模块必须执行）
 
-**⚠️ 必须执行！** 每次前端部署后都要检查 `sites-enabled/` 下是否有冲突的配置文件，否则可能导致前端页面无法访问。
+**每次前端部署后必须检查：**
 
 ```bash
-# 检查 sites-enabled 下是否有多个配置文件导致 server_name 冲突
+# 1. 检查 sites-enabled 下是否有冲突的配置文件
 ssh -o StrictHostKeyChecking=no root@47.99.138.250 "ls -la /etc/nginx/sites-enabled/"
 
-# 如果存在 .bak 或其他多余文件，立即删除并重载
-ssh -o StrictHostKeyChecking=no root@47.99.138.250 "rm -f /etc/nginx/sites-enabled/*.bak && nginx -t 2>&1 && nginx -s reload"
+# 2. 清理 .bak 等多余文件
+ssh -o StrictHostKeyChecking=no root@47.99.138.250 "rm -f /etc/nginx/sites-enabled/*.bak"
+
+# 3. 检查新增页面是否有对应的 location 规则（以 agent-chat 为例）
+ssh -o StrictHostKeyChecking=no root@47.99.138.250 "grep 'location' /etc/nginx/sites-enabled/verra-voile"
 ```
 
-> **踩坑记录**：`sites-enabled/` 下同时存在 `verra-voile` 和 `verra-voile.bak`，两者监听相同端口和 server_name，导致 Nginx 路由冲突，前端页面返回 404。
+**新增模块/页面时，必须在 Nginx 中添加 location 规则！** 否则该页面会 fallback 到 index.html，返回首页内容。
+
+模板：
+```nginx
+# 新增页面（如 /agent-chat）
+location = /agent-chat {
+    add_header Cache-Control "no-cache, no-store, must-revalidate";
+    add_header Vary "Accept-Encoding";
+    try_files /agent-chat.html /index.html;
+}
+```
+
+添加后重载：
+```bash
+ssh -o StrictHostKeyChecking=no root@47.99.138.250 "nginx -t && nginx -s reload"
+```
+
+> **踩坑记录**：`/agent-chat` 页面部署后未添加 Nginx location，导致 fallback 到首页 HTML，SEO 内容完全错误。
 
 ### 8. 验证部署
 
@@ -240,6 +229,7 @@ curl -s -o /dev/null -w "HTTP Status: %{http_code}\nSize: %{size_download} bytes
 服务器 Nginx 已配置：
 - HTTPS (443) + HTTP→HTTPS 重定向 (80)
 - `server_name`: `europewedding.cn www.europewedding.cn`
+- **`root /var/www/verra-voile/dist`**（直接指向构建产物目录）
 - SSL 证书: `/etc/letsencrypt/live/europewedding.cn/`
 - SPA 路由: `try_files $uri $uri/ /index.html`
 - API 代理: `/api/` → `http://127.0.0.1:3000`
@@ -251,8 +241,10 @@ curl -s -o /dev/null -w "HTTP Status: %{http_code}\nSize: %{size_download} bytes
 |---|------|------|----------|
 | 1 | 前端页面 404 无法访问 | `sites-enabled/` 下有 `.bak` 冲突配置文件 | 部署后必须检查并清理 sites-enabled 下的多余文件 |
 | 2 | 前端上传后数据库导出静默失败 | 和数据库导出用 `&&` 串联，上传耗时导致后续命令被跳过 | 前后端部署的每个步骤**独立执行**，不要用 `&&` 串联长时间命令 |
-| 3 | 前端部署后白屏，JS 文件 0 字节 | `scp -r` 同时上传 index.html 和 assets 时，JS 文件在服务器上变成 0 字节；且浏览器会缓存这个 0 字节响应，即使后续重新上传正确文件，浏览器仍返回缓存的空文件 | 1. **分步上传**：先传 assets，验证文件大小正确后再传 index.html；2. 上传后立即对比服务器和本地的 JS/CSS 文件大小；3. 若已产生缓存问题，在 index.html 中给 JS 引用加 `?v=N` 缓存破坏参数 |
-| 4 | **SSG 页面价格显示为 0 / SEO 内容缺失** | SSG 生成的 HTML 文件上传到了 `dist/` 子目录，但 Nginx root 指向 `/var/www/verra-voile/`，Nginx 找不到文件 fallback 到 SPA 首页 | **SSG 文件必须直接部署到 Nginx root**：1. 打包用 `tar -czf dist.tar.gz -C dist .`（打包 dist 内部内容）；2. 解压到 `/var/www/verra-voile/`（不是 `dist/`）；3. 部署后 curl 验证 HTML 中价格是否正确 |
+| 3 | 前端部署后白屏，JS 文件 0 字节 | `scp -r` 同时上传 index.html 和 assets 时，JS 文件在服务器上变成 0 字节；且浏览器会缓存这个 0 字节响应 | 1. 上传后立即对比服务器和本地的 JS/CSS 文件大小；2. 若已产生缓存问题，在 index.html 中给 JS 引用加 `?v=N` 缓存破坏参数 |
+| 4 | **新页面 SEO 内容显示为首页内容** | 新增页面（如 `/agent-chat`）未在 Nginx 配置中添加 location 规则，导致 fallback 到 `index.html` | 每次新增模块/页面时，必须添加 `location = /xxx { try_files /xxx.html /index.html; }` 规则 |
+
+> **历史教训（已解决）**：以前 Nginx root 指向 `/var/www/verra-voile/` 时，每次部署都要手动把文件从 `dist/` 复制到根目录，经常遗漏 HTML/gif/png 等文件。现在 root 直接指向 `dist/`，部署只需替换整个 `dist/` 目录即可，彻底解决此问题。
 
 ## 输出
 

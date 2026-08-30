@@ -1,6 +1,42 @@
 # 场地爬取清单
 # 状态: ✅已入库  ⚠️待处理  ❌已剔除  ⬜待爬取
 # 格式: 地点名 | 状态(id=数据库ID, N张图) | 来源URL
+# 最后更新: 2026-08-30
+
+## 汇总统计
+
+| 国家 | 场地数 | 状态 |
+|------|--------|------|
+| 西班牙 Spain | 49✅ + 3⬜ + 4⚠️ | 完成 |
+| 英国 UK | 4✅ | 完成 |
+| 奥地利 Austria | 5✅ + 2⚠️ | 完成 |
+| 瑞士 Switzerland | 5✅ | 完成 |
+| 德国 Germany | 2✅ | 完成 |
+| 荷兰 Netherlands | 2✅ | 完成 |
+| 丹麦 Denmark | 2✅ | 完成 |
+| 爱尔兰 Ireland | 2✅ | 完成 |
+| 瑞典 Sweden | 2✅ | 完成 |
+| 比利时 Belgium | 2✅ | 完成 |
+| 捷克 Czech Republic | 2✅ | 完成 |
+| 克罗地亚 Croatia | 2✅ | 完成 |
+| 匈牙利 Hungary | 1✅ + 1✅(2张⚠️) | 完成 |
+| 波兰 Poland | 2✅ | 完成 |
+| 芬兰 Finland | 2✅ | 完成 |
+| 挪威 Norway | 2✅ | 完成 |
+| 冰岛 Iceland | 2✅ | 完成 |
+| 斯洛文尼亚 Slovenia | 2✅ | 完成 |
+| 爱沙尼亚 Estonia | 2✅ | 完成 |
+| 拉脱维亚 Latvia | 2✅ | 完成 |
+| 立陶宛 Lithuania | 2✅ | 完成 |
+| 列支敦士登 Liechtenstein | 2✅ | 完成 |
+| 卢森堡 Luxembourg | 2✅ | 完成 |
+| 斯洛伐克 Slovakia | 2✅ | 完成 |
+| 马耳他 Malta | 1✅ + 1⚠️(0张) | 待修复 |
+| 希腊 Greece | 2✅ | 完成 |
+
+**总计**: 143个场地入库, 21国各2个场地(马耳他第2个待修复)
+
+---
 
 ## 西班牙 Spain
 
@@ -315,147 +351,261 @@
 
 ## 比利时 Belgium
 
-1. Château de Belœil | ✅ id=131
+1. Château de Belœil | ✅ id=131, 9张
    地址: Rue du Château 18, 7970 Belœil
    信息: https://www.chateaudebeloeil.com/
    图片: 9张 ✅
 
+2. Château de Vêves | ✅ id=152, 13张
+   地址: Rue de Furfooz 3, 5561 Celles
+   信息: https://www.chateau-veves.be
+   图片: 13张 ✅
+
 ## 克罗地亚 Croatia
 
-1. Hotel Excelsior Dubrovnik | ✅ id=133
+1. Hotel Excelsior Dubrovnik | ✅ id=133, 18张
    地址: Frana Supila 12, 20000 Dubrovnik
    信息: https://www.slh.com/hotel-excelsior-dubrovnik
    图片: 18张 ✅
 
+2. Villa Dubrovnik | ✅ id=166, 10张
+   地址: Frana Supila 12, 20000 Dubrovnik
+   信息: https://www.villa-dubrovnik.hr
+   图片: 10张 ✅
+
 ## 捷克 Czech Republic
 
-1. Chateau Mcely | ✅ id=132
+1. Chateau Mcely | ✅ id=132, 8张
    地址: Mcely 61, 289 36 Mcely
    信息: https://www.chateaumcely.cz/
    图片: 8张 ✅
 
+2. Château Herálec | ✅ id=153, 24张
+   地址: Herálec 1, 582 55 Herálec
+   信息: https://www.chateauheralec.cz
+   图片: 24张 ✅
+
 ## 丹麦 Denmark
 
-1. Egeskov Slot | ✅ id=128
+1. Egeskov Slot | ✅ id=128, 24张
    地址: Egeskov Gade 22, DK-5772 Kværndrup
    信息: https://www.egeskov.dk/
    图片: 24张 ✅
 
+2. Dragsholm Slot | ✅ id=149, 12张
+   地址: Dragsholm Allé 1, 4534 Hørve
+   信息: https://www.dragsholmslot.dk
+   图片: 12张 ✅
+
 ## 爱沙尼亚 Estonia
 
-1. Vihula Manor Country Club & Spa | ✅ id=141
+1. Vihula Manor Country Club & Spa | ✅ id=141, 13张
    地址: Vihula, Lääne-Virumaa, 45402, Estonia
    信息: https://vihulamanor.com/en/
    图片: 13张 ✅
 
+2. Keila-Joa Schloss Fall | ✅ id=160, 10张
+   地址: Pargi allee 5, Keila-Joa, Harju maakond 76701
+   信息: https://www.schlossfall.com
+   图片: 10张 ✅
+
 ## 芬兰 Finland
 
-1. Fiskars Village | ✅ id=140
+1. Fiskars Village | ✅ id=140, 12张
    地址: Fiskars Village, 10450 Fiskars, Finland
    信息: https://fiskarsvillage.fi/en/gather-and-celebrate/weddings-and-festivities/
    图片: 12张 ✅
 
+2. Tertti Manor | ✅ id=159, 14张
+   地址: Kuopiontie 68, 50350 Mikkeli
+   信息: https://tertinkartano.fi
+   图片: 14张 ✅
+
 ## 德国 Germany
 
-1. Schlosshotel Kronberg | ✅ id=126
+1. Schlosshotel Kronberg | ✅ id=126, 25张
    地址: Hainstraße 25, 61476 Kronberg im Taunus
    信息: https://www.schlosshotel-kronberg.de/
    图片: 25张 ✅
 
+2. Schloss Elmau | ✅ id=147, 11张
+   地址: In Elmau 2, 82493 Elmau
+   信息: https://www.schloss-elmau.de
+   图片: 11张 ✅
+
 ## 匈牙利 Hungary
 
-1. Festetics Kastely | ✅ id=134
+1. Festetics Kastely | ✅ id=134, 14张
    地址: Keszthely, Festetics u. 1, 8360
    信息: https://www.festeticskastely.hu/
    图片: 14张 ✅
 
+2. Károlyi Kastély | ✅ id=155, 2张
+   地址: H-8052 Fehérvárcsurgó, Petőfi Sándor u. 2
+   信息: https://karolyikastely.accenthotels.com
+   图片: 2张 ⚠️(Wikimedia限流)
+
 ## 冰岛 Iceland
 
-1. Hotel Buðir | ✅ id=138
+1. Hotel Buðir | ✅ id=138, 17张
    地址: Buðir, 871 Snæfellsbær
    信息: https://www.hotelbudir.com/
    图片: 17张 ✅
 
+2. Hotel Rangá | ✅ id=167, 15张
+   地址: Ásahreppur, 851 Hella
+   信息: https://www.hotelranga.is
+   图片: 15张 ✅
+
 ## 爱尔兰 Ireland
 
-1. Adare Manor | ✅ id=129
+1. Adare Manor | ✅ id=129, 41张
    地址: Adare Manor, Adare, Co. Limerick, V94 W8WR
    信息: https://www.adaremanor.com/
    图片: 41张 ✅
 
+2. Ashford Castle | ✅ id=150, 12张
+   地址: Cong, County Mayo, F31 CA48
+   信息: https://www.ashfordcastle.com
+   图片: 12张 ✅
+
 ## 拉脱维亚 Latvia
 
-1. Hotel Jurmala Spa | ✅ id=142
+1. Hotel Jurmala Spa | ✅ id=142, 8张
    地址: Jomas iela 47/49, Jūrmala, LV-2015, Latvia
    信息: https://www.hoteljurmala.com/
    图片: 8张 ✅
 
+2. Birīni Castle | ✅ id=161, 8张
+   地址: Bīriņi, Vidrižu pagasts, Limbažu novads, LV-4013
+   信息: https://www.birinupils.lv
+   图片: 8张 ✅
+
 ## 列支敦士登 Liechtenstein
 
-1. Park-Hotel Sonnenhof | ✅ id=144
+1. Park-Hotel Sonnenhof | ✅ id=144, 8张
    地址: Mareestrasse 29, 9490 Vaduz, Liechtenstein
    信息: https://www.sonnenhof.li/
    图片: 8张 ✅
 
+2. Hotel Löwen | ✅ id=163, 16张
+   地址: Landstrasse 68, 9494 Schellenberg
+   信息: https://www.hotel-loewen.li
+   图片: 16张 ✅
+
 ## 立陶宛 Lithuania
 
-1. Paliesius Manor | ✅ id=143
+1. Paliesius Manor | ✅ id=143, 10张
    地址: Dvaro g. 7, Paliesius village, Mielagėnai 30171
    信息: https://paliesiusmanor.com/
    图片: 10张 ✅
 
+2. Bistrampolis Manor | ✅ id=162, 14张
+   地址: Bistrampolio g. 1, Kučių k., Panevėžio raj.
+   信息: https://bistrampolis.lt
+   图片: 14张 ✅
+
 ## 卢森堡 Luxembourg
 
-1. Château de Bourglinster | ✅ id=145
+1. Château de Bourglinster | ✅ id=145, 13张
    地址: 8, rue du Château, L-6162 Bourglinster
    信息: https://www.bourglinster.lu/
    图片: 13张 ✅
 
+2. Château d'Urspelt | ✅ id=164, 15张
+   地址: 12, rue d'Urspelt, L-9382 Eschdorf
+   信息: https://www.chateau-urspelt.lu
+   图片: 15张 ✅
+
 ## 马耳他 Malta
 
-1. Xara Palace Relais & Châteaux | ✅ id=139
+1. Xara Palace Relais & Châteaux | ✅ id=139, 5张
    地址: Xara Palace, Triq Villegaignon, Mdina MDN 1020
    信息: https://www.xarapalace.com/
    图片: 5张 ✅
 
+2. Palazzo Parisio | ⚠️ id=SKIP, 0张
+   信息: https://www.palazzoparisio.com
+   图片: 0张 ⚠️(Wix CDN封锁+Wikimedia限流)
+
 ## 荷兰 Netherlands
 
-1. Kasteel de Haar | ✅ id=127
+1. Kasteel de Haar | ✅ id=127, 5张
    地址: Kasteellaan 1, 3455 RR Haarzuilens
    信息: https://www.kasteeldehaar.nl/
    图片: 5张 ✅
 
+2. Kasteel Huis Bergh | ✅ id=148, 10张
+   地址: Hof van Bergh 8, 7041 AC 's-Heerenberg
+   信息: https://www.huisbergh.nl
+   图片: 10张 ✅
+
 ## 挪威 Norway
 
-1. Kviknes Hotel | ✅ id=136
+1. Kviknes Hotel | ✅ id=136, 23张
    地址: Kviknes Hotel, 5745 Balestrand
    信息: https://www.kvikne.no/
    图片: 23张 ✅
 
+2. Dalen Hotel | ✅ id=157, 13张
+   地址: Hotellvegen 33, 3880 Dalen
+   信息: https://www.dalenhotel.no
+   图片: 13张 ✅
+
 ## 波兰 Poland
 
-1. Zamek Moszna | ✅ id=135
+1. Zamek Moszna | ✅ id=135, 11张
    地址: Moszna, 47-370 Otmuchów
-   信息: https://www.zamekmoszna.pl/
+   信息: https://www.mosznazamek.pl/
    图片: 11张 ✅
+
+2. Pałac Chojnata | ✅ id=156, 12张
+   地址: Wola Chojnata 59, 96-230 Biała Rawska
+   信息: https://palacchojnata.pl
+   图片: 12张 ✅
 
 ## 斯洛伐克 Slovakia
 
-1. Bojnice Castle | ✅ id=146
+1. Bojnice Castle | ✅ id=146, 11张
    地址: Zámok a okolie 1, 972 01 Bojnice
    信息: https://bojnicecastle.sk/
    图片: 11张 ✅
 
+2. Smolenice Castle | ✅ id=165, 14张
+   地址: Smolenice, 918 64
+   信息: https://smolenickyzamok.sav.sk
+   图片: 14张 ✅
+
 ## 斯洛文尼亚 Slovenia
 
-1. Grad Otočec | ✅ id=137
+1. Grad Otočec | ✅ id=137, 19张
    地址: Otočec 106, 8222 Otočec
-   信息: https://www.terminus-otocec.si/
+   信息: https://www.otocec.net/
    图片: 19张 ✅
+
+2. Dvorec Zemono | ✅ id=158, 14张
+   地址: Dvorec Zemono, 5271 Vipava
+   信息: https://www.dvoreczemono.si
+   图片: 14张 ✅
 
 ## 瑞典 Sweden
 
-1. Lejondals Slott | ✅ id=130
+1. Lejondals Slott | ✅ id=130, 11张
    地址: Lejondal, 197 91 Bro, Sweden
    信息: https://www.lejondalsslott.se/
    图片: 11张 ✅
+
+2. Rosersbergs Slott | ✅ id=151, 12张
+   地址: Slottsvägen 203, 195 95 Rosersberg
+   信息: https://www.rosersbergsslott.se
+   图片: 12张 ✅
+
+## 希腊 Greece
+
+1. Villa Bordeaux Santorini | ✅ id=28
+   信息: https://www.weddingwire.com/destination-wedding/greece/villa-bordeaux-santorini--e2199058
+   图片: 29张 ✅
+
+2. Alsos Nimfon | ✅ id=27
+   信息: https://www.weddingwire.com/destination-wedding/greece/alsos-nimfon--e2226182
+   图片: 44张 ✅

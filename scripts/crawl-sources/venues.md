@@ -1,7 +1,7 @@
 # 场地爬取清单
 # 状态: ✅已入库  ⚠️待处理  ❌已剔除  ⬜待爬取
 # 格式: 地点名 | 状态(id=数据库ID, N张图) | 来源URL
-# 最后更新: 2026-08-30
+# 最后更新: 2026-09-02
 
 ## 汇总统计
 
@@ -33,8 +33,9 @@
 | 斯洛伐克 Slovakia | 2✅ | 完成 |
 | 马耳他 Malta | 1✅ + 1⚠️(0张) | 待修复 |
 | 希腊 Greece | 2✅ | 完成 |
+| 意大利 Italy | 14✅ | 完成 |
 
-**总计**: 143个场地入库, 21国各2个场地(马耳他第2个待修复)
+**总计**: 157个场地入库, 22国
 
 ---
 
@@ -609,3 +610,49 @@
 2. Alsos Nimfon | ✅ id=27
    信息: https://www.weddingwire.com/destination-wedding/greece/alsos-nimfon--e2226182
    图片: 44张 ✅
+
+## 意大利 Italy
+
+1. Villa di Maiano | ✅ id=34
+   图片: https://www.villadimaiano.com/
+
+2. Villa di Striano | ✅ id=35
+   图片: https://www.villadistriano.com/
+
+3. Villa Valentini Bonaparte | ✅ id=36
+   图片: https://www.villavalentinibonaparte.it/
+
+4. Hotel Corallo | ✅ id=37
+   图片: https://www.hotelcorallo.it/
+
+5. Villa Scorzi — Relais de Charme | ✅ id=38
+   图片: https://www.villascorzi.it/
+
+6. Park Hotel Villa Grazioli | ✅ id=39
+   图片: https://www.villagrazioli.it/
+
+7. Villa Zaffiro | ✅ id=40
+   图片: https://himerahomes.com/
+
+8. Villa Bellaria | ✅ id=41
+   图片: https://villabellaria.it/
+
+9. Villa Bossi | ✅ id=42
+   图片: https://villabossi.it/
+
+10. Agriturismo Pieve del Castello | ✅ id=46
+    图片: https://www.pievedelcastello.com/
+
+11. Villa Porta | ✅ id=47
+    图片: https://www.villaporta.it/
+
+12. Hotel Vis à Vis | ✅ id=48
+    图片: https://www.hotelvisavis.it/
+
+13. Villa Medicea di Lilliano | ✅ id=168, 60张
+    信息: https://www.medicivilla.com/
+    图片: 60张 ✅ (mv-000.jpg ~ mv-060.jpg, 排除 mv-052)
+
+14. Hotel Villa Cimbrone | ✅ id=169, 60张
+    信息: https://www.hotelvillacimbrone.com/
+    图片: 60张 ✅ (hvc-000.jpg ~ hvc-060.jpg, 排除 hvc-058)

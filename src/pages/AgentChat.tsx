@@ -4,6 +4,7 @@ import { io, Socket } from 'socket.io-client'
 import Seo from '../components/Seo'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
+import { trackEvent } from '../utils/analytics'
 
 interface PlanItem {
   category: string
@@ -419,6 +420,7 @@ export default function AgentChat() {
   /* ── 发送消息 ── */
   const doSend = (text: string, overrideMediaId?: string) => {
     if (!text || loadingRef.current) return
+    trackEvent('ai_chat', { message_length: text.length, has_media: !!overrideMediaId })
     resetForNewMsg()
     setMessages(prev => [...prev, {
       id: `u${Date.now()}`, role: 'user' as const, content: text, timestamp: Date.now(),

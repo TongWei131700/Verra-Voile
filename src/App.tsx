@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { loadSelectedProductsFromServer, getSelectedProducts } from './utils/selectedProducts'
+import { trackPageView } from './utils/analytics'
 import Footer from './components/Footer'
 import AppHeader from './components/common/AppHeader'
 import Home from './pages/Home'
@@ -61,6 +62,11 @@ function setScrollTop(el: Element | Window, value: number) {
 
 function ScrollRestoration() {
   const { pathname } = useLocation()
+
+  // 埋点：每次路由切换发送 PV 事件
+  useEffect(() => {
+    trackPageView(pathname, document.title)
+  }, [pathname])
 
   // 路由切换时处理滚动位置
   useEffect(() => {

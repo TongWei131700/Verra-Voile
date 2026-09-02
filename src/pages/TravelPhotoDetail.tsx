@@ -4,6 +4,7 @@ import BackButton from '../components/common/BackButton'
 import FallbackImage from '../components/common/FallbackImage'
 import Seo from '../components/Seo'
 import { proxyImage } from '../utils/imageProxy'
+import { trackEvent } from '../utils/analytics'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -131,6 +132,7 @@ export default function TravelPhotoDetail() {
       slug: slug,
       route: `/travel-photo/${slug}`,
     }))
+    trackEvent('consult', { category: 'travel-photo', product_id: slug, name: detail.name })
     navigate('/consult')
   }, [slug, detail, navigate])
 

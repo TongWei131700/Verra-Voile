@@ -8,6 +8,7 @@ import Seo from '../components/Seo'
 import { setSelectedItem, updateSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
 import { syncWishlistToServer, removeWishlistFromServer } from '../utils/wishlistSync'
 import type { WineProduct, WineCharacteristic, WineReview, WineAboutImage, WineOverview, WineOverviewAttribute, WineOverviewItem, WineBuyingOption } from './Wine'
+import { trackEvent } from '../utils/analytics'
 
 function isLoggedIn() {
   return !!localStorage.getItem('token')
@@ -185,6 +186,7 @@ export default function WineDetail() {
         price: detail.price, unit: detail.unit || '£', type: '酒水',
         slug: productId, route: `/wine/${productId}`,
       }))
+      trackEvent('consult', { category: 'wine', product_id: productId, name: detail.name })
     }
     navigate('/consult')
   }, [detail, navigate])

@@ -90,7 +90,7 @@ interface DeployVersion {
   rolled_back: number
 }
 
-type Tab = 'overview' | 'reservations' | 'users' | 'chat' | 'products' | 'version' | 'db-version' | 'agent-chat'
+type Tab = 'overview' | 'reservations' | 'users' | 'chat' | 'products' | 'version' | 'db-version' | 'agent-chat' | 'analytics'
 
 export default function Admin() {
   const [authed, setAuthed] = useState(!!localStorage.getItem('admin_token'))
@@ -159,6 +159,13 @@ export default function Admin() {
   const [agentSessions, setAgentSessions] = useState<{user_token: string; message_count: number; last_message_at: string; first_message_at: string}[]>([])
   const [agentSelectedUser, setAgentSelectedUser] = useState<string | null>(null)
   const [agentMessages, setAgentMessages] = useState<any[]>([])
+
+  // 埋点数据分析状态
+  const [analyticsOverview, setAnalyticsOverview] = useState<any>(null)
+  const [analyticsTopPages, setAnalyticsTopPages] = useState<any[]>([])
+  const [analyticsEvents, setAnalyticsEvents] = useState<any[]>([])
+  const [analyticsTimeline, setAnalyticsTimeline] = useState<any[]>([])
+
   const moreRef = useRef<HTMLDivElement>(null)
 
   const handleAdminLogin = async (e: React.FormEvent) => {
@@ -469,6 +476,7 @@ export default function Admin() {
     if (tab === 'version' && authed) fetchVersions()
     if (tab === 'db-version' && authed) fetchDbTables()
     if (tab === 'agent-chat' && authed) fetchAgentSessions()
+    if (tab === 'analytics' && authed) fetchAnalytics()
   }, [tab, authed])
 
   // AI 对话管理函数
@@ -489,6 +497,27 @@ export default function Admin() {
       if (data.success) setAgentMessages(data.data)
     } catch (e) {
       console.error('获取 AI 对话详情失败:', e)
+    }
+  }
+
+  // 埋点数据获取
+  const fetchAnalytics = async () => {
+    try {
+      const [overviewRes, topPagesRes, eventsRes, timelineRes] = await Promise.all([
+        fetch('/api/analytics/overview'),
+        fetch('/api/analytics/top-pages?limit=15&days=30'),
+        fetch('/api/analytics/events?days=30'),
+        fetch('/api/analytics/timeline?limit=30'),
+      ])
+      const [overviewData, topPagesData, eventsData, timelineData] = await Promise.all([
+        overviewRes.json(), topPagesRes.json(), eventsRes.json(), timelineRes.json(),
+      ])
+      if (overviewData.success) setAnalyticsOverview(overviewData.data)
+      if (topPagesData.success) setAnalyticsTopPages(topPagesData.data)
+      if (eventsData.success) setAnalyticsEvents(eventsData.data)
+      if (timelineData.success) setAnalyticsTimeline(timelineData.data)
+    } catch (e) {
+      console.error('获取埋点数据失败:', e)
     }
   }
 
@@ -688,6 +717,7 @@ export default function Admin() {
     { key: 'version', label: '🚀 版本控制' },
     { key: 'db-version', label: '🗄️ 数据库' },
     { key: 'agent-chat', label: '🤖 AI 对话' },
+    { key: 'analytics', label: '📊 数据分析' },
   ]
 
   const MAX_VISIBLE_TABS = 4
@@ -1599,6 +1629,155 @@ export default function Admin() {
                   )}
                 </div>
               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 数据分析 */}
+      {tab === 'analytics' && (
+        <div className="dashboard-content">
+          <div className="dash-section">
+            <h3>📊 埋点数据概览</h3>
+
+            {analyticsOverview ? (
+              <>
+                {/* 核心指标卡片 */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 28 }}>
+                  <div style={{ background: '#f8f6f3', borderRadius: 12, padding: '20px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 28, fontWeight: 700, color: '#2a2723' }}>{analyticsOverview.todayPv}</div>
+                    <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>今日 PV</div>
+                  </div>
+                  <div style={{ background: '#f8f6f3', borderRadius: 12, padding: '20px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 28, fontWeight: 700, color: '#2a2723' }}>{analyticsOverview.todayUv}</div>
+                    <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>今日 UV</div>
+                  </div>
+                  <div style={{ background: '#f8f6f3', borderRadius: 12, padding: '20px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 28, fontWeight: 700, color: '#2a2723' }}>{analyticsOverview.yesterdayPv}</div>
+                    <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>昨日 PV</div>
+                  </div>
+                  <div style={{ background: '#f8f6f3', borderRadius: 12, padding: '20px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 28, fontWeight: 700, color: '#2a2723' }}>{analyticsOverview.yesterdayUv}</div>
+                    <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>昨日 UV</div>
+                  </div>
+                  <div style={{ background: '#f8f6f3', borderRadius: 12, padding: '20px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 28, fontWeight: 700, color: '#2a2723' }}>{analyticsOverview.totalEvents?.toLocaleString()}</div>
+                    <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>总事件数</div>
+                  </div>
+                </div>
+
+                {/* 7 天趋势 */}
+                {analyticsOverview.trend?.length > 0 && (
+                  <div style={{ marginBottom: 28 }}>
+                    <h4 style={{ marginBottom: 12, fontSize: 15 }}>最近 7 天趋势</h4>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid #e8e4df' }}>
+                          <th style={{ textAlign: 'left', padding: '8px 12px' }}>日期</th>
+                          <th style={{ textAlign: 'right', padding: '8px 12px' }}>PV</th>
+                          <th style={{ textAlign: 'right', padding: '8px 12px' }}>UV</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {analyticsOverview.trend.map((row: any) => (
+                          <tr key={row.date} style={{ borderBottom: '1px solid #f0ece8' }}>
+                            <td style={{ padding: '8px 12px' }}>{new Date(row.date).toLocaleDateString('zh-CN')}</td>
+                            <td style={{ padding: '8px 12px', textAlign: 'right' }}>{row.pv}</td>
+                            <td style={{ padding: '8px 12px', textAlign: 'right' }}>{row.uv}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* 热门页面 */}
+                {analyticsTopPages.length > 0 && (
+                  <div style={{ marginBottom: 28 }}>
+                    <h4 style={{ marginBottom: 12, fontSize: 15 }}>热门页面 Top 15（近 30 天）</h4>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid #e8e4df' }}>
+                          <th style={{ textAlign: 'left', padding: '8px 12px' }}>#</th>
+                          <th style={{ textAlign: 'left', padding: '8px 12px' }}>页面路径</th>
+                          <th style={{ textAlign: 'right', padding: '8px 12px' }}>PV</th>
+                          <th style={{ textAlign: 'right', padding: '8px 12px' }}>UV</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {analyticsTopPages.map((row: any, i: number) => (
+                          <tr key={row.page_path} style={{ borderBottom: '1px solid #f0ece8' }}>
+                            <td style={{ padding: '8px 12px', color: '#999' }}>{i + 1}</td>
+                            <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontSize: 12 }}>{row.page_path}</td>
+                            <td style={{ padding: '8px 12px', textAlign: 'right' }}>{row.pv}</td>
+                            <td style={{ padding: '8px 12px', textAlign: 'right' }}>{row.uv}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* 事件类型统计 */}
+                {analyticsEvents.length > 0 && (
+                  <div style={{ marginBottom: 28 }}>
+                    <h4 style={{ marginBottom: 12, fontSize: 15 }}>事件类型统计（近 30 天）</h4>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid #e8e4df' }}>
+                          <th style={{ textAlign: 'left', padding: '8px 12px' }}>事件类型</th>
+                          <th style={{ textAlign: 'right', padding: '8px 12px' }}>次数</th>
+                          <th style={{ textAlign: 'right', padding: '8px 12px' }}>涉及会话</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {analyticsEvents.map((row: any) => (
+                          <tr key={row.event_type} style={{ borderBottom: '1px solid #f0ece8' }}>
+                            <td style={{ padding: '8px 12px', fontFamily: 'monospace' }}>{row.event_type}</td>
+                            <td style={{ padding: '8px 12px', textAlign: 'right' }}>{row.count}</td>
+                            <td style={{ padding: '8px 12px', textAlign: 'right' }}>{row.sessions}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* 最近事件时间线 */}
+                {analyticsTimeline.length > 0 && (
+                  <div>
+                    <h4 style={{ marginBottom: 12, fontSize: 15 }}>最近事件（最新 30 条）</h4>
+                    <div style={{ maxHeight: 400, overflowY: 'auto', border: '1px solid #e8e4df', borderRadius: 8 }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                        <thead>
+                          <tr style={{ borderBottom: '2px solid #e8e4df', position: 'sticky', top: 0, background: '#fff' }}>
+                            <th style={{ textAlign: 'left', padding: '6px 10px' }}>时间</th>
+                            <th style={{ textAlign: 'left', padding: '6px 10px' }}>事件</th>
+                            <th style={{ textAlign: 'left', padding: '6px 10px' }}>页面</th>
+                            <th style={{ textAlign: 'left', padding: '6px 10px' }}>用户</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {analyticsTimeline.map((ev: any) => (
+                            <tr key={ev.id} style={{ borderBottom: '1px solid #f0ece8' }}>
+                              <td style={{ padding: '6px 10px', whiteSpace: 'nowrap', color: '#888' }}>{new Date(ev.created_at).toLocaleString('zh-CN')}</td>
+                              <td style={{ padding: '6px 10px', fontFamily: 'monospace' }}>{ev.event_type}</td>
+                              <td style={{ padding: '6px 10px', fontFamily: 'monospace', fontSize: 11, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.page_path}</td>
+                              <td style={{ padding: '6px 10px', color: '#888', fontSize: 11 }}>{ev.user_token}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {analyticsOverview.totalEvents === 0 && (
+                  <p style={{ color: '#999', textAlign: 'center', padding: 40 }}>暂无埋点数据，前端开始上报后将在此显示</p>
+                )}
+              </>
+            ) : (
+              <p style={{ color: '#999', textAlign: 'center', padding: 40 }}>加载中...</p>
             )}
           </div>
         </div>

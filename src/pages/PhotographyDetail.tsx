@@ -4,6 +4,7 @@ import FallbackImage from '../components/common/FallbackImage'
 import LoginModal from '../components/LoginModal'
 import { setSelectedItem, isProductSelected, removeSelectedProduct } from '../utils/selectedProducts'
 import { proxyImage } from '../utils/imageProxy'
+import { trackEvent } from '../utils/analytics'
 import Seo from '../components/Seo'
 import { CardHero } from '../components/DetailHero'
 
@@ -144,6 +145,7 @@ export default function PhotographyDetail() {
         })
         setIsBooked(true)
         setIsBooking(false)
+        trackEvent('add_to_cart', { category: 'photography', product_id: detail.slug, name: detail.name, price: detail.price })
       }, 1500)
     }
   }, [detail, isBooked])
@@ -161,6 +163,7 @@ export default function PhotographyDetail() {
         price: detail.price, unit: '€', type: '摄影',
         slug: detail.slug, route: `/photography/${detail.slug}`,
       }))
+      trackEvent('consult', { category: 'photography', product_id: detail.slug, name: detail.name })
     }
     navigate('/consult')
   }, [detail, navigate])

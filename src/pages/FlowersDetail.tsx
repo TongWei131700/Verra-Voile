@@ -6,6 +6,7 @@ import LoginModal from '../components/LoginModal'
 import { setSelectedItem, removeSelectedProduct } from '../utils/selectedProducts'
 import { syncWishlistToServer, removeWishlistFromServer } from '../utils/wishlistSync'
 import { proxyImage } from '../utils/imageProxy'
+import { trackEvent } from '../utils/analytics'
 import ewLogo from '../assets/europewedding-logo.png'
 import defaultHeadshot from '../assets/default-headshot.jpg'
 import Seo from '../components/Seo'
@@ -853,6 +854,7 @@ export default function FlowersDetail() {
                       })
                       setIsBooked(true)
                       setIsBooking(false)
+                      trackEvent('add_to_cart', { category: 'floral', product_id: detail.slug, name: detail.name, price: detail.price })
                     }, 1500)
                   }} style={{ flex: 2, height: 48, borderRadius: 12, border: 'none', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', color: '#fff', background: 'linear-gradient(135deg, #b8a08a, #a08e76)' }}>
                     加入购物车 · £{modalProduct.price * modalQty}

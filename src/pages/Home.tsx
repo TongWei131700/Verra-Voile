@@ -11,6 +11,7 @@ import coverTravelPhoto from '../assets/cover-travel-photo.jpg'
 import LoginModal from '../components/LoginModal'
 import Seo from '../components/Seo'
 import { getSelectedProducts } from '../utils/selectedProducts'
+import { trackEvent } from '../utils/analytics'
 
 interface ModuleDef {
   id: string
@@ -162,6 +163,7 @@ export default function Home() {
       : { backgroundColor: '#2a2723' }
 
   const handleConsult = () => {
+    trackEvent('consult', { source: 'home' })
     navigate('/agent-chat')
   }
 

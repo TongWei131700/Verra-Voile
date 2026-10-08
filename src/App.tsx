@@ -28,7 +28,6 @@ import WineDetail from './pages/WineDetail'
 import FlowerProductDetail from './pages/FlowerProductDetail'
 import TravelPhoto from './pages/TravelPhoto'
 import TravelPhotoDetail from './pages/TravelPhotoDetail'
-import DomesticDestinations from './pages/DomesticDestinations'
 
 const scrollCache: Record<string, number> = {}
 
@@ -288,7 +287,6 @@ export default function App() {
         <Route path="/travel-photo/vatican" element={<TravelPhoto />} />
         <Route path="/travel-photo/monaco" element={<TravelPhoto />} />
         <Route path="/travel-photo/:slug" element={<TravelPhotoDetail />} />
-        <Route path="/domestic-destinations" element={<DomesticDestinations />} />
       </Routes>
       {/* 公共精简头部：仅在业务模块页面显示（首页/订单/管理页除外） */}
       {!['/', '/order', '/consult', '/admin', '/upload', '/login', '/register', '/agent-chat'].includes(pathname) && <AppHeader />}

@@ -21,13 +21,14 @@ interface AnalyticsEvent {
 
 const QUEUE_LIMIT = 10          // 队列满 10 条立即上报
 const FLUSH_INTERVAL = 5000     // 每 5 秒兜底 flush
-const REPORT_URL = '/api/analytics/report'
+const API_BASE = import.meta.env.VITE_API_URL || ''
+const REPORT_URL = `${API_BASE}/api/analytics/report`
 
 let queue: AnalyticsEvent[] = []
 let flushTimer: ReturnType<typeof setInterval> | null = null
 
 // ── sessionId ──
-function getSessionId(): string {
+export function getSessionId(): string {
   let sid = sessionStorage.getItem('analytics_sid')
   if (!sid) {
     sid = `sid_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
@@ -37,7 +38,7 @@ function getSessionId(): string {
 }
 
 // ── userToken ──
-function getUserToken(): string {
+export function getUserToken(): string {
   const token = localStorage.getItem('token')
   if (token) return token.substring(0, 16)
   // 与 AgentChat 一致的访客标识

@@ -33,9 +33,10 @@
 | 斯洛伐克 Slovakia | 2✅ | 完成 |
 | 马耳他 Malta | 1✅ + 1⚠️(0张) | 待修复 |
 | 希腊 Greece | 2✅ | 完成 |
+| 法国 France | 1✅ | 完成 |
 | 意大利 Italy | 14✅ | 完成 |
 
-**总计**: 157个场地入库, 22国
+**总计**: 158个场地入库, 23国
 
 ---
 
@@ -656,3 +657,9 @@
 14. Hotel Villa Cimbrone | ✅ id=169, 60张
     信息: https://www.hotelvillacimbrone.com/
     图片: 60张 ✅ (hvc-000.jpg ~ hvc-060.jpg, 排除 hvc-058)
+
+## 法国 France
+
+1. Château de Vaux-le-Vicomte | ✅ id=170, 55张
+    信息: https://vaux-le-vicomte.com/
+    图片: 55张 ✅ (vlv-000.jpg ~ vlv-057.jpg, 排除 vlv-006/009/015)

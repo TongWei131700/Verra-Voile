@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
 interface UploadedFile {
   url: string
   filename: string
@@ -17,7 +19,7 @@ export default function Upload() {
     const formData = new FormData()
     formData.append('image', file)
 
-    const res = await fetch('/api/upload', {
+    const res = await fetch(`${API_BASE}/api/upload`, {
       method: 'POST',
       body: formData,
     })

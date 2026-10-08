@@ -11,7 +11,9 @@ import coverTravelPhoto from '../assets/cover-travel-photo.jpg'
 import LoginModal from '../components/LoginModal'
 import Seo from '../components/Seo'
 import { getSelectedProducts } from '../utils/selectedProducts'
-import { trackEvent } from '../utils/analytics'
+import { trackEvent, getSessionId, getUserToken } from '../utils/analytics'
+
+const API_BASE = import.meta.env.VITE_API_URL || ''
 
 interface ModuleDef {
   id: string
@@ -111,6 +113,21 @@ export default function Home() {
     checkLoginStatus()
   }, [])
 
+  // 进入首页时发送邮件通知（同一 session 只通知一次）
+  useEffect(() => {
+    const sessionId = getSessionId()
+    const userToken = getUserToken()
+    fetch(`${API_BASE}/api/analytics/visit-notify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        userToken,
+        referrer: document.referrer || '',
+      }),
+    }).catch(() => {/* 静默失败 */})
+  }, [])
+
   // 登录弹窗关闭后重新检查登录状态
   useEffect(() => {
     if (!showLoginModal) {
@@ -143,7 +160,7 @@ export default function Home() {
       img.src = url
     })
 
-    fetch('/api/products')
+    fetch(`${API_BASE}/api/products`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data?.categories) {

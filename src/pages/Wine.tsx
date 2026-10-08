@@ -182,7 +182,7 @@ export default function Wine() {
   }
 
   useEffect(() => {
-    fetch('/api/products/wine')
+    fetch(`${API_BASE}/api/products/wine`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data?.products) {

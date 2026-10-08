@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { onLoginSuccess } from '../utils/selectedProducts'
 
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
 export default function Register() {
   const navigate = useNavigate()
   const [phone, setPhone] = useState('')
@@ -24,7 +26,7 @@ export default function Register() {
     setSubmitting(true)
 
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, email, password, confirmPassword }),

@@ -7,6 +7,8 @@ import { exportOrderPDF } from '../utils/exportPDF'
 import LoginModal from '../components/LoginModal'
 import type { SelectedItem } from '../utils/selectedProducts'
 
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
 const CATEGORY_LABELS: Record<string, string> = {
   destination: '目的地',
   team: '婚礼团队',
@@ -101,7 +103,7 @@ export default function OrderDetail() {
     if (!showChat) return
 
     const connectSocket = (token: string) => {
-      const socket = io({ auth: { token, channel: 'order' } })
+      const socket = io(API_BASE || undefined, { auth: { token, channel: 'order' } })
       socketRef.current = socket
 
       socket.on('connect', () => setSocketConnected(true))
@@ -135,7 +137,7 @@ export default function OrderDetail() {
         if (err.message === 'Token 无效或已过期') {
           sessionStorage.removeItem('guest_token')
           try {
-            const res = await fetch('/api/auth/guest-token', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+            const res = await fetch(`${API_BASE}/api/auth/guest-token`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
             const data = await res.json()
             if (data.success && data.data.token) {
               sessionStorage.setItem('guest_token', data.data.token)
@@ -164,7 +166,7 @@ export default function OrderDetail() {
       let guestToken = sessionStorage.getItem('guest_token')
       if (!guestToken) {
         try {
-          const res = await fetch('/api/auth/guest-token', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+          const res = await fetch(`${API_BASE}/api/auth/guest-token`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
           const data = await res.json()
           if (data.success && data.data.token) {
             const newToken: string = data.data.token
@@ -228,7 +230,7 @@ export default function OrderDetail() {
     if (!sessionStorage.getItem('order_first_chat_notified')) {
       sessionStorage.setItem('order_first_chat_notified', '1')
       const token = localStorage.getItem('token') || sessionStorage.getItem('guest_token')
-      fetch('/api/chat/notify-first-message', {
+      fetch(`${API_BASE}/api/chat/notify-first-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

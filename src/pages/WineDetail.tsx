@@ -82,7 +82,7 @@ export default function WineDetail() {
 
   // 拉取酒水宴席商品并定位当前项
   useEffect(() => {
-    fetch('/api/products/wine')
+    fetch(`${API_BASE}/api/products/wine`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data?.products) {

@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { onLoginSuccess } from '../utils/selectedProducts'
 
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
 type LoginTab = 'phone' | 'email'
 
 export default function Login() {
@@ -30,7 +32,7 @@ export default function Login() {
     setError('')
     setEmailSending(true)
     try {
-      const res = await fetch('/api/auth/send-email-code', {
+      const res = await fetch(`${API_BASE}/api/auth/send-email-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -63,7 +65,7 @@ export default function Login() {
     setError('')
     setSubmitting(true)
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, password }),
@@ -89,7 +91,7 @@ export default function Login() {
     setError('')
     setSubmitting(true)
     try {
-      const res = await fetch('/api/auth/login-by-email', {
+      const res = await fetch(`${API_BASE}/api/auth/login-by-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code: emailCode }),

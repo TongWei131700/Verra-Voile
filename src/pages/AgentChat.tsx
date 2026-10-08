@@ -6,6 +6,8 @@ import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 import { trackEvent } from '../utils/analytics'
 
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
 interface PlanItem {
   category: string
   categoryCn: string
@@ -99,7 +101,9 @@ export default function AgentChat() {
 
   /* ── Socket 连接 ── */
   useEffect(() => {
-    const url = import.meta.env.DEV ? 'http://localhost:3000/agent' : '/agent'
+    const url = import.meta.env.VITE_API_URL
+      ? `${import.meta.env.VITE_API_URL}/agent`
+      : (import.meta.env.DEV ? 'http://localhost:3000/agent' : '/agent')
     const connect = () => {
       // 获取用户标识：已登录用手机号/邮箱，未登录生成 guest
       const token = localStorage.getItem('token')
@@ -388,7 +392,7 @@ export default function AgentChat() {
     try {
       const formData = new FormData()
       formData.append('media', file)
-      const res = await fetch('/api/agent/upload-media', { method: 'POST', body: formData })
+      const res = await fetch(`${API_BASE}/api/agent/upload-media`, { method: 'POST', body: formData })
       const json = await res.json()
       if (json.success) {
         const vid = json.data.videoId
@@ -748,7 +752,7 @@ export default function AgentChat() {
     const text = feedbackIdx === idx ? feedbackText.trim() : ''
     const replyText = turnsRef.current[idx]?.text || ''
     try {
-      await fetch('/api/agent/feedback', {
+      await fetch(`${API_BASE}/api/agent/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

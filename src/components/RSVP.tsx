@@ -5,7 +5,8 @@ import SectionTitle from './SectionTitle'
 import CustomSelect from './CustomSelect'
 import DatePicker from './DatePicker'
 
-const API_URL = '/api/reservation'
+const API_BASE = import.meta.env.VITE_API_URL || ''
+const API_URL = `${API_BASE}/api/reservation`
 
 const destinationOptions = [
   'Paris · 巴黎',

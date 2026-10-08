@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, Fragment } from 'react'
 import { io, Socket } from 'socket.io-client'
 
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
 interface Reservation {
   id: number
   name: string
@@ -173,7 +175,7 @@ export default function Admin() {
     setLoginError('')
     setLogging(true)
     try {
-      const res = await fetch('/api/auth/admin-login', {
+      const res = await fetch(`${API_BASE}/api/auth/admin-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -205,11 +207,11 @@ export default function Admin() {
     const headers = { Authorization: `Bearer ${token}` }
     try {
       const [resRes, userRes, statsRes, prodRes, modRes] = await Promise.all([
-        fetch('/api/reservation', { headers }),
-        fetch('/api/admin/users', { headers }),
-        fetch('/api/admin/stats', { headers }),
-        fetch('/api/admin/products', { headers }),
-        fetch('/api/admin/product-modules', { headers }),
+        fetch(`${API_BASE}/api/reservation`, { headers }),
+        fetch(`${API_BASE}/api/admin/users`, { headers }),
+        fetch(`${API_BASE}/api/admin/stats`, { headers }),
+        fetch(`${API_BASE}/api/admin/products`, { headers }),
+        fetch(`${API_BASE}/api/admin/product-modules`, { headers }),
       ])
       const resJson = await resRes.json()
       const userJson = await userRes.json()
@@ -246,7 +248,7 @@ export default function Admin() {
     const adminToken = localStorage.getItem('admin_token')
     if (!adminToken) return
 
-    const socket = io({
+    const socket = io(API_BASE || undefined, {
       auth: { token: adminToken },
     })
     socketRef.current = socket
@@ -262,7 +264,7 @@ export default function Admin() {
       setChatMessages(prev => [...prev, msg])
       // 如果消息来自当前选中用户，自动标记已读并刷新
       if (msg.user_id === selectedChatUser?.id) {
-        fetch(`/api/admin/mark-read/${msg.user_id}`, {
+        fetch(`${API_BASE}/api/admin/mark-read/${msg.user_id}`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` },
         }).catch(() => {})
@@ -292,7 +294,7 @@ export default function Admin() {
   const fetchChatUsers = async () => {
     const token = localStorage.getItem('admin_token')
     try {
-      const res = await fetch('/api/admin/chat-users', {
+      const res = await fetch(`${API_BASE}/api/admin/chat-users`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await res.json()
@@ -309,7 +311,7 @@ export default function Admin() {
     // 标记该用户的消息为已读
     const token = localStorage.getItem('admin_token')
     try {
-      await fetch(`/api/admin/mark-read/${user.id}`, {
+      await fetch(`${API_BASE}/api/admin/mark-read/${user.id}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -318,7 +320,7 @@ export default function Admin() {
     } catch {}
     // 加载用户商品
     try {
-      const res = await fetch(`/api/admin/user-products/${user.id}`, {
+      const res = await fetch(`${API_BASE}/api/admin/user-products/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await res.json()
@@ -397,7 +399,7 @@ export default function Admin() {
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     const token = localStorage.getItem('admin_token')
-    const url = editingProduct ? `/api/admin/products/${editingProduct.id}` : '/api/admin/products'
+    const url = editingProduct ? `${API_BASE}/api/admin/products/${editingProduct.id}` : `${API_BASE}/api/admin/products`
     const method = editingProduct ? 'PUT' : 'POST'
     try {
       const res = await fetch(url, {
@@ -421,7 +423,7 @@ export default function Admin() {
     if (!confirm(`确定要删除商品「${p.name}」吗？`)) return
     const token = localStorage.getItem('admin_token')
     try {
-      const res = await fetch(`/api/admin/products/${p.id}`, {
+      const res = await fetch(`${API_BASE}/api/admin/products/${p.id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ categoryId: p.categoryId }),
@@ -451,11 +453,11 @@ export default function Admin() {
     const h = { Authorization: `Bearer ${token}` }
     try {
       const [currentRes, feListRes, beListRes, feNextRes, beNextRes] = await Promise.all([
-        fetch('/api/version/current', { headers: h }),
-        fetch('/api/version/list?side=frontend', { headers: h }),
-        fetch('/api/version/list?side=backend', { headers: h }),
-        fetch('/api/version/next?side=frontend', { headers: h }),
-        fetch('/api/version/next?side=backend', { headers: h }),
+        fetch(`${API_BASE}/api/version/current`, { headers: h }),
+        fetch(`${API_BASE}/api/version/list?side=frontend`, { headers: h }),
+        fetch(`${API_BASE}/api/version/list?side=backend`, { headers: h }),
+        fetch(`${API_BASE}/api/version/next?side=frontend`, { headers: h }),
+        fetch(`${API_BASE}/api/version/next?side=backend`, { headers: h }),
       ])
       const currentData = await currentRes.json()
       const feListData = await feListRes.json()
@@ -482,7 +484,7 @@ export default function Admin() {
   // AI 对话管理函数
   const fetchAgentSessions = async () => {
     try {
-      const res = await fetch('/api/admin/agent-sessions', { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` } })
+      const res = await fetch(`${API_BASE}/api/admin/agent-sessions`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` } })
       const data = await res.json()
       if (data.success) setAgentSessions(data.data)
     } catch (e) {
@@ -492,7 +494,7 @@ export default function Admin() {
 
   const fetchAgentMessages = async (userToken: string) => {
     try {
-      const res = await fetch(`/api/admin/agent-messages/${encodeURIComponent(userToken)}`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` } })
+      const res = await fetch(`${API_BASE}/api/admin/agent-messages/${encodeURIComponent(userToken)}`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` } })
       const data = await res.json()
       if (data.success) setAgentMessages(data.data)
     } catch (e) {
@@ -504,10 +506,10 @@ export default function Admin() {
   const fetchAnalytics = async () => {
     try {
       const [overviewRes, topPagesRes, eventsRes, timelineRes] = await Promise.all([
-        fetch('/api/analytics/overview'),
-        fetch('/api/analytics/top-pages?limit=15&days=30'),
-        fetch('/api/analytics/events?days=30'),
-        fetch('/api/analytics/timeline?limit=30'),
+        fetch(`${API_BASE}/api/analytics/overview`),
+        fetch(`${API_BASE}/api/analytics/top-pages?limit=15&days=30`),
+        fetch(`${API_BASE}/api/analytics/events?days=30`),
+        fetch(`${API_BASE}/api/analytics/timeline?limit=30`),
       ])
       const [overviewData, topPagesData, eventsData, timelineData] = await Promise.all([
         overviewRes.json(), topPagesRes.json(), eventsRes.json(), timelineRes.json(),
@@ -524,7 +526,7 @@ export default function Admin() {
   // 数据库版本控制函数
   const fetchDbTables = async () => {
     try {
-      const res = await fetch('/api/data-version/tables')
+      const res = await fetch(`${API_BASE}/api/data-version/tables`)
       const data = await res.json()
       if (data.success) {
         setDbTables(data.data)
@@ -541,7 +543,7 @@ export default function Admin() {
     const targetTable = table || dbSelectedTable
     if (!targetTable) return
     try {
-      const res = await fetch(`/api/data-version/list?table=${encodeURIComponent(targetTable)}`)
+      const res = await fetch(`${API_BASE}/api/data-version/list?table=${encodeURIComponent(targetTable)}`)
       const data = await res.json()
       if (data.success) setDbVersions(data.data)
     } catch (e) {
@@ -557,7 +559,7 @@ export default function Admin() {
     if (!dbSaveName.trim()) return alert('请输入版本名称')
     setDbSaving(true)
     try {
-      const res = await fetch('/api/data-version/save', {
+      const res = await fetch(`${API_BASE}/api/data-version/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ table: dbSelectedTable, name: dbSaveName.trim(), note: dbSaveNote.trim() }),
@@ -581,7 +583,7 @@ export default function Admin() {
 
   const handleDbPreview = async (versionId: number, page: number = 1) => {
     try {
-      const res = await fetch(`/api/data-version/preview/${versionId}?page=${page}&pageSize=10`)
+      const res = await fetch(`${API_BASE}/api/data-version/preview/${versionId}?page=${page}&pageSize=10`)
       const data = await res.json()
       if (data.success) {
         setDbPreviewData(data.data)
@@ -610,7 +612,7 @@ export default function Admin() {
     if (!dbRestoreConfirm) return
     setDbRestoring(true)
     try {
-      const res = await fetch(`/api/data-version/restore/${dbRestoreConfirm.id}`, { method: 'POST' })
+      const res = await fetch(`${API_BASE}/api/data-version/restore/${dbRestoreConfirm.id}`, { method: 'POST' })
       const data = await res.json()
       if (data.success) {
         alert(data.message)
@@ -632,7 +634,7 @@ export default function Admin() {
   const handleDbDeleteVersion = async (versionId: number, versionName: string) => {
     if (!confirm(`确定删除版本「${versionName}」？此操作不可恢复。`)) return
     try {
-      const res = await fetch(`/api/data-version/${versionId}`, { method: 'DELETE' })
+      const res = await fetch(`${API_BASE}/api/data-version/${versionId}`, { method: 'DELETE' })
       const data = await res.json()
       if (data.success) {
         fetchDbVersions()
@@ -650,14 +652,14 @@ export default function Admin() {
     setDeployingSide(side)
     const token = localStorage.getItem('admin_token')
     try {
-      const res = await fetch('/api/version/deploy', {
+      const res = await fetch(`${API_BASE}/api/version/deploy`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ side, note }),
       })
       const data = await res.json()
       if (data.success) {
-        await fetch('/api/version/switch-branch', {
+        await fetch(`${API_BASE}/api/version/switch-branch`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ side, version: nextInfo.next }),

@@ -28,6 +28,7 @@ import WineDetail from './pages/WineDetail'
 import FlowerProductDetail from './pages/FlowerProductDetail'
 import TravelPhoto from './pages/TravelPhoto'
 import TravelPhotoDetail from './pages/TravelPhotoDetail'
+import DomesticDestinations from './pages/DomesticDestinations'
 
 const scrollCache: Record<string, number> = {}
 
@@ -145,6 +146,17 @@ export default function App() {
     }
     setVh()
     window.addEventListener('resize', setVh)
+
+    // Capacitor App：配置状态栏并设置安全区域
+    const win = window as any
+    if (win.Capacitor) {
+      document.documentElement.classList.add('is-capacitor')
+      import('@capacitor/status-bar').then(({ StatusBar, Style }) => {
+        StatusBar.setOverlaysWebView({ overlay: true })
+        StatusBar.setStyle({ style: Style.Light })
+      }).catch(() => {})
+    }
+
     return () => window.removeEventListener('resize', setVh)
   }, [])
 
@@ -276,6 +288,7 @@ export default function App() {
         <Route path="/travel-photo/vatican" element={<TravelPhoto />} />
         <Route path="/travel-photo/monaco" element={<TravelPhoto />} />
         <Route path="/travel-photo/:slug" element={<TravelPhotoDetail />} />
+        <Route path="/domestic-destinations" element={<DomesticDestinations />} />
       </Routes>
       {/* 公共精简头部：仅在业务模块页面显示（首页/订单/管理页除外） */}
       {!['/', '/order', '/consult', '/admin', '/upload', '/login', '/register', '/agent-chat'].includes(pathname) && <AppHeader />}

@@ -204,15 +204,15 @@ export default function Home() {
   return (
     <>
       <Seo
-        title="欧洲目的地婚礼 | EuropeWedding 全程策划"
-        description="EuropeWedding 提供欧洲 12 国 50+ 城市目的地婚礼全程策划服务，涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
-        keywords="欧洲婚礼, 目的地婚礼, 海外婚礼, 婚礼策划, 意大利婚礼, 法国婚礼"
+        title="欧婚纪 · 欧洲目的地婚礼全程策划"
+        description="欧婚纪（EuropeWedding）提供欧洲 12 国 50+ 城市目的地婚礼全程策划服务，涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块一站式服务。"
+        keywords="欧婚纪, 欧洲婚礼, 目的地婚礼, 海外婚礼, 婚礼策划, 意大利婚礼, 法国婚礼"
         structuredData={[
           {
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "EuropeWedding",
-            "alternateName": "欧洲目的地婚礼",
+            "name": "欧婚纪",
+            "alternateName": "EuropeWedding",
             "url": "https://europewedding.cn",
             "logo": "https://europewedding.cn/logo.png",
             "description": "欧洲 12 国 50+ 城市目的地婚礼全程策划平台，涵盖场地甄选、婚礼团队、花卉布置、礼服定制、摄影摄像、酒水宴席六大模块。",

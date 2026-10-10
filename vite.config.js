@@ -19,6 +19,11 @@ export default defineConfig({
         ws: true,
         changeOrigin: true,
       },
+      '/xhs-mcp': {
+        target: 'http://127.0.0.1:18060',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/xhs-mcp/, ''),
+      },
     },
   },
 })

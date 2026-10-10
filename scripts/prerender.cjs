@@ -295,7 +295,7 @@ async function renderPage(browser, route) {
     // 验证 title 是否已更新（排除首页）
     if (route !== '/') {
       const currentTitle = await page.evaluate(() => document.title)
-      const defaultTitle = '欧洲目的地婚礼 | EuropeWedding 全程策划'
+      const defaultTitle = '欧婚纪 · 欧洲目的地婚礼全程策划'
       if (currentTitle === defaultTitle) {
         console.log(`\n  ⚠ ${route} title 未更新，额外等待 2s...`)
         await new Promise(r => setTimeout(r, 2000))

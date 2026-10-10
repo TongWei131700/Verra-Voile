@@ -196,7 +196,8 @@ export default function Home() {
       <h2>{m.title}</h2>
       <div className="nh-wrapper">
         <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>查看</Link>
-        <button type="button" onClick={handleConsult}>AI规划</button>
+        <button type="button" onClick={handleConsult} style={{ color: '#fff' }}>AI规划</button>
+        <Link to="/xhs-research" className="nh-cta-link" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', color: '#fff' }}>精准获客</Link>
       </div>
     </div>
   )
@@ -420,7 +421,8 @@ export default function Home() {
               <h2>{m.title}</h2>
               <div className="nh-wrapper">
                 <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>查看</Link>
-                <button type="button" onClick={handleConsult}>AI规划</button>
+                <button type="button" onClick={handleConsult} style={{ color: '#fff' }}>AI规划</button>
+                <Link to="/xhs-research" className="nh-cta-link" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', color: '#fff' }}>精准获客</Link>
               </div>
             </div>
             {idx < MODULES.length - 1 && (

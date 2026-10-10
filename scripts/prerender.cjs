@@ -56,6 +56,9 @@ async function prefetchAllData() {
   // AI Agent 聊天页面（无 API 数据，纯 SEO）
   routeMap['/agent-chat'] = []
 
+  // 精准获客 Agent（工具页面，SEO 元数据）
+  routeMap['/xhs-research'] = []
+
 
   // 目的地
   try {

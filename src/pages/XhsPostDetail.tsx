@@ -178,7 +178,39 @@ export default function XhsPostDetail() {
   useLayoutEffect(() => { window.scrollTo({ top: 0 }) }, [])
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const post = INITIAL_POSTS.find(p => p.id === id)
+
+  /* 帖子数据：从后端获取 */
+  const [post, setPost] = useState<any>(INITIAL_POSTS.find(p => p.id === id) || null)
+
+  useLayoutEffect(() => {
+    if (post) { return }
+    if (!id) return
+
+    // 从后端搜索历史中找到包含该 post 的 taskId，然后获取帖子详情
+    fetch('/api/xhs-mcp/search-history')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success || !data.history) return
+        // 在所有历史任务中查找该帖子
+        for (const h of data.history) {
+          if (h.posts?.some((p: any) => p.url?.includes(id))) {
+            // 找到包含该帖子的任务，加载完整数据
+            return fetch(`/api/xhs-mcp/search/${h.taskId}`)
+              .then(res => res.json())
+              .then(taskData => {
+                if (taskData.success && taskData.posts) {
+                  const found = taskData.posts.find((p: any) => p.id === id)
+                  if (found) {
+                    setPost(found)
+                    return
+                  }
+                }
+              })
+          }
+        }
+      })
+      .catch(err => console.error('加载帖子失败:', err))
+  }, [id, post])
 
   const [comment, setComment] = useState('')
   const [copied, setCopied] = useState<'copy' | 'comment' | null>(null)
@@ -199,12 +231,17 @@ export default function XhsPostDetail() {
   const [commentResult, setCommentResult] = useState<'idle' | 'success' | 'error'>('idle')
   const [commentMsg, setCommentMsg] = useState('')
 
+  /* AI 生成回复 */
+  const [generating, setGenerating] = useState(false)
+  const [typingCopy, setTypingCopy] = useState('')
+  const [typingComment, setTypingComment] = useState('')
+
   useLayoutEffect(() => {
     if (id && AGENT_DATA[id]) {
       setPostTitle(AGENT_DATA[id].title || '')
       setComment(AGENT_DATA[id].comment)
       setCopyText(AGENT_DATA[id].copy)
-      setSelectedSrc(AGENT_DATA[id].images)
+      // 不预加载图片，等 AI 生成后自动选择
     }
   }, [id])
 
@@ -298,6 +335,108 @@ export default function XhsPostDetail() {
       setCommentResult('error')
       setCommentMsg(e instanceof Error ? e.message : '评论失败，请检查 MCP 服务')
     } finally { setCommenting(false) }
+  }
+
+  /* AI 一键生成文案+评论 */
+  const handleGenerateAll = async () => {
+    if (!post || generating) return
+    setGenerating(true)
+    setTypingCopy('')
+    setTypingComment('')
+    setCopyText('')
+    setComment('')
+
+    try {
+      const postContext = [
+        `帖子标题: ${post.title || '(无标题)'}`,
+        `作者: ${post.author}`,
+        post.imageContent ? `帖子图片文字内容: ${post.imageContent}` : '',
+        `互动数据: ${post.likes}赞 ${post.collects}藏 ${post.comments}评`,
+      ].filter(Boolean).join('\n')
+
+      // 1. 生成文案
+      const copyPrompt = `你是「欧婚纪」的小红书内容创作者，欧婚纪主打「自由设计你的婚礼」理念，专注帮助新人定制个性化目的地婚礼。
+
+现在有一条小红书帖子：
+${postContext}
+
+请根据这条帖子，生成一篇专业的小红书笔记文案，要求：
+1. 开头先回应原帖的需求/问题，给出共鸣
+2. 分享 3-5 条专业建议或经验（干货型）
+3. 自然融入品牌（如「我们欧婚纪之前帮客户做过…」）
+4. 结尾引导互动（如「有具体日期可以帮你看看」「需要场地对比可以分享」）
+5. 语气温暖专业，像闺蜜分享经验
+6. 400-800 字，适合小红书笔记
+
+直接输出文案内容，不要加标题和前缀。`
+
+      const copyRes = await fetch('/api/agent/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: copyPrompt }),
+      })
+      const copyData = await copyRes.json()
+      if (copyData.reply) {
+        // 打字动画：逐字显示文案
+        await typeText(copyData.reply, setTypingCopy)
+        setCopyText(copyData.reply)
+      }
+
+      // 2. 生成评论
+      const commentPrompt = `你是「欧婚纪」的小红书运营，欧婚纪主打「自由设计你的婚礼」，专注目的地婚礼定制。
+
+现在有一条小红书帖子：
+${postContext}
+
+请以欧婚纪的身份生成一条评论区回复，要求：
+1. 先共情/回应对方的需求
+2. 分享 2-3 条干货建议
+3. 适当提及「欧婚纪」但不要硬广
+4. 结尾引导互动
+5. 语气像闺蜜/朋友
+6. 控制在 200 字以内
+
+直接输出回复内容。`
+
+      const commentRes = await fetch('/api/agent/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: commentPrompt }),
+      })
+      const commentData = await commentRes.json()
+      if (commentData.reply) {
+        // 打字动画：逐字显示评论
+        await typeText(commentData.reply, setTypingComment)
+        setComment(commentData.reply)
+      }
+
+      // 3. 自动选择配图
+      const pool = isIcelandPost ? IMAGE_POOL_ICELAND : IMAGE_POOL_ITALY
+      const autoImages = pool.slice(0, 6).map(img => img.src)
+      setSelectedSrc(autoImages)
+    } catch (e) {
+      console.error('AI 生成失败:', e)
+      alert('⚠️ AI 生成失败，请稍后重试')
+    } finally {
+      setGenerating(false)
+      setTypingCopy('')
+      setTypingComment('')
+    }
+  }
+
+  /* 打字动画函数 */
+  const typeText = (text: string, setter: (v: string) => void): Promise<void> => {
+    return new Promise(resolve => {
+      let i = 0
+      const interval = setInterval(() => {
+        setter(text.slice(0, i + 1))
+        i++
+        if (i >= text.length) {
+          clearInterval(interval)
+          resolve()
+        }
+      }, 30)
+    })
   }
 
   return (
@@ -464,19 +603,55 @@ export default function XhsPostDetail() {
                 fontSize: 14, color: '#333', lineHeight: 1.8,
                 whiteSpace: 'pre-wrap',
               }}>
-                {copyText}
+                {typingCopy || copyText}
+                {typingCopy && <span style={{ display: 'inline-block', width: 2, height: 16, background: '#667eea', marginLeft: 2, animation: 'blink 1s infinite', verticalAlign: 'text-bottom' }} />}
               </div>
             )
+          ) : typingCopy ? (
+            <div style={{
+              fontSize: 14, color: '#333', lineHeight: 1.8,
+              whiteSpace: 'pre-wrap',
+            }}>
+              {typingCopy}
+              <span style={{ display: 'inline-block', width: 2, height: 16, background: '#667eea', marginLeft: 2, animation: 'blink 1s infinite', verticalAlign: 'text-bottom' }} />
+            </div>
           ) : (
             <div style={{ padding: '24px 0', textAlign: 'center', color: '#ccc', fontSize: 14 }}>
               暂无 Agent 生成内容
               <br />
-              <span style={{ fontSize: 12 }}>启动 MCP 服务后，可通过 Agent API 自动生成</span>
+              <span style={{ fontSize: 12 }}>点击下方按钮，AI 将自动生成文案和评论</span>
             </div>
           )}
+          {/* ── AI 一键生成大按钮 ── */}
+          <button
+            onClick={handleGenerateAll}
+            disabled={generating}
+            style={{
+              width: '100%', padding: '18px 0', marginTop: 16,
+              borderRadius: 14, border: 'none',
+              background: generating
+                ? 'linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%)'
+                : 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ff2442 100%)',
+              color: generating ? '#999' : '#fff',
+              fontSize: 17, fontWeight: 700, letterSpacing: 2,
+              cursor: generating ? 'not-allowed' : 'pointer',
+              transition: 'all 0.3s',
+              boxShadow: generating ? 'none' : '0 4px 16px rgba(102,126,234,0.4)',
+              position: 'relative', overflow: 'hidden',
+            }}
+          >
+            {generating && (
+              <span style={{
+                position: 'absolute', top: 0, left: '-100%', width: '100%', height: '100%',
+                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                animation: 'shimmer 1.5s infinite',
+              }} />
+            )}
+            {generating ? '✨ AI 正在生成文案和评论...' : '🤖 AI 一键生成文案 + 评论'}
+          </button>
         </div>
 
-        {/* ── 精选配图（可挑选） ── */}
+        {/* ── 精选配图 ── */}
         <div style={{
           background: '#fff', borderRadius: 14, padding: '20px 24px',
           marginBottom: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
@@ -586,7 +761,8 @@ export default function XhsPostDetail() {
               </div>
             </div>
           )}
-        </div>{/* ── 精选配图结束 ── */}
+        </div>
+        {/* ── 精选配图结束 ── */}
 
         </div>{/* ── 左列结束 ── */}
 
@@ -628,18 +804,31 @@ export default function XhsPostDetail() {
               </button>
             </div>
           </div>
-          <textarea
-            value={comment}
-            onChange={e => setComment(e.target.value)}
-            placeholder="输入引流评论内容（≤300字）..."
-            style={{
+          {typingComment ? (
+            <div style={{
               width: '100%', minHeight: 140, padding: '14px 16px',
-              borderRadius: 12, border: `1px solid ${charCount > 300 ? '#ff2442' : '#e8e8e8'}`,
-              fontSize: 14, lineHeight: 1.8, resize: 'vertical',
-              outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
-              transition: 'border-color 0.2s',
-            }}
-          />
+              borderRadius: 12, border: '1px solid #667eea',
+              fontSize: 14, lineHeight: 1.8, color: '#333',
+              boxSizing: 'border-box', background: '#fafbff',
+              whiteSpace: 'pre-wrap',
+            }}>
+              {typingComment}
+              <span style={{ display: 'inline-block', width: 2, height: 16, background: '#ff2442', marginLeft: 2, animation: 'blink 1s infinite', verticalAlign: 'text-bottom' }} />
+            </div>
+          ) : (
+            <textarea
+              value={comment}
+              onChange={e => setComment(e.target.value)}
+              placeholder="输入引流评论内容（≤300字）..."
+              style={{
+                width: '100%', minHeight: 140, padding: '14px 16px',
+                borderRadius: 12, border: `1px solid ${charCount > 300 ? '#ff2442' : '#e8e8e8'}`,
+                fontSize: 14, lineHeight: 1.8, resize: 'vertical',
+                outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
+                transition: 'border-color 0.2s',
+              }}
+            />
+          )}
           {charCount > 300 && (
             <div style={{ fontSize: 12, color: '#ff2442', marginTop: 6 }}>
               ⚠ 评论超过 300 字，可能被平台折叠

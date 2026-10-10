@@ -1,5 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Seo from '../components/Seo'
 
 /* ── 类型定义 ─────────────────────────────────────────── */
 export interface XhsPost {
@@ -13,8 +14,12 @@ export interface XhsPost {
   id: string
   token: string
   url: string
+  keyword?: string
   imageContent?: string
   images?: { url: string; width: number; height: number }[]
+  isHighValue?: boolean
+  isAd?: boolean
+  taskId?: string
 }
 
 interface TagConfig {
@@ -23,60 +28,26 @@ interface TagConfig {
 }
 
 /* ── 常量 ──────────────────────────────────────────────── */
-const DEFAULT_TAGS: TagConfig[] = [
-  { name: '欧洲婚礼' },
-  { name: '意大利婚礼' },
-  { name: '目的地婚礼' },
-  { name: '法国婚礼' },
-  { name: '冰岛婚礼' },
-]
-
 const TIME_OPTIONS = [
+  { label: '不限', value: '不限' },
   { label: '一天内', value: '一天内' },
   { label: '一周内', value: '一周内' },
   { label: '半年内', value: '半年内' },
+]
+const SORT_OPTIONS = [
+  { label: '综合', value: '综合' },
+  { label: '最新', value: '最新' },
+  { label: '最多点赞', value: '最多点赞' },
+  { label: '最多评论', value: '最多评论' },
+  { label: '最多收藏', value: '最多收藏' },
+]
+const NOTE_TYPE_OPTIONS = [
   { label: '不限', value: '不限' },
+  { label: '图文', value: '图文' },
+  { label: '视频', value: '视频' },
 ]
 
-export const INITIAL_POSTS: XhsPost[] = [
-  { index: 1, title: '🇮🇸冰岛旅行结婚｜在世界尽头的婚礼', author: '莱斯利', likes: '109', collects: '35', comments: '10', shares: '0', id: '6ac639630000000018007886', token: 'ABigqD8DDLiIa7ujFGdDc1ZJ-hY2zdzV_-l8gwELj5k8Q=', url: 'https://www.xiaohongshu.com/explore/6ac639630000000018007886?xsec_token=ABigqD8DDLiIa7ujFGdDc1ZJ-hY2zdzV_-l8gwELj5k8Q=' },
-  { index: 2, title: '国庆旅游，顺便结个婚 🥹冰岛🇮🇸', author: '白1989.', likes: '7', collects: '3', comments: '2', shares: '0', id: '6ac99350000000001c02eb97', token: 'ABkN7ADd-n0hWg-QWhO1M5iH_m-utVHQ4vdLvKRU3hOn4=', url: 'https://www.xiaohongshu.com/explore/6ac99350000000001c02eb97?xsec_token=ABkN7ADd-n0hWg-QWhO1M5iH_m-utVHQ4vdLvKRU3hOn4=' },
-  { index: 3, title: '我看伦敦未必有冰岛忧郁', author: '辩日记', likes: '5', collects: '1', comments: '3', shares: '0', id: '6ac958000000000014038795', token: 'ABkN7ADd-n0hWg-QWhO1M5iNU0bODwGdTP59F4_kFJ180=', url: 'https://www.xiaohongshu.com/explore/6ac958000000000014038795?xsec_token=ABkN7ADd-n0hWg-QWhO1M5iNU0bODwGdTP59F4_kFJ180=' },
-  { index: 4, title: '要不要尝试在冰岛把誓言写下来？🇮🇸', author: 'StudioMann.', likes: '3', collects: '1', comments: '3', shares: '0', id: '6ac8f7df000000001303fefc', token: 'ABdCJmt43cSrL900-vZGGES7iMXrnCeLXsUyP0MsZpv8Y=', url: 'https://www.xiaohongshu.com/explore/6ac8f7df000000001303fefc?xsec_token=ABdCJmt43cSrL900-vZGGES7iMXrnCeLXsUyP0MsZpv8Y=' },
-  { index: 5, title: '奔赴冰岛，举行一场纯粹的教堂婚礼💒', author: 'Ice-memory冰岛婚礼&婚纱照', likes: '6', collects: '0', comments: '0', shares: '0', id: '6ac3bf6100000000120379e2', token: 'AB-zPuohPP8waD5MbQB0HoIJIHtnj_9Z6ksxWojugjDc0=', url: 'https://www.xiaohongshu.com/explore/6ac3bf6100000000120379e2?xsec_token=AB-zPuohPP8waD5MbQB0HoIJIHtnj_9Z6ksxWojugjDc0=' },
-  { index: 6, title: 'Vik 红顶教堂 彩绘的玻璃窗', author: '任蝶', likes: '2', collects: '0', comments: '2', shares: '0', id: '6ac8d49c000000001a0290af', token: 'ABdCJmt43cSrL900-vZGGES5jYXR0-0hnI2GLnS86p81o=', url: 'https://www.xiaohongshu.com/explore/6ac8d49c000000001a0290af?xsec_token=ABdCJmt43cSrL900-vZGGES5jYXR0-0hnI2GLnS86p81o=' },
-  { index: 7, title: '自己备花、自己见证｜冰岛最纯粹的婚礼', author: '中义不拍综艺', likes: '4', collects: '1', comments: '0', shares: '0', id: '6ac837990000000018017a0f', token: 'ABdCJmt43cSrL900-vZGGESxHiz_UI1EoKn8FzdB0JA64=', url: 'https://www.xiaohongshu.com/explore/6ac837990000000018017a0f?xsec_token=ABdCJmt43cSrL900-vZGGESxHiz_UI1EoKn8FzdB0JA64=' },
-  { index: 8, title: '听劝！不出片都难唉！ 🇮🇸冰岛', author: '白1989.', likes: '12', collects: '0', comments: '3', shares: '0', id: '6ac81787000000001a031d49', token: 'ABdCJmt43cSrL900-vZGGESyxzP8034w-a2TOEXBt4kdE=', url: 'https://www.xiaohongshu.com/explore/6ac81787000000001a031d49?xsec_token=ABdCJmt43cSrL900-vZGGESyxzP8034w-a2TOEXBt4kdE=' },
-  { index: 9, title: '冰岛婚礼，到世界尽头办场婚礼愿望达成', author: 'kiki暖心策划', likes: '21', collects: '3', comments: '12', shares: '0', id: '6ac7b3e20000000002010367', token: 'ABhBaZSZ8HJJ9lx1XEI1C6x2UBJHXMmnKIHzRsrqpnJgs=', url: 'https://www.xiaohongshu.com/explore/6ac7b3e20000000002010367?xsec_token=ABhBaZSZ8HJJ9lx1XEI1C6x2UBJHXMmnKIHzRsrqpnJgs=' },
-  { index: 10, title: '终于在冰岛大教堂举行了婚礼', author: 'Ice-memory冰岛婚礼&婚纱照', likes: '5', collects: '1', comments: '0', shares: '0', id: '6ac79527000000001a0201e8', token: 'ABhBaZSZ8HJJ9lx1XEI1C6x1zD0SHIIE4ejfJih_3tt9w=', url: 'https://www.xiaohongshu.com/explore/6ac79527000000001a0201e8?xsec_token=ABhBaZSZ8HJJ9lx1XEI1C6x1zD0SHIIE4ejfJih_3tt9w=' },
-  { index: 11, title: '🇲🇾JB备婚ING｜婚宴 vs 冰岛＋瑞士 🇮🇸🇨🇭', author: '小红帽坐飞机', likes: '75', collects: '24', comments: '66', shares: '0', id: '6ac77fd6000000001901e0e0', token: 'ABhBaZSZ8HJJ9lx1XEI1C6x8baeZSpEr6sOHVVIIUElBU=', url: 'https://www.xiaohongshu.com/explore/6ac77fd6000000001901e0e0?xsec_token=ABhBaZSZ8HJJ9lx1XEI1C6x8baeZSpEr6sOHVVIIUElBU=' },
-  { index: 12, title: '想去冰岛拍婚纱，有人少一点的景点吗', author: '来杯地铁', likes: '5', collects: '2', comments: '4', shares: '0', id: '6ac913c20000000018039862', token: 'ABkN7ADd-n0hWg-QWhO1M5iA7dAFSL904Jhq9krRAZrhA=', url: 'https://www.xiaohongshu.com/explore/6ac913c20000000018039862?xsec_token=ABkN7ADd-n0hWg-QWhO1M5iA7dAFSL904Jhq9krRAZrhA=' },
-  { index: 13, title: '婚礼花絮｜如果冰岛是一块大蛋糕', author: '啤酒座的丸子婚礼策划', likes: '13', collects: '5', comments: '3', shares: '0', id: '6ac7a6630000000015013f81', token: 'ABhBaZSZ8HJJ9lx1XEI1C6x57_-Rudyu6_bydx3qXdQuI=', url: 'https://www.xiaohongshu.com/explore/6ac7a6630000000015013f81?xsec_token=ABhBaZSZ8HJJ9lx1XEI1C6x57_-Rudyu6_bydx3qXdQuI=' },
-  { index: 14, title: '冰岛求婚成功！还收到了彩虹的祝福！', author: '八萬Hachi', likes: '14', collects: '0', comments: '2', shares: '0', id: '6ac74f6d000000001402d25f', token: 'ABhBaZSZ8HJJ9lx1XEI1C6xzP-futhMgmZ9DHOdCT_r_c=', url: 'https://www.xiaohongshu.com/explore/6ac74f6d000000001402d25f?xsec_token=ABhBaZSZ8HJJ9lx1XEI1C6xzP-futhMgmZ9DHOdCT_r_c=' },
-  { index: 15, title: '今日礼成', author: 'GEO-MHT', likes: '88', collects: '3', comments: '41', shares: '0', id: '6ac519340000000014039011', token: 'ABb609-ziSHaKGjzQwhQCrPUQlMVK0x0xkCeh9JsbvAh8=', url: 'https://www.xiaohongshu.com/explore/6ac519340000000014039011?xsec_token=ABb609-ziSHaKGjzQwhQCrPUQlMVK0x0xkCeh9JsbvAh8=' },
-  { index: 16, title: '感\u202e十谢\u202c月', author: '无聊就买早餐', likes: '2', collects: '0', comments: '0', shares: '0', id: '6ac25b5f000000001a029537', token: 'ABKJJn_xOkqbux_i3mH1dCgkIQA___1kty-e2yCZIJiPU=', url: 'https://www.xiaohongshu.com/explore/6ac25b5f000000001a029537?xsec_token=ABKJJn_xOkqbux_i3mH1dCgkIQA___1kty-e2yCZIJiPU=' },
-  { index: 17, title: '我要去参加橹穆的婚礼了', author: '豚馒许愿屋', likes: '108', collects: '1', comments: '76', shares: '0', id: '6ac2586d000000001b02e7b7', token: 'ABKJJn_xOkqbux_i3mH1dCgjU6uh2NXMubzvwrioZ-BkY=', url: 'https://www.xiaohongshu.com/explore/6ac2586d000000001b02e7b7?xsec_token=ABKJJn_xOkqbux_i3mH1dCgjU6uh2NXMubzvwrioZ-BkY=' },
-  { index: 18, title: '(无标题)', author: '田夏哇倒立', likes: '7', collects: '2', comments: '1', shares: '0', id: '6ac250d4000000001203e382', token: 'ABKJJn_xOkqbux_i3mH1dCgkd5CaJggyrp09OC-QuPU8o=', url: 'https://www.xiaohongshu.com/explore/6ac250d4000000001203e382?xsec_token=ABKJJn_xOkqbux_i3mH1dCgkd5CaJggyrp09OC-QuPU8o=' },
-  { index: 19, title: '好喜欢！在冰岛拍到了人生婚纱照💍（ccd版）', author: 'QueenQueen来了', likes: '168', collects: '13', comments: '19', shares: '0', id: '6ac11a76000000000a01c870', token: 'ABW-EX_eYjn1tzylVLmkyjwaPEjNjUFRRPsfB9RdAT2Qs=', url: 'https://www.xiaohongshu.com/explore/6ac11a76000000000a01c870?xsec_token=ABW-EX_eYjn1tzylVLmkyjwaPEjNjUFRRPsfB9RdAT2Qs=' },
-  { index: 20, title: '想找冰岛婚纱摄影师～有没有推荐的呀～一月中旬刚好去冰岛想找一天去拍照～我需要有服装和装饰', author: '小红书用户', likes: '0', collects: '0', comments: '0', shares: '0', id: 'xhs-iceland-photo-jan', token: '', url: '', imageContent: '想找冰岛婚纱摄影师～有没有推荐的呀～一月中旬刚好去冰岛想找一天去拍照～我需要有服装和装饰' },
-]
-
-/* ── MCP API 调用 ──────────────────────────────────────── */
-async function mcpCall(tool: string, args: Record<string, unknown>) {
-  const res = await fetch('/xhs-mcp/mcp', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      method: 'tools/call',
-      params: { name: tool, arguments: args },
-      id: 1,
-    }),
-  })
-  const data = await res.json()
-  const text = data?.result?.content?.[0]?.text
-  return text ? JSON.parse(text) : null
-}
+export const INITIAL_POSTS: XhsPost[] = []
 
 /* ── 展开面板组件 ──────────────────────────────────────── */
 function ExpandedPanel({ post, isExtracting, onSaveContent }: {
@@ -135,82 +106,462 @@ export default function XhsResearch() {
 
   /* 状态 */
   const [posts, setPosts] = useState<XhsPost[]>(INITIAL_POSTS)
-  const [tags, setTags] = useState<TagConfig[]>(() => {
-    try {
-      const saved = localStorage.getItem('xhs-tags')
-      return saved ? JSON.parse(saved) : DEFAULT_TAGS
-    } catch { return DEFAULT_TAGS }
-  })
-  const [activeTag, setActiveTag] = useState(0)
+  const [tags, setTags] = useState<TagConfig[]>([])
+  const [activeTag, setActiveTag] = useState(-1)
   const [timePeriod, setTimePeriod] = useState('一周内')
+  const [sortBy, setSortBy] = useState('综合')
+  const [noteType, setNoteType] = useState('不限')
   const [searching, setSearching] = useState(false)
-  const [lastSearch, setLastSearch] = useState('2026-10-09')
+  const [searchProgress, setSearchProgress] = useState({ current: 0, total: 0, keyword: '' })
+  const [lastSearch, setLastSearch] = useState('')
+  const [currentTaskId, setCurrentTaskId] = useState('')
+  const [aiAnalyzing, setAiAnalyzing] = useState(false)
+  const [aiStats, setAiStats] = useState<{ highValue: number; ad: number; normal: number } | null>(null)
   const [expandedPost, setExpandedPost] = useState<number | null>(null)
   const [extracting, setExtracting] = useState<Set<number>>(new Set())
   const [newTag, setNewTag] = useState('')
   const [showAddTag, setShowAddTag] = useState(false)
+  const [accountInfo, setAccountInfo] = useState<{ nickname: string; userId: string } | null>(null)
+  const [checkingLogin, setCheckingLogin] = useState(false)
+  const [loggingIn, setLoggingIn] = useState(false)
+  const [searchHistory, setSearchHistory] = useState<Array<{
+    id: string
+    time: string
+    tags: string[]
+    timePeriod: string
+    filters?: { publish_time: string; sort_by: string; note_type: string }
+    count: number
+    posts: Array<{ title: string; url: string }>
+    taskId?: string
+  }>>([])
 
-  /* 持久化标签 */
+  /* 加载标签和搜索历史（从后端） */
   useEffect(() => {
-    localStorage.setItem('xhs-tags', JSON.stringify(tags))
+    // 加载标签
+    fetch('/api/xhs-mcp/tags')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.tags?.length) {
+          setTags(data.tags.map((t: any) => ({ name: t.name, custom: true })))
+        }
+      })
+      .catch(() => {})
+
+    // 加载搜索历史
+    fetch('/api/xhs-mcp/search-history')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setSearchHistory(data.history || [])
+      })
+      .catch(() => {})
+  }, [])
+
+  /* 标签变更时保存到后端 */
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetch('/api/xhs-mcp/tags', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tags: tags.map(t => t.name) }),
+      }).catch(() => {})
+    }, 500)
+    return () => clearTimeout(timer)
   }, [tags])
 
-  /* 搜索 */
+  /* 检查登录状态 */
+  useEffect(() => {
+    const checkLogin = async () => {
+      setCheckingLogin(true)
+      try {
+        const res = await fetch('/api/xhs-mcp/status')
+        const data = await res.json()
+        if (data.loggedIn) {
+          setAccountInfo({
+            nickname: data.nickname || '未知用户',
+            userId: '',
+          })
+        }
+      } catch (e) {
+        console.error('检查登录状态失败:', e)
+      } finally {
+        setCheckingLogin(false)
+      }
+    }
+    checkLogin()
+  }, [])
+
+  /* 登出 - 一键完全清理 */
+  const handleLogout = async () => {
+    const confirmMsg = `确定要完全登出当前账号吗？
+
+此操作将：
+1. 清除 MCP 服务的登录态
+2. 停止 MCP 服务进程
+3. 删除所有 Cookie 文件
+
+登出后需要重新扫码登录。`
+    
+    if (!window.confirm(confirmMsg)) return
+    
+    try {
+      const res = await fetch('/api/xhs-mcp/logout', {
+        method: 'POST',
+      })
+      const data = await res.json()
+      
+      if (data.success) {
+        setAccountInfo(null)
+        alert('✅ ' + data.message)
+      } else {
+        alert('⚠️ 登出失败: ' + data.message)
+      }
+    } catch (e) {
+      console.error('登出失败:', e)
+      alert('⚠️ 登出失败，请检查后端服务是否运行')
+    }
+  }
+
+  /* 登录 - 一键启动登录工具 */
+  const handleLogin = async () => {
+    setLoggingIn(true)
+    try {
+      // 1. 调用后端 API 启动登录工具
+      const res = await fetch('/api/xhs-mcp/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ account: 'A' }),
+      })
+      const data = await res.json()
+      
+      if (!data.success) {
+        alert('⚠️ ' + data.message)
+        setLoggingIn(false)
+        return
+      }
+      
+      // 2. 提示用户扫码
+      alert('🔍 浏览器已弹出二维码，请用小红书 App 扫码登录\n\n扫码完成后点击确定')
+      
+      // 3. 等待用户确认扫码后，启动 MCP 服务
+      const startRes = await fetch('/api/xhs-mcp/start-service', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ account: 'A' }),
+      })
+      const startData = await startRes.json()
+      
+      if (startData.success) {
+        // 4. 轮询检查登录状态（最多等待 15 秒）
+        let loggedIn = false
+        for (let i = 0; i < 5; i++) {
+          await new Promise(resolve => setTimeout(resolve, 3000))
+          try {
+            const statusRes = await fetch('/api/xhs-mcp/status')
+            const statusData = await statusRes.json()
+            
+            if (statusData.loggedIn) {
+              setAccountInfo({
+                nickname: statusData.nickname || '未知用户',
+                userId: '',
+              })
+              alert('✅ 登录成功！欢迎 ' + statusData.nickname)
+              loggedIn = true
+              break
+            }
+          } catch (e) {
+            // 继续重试
+          }
+        }
+        
+        if (!loggedIn) {
+          alert('⚠️ 服务已启动，但未检测到登录态\n\n可能原因：\n1. 扫码未完成或已过期\n2. MCP 服务启动较慢\n\n请刷新页面重试，或手动检查 MCP 服务状态')
+        }
+      } else {
+        alert('⚠️ ' + startData.message)
+      }
+    } catch (e) {
+      console.error('登录失败:', e)
+      alert('⚠️ 登录失败，请检查后端服务是否运行')
+    } finally {
+      setLoggingIn(false)
+    }
+  }
+
+  /* 搜索 - 异步任务模式：POST 创建任务 → 轮询结果 */
   const handleSearch = useCallback(async () => {
     setSearching(true)
+    const tagsToSearch = activeTag === -1 ? tags : [tags[activeTag]]
+    setSearchProgress({ current: 0, total: tagsToSearch.length, keyword: '' })
+
     try {
-      const result = await mcpCall('search_feeds', {
-        keyword: tags[activeTag].name,
-        filters: { publish_time: timePeriod },
+      // 1. 创建搜索任务
+      const res = await fetch('/api/xhs-mcp/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tags: tagsToSearch.map(t => t.name),
+          timePeriod,
+          sortBy,
+          noteType,
+        }),
       })
-      if (result?.feeds?.length) {
-        const mapped: XhsPost[] = result.feeds.map((f: any, i: number) => {
-          const nc = f.noteCard || f
-          const info = nc.interactInfo || {}
-          return {
-            index: i + 1,
-            title: nc.displayTitle || nc.title || '(无标题)',
-            author: nc.user?.nickname || '',
-            likes: info.likedCount || '0',
-            collects: info.collectedCount || '0',
-            comments: info.commentCount || '0',
-            shares: info.shareCount || '0',
-            id: f.feed_id || nc.noteId || '',
-            token: nc.xsecToken || '',
-            url: f.feed_id
-              ? `https://www.xiaohongshu.com/explore/${f.feed_id}?xsec_token=${nc.xsecToken || ''}`
-              : '',
+      const data = await res.json()
+      if (!data.success || !data.taskId) {
+        alert('⚠️ 创建搜索任务失败: ' + (data.message || '未知错误'))
+        setSearching(false)
+        return
+      }
+
+      const taskId = data.taskId
+
+      // 2. 轮询任务状态（每 2 秒一次）
+      let done = false
+      let attempts = 0
+      const maxAttempts = 150 // 最多等待 5 分钟
+
+      while (!done && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        attempts++
+
+        try {
+          const statusRes = await fetch(`/api/xhs-mcp/search/${taskId}`)
+          const statusData = await statusRes.json()
+
+          if (!statusData.success) {
+            console.error('轮询失败:', statusData.message)
+            continue
           }
-        })
-        setPosts(mapped)
-        setExpandedPost(null)
-        setLastSearch(new Date().toLocaleDateString('zh-CN'))
+
+          // 更新进度
+          if (statusData.progress) {
+            setSearchProgress({
+              current: statusData.progress.current,
+              total: statusData.progress.total,
+              keyword: statusData.progress.keyword,
+            })
+          }
+
+          // 任务完成
+          if (statusData.status === 'done') {
+            done = true
+            const postsData = statusData.posts || []
+            const mapped: XhsPost[] = postsData.map((p: any, idx: number) => ({
+              index: idx + 1,
+              title: p.title,
+              author: p.author,
+              likes: p.likes,
+              collects: p.collects,
+              comments: p.comments,
+              shares: p.shares,
+              id: p.id,
+              token: p.token || '',
+              url: p.url || '',
+              keyword: p.keyword,
+              imageContent: p.imageContent || '',
+              images: p.images || [],
+              isHighValue: p.isHighValue,
+              isAd: p.isAd,
+              taskId,
+            }))
+
+            setPosts(mapped)
+            setExpandedPost(null)
+            setLastSearch(new Date().toLocaleDateString('zh-CN'))
+            setCurrentTaskId(taskId)
+            setAiStats(null)
+
+            // 加载搜索历史
+            try {
+              const histRes = await fetch('/api/xhs-mcp/search-history')
+              const histData = await histRes.json()
+              if (histData.success) setSearchHistory(histData.history)
+            } catch {}
+
+            // 自动触发 AI 高价值分析
+            setAiAnalyzing(true)
+            setTimeout(() => {
+              fetch('/api/xhs-mcp/analyze-high-value', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ taskId }),
+              })
+                .then(res => res.json())
+                .then(aiData => {
+                  if (aiData.success) {
+                    setAiStats(aiData.stats)
+                    // 重新加载帖子获取最新分类
+                    fetch(`/api/xhs-mcp/search/${taskId}`)
+                      .then(r => r.json())
+                      .then(reload => {
+                        if (reload.success && reload.status === 'done' && reload.posts) {
+                          const remapped: XhsPost[] = reload.posts.map((p: any, idx: number) => ({
+                            index: idx + 1, title: p.title, author: p.author,
+                            likes: p.likes, collects: p.collects, comments: p.comments, shares: p.shares,
+                            id: p.id, token: p.token || '', url: p.url || '', keyword: p.keyword,
+                            imageContent: p.imageContent || '', images: p.images || [],
+                            isHighValue: p.isHighValue, isAd: p.isAd, taskId,
+                          }))
+                          setPosts(remapped)
+                        }
+                      })
+                  }
+                })
+                .catch(() => {})
+                .finally(() => setAiAnalyzing(false))
+            }, 500)
+          }
+
+          // 任务失败
+          if (statusData.status === 'failed') {
+            done = true
+            alert('⚠️ 搜索失败: ' + (statusData.error || '未知错误'))
+          }
+        } catch (e) {
+          console.error('轮询出错:', e)
+        }
+      }
+
+      if (!done) {
+        alert('⚠️ 搜索超时，请稍后查看结果')
       }
     } catch (e) {
       console.error('搜索失败:', e)
+      alert('⚠️ 搜索失败，请检查后端服务')
     } finally {
       setSearching(false)
+      setSearchProgress({ current: 0, total: 0, keyword: '' })
     }
-  }, [tags, activeTag, timePeriod])
+  }, [tags, activeTag, timePeriod, sortBy, noteType])
 
-  /* 提取图片内容 */
+  /* 点击历史记录：加载该任务的完整结果 */
+  const handleLoadHistory = useCallback(async (taskId: string) => {
+    if (!taskId) {
+      alert('⚠️ 该历史记录没有关联任务ID，无法加载完整结果')
+      return
+    }
+    setSearching(true)
+    setSearchProgress({ current: 0, total: 0, keyword: '加载中...' })
+    try {
+      const res = await fetch(`/api/xhs-mcp/search/${taskId}`)
+      const data = await res.json()
+      if (!data.success) {
+        alert('⚠️ 加载失败: ' + (data.message || '未知错误'))
+        return
+      }
+      if (data.status === 'done' && data.posts) {
+        const mapped: XhsPost[] = data.posts.map((p: any, idx: number) => ({
+          index: idx + 1,
+          title: p.title,
+          author: p.author,
+          likes: p.likes,
+          collects: p.collects,
+          comments: p.comments,
+          shares: p.shares,
+          id: p.id,
+          token: p.token || '',
+          url: p.url || '',
+          keyword: p.keyword,
+          imageContent: p.imageContent || '',
+          images: p.images || [],
+          isHighValue: p.isHighValue,
+          isAd: p.isAd,
+          taskId,
+        }))
+        setPosts(mapped)
+        setExpandedPost(null)
+        setCurrentTaskId(taskId)
+        setAiStats(null)
+      } else if (data.status === 'running') {
+        alert('⚠️ 该搜索任务还在执行中，请稍后再试')
+      } else {
+        alert('⚠️ 该任务状态为: ' + data.status)
+      }
+    } catch (e) {
+      console.error('加载历史记录失败:', e)
+      alert('⚠️ 加载失败，请检查后端服务')
+    } finally {
+      setSearching(false)
+      setSearchProgress({ current: 0, total: 0, keyword: '' })
+    }
+  }, [])
+
+  /* AI 分析高价值帖子 - 调用 LLM 语义判断 */
+  const handleAnalyzeAI = useCallback(async () => {
+    if (!currentTaskId) {
+      alert('⚠️ 请先搜索或加载历史记录')
+      return
+    }
+    setAiAnalyzing(true)
+    try {
+      const res = await fetch('/api/xhs-mcp/analyze-high-value', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskId: currentTaskId }),
+      })
+      const data = await res.json()
+      if (!data.success) {
+        alert('⚠️ AI 分析失败: ' + (data.message || '未知错误'))
+        return
+      }
+      setAiStats(data.stats)
+      alert(`✅ AI 分析完成！\n\n🔴 高价值询盘帖: ${data.stats.highValue} 条\n⚪ 广告/营销帖: ${data.stats.ad} 条\n🔵 普通帖: ${data.stats.normal} 条\n\n页面将刷新显示最新分类结果。`)
+
+      // 重新加载当前任务的帖子（获取最新分类）
+      const reloadRes = await fetch(`/api/xhs-mcp/search/${currentTaskId}`)
+      const reloadData = await reloadRes.json()
+      if (reloadData.success && reloadData.status === 'done' && reloadData.posts) {
+        const mapped: XhsPost[] = reloadData.posts.map((p: any, idx: number) => ({
+          index: idx + 1,
+          title: p.title,
+          author: p.author,
+          likes: p.likes,
+          collects: p.collects,
+          comments: p.comments,
+          shares: p.shares,
+          id: p.id,
+          token: p.token || '',
+          url: p.url || '',
+          keyword: p.keyword,
+          imageContent: p.imageContent || '',
+          images: p.images || [],
+          isHighValue: p.isHighValue,
+          isAd: p.isAd,
+          taskId: currentTaskId,
+        }))
+        setPosts(mapped)
+      }
+    } catch (e) {
+      console.error('AI 分析失败:', e)
+      alert('⚠️ AI 分析失败，请检查后端服务')
+    } finally {
+      setAiAnalyzing(false)
+    }
+  }, [currentTaskId])
+
+  /* 提取图片内容 - 通过后端 API 调用 MCP */
   const handleExtract = useCallback(async (post: XhsPost) => {
     if (extracting.has(post.index)) return
     setExtracting(prev => new Set(prev).add(post.index))
     try {
-      const detail = await mcpCall('get_feed_detail', {
-        feed_id: post.id,
-        xsec_token: post.token,
+      // 调用后端代理 MCP get_feed_detail
+      const res = await fetch('/api/xhs-mcp/feed-detail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ feed_id: post.id, xsec_token: post.token }),
       })
-      const note = detail?.data?.note
-      const imgs = note?.imageList?.map((img: any) => ({
-        url: img.urlDefault || img.urlPre || '',
-        width: img.width || 0,
-        height: img.height || 0,
-      })) || []
-      setPosts(prev => prev.map(p =>
-        p.index === post.index ? { ...p, images: imgs } : p
-      ))
+      const data = await res.json()
+      if (data.success && data.images) {
+        const imgs = data.images
+        // 保存图片到后端
+        await fetch(`/api/xhs-mcp/posts/${post.id}/images`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ images: imgs, taskId: post.taskId }),
+        })
+        setPosts(prev => prev.map(p =>
+          p.index === post.index ? { ...p, images: imgs } : p
+        ))
+      }
     } catch (e) {
       console.error('提取失败:', e)
     } finally {
@@ -218,12 +569,23 @@ export default function XhsResearch() {
     }
   }, [extracting])
 
-  /* 保存图片文字 */
-  const handleSaveContent = useCallback((idx: number, content: string) => {
+  /* 保存图片文字 - 存储到后端 */
+  const handleSaveContent = useCallback(async (idx: number, content: string) => {
     setPosts(prev => prev.map(p =>
       p.index === idx ? { ...p, imageContent: content } : p
     ))
-  }, [])
+    // 异步保存到后端
+    const post = posts.find(p => p.index === idx)
+    if (post) {
+      try {
+        await fetch(`/api/xhs-mcp/posts/${post.id}/image-content`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageContent: content, taskId: post.taskId }),
+        })
+      } catch {}
+    }
+  }, [posts])
 
   /* 标签管理 */
   const addTag = () => {
@@ -241,11 +603,84 @@ export default function XhsResearch() {
     }
   }
 
-  /* 高价值帖子判定 */
-  const INQUIRY_KW = ['求推荐', '推荐一下', '寻找', '有没有', '求助', '求姐妹', '能接', '来聊', '预算', '多少钱']
-  const isHighValue = (p: XhsPost) =>
-    !!p.imageContent || !p.title || p.title === '(无标题)' ||
-    INQUIRY_KW.some(kw => p.title.includes(kw))
+  /* 帖子卡片渲染函数 */
+  const renderPostCard = (post: XhsPost) => {
+    const isExpanded = expandedPost === post.index
+    const isExtracting = extracting.has(post.index)
+    const hasImages = post.images && post.images.length > 0
+
+    return (
+      <div
+        key={post.id || post.index}
+        onClick={() => post.id && navigate(`/xhs-post/${post.id}`)}
+        style={{
+          background: '#fff', borderRadius: 14, overflow: 'hidden',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+          border: isHighValue(post)
+            ? '1px solid rgba(255,36,66,0.12)'
+            : '1px solid rgba(0,0,0,0.04)',
+          cursor: 'pointer',
+        }}>
+        <div style={{ padding: '14px 18px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 12, fontWeight: 700, marginTop: 2,
+            background: 'linear-gradient(135deg, #ff2442, #ff6b81)',
+            color: '#fff',
+          }}>{post.index}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              {isHighValue(post) && (
+                <span style={{
+                  fontSize: 10, fontWeight: 600, color: '#ff2442',
+                  background: '#fff0f3', padding: '2px 6px', borderRadius: 4,
+                }}>询盘</span>
+              )}
+              <h3 style={{
+                fontSize: 14, fontWeight: 600, color: '#1a1a1a', margin: 0,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>{post.title}</h3>
+            </div>
+            <div style={{ fontSize: 12, color: '#999', marginBottom: 6 }}>@{post.author}</div>
+            {post.imageContent && (
+              <div style={{
+                padding: '8px 12px', marginBottom: 6,
+                background: 'linear-gradient(135deg, #fff5f5 0%, #fff0f6 100%)',
+                borderRadius: 8, borderLeft: '3px solid #ff2442',
+                fontSize: 13, color: '#333', lineHeight: 1.7,
+              }}>
+                <div style={{ fontSize: 10, color: '#ff2442', fontWeight: 600, marginBottom: 2, letterSpacing: 1 }}>图片文字内容</div>
+                {post.imageContent}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 12, fontSize: 12, color: '#bbb' }}>
+              <span>❤ {post.likes}</span><span>⭐ {post.collects}</span>
+              <span>💬 {post.comments}</span><span>↗ {post.shares}</span>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+            <button onClick={(e) => { e.stopPropagation(); setExpandedPost(post.index); handleExtract(post) }} style={{
+              padding: '5px 10px', borderRadius: 8, fontSize: 11,
+              border: '1px solid #ffe0e6', background: '#fff5f7',
+              color: '#ff2442', cursor: 'pointer',
+            }}>提取图片</button>
+            <a href={post.url} target="_blank" rel="noopener noreferrer" style={{
+              padding: '5px 10px', borderRadius: 8, fontSize: 11,
+              border: '1px solid #eee', background: '#fafafa',
+              color: '#999', textDecoration: 'none', textAlign: 'center',
+            }}>原帖 ↗</a>
+          </div>
+        </div>
+        {isExpanded && (
+          <ExpandedPanel post={post} isExtracting={isExtracting} onSaveContent={(c) => handleSaveContent(post.index, c)} />
+        )}
+      </div>
+    )
+  }
+
+  /* 高价值帖子（后端已标记） */
+  const isHighValue = (p: XhsPost) => p.isHighValue === true
   const highValuePosts = posts.filter(isHighValue)
 
   /* 总互动数 */
@@ -255,8 +690,42 @@ export default function XhsResearch() {
 
   /* ── 渲染 ──────────────────────────────────────────── */
   return (
+    <>
+    <Seo
+      title="精准获客 Agent · 小红书智能引流 - 欧婚纪"
+      description="欧婚纪精准获客 Agent，AI 智能分析小红书询盘帖子，自动生成专业回复文案和引流评论，帮助婚礼策划品牌精准获取客户。一键生成文案+配图+评论，高效引流。"
+      keywords="小红书引流, 精准获客, AI 营销, 婚礼策划, 目的地婚礼, 欧婚纪, 智能客服, 社交媒体营销"
+      structuredData={[
+        {
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: '精准获客 Agent',
+          applicationCategory: 'BusinessApplication',
+          operatingSystem: 'Web',
+          description: 'AI 智能分析小红书询盘帖，自动生成专业回复文案和引流评论',
+          provider: {
+            '@type': 'Organization',
+            name: '欧婚纪 EuropeWedding',
+            url: 'https://www.europewedding.cn',
+          },
+        },
+      ]}
+    />
     <div style={{ minHeight: '100vh', background: '#f5f5f7', paddingTop: 32, paddingBottom: 80 }}>
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 20px' }}>
+
+        {/* ── 返回按钮 ── */}
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: 'none', border: 'none', padding: '8px 0',
+            fontSize: 14, color: '#999', cursor: 'pointer', marginBottom: 12,
+          }}
+        >
+          <span style={{ fontSize: 18 }}>←</span>
+          返回
+        </button>
 
         {/* ── 标题区 ── */}
         <div style={{ marginBottom: 28 }}>
@@ -269,13 +738,78 @@ export default function XhsResearch() {
             }}>
               研
             </div>
-            <div>
+            <div style={{ flex: 1 }}>
               <h1 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', margin: 0, lineHeight: 1.3 }}>
                 精准获客Agent
               </h1>
               <p style={{ fontSize: 12, color: '#999', margin: 0 }}>
                 社交平台监控 · 询盘挖掘 · 智能应答
               </p>
+            </div>
+            {/* 账号状态 */}
+            <div style={{
+              padding: '8px 16px', borderRadius: 12,
+              background: accountInfo ? '#f0fdf4' : '#fef2f2',
+              border: `1px solid ${accountInfo ? '#bbf7d0' : '#fecaca'}`,
+              display: 'flex', alignItems: 'center', gap: 10,
+            }}>
+              {checkingLogin ? (
+                <>
+                  <span style={{
+                    display: 'inline-block', width: 14, height: 14,
+                    border: '2px solid #e5e7eb', borderTopColor: '#ff2442',
+                    borderRadius: '50%', animation: 'spin 0.8s linear infinite',
+                  }} />
+                  <span style={{ fontSize: 12, color: '#666' }}>检查中...</span>
+                </>
+              ) : accountInfo ? (
+                <>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#166534' }}>
+                      ✓ {accountInfo.nickname}
+                    </div>
+                    <div style={{ fontSize: 10, color: '#16a34a' }}>账号 A · 搜索+评论</div>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    style={{
+                      padding: '4px 10px', borderRadius: 6, border: '1px solid #fecaca',
+                      background: '#fff', fontSize: 11, color: '#dc2626', cursor: 'pointer',
+                      fontWeight: 500,
+                    }}
+                  >
+                    登出
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span style={{ fontSize: 12, color: '#dc2626', fontWeight: 500 }}>
+                    ✗ 未登录
+                  </span>
+                  <button
+                    onClick={handleLogin}
+                    disabled={loggingIn}
+                    style={{
+                      padding: '4px 12px', borderRadius: 6, border: 'none',
+                      background: loggingIn ? '#ccc' : 'linear-gradient(135deg, #ff2442 0%, #ff6b81 100%)',
+                      fontSize: 11, color: '#fff', cursor: loggingIn ? 'wait' : 'pointer',
+                      fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4,
+                    }}
+                  >
+                    {loggingIn ? (
+                      <>
+                        <span style={{
+                          display: 'inline-block', width: 10, height: 10,
+                          border: '1.5px solid rgba(255,255,255,0.3)',
+                          borderTopColor: '#fff', borderRadius: '50%',
+                          animation: 'spin 0.8s linear infinite',
+                        }} />
+                        登录中...
+                      </>
+                    ) : '登录'}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -290,6 +824,20 @@ export default function XhsResearch() {
             订阅标签
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+            <div
+              onClick={() => setActiveTag(-1)}
+              style={{
+                padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 500,
+                cursor: 'pointer', transition: 'all 0.2s',
+                background: activeTag === -1
+                  ? 'linear-gradient(135deg, #ff2442 0%, #ff4d6a 100%)'
+                  : '#f5f5f7',
+                color: activeTag === -1 ? '#fff' : '#555',
+                border: activeTag === -1 ? '1px solid transparent' : '1px solid #e8e8e8',
+              }}
+            >
+              全选
+            </div>
             {tags.map((tag, i) => (
               <div
                 key={tag.name}
@@ -364,70 +912,218 @@ export default function XhsResearch() {
           </div>
         </div>
 
-        {/* ── 时间筛选 + 搜索 ── */}
+        {/* ── 筛选条件 ── */}
         <div style={{
-          background: '#fff', borderRadius: 14, padding: '14px 20px',
-          marginBottom: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+          background: '#fff', borderRadius: 14, padding: '16px 20px',
+          marginBottom: 12, boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
           border: '1px solid rgba(0,0,0,0.04)',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: 10,
+          display: 'flex', flexDirection: 'column', gap: 14,
         }}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {TIME_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => setTimePeriod(opt.value)}
-                style={{
-                  padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 500,
+          {/* 时间 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ fontSize: 11, color: '#999', fontWeight: 500, minWidth: 48 }}>时间</div>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+              {TIME_OPTIONS.map(opt => (
+                <button key={opt.value} onClick={() => setTimePeriod(opt.value)} style={{
+                  padding: '8px 14px', borderRadius: 14, fontSize: 11, fontWeight: 500,
                   border: 'none', cursor: 'pointer', transition: 'all 0.2s',
                   background: timePeriod === opt.value ? '#1a1a1a' : '#f5f5f7',
                   color: timePeriod === opt.value ? '#fff' : '#666',
-                }}
-              >
-                {opt.label}
-              </button>
-            ))}
+                }}>{opt.label}</button>
+              ))}
+            </div>
           </div>
-          <button
-            onClick={handleSearch}
-            disabled={searching}
-            style={{
-              padding: '8px 24px', borderRadius: 20, border: 'none',
-              background: searching
-                ? '#ccc'
-                : 'linear-gradient(135deg, #ff2442 0%, #ff6b81 100%)',
-              color: '#fff', fontSize: 13, fontWeight: 600, cursor: searching ? 'wait' : 'pointer',
-              transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 6,
-            }}
-          >
-            {searching ? (
-              <>
-                <span style={{
-                  display: 'inline-block', width: 14, height: 14,
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  borderTopColor: '#fff', borderRadius: '50%',
-                  animation: 'spin 0.8s linear infinite',
-                }} />
-                搜索中...
-              </>
-            ) : '搜索'}
-          </button>
+          {/* 排序 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ fontSize: 11, color: '#999', fontWeight: 500, minWidth: 48 }}>排序</div>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+              {SORT_OPTIONS.map(opt => (
+                <button key={opt.value} onClick={() => setSortBy(opt.value)} style={{
+                  padding: '8px 14px', borderRadius: 14, fontSize: 11, fontWeight: 500,
+                  border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                  background: sortBy === opt.value ? '#1a1a1a' : '#f5f5f7',
+                  color: sortBy === opt.value ? '#fff' : '#666',
+                }}>{opt.label}</button>
+              ))}
+            </div>
+          </div>
+          {/* 笔记类型 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ fontSize: 11, color: '#999', fontWeight: 500, minWidth: 48 }}>类型</div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {NOTE_TYPE_OPTIONS.map(opt => (
+                <button key={opt.value} onClick={() => setNoteType(opt.value)} style={{
+                  padding: '8px 14px', borderRadius: 14, fontSize: 11, fontWeight: 500,
+                  border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                  background: noteType === opt.value ? '#1a1a1a' : '#f5f5f7',
+                  color: noteType === opt.value ? '#fff' : '#666',
+                }}>{opt.label}</button>
+              ))}
+            </div>
+            {(sortBy !== '综合' || noteType !== '不限') && (
+              <button onClick={() => { setSortBy('综合'); setNoteType('不限') }} style={{
+                padding: '3px 8px', borderRadius: 10, fontSize: 10, fontWeight: 500,
+                border: '1px solid #e5e5e5', background: '#fff', color: '#999', cursor: 'pointer',
+                marginLeft: 'auto',
+              }}>重置筛选</button>
+            )}
+          </div>
         </div>
+
+        {/* ── 搜索按钮 ── */}
+        <button
+          onClick={handleSearch}
+          disabled={searching}
+          style={{
+            width: '100%', padding: '14px 24px', borderRadius: 14, border: 'none',
+            background: searching
+              ? '#ccc'
+              : 'linear-gradient(135deg, #ff2442 0%, #ff6b81 100%)',
+            color: '#fff', fontSize: 15, fontWeight: 700, cursor: searching ? 'wait' : 'pointer',
+            transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            marginBottom: 20, boxShadow: '0 2px 8px rgba(255,36,66,0.2)',
+          }}
+        >
+          {searching ? (
+            <>
+              <span style={{
+                display: 'inline-block', width: 16, height: 16,
+                border: '2px solid rgba(255,255,255,0.3)',
+                borderTopColor: '#fff', borderRadius: '50%',
+                animation: 'spin 0.8s linear infinite',
+              }} />
+              搜索中... {searchProgress.current}/{searchProgress.total} {searchProgress.keyword}
+            </>
+          ) : '🔍 搜索'}
+        </button>
+
+        {/* ── 搜索历史 ── */}
+        {searchHistory.length > 0 && (
+          <div style={{
+            marginBottom: 16, background: '#fff', borderRadius: 14, padding: '14px 18px',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.04)',
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>📝 搜索历史</span>
+              <span style={{ fontSize: 11, color: '#999', fontWeight: 400 }}>最近 {searchHistory.length} 条 · 点击可加载完整结果</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 280, overflowY: 'auto' }}>
+              {searchHistory.map(history => (
+                <div key={history.id}
+                  onClick={() => history.taskId && handleLoadHistory(history.taskId)}
+                  style={{
+                    padding: '10px 14px', borderRadius: 10, background: '#f9fafb',
+                    border: '1px solid #f0f0f0',
+                    cursor: history.taskId ? 'pointer' : 'default',
+                    transition: 'all 0.2s',
+                    display: 'flex', gap: 10, alignItems: 'center',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLElement
+                    if (history.taskId) { el.style.background = '#f0f4ff' }
+                    el.style.borderColor = '#d0d8ff'
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.background = '#f9fafb'
+                    el.style.borderColor = '#f0f0f0'
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                      <span style={{ fontSize: 10, color: '#999' }}>{history.time}</span>
+                      <span style={{
+                        fontSize: 9, color: '#ff2442', background: '#fff0f3',
+                        padding: '1px 5px', borderRadius: 6, fontWeight: 500,
+                      }}>{history.filters?.publish_time || history.timePeriod}</span>
+                      {history.filters?.sort_by && history.filters.sort_by !== '综合' && (
+                        <span style={{
+                          fontSize: 9, color: '#f59e0b', background: '#fffbeb',
+                          padding: '1px 5px', borderRadius: 6, fontWeight: 500,
+                        }}>{history.filters.sort_by}</span>
+                      )}
+                      {history.filters?.note_type && history.filters.note_type !== '不限' && (
+                        <span style={{
+                          fontSize: 9, color: '#10b981', background: '#ecfdf5',
+                          padding: '1px 5px', borderRadius: 6, fontWeight: 500,
+                        }}>{history.filters.note_type}</span>
+                      )}
+                      <div style={{ display: 'flex', gap: 3 }}>
+                        {history.tags.map(tag => (
+                          <span key={tag} style={{
+                            fontSize: 9, color: '#667eea', background: '#f0f2ff',
+                            padding: '1px 5px', borderRadius: 4,
+                          }}>{tag}</span>
+                        ))}
+                      </div>
+                      <span style={{ fontSize: 10, color: '#666', marginLeft: 'auto' }}>
+                        {history.count} 条
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 10, color: '#888', lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {history.posts.slice(0, 2).map((post, i) => (
+                        <span key={i}>{i > 0 && <span style={{ color: '#ddd', margin: '0 4px' }}>·</span>}{post.title}</span>
+                      ))}
+                      {history.posts.length > 2 && <span style={{ color: '#bbb' }}> ...+{history.posts.length - 2}</span>}
+                    </div>
+                  </div>
+                  {history.taskId && (
+                    <div style={{ flexShrink: 0 }}>
+                      <span style={{
+                        fontSize: 10, color: '#667eea', fontWeight: 500,
+                        padding: '4px 10px', borderRadius: 6,
+                        background: '#fff', border: '1px solid #d0d8ff',
+                        whiteSpace: 'nowrap',
+                      }}>查看 →</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* ── 统计栏 ── */}
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           marginBottom: 16, padding: '0 4px',
         }}>
-          <div style={{ fontSize: 13, color: '#999' }}>
-            <span style={{ fontWeight: 600, color: '#1a1a1a', fontSize: 18 }}>{posts.length}</span>
-            <span style={{ margin: '0 4px' }}>条结果</span>
-            <span style={{ color: '#ddd' }}>|</span>
-            <span style={{ margin: '0 4px' }}>总互动</span>
-            <span style={{ fontWeight: 600, color: '#ff2442', fontSize: 15 }}>{totalEngagement.toLocaleString()}</span>
+          <div style={{ fontSize: 13, color: '#999', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div>
+              <span style={{ fontWeight: 600, color: '#1a1a1a', fontSize: 18 }}>{posts.length}</span>
+              <span style={{ margin: '0 4px' }}>条结果</span>
+              <span style={{ color: '#ddd' }}>|</span>
+              <span style={{ margin: '0 4px' }}>总互动</span>
+              <span style={{ fontWeight: 600, color: '#ff2442', fontSize: 15 }}>{totalEngagement.toLocaleString()}</span>
+            </div>
+            {aiStats && (
+              <div style={{ fontSize: 11, display: 'flex', gap: 6 }}>
+                <span style={{ color: '#ff2442', fontWeight: 600 }}>🔴 {aiStats.highValue} 询盘</span>
+                <span style={{ color: '#999' }}>⚪ {aiStats.ad} 广告</span>
+                <span style={{ color: '#667eea' }}>🔵 {aiStats.normal} 普通</span>
+              </div>
+            )}
           </div>
-          <div style={{ fontSize: 12, color: '#bbb' }}>
-            更新于 {lastSearch}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {aiAnalyzing && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '4px 10px', borderRadius: 8,
+                background: 'linear-gradient(135deg, #667eea20 0%, #764ba220 100%)',
+                border: '1px solid #667eea30',
+              }}>
+                <span style={{
+                  display: 'inline-block', width: 10, height: 10,
+                  border: '1.5px solid #667eea',
+                  borderTopColor: 'transparent', borderRadius: '50%',
+                  animation: 'spin 0.8s linear infinite',
+                }} />
+                <span style={{ fontSize: 11, color: '#667eea', fontWeight: 500 }}>🤖 AI 正在分析高价值帖子...</span>
+              </div>
+            )}
+            <div style={{ fontSize: 12, color: '#bbb' }}>
+              更新于 {lastSearch}
+            </div>
           </div>
         </div>
 
@@ -456,7 +1152,7 @@ export default function XhsResearch() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {highValuePosts.map(post => (
                 <div key={`hv-${post.id || post.index}`}
-                  onClick={() => post.id && navigate(`/xhs-research/${post.id}`)}
+                  onClick={() => post.id && navigate(`/xhs-post/${post.id}`)}
                   style={{
                   background: '#fff', borderRadius: 14, overflow: 'hidden',
                   border: '1px solid rgba(255,36,66,0.12)',
@@ -533,219 +1229,71 @@ export default function XhsResearch() {
           </div>
         )}
 
-        {/* ── 帖子列表 ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {posts.map((post) => {
-            const isExpanded = expandedPost === post.index
-            const isExtracting = extracting.has(post.index)
-            const hasImages = post.images && post.images.length > 0
-            const isHighValuePost = isHighValue(post)
-
-            return (
-              <div
-                key={post.id || post.index}
-                onClick={() => post.id && navigate(`/xhs-research/${post.id}`)}
-                style={{
-                  background: '#fff', borderRadius: 14, overflow: 'hidden',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
-                  border: isHighValuePost ? '1px solid rgba(255,36,66,0.15)' : '1px solid rgba(0,0,0,0.04)',
-                  transition: 'all 0.2s', cursor: 'pointer',
-                }}
-              >
-                {/* 卡片主体 */}
-                <div style={{ padding: '16px 20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                    {/* 序号 */}
-                    <div style={{
-                      width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 12, fontWeight: 700, marginTop: 2,
-                      background: post.index <= 3
-                        ? 'linear-gradient(135deg, #ff2442, #ff6b81)'
-                        : isHighValuePost ? '#fff0f3' : '#f5f5f7',
-                      color: post.index <= 3 ? '#fff' : isHighValuePost ? '#ff2442' : '#999',
-                    }}>
-                      {post.index}
-                    </div>
-
-                    {/* 内容 */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      {/* 标题行 */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                        {isHighValuePost && (
-                          <span style={{
-                            fontSize: 10, fontWeight: 600, color: '#ff2442',
-                            background: '#fff0f3', padding: '2px 6px', borderRadius: 4,
-                            flexShrink: 0,
-                          }}>
-                            询盘
-                          </span>
-                        )}
-                        <h2 style={{
-                          fontSize: 15, fontWeight: 600, color: '#1a1a1a',
-                          margin: 0, lineHeight: 1.4, flex: 1,
-                          overflow: 'hidden', textOverflow: 'ellipsis',
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                        }}>
-                          {post.title}
-                        </h2>
-                      </div>
-
-                      {/* 作者 */}
-                      <div style={{ fontSize: 12, color: '#999', marginBottom: 8 }}>
-                        @{post.author}
-                      </div>
-
-                      {/* 已有的图片文字内容 */}
-                      {post.imageContent && (
-                        <div style={{
-                          padding: '10px 14px', marginBottom: 10,
-                          background: 'linear-gradient(135deg, #fff5f5 0%, #fff0f6 100%)',
-                          borderRadius: 10, borderLeft: '3px solid #ff2442',
-                          fontSize: 13, color: '#333', lineHeight: 1.7,
-                        }}>
-                          <div style={{
-                            fontSize: 10, color: '#ff2442', fontWeight: 600,
-                            marginBottom: 4, letterSpacing: 1,
-                          }}>
-                            图片文字内容
-                          </div>
-                          {post.imageContent}
-                        </div>
-                      )}
-
-                      {/* 互动数据 */}
-                      <div style={{ display: 'flex', gap: 14, fontSize: 12, color: '#bbb' }}>
-                        <span>❤ {post.likes}</span>
-                        <span>⭐ {post.collects}</span>
-                        <span>💬 {post.comments}</span>
-                        <span>↗ {post.shares}</span>
-                      </div>
-                    </div>
-
-                    {/* 右侧操作区 */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                      {/* 提取图片按钮 */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          if (isExpanded) { setExpandedPost(null) }
-                          else { setExpandedPost(post.index); handleExtract(post) }
-                        }}
-                        style={{
-                          padding: '5px 10px', borderRadius: 8, fontSize: 11,
-                          border: '1px solid #eee', background: isExpanded ? '#fff0f3' : '#fafafa',
-                          color: isExpanded ? '#ff2442' : '#999',
-                          cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {isExtracting ? '提取中...' : isExpanded ? '收起' : '提取图片'}
-                      </button>
-                      {/* 原帖链接 */}
-                      <a
-                        href={post.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          padding: '5px 10px', borderRadius: 8, fontSize: 11,
-                          border: '1px solid #eee', background: '#fafafa',
-                          color: '#999', textDecoration: 'none',
-                          textAlign: 'center', transition: 'all 0.2s',
-                        }}
-                      >
-                        原帖 ↗
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 展开区域：图片 + 文字提取 */}
-                {isExpanded && (
-                  <div style={{
-                    borderTop: '1px solid #f0f0f0',
-                    padding: '16px 20px',
-                    background: '#fafbfc',
-                  }}>
-                    {/* 图片缩略图 */}
-                    {hasImages ? (
-                      <div style={{
-                        display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12,
-                      }}>
-                        {post.images!.map((img, i) => (
-                          <a
-                            key={i}
-                            href={img.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              width: 100, height: 100, borderRadius: 8,
-                              overflow: 'hidden', flexShrink: 0,
-                              border: '1px solid #eee',
-                            }}
-                          >
-                            <img
-                              src={img.url}
-                              alt={`图${i + 1}`}
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            />
-                          </a>
-                        ))}
-                        <div style={{
-                          fontSize: 11, color: '#bbb', alignSelf: 'center',
-                          paddingLeft: 4,
-                        }}>
-                          共 {post.images!.length} 张图 · 点击查看原图
-                        </div>
-                      </div>
-                    ) : isExtracting ? (
-                      <div style={{
-                        padding: '20px 0', textAlign: 'center',
-                        fontSize: 13, color: '#bbb',
-                      }}>
-                        <span style={{
-                          display: 'inline-block', width: 18, height: 18,
-                          border: '2px solid #eee', borderTopColor: '#ff2442',
-                          borderRadius: '50%', animation: 'spin 0.8s linear infinite',
-                          marginBottom: 8,
-                        }} />
-                        <br />正在获取帖子图片...
-                      </div>
-                    ) : (
-                      <div style={{ padding: '12px 0', fontSize: 13, color: '#ccc' }}>
-                        暂无图片数据
-                      </div>
-                    )}
-
-                    {/* 文字提取输入区 */}
-                    <div>
-                      <div style={{
-                        fontSize: 11, color: '#999', marginBottom: 6, fontWeight: 500,
-                      }}>
-                        图片文字提取（查看图片后手动输入或粘贴）
-                      </div>
-                      <textarea
-                        defaultValue={post.imageContent || ''}
-                        onBlur={e => handleSaveContent(post.index, e.target.value)}
-                        placeholder="识别图片中的文字内容，粘贴或输入到此处..."
-                        style={{
-                          width: '100%', minHeight: 60, padding: '10px 12px',
-                          borderRadius: 10, border: '1px solid #e8e8e8',
-                          fontSize: 13, lineHeight: 1.6, resize: 'vertical',
-                          outline: 'none', fontFamily: 'inherit',
-                          boxSizing: 'border-box',
-                          transition: 'border-color 0.2s',
-                        }}
-                        onFocus={e => e.target.style.borderColor = '#ff2442'}
-                        onBlurCapture={e => (e.target as HTMLTextAreaElement).style.borderColor = '#e8e8e8'}
-                      />
-                    </div>
-                  </div>
-                )}
+        {/* ── 帖子列表（按标签分组） ── */}
+        {posts.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            {/* 标签分组标题 */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              marginBottom: 16, padding: '0 4px',
+            }}>
+              <div style={{
+                padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600,
+                background: 'linear-gradient(135deg, #ff2442 0%, #ff6b81 100%)',
+                color: '#fff',
+              }}>
+                {activeTag === -1 ? '全部标签' : tags[activeTag]?.name || '搜索结果'}
               </div>
-            )
-          })}
-        </div>
+              <div style={{ flex: 1, height: 1, background: '#e8e8e8' }} />
+              <span style={{ fontSize: 12, color: '#999' }}>{posts.length} 条帖子</span>
+            </div>
+
+            {/* 高价值帖子 */}
+            {highValuePosts.length > 0 && (
+              <div style={{ marginBottom: 20 }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  marginBottom: 12, padding: '0 4px',
+                }}>
+                  <div style={{
+                    width: 22, height: 22, borderRadius: 6,
+                    background: 'linear-gradient(135deg, #ff2442 0%, #ff6b81 100%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#fff', fontSize: 12, fontWeight: 700,
+                  }}>!</div>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a' }}>高价值帖子</span>
+                  <span style={{
+                    fontSize: 11, color: '#ff2442', background: '#fff0f3',
+                    padding: '2px 8px', borderRadius: 10, fontWeight: 600,
+                  }}>{highValuePosts.length} 条</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {highValuePosts.map(post => renderPostCard(post))}
+                </div>
+              </div>
+            )}
+
+            {/* 其他结果 */}
+            {posts.length > highValuePosts.length && (
+              <div>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  marginBottom: 12, padding: '0 4px',
+                }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#999' }}>其他结果</span>
+                  <span style={{
+                    fontSize: 11, color: '#999', background: '#f5f5f7',
+                    padding: '2px 8px', borderRadius: 10,
+                  }}>{posts.length - highValuePosts.length} 条</span>
+                  <div style={{ flex: 1, height: 1, background: '#e8e8e8' }} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {posts.filter(p => !isHighValue(p)).map(post => renderPostCard(post))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── Agent 获客方案展示 ── */}
         <div style={{
@@ -1423,5 +1971,6 @@ export default function XhsResearch() {
         }
       `}</style>
     </div>
+    </>
   )
 }

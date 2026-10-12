@@ -17,6 +17,7 @@ export interface XhsPost {
   keyword?: string
   imageContent?: string
   images?: { url: string; width: number; height: number }[]
+  avatarUrl?: string
   isHighValue?: boolean
   isAd?: boolean
   taskId?: string
@@ -121,6 +122,9 @@ export default function XhsResearch() {
   const [extracting, setExtracting] = useState<Set<number>>(new Set())
   const [newTag, setNewTag] = useState('')
   const [showAddTag, setShowAddTag] = useState(false)
+  const [linkInput, setLinkInput] = useState('')
+  const [linkExtracting, setLinkExtracting] = useState(false)
+  const [linkPost, setLinkPost] = useState<XhsPost | null>(null)
   const [accountInfo, setAccountInfo] = useState<{ nickname: string; userId: string } | null>(null)
   const [checkingLogin, setCheckingLogin] = useState(false)
   const [loggingIn, setLoggingIn] = useState(false)
@@ -434,11 +438,37 @@ export default function XhsResearch() {
   }, [tags, activeTag, timePeriod, sortBy, noteType])
 
   /* 点击历史记录：加载该任务的完整结果 */
-  const handleLoadHistory = useCallback(async (taskId: string) => {
+  const handleLoadHistory = useCallback(async (taskId: string, historyPosts?: any[]) => {
     if (!taskId) {
       alert('⚠️ 该历史记录没有关联任务ID，无法加载完整结果')
       return
     }
+
+    // 链接提取记录：直接从存储的数据中还原，不再调用任何 API
+    if (taskId.startsWith('link-')) {
+      const stored = historyPosts?.[0]
+      if (!stored) {
+        alert('⚠️ 该记录没有存储数据')
+        return
+      }
+      const restored: XhsPost = {
+        index: 0,
+        title: stored.title || '(无标题)',
+        author: stored.author || '未知',
+        likes: stored.likes || '0',
+        collects: stored.collects || '0',
+        comments: stored.comments || '0',
+        shares: stored.shares || '0',
+        id: stored.id || taskId.replace('link-', ''),
+        token: stored.token || '',
+        url: stored.url || '',
+        images: stored.images || [],
+        imageContent: stored.imageContent || '',
+      }
+      setLinkPost(restored)
+      return
+    }
+
     setSearching(true)
     setSearchProgress({ current: 0, total: 0, keyword: '加载中...' })
     try {
@@ -586,6 +616,149 @@ export default function XhsResearch() {
       } catch {}
     }
   }, [posts])
+
+  /* 从链接提取帖子信息 */
+  const handleExtractLink = useCallback(async () => {
+    const text = linkInput.trim()
+    if (!text) { alert('请粘贴小红书分享内容'); return }
+
+    setLinkExtracting(true)
+    setLinkPost(null)
+    try {
+      // Step 1: 调用后端解析链接（提取标题 + 短链重定向 + 获取 feed_id）
+      const resolveRes = await fetch('/api/xhs-mcp/resolve-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      })
+      const resolveData = await resolveRes.json()
+
+      if (!resolveData.success || !resolveData.feedId) {
+        alert('⚠️ ' + (resolveData.message || '无法从文本中解析出小红书链接'))
+        return
+      }
+
+      const { feedId, xsecToken, finalUrl, title: parsedTitle } = resolveData
+
+      // Step 2: 调用 MCP 获取帖子完整详情（需要登录态）
+      const res = await fetch('/api/xhs-mcp/feed-detail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ feed_id: feedId, xsec_token: xsecToken }),
+      })
+      const data = await res.json()
+
+      if (!data.success) {
+        // MCP 获取失败，至少展示从文本中解析的标题和链接
+        const fallbackPost: XhsPost = {
+          index: 0,
+          title: parsedTitle || '(无标题)',
+          author: '未知',
+          likes: '-', collects: '-', comments: '-', shares: '-',
+          id: feedId,
+          token: xsecToken,
+          url: finalUrl || `https://www.xiaohongshu.com/explore/${feedId}`,
+          images: [],
+        }
+        setLinkPost(fallbackPost)
+        return
+      }
+
+      const note = data.detail?.data?.note || {}
+      // 标题优先级：粘贴文本中提取的标题 > MCP desc（过滤纯 hashtag 行）
+      const mcpDescFirstLine = (note.desc || note.title || '').split('\n').find((l: string) => l.trim())?.trim().substring(0, 80) || ''
+      const mcpTitleClean = mcpDescFirstLine.replace(/#[^#]+\[话题\]#/g, '').trim()
+      // 如果粘贴文本有标题，优先用；否则用 MCP desc（去掉 hashtag 后）
+      const title = parsedTitle || mcpTitleClean || mcpDescFirstLine || '(无标题)'
+      const author = note.user?.nickname || note.user?.nickName || '未知'
+      const interactInfo = note.interactInfo || {}
+      const images = (note.imageList || []).map((img: any) => ({
+        url: img.urlDefault || img.urlPre || img.url || '',
+        width: img.width || 0,
+        height: img.height || 0,
+      }))
+
+      // 提取帖子全文内容（去除 hashtag 行）
+      const fullDesc = (note.desc || '').split('\n').filter((l: string) => !l.trim().startsWith('#')).join('\n').trim()
+
+      const avatarUrl = typeof note.user?.avatar === 'string' ? note.user.avatar : note.user?.avatar?.urlDefault || ''
+
+      const post: XhsPost = {
+        index: 0,
+        title,
+        author,
+        likes: String(interactInfo.likedCount ?? note.likedCount ?? '0'),
+        collects: String(interactInfo.collectedCount ?? note.collectedCount ?? '0'),
+        comments: String(interactInfo.commentCount ?? note.commentCount ?? '0'),
+        shares: String(interactInfo.shareCount ?? note.shareCount ?? '0'),
+        id: feedId,
+        token: xsecToken,
+        url: finalUrl || `https://www.xiaohongshu.com/explore/${feedId}`,
+        images,
+        avatarUrl,
+        imageContent: fullDesc || '',
+      }
+
+      setLinkPost(post)
+
+      // Step 3: 对第一张图片 OCR 提取文字
+      let ocrText = fullDesc || ''
+      if (images.length > 0 && images[0].url) {
+        try {
+          const ocrRes = await fetch('/api/xhs-mcp/ocr-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageUrl: images[0].url }),
+          })
+          const ocrData = await ocrRes.json()
+          if (ocrData.success && ocrData.text) {
+            ocrText = ocrData.text
+            setLinkPost(prev => prev ? { ...prev, imageContent: ocrText } : prev)
+          }
+        } catch (ocrErr) {
+          console.error('OCR 提取失败:', ocrErr)
+        }
+      }
+
+      // Step 4: 保存链接提取记录到搜索历史（完整存储帖子数据，点击历史直接展示，不再重复提取）
+      const fullPostData = {
+        title,
+        author,
+        url: post.url,
+        id: feedId,
+        token: xsecToken,
+        likes: post.likes,
+        collects: post.collects,
+        comments: post.comments,
+        shares: post.shares,
+        images: images,
+        avatarUrl,
+        imageContent: ocrText,
+      }
+      try {
+        await fetch('/api/xhs-mcp/search-history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tags: ['🔗 链接提取'],
+            timePeriod: '链接提取',
+            count: 1,
+            posts: [fullPostData], // 完整存储，点击历史直接还原
+            taskId: `link-${feedId}`,
+          }),
+        })
+        // 重新加载搜索历史
+        const histRes = await fetch('/api/xhs-mcp/search-history')
+        const histData = await histRes.json()
+        if (histData.success) setSearchHistory(histData.history)
+      } catch {}
+    } catch (e) {
+      console.error('链接提取失败:', e)
+      alert('⚠️ 提取失败，请检查后端服务是否运行')
+    } finally {
+      setLinkExtracting(false)
+    }
+  }, [linkInput])
 
   /* 标签管理 */
   const addTag = () => {
@@ -997,6 +1170,135 @@ export default function XhsResearch() {
           ) : '🔍 搜索'}
         </button>
 
+        {/* ── 链接提取模块 ── */}
+        <div style={{
+          background: '#fff', borderRadius: 14, padding: '16px 20px',
+          marginBottom: 12, boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+          border: '1px solid rgba(0,0,0,0.04)',
+        }}>
+          <div style={{ fontSize: 12, color: '#999', marginBottom: 10, fontWeight: 500, letterSpacing: 0.5 }}>
+            🔗 链接提取
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input
+              value={linkInput}
+              onChange={e => setLinkInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleExtractLink()}
+              placeholder="粘贴小红书分享内容，如：寻佛罗伦萨摄像 https://xhslink.cn/o/xxx ..."
+              style={{
+                flex: 1, padding: '10px 14px', borderRadius: 10,
+                border: '1px solid #e8e8e8', fontSize: 13, outline: 'none',
+                transition: 'border-color 0.2s',
+              }}
+              onFocus={e => { e.currentTarget.style.borderColor = '#ff2442' }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#e8e8e8' }}
+            />
+            <button
+              onClick={handleExtractLink}
+              disabled={linkExtracting}
+              style={{
+                padding: '10px 20px', borderRadius: 10, border: 'none',
+                background: linkExtracting ? '#ccc' : 'linear-gradient(135deg, #ff2442 0%, #ff6b81 100%)',
+                color: '#fff', fontSize: 13, fontWeight: 600,
+                cursor: linkExtracting ? 'wait' : 'pointer', whiteSpace: 'nowrap',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}
+            >
+              {linkExtracting ? (
+                <>
+                  <span style={{
+                    display: 'inline-block', width: 14, height: 14,
+                    border: '2px solid rgba(255,255,255,0.3)',
+                    borderTopColor: '#fff', borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite',
+                  }} />
+                  提取中...
+                </>
+              ) : '提取'}
+            </button>
+          </div>
+
+          {/* 提取结果 */}
+          {linkPost && (
+            <div style={{ marginTop: 14 }}>
+              <div
+                style={{
+                  background: '#fff', borderRadius: 14, overflow: 'hidden',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                  border: '1px solid rgba(0,0,0,0.04)',
+                }}>
+                {/* 第一张图片展示 */}
+                {linkPost.images && linkPost.images.length > 0 && (
+                  <div style={{ position: 'relative', cursor: 'pointer' }}
+                    onClick={() => linkPost.id && navigate(`/xhs-post/${linkPost.id}`)}>
+                    <img
+                      src={linkPost.images[0].url}
+                      alt="封面"
+                      style={{
+                        width: '100%', maxHeight: 280, objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                    {linkPost.images.length > 1 && (
+                      <div style={{
+                        position: 'absolute', bottom: 8, right: 8,
+                        padding: '3px 8px', borderRadius: 10,
+                        background: 'rgba(0,0,0,0.5)', color: '#fff',
+                        fontSize: 11, fontWeight: 500,
+                      }}>共 {linkPost.images.length} 张</div>
+                    )}
+                  </div>
+                )}
+                <div style={{ padding: '14px 18px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 12, fontWeight: 700, marginTop: 2,
+                      background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                      color: '#fff',
+                    }}>🔗</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <h3
+                        onClick={() => linkPost.id && navigate(`/xhs-post/${linkPost.id}`)}
+                        style={{
+                          fontSize: 14, fontWeight: 600, color: '#1a1a1a', margin: '0 0 4px 0',
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          cursor: 'pointer',
+                        }}>{linkPost.title}</h3>
+                      <div style={{ fontSize: 12, color: '#999', marginBottom: 6 }}>@{linkPost.author}</div>
+                      {/* 帖子文字内容 */}
+                      {linkPost.imageContent && (
+                        <div style={{
+                          padding: '8px 12px', marginBottom: 8,
+                          background: 'linear-gradient(135deg, #fff5f5 0%, #fff0f6 100%)',
+                          borderRadius: 8, borderLeft: '3px solid #ff2442',
+                          fontSize: 13, color: '#333', lineHeight: 1.7,
+                          maxHeight: 120, overflowY: 'auto',
+                        }}>
+                          <div style={{ fontSize: 10, color: '#ff2442', fontWeight: 600, marginBottom: 2, letterSpacing: 1 }}>帖子内容</div>
+                          {linkPost.imageContent}
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', gap: 12, fontSize: 12, color: '#bbb' }}>
+                        <span>❤ {linkPost.likes}</span><span>⭐ {linkPost.collects}</span>
+                        <span>💬 {linkPost.comments}</span><span>↗ {linkPost.shares}</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }}>
+                      <a href={linkPost.url} target="_blank" rel="noopener noreferrer" style={{
+                        padding: '5px 10px', borderRadius: 8, fontSize: 11,
+                        border: '1px solid #eee', background: '#fafafa',
+                        color: '#999', textDecoration: 'none', textAlign: 'center',
+                      }}>原帖 ↗</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* ── 搜索历史 ── */}
         {searchHistory.length > 0 && (
           <div style={{
@@ -1010,7 +1312,7 @@ export default function XhsResearch() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 280, overflowY: 'auto' }}>
               {searchHistory.map(history => (
                 <div key={history.id}
-                  onClick={() => history.taskId && handleLoadHistory(history.taskId)}
+                  onClick={() => history.taskId && handleLoadHistory(history.taskId, history.posts)}
                   style={{
                     padding: '10px 14px', borderRadius: 10, background: '#f9fafb',
                     border: '1px solid #f0f0f0',

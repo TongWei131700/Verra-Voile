@@ -12,6 +12,7 @@ import LoginModal from '../components/LoginModal'
 import Seo from '../components/Seo'
 import { getSelectedProducts } from '../utils/selectedProducts'
 import { trackEvent, getSessionId, getUserToken } from '../utils/analytics'
+import { isWeChatBrowser, getBrowserEnv } from '../utils/browserEnv'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -117,6 +118,11 @@ export default function Home() {
   useEffect(() => {
     const sessionId = getSessionId()
     const userToken = getUserToken()
+    const env = getBrowserEnv()
+    
+    // 记录访问环境（可用于后续分析微信流量）
+    console.log('[Browser Env]', env)
+    
     fetch(`${API_BASE}/api/analytics/visit-notify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -124,6 +130,8 @@ export default function Home() {
         sessionId,
         userToken,
         referrer: document.referrer || '',
+        isWeChat: env.isWeChat,
+        platform: env.env,
       }),
     }).catch(() => {/* 静默失败 */})
   }, [])
@@ -197,7 +205,6 @@ export default function Home() {
       <div className="nh-wrapper">
         <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>查看</Link>
         <button type="button" onClick={handleConsult} style={{ color: '#fff' }}>AI规划</button>
-        <Link to="/xhs-research" className="nh-cta-link" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', color: '#fff' }}>精准获客</Link>
       </div>
     </div>
   )
@@ -422,7 +429,6 @@ export default function Home() {
               <div className="nh-wrapper">
                 <Link to={m.route} className="nh-cta-link" onClick={() => navigateFromHome(m.route)}>查看</Link>
                 <button type="button" onClick={handleConsult} style={{ color: '#fff' }}>AI规划</button>
-                <Link to="/xhs-research" className="nh-cta-link" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', color: '#fff' }}>精准获客</Link>
               </div>
             </div>
             {idx < MODULES.length - 1 && (

@@ -1,6 +1,7 @@
-import { useState, useLayoutEffect } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { INITIAL_POSTS } from './XhsResearch'
+import html2canvas from 'html2canvas'
 
 /* ── 静态 Agent 生成数据（示例） ── */
 const AGENT_DATA: Record<string, {
@@ -193,8 +194,31 @@ export default function XhsPostDetail() {
         if (!data.success || !data.history) return
         // 在所有历史任务中查找该帖子
         for (const h of data.history) {
+          if (!h.taskId) continue
+          // 链接提取记录：直接从存储数据中还原，不调用 API
+          if (h.taskId.startsWith('link-')) {
+            const postInfo = h.posts?.find((p: any) => p.url?.includes(id) || p.id === id)
+            if (postInfo && postInfo.title) {
+              setPost({
+                id,
+                title: postInfo.title || '(无标题)',
+                author: postInfo.author || '未知',
+                likes: postInfo.likes || '0',
+                collects: postInfo.collects || '0',
+                comments: postInfo.comments || '0',
+                shares: postInfo.shares || '0',
+                url: postInfo.url || `https://www.xiaohongshu.com/explore/${id}`,
+                token: postInfo.token || '',
+                images: postInfo.images || [],
+                imageContent: postInfo.imageContent || '',
+              })
+              return
+            }
+            continue
+          }
+          // 普通搜索记录
           if (h.posts?.some((p: any) => p.url?.includes(id))) {
-            // 找到包含该帖子的任务，加载完整数据
+            // 找到包含该帖子的搜索任务，加载完整数据
             return fetch(`/api/xhs-mcp/search/${h.taskId}`)
               .then(res => res.json())
               .then(taskData => {
@@ -208,6 +232,37 @@ export default function XhsPostDetail() {
               })
           }
         }
+        // 搜索历史中未找到，尝试直接通过 MCP feed-detail 获取（链接提取的帖子）
+        return fetch('/api/xhs-mcp/feed-detail', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ feed_id: id, xsec_token: '' }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              const note = data.detail?.data?.note || {}
+              const interactInfo = note.interactInfo || {}
+              const images = (note.imageList || []).map((img: any) => ({
+                url: img.urlDefault || img.urlPre || img.url || '',
+                width: img.width || 0,
+                height: img.height || 0,
+              }))
+              setPost({
+                id,
+                title: (note.desc || '').split('\n').find((l: string) => l.trim())?.trim().substring(0, 80) || '(无标题)',
+                author: note.user?.nickname || '未知',
+                likes: String(interactInfo.likedCount ?? '0'),
+                collects: String(interactInfo.collectedCount ?? '0'),
+                comments: String(interactInfo.commentCount ?? '0'),
+                shares: String(interactInfo.shareCount ?? '0'),
+                url: `https://www.xiaohongshu.com/explore/${id}`,
+                token: '',
+                images,
+                imageContent: (note.desc || '').split('\n').filter((l: string) => !l.trim().startsWith('#')).join('\n').trim(),
+              })
+            }
+          })
       })
       .catch(err => console.error('加载帖子失败:', err))
   }, [id, post])
@@ -222,11 +277,13 @@ export default function XhsPostDetail() {
 
   /* 图片挑选 */
   const [selectedSrc, setSelectedSrc] = useState<string[]>([])
+  const [zoomImage, setZoomImage] = useState<string | null>(null)
 
   /* 一键发布 */
   const [publishing, setPublishing] = useState(false)
   const [publishResult, setPublishResult] = useState<'idle' | 'success' | 'error'>('idle')
   const [publishMsg, setPublishMsg] = useState('')
+  const [publishedUrl, setPublishedUrl] = useState('')
   const [commenting, setCommenting] = useState(false)
   const [commentResult, setCommentResult] = useState<'idle' | 'success' | 'error'>('idle')
   const [commentMsg, setCommentMsg] = useState('')
@@ -244,6 +301,22 @@ export default function XhsPostDetail() {
       // 不预加载图片，等 AI 生成后自动选择
     }
   }, [id])
+
+  /* 加载服务端已保存的 AI 内容 */
+  useEffect(() => {
+    if (!post?.id) return
+    fetch(`/api/xhs-mcp/posts/${post.id}/ai-content`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          const { copywriting, comment: savedComment, selectedImages } = data.data
+          if (copywriting) setCopyText(copywriting)
+          if (savedComment) setComment(savedComment)
+          if (selectedImages && selectedImages.length > 0) setSelectedSrc(selectedImages)
+        }
+      })
+      .catch(() => {})
+  }, [post?.id])
 
   if (!post) {
     return (
@@ -291,49 +364,111 @@ export default function XhsPostDetail() {
     return data?.result?.content?.[0]?.text || ''
   }
 
-  /* 发布帖子（账号 B :18061） */
+  /* 清除残留 Markdown 格式（AI 偶尔不听话的保险） */
+  function stripMarkdown(text: string): string {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '$1')       // **加粗** → 加粗
+      .replace(/\*(.+?)\*/g, '$1')            // *斜体* → 斜体
+      .replace(/^#{1,6}\s*/gm, '')            // # 标题 → 标题
+      .replace(/^>\s*/gm, '')                 // > 引用 → 正文
+      .replace(/^\s*[-*+]\s+/gm, '')          // - 列表 → 空行
+      .replace(/^\s*\d+\.\s+/gm, (match, offset, str) => {
+        // 数字编号：如果紧跟的内容像正常句子就保留编号，否则去掉
+        return ''
+      })
+      .replace(/`{1,3}[^`]*`{1,3}/g, '')     // `代码` → 空
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [链接](url) → 链接
+      .replace(/\n{3,}/g, '\n\n')             // 多个空行 → 一个空行
+      .trim()
+  }
+
+  /* 发布帖子（账号 B :18061）→ 前端直连 MCP */
   const handlePublish = async () => {
     if (!post || selectedSrc.length === 0 || !copyText) return
-    setPublishing(true); setPublishResult('idle'); setPublishMsg('')
+    setPublishing(true); setPublishResult('idle'); setPublishMsg(''); setPublishedUrl('')
     try {
-      const absImages = selectedSrc.map(s => `/Users/hongli/WorkSpace/Verra-Voile-End${s}`)
-      const title = (post.title || '').slice(0, 20)
-      const text = await mcpCall(18061, 'publish_content', {
-        title,
-        content: copyText.slice(0, 1000),
-        images: absImages,
-        tags: ['目的地婚礼', '欧洲婚礼', '意大利婚礼', '托斯卡纳婚礼'],
-        is_original: true,
+      const absImages = selectedSrc.map(s => {
+        if (s.startsWith('/')) return `/Users/hongli/WorkSpace/Verra-Voile-End${s}`
+        return s
       })
-      if (text.includes('发布成功') || text.includes('发布完成') || text.includes('成功')) {
-        setPublishResult('success'); setPublishMsg('帖子发布成功！')
+      const res = await fetch('http://localhost:18061/mcp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', method: 'tools/call', id: 1,
+          params: { name: 'publish_content', arguments: {
+            title: (postTitle || post.title || '').slice(0, 20),
+            content: stripMarkdown(copyText).slice(0, 1000),
+            images: absImages,
+            tags: ['目的地婚礼', '欧洲婚礼', '意大利婚礼', '托斯卡纳婚礼'],
+            is_original: false,
+          }},
+        }),
+      })
+      const data = await res.json()
+      const text = data?.result?.content?.[0]?.text || ''
+      if (text.includes('成功')) {
+        setPublishResult('success'); setPublishMsg('帖子发布成功！正在获取链接...')
+        // 获取账号 B 最新帖子链接
+        try {
+          await new Promise(r => setTimeout(r, 3000)) // 等小红书索引
+          const profileRes = await fetch('http://localhost:18061/mcp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0', method: 'tools/call', id: 2,
+              params: { name: 'get_my_profile', arguments: { tab: 'note' } },
+            }),
+          })
+          const profileData = await profileRes.json()
+          const profileText = profileData?.result?.content?.[0]?.text || ''
+          const profile = JSON.parse(profileText)
+          const latestFeed = profile?.feeds?.[0]
+          if (latestFeed?.id) {
+            const url = `https://www.xiaohongshu.com/explore/${latestFeed.id}?xsec_token=${latestFeed.xsecToken || ''}`
+            setPublishedUrl(url)
+            setPublishMsg('帖子发布成功！')
+          }
+        } catch (e) {
+          console.error('获取帖子链接失败:', e)
+          setPublishMsg('帖子发布成功！（获取链接失败）')
+        }
       } else {
-        setPublishResult('success'); setPublishMsg(text.slice(0, 100))
+        setPublishResult('error'); setPublishMsg(text.slice(0, 120))
       }
     } catch (e: unknown) {
       setPublishResult('error')
-      setPublishMsg(e instanceof Error ? e.message : '发布失败，请检查 MCP 服务')
+      setPublishMsg(e instanceof Error ? e.message : '发布失败，请确认 MCP 服务已启动')
     } finally { setPublishing(false) }
   }
 
-  /* 发送评论（账号 A :18060） */
+  /* 发送评论（账号 A :18060）→ 前端直连 MCP */
   const handleComment = async () => {
     if (!post || !comment) return
     setCommenting(true); setCommentResult('idle'); setCommentMsg('')
     try {
-      const text = await mcpCall(18060, 'post_comment_to_feed', {
-        feed_id: post.id,
-        xsec_token: post.token,
-        content: comment.slice(0, 300),
+      const res = await fetch('http://localhost:18060/mcp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', method: 'tools/call', id: 1,
+          params: { name: 'post_comment_to_feed', arguments: {
+            feed_id: post.id,
+            xsec_token: post.token || '',
+            content: stripMarkdown(comment).slice(0, 300),
+          }},
+        }),
       })
-      if (text.includes('成功') || text.includes('评论已发')) {
+      const data = await res.json()
+      const text = data?.result?.content?.[0]?.text || ''
+      if (text.includes('成功')) {
         setCommentResult('success'); setCommentMsg('评论发送成功！')
       } else {
-        setCommentResult('success'); setCommentMsg(text.slice(0, 100))
+        setCommentResult('error'); setCommentMsg(text.slice(0, 120))
       }
     } catch (e: unknown) {
       setCommentResult('error')
-      setCommentMsg(e instanceof Error ? e.message : '评论失败，请检查 MCP 服务')
+      setCommentMsg(e instanceof Error ? e.message : '评论失败，请确认 MCP 服务已启动')
     } finally { setCommenting(false) }
   }
 
@@ -354,21 +489,57 @@ export default function XhsPostDetail() {
         `互动数据: ${post.likes}赞 ${post.collects}藏 ${post.comments}评`,
       ].filter(Boolean).join('\n')
 
-      // 1. 生成文案
+      // 1. 生成文案（小红书原生风格，禁止 Markdown）
       const copyPrompt = `你是「欧婚纪」的小红书内容创作者，欧婚纪主打「自由设计你的婚礼」理念，专注帮助新人定制个性化目的地婚礼。
 
 现在有一条小红书帖子：
 ${postContext}
 
-请根据这条帖子，生成一篇专业的小红书笔记文案，要求：
-1. 开头先回应原帖的需求/问题，给出共鸣
-2. 分享 3-5 条专业建议或经验（干货型）
-3. 自然融入品牌（如「我们欧婚纪之前帮客户做过…」）
-4. 结尾引导互动（如「有具体日期可以帮你看看」「需要场地对比可以分享」）
-5. 语气温暖专业，像闺蜜分享经验
-6. 400-800 字，适合小红书笔记
+请根据这条帖子的主题/目的地/需求，生成一篇小红书笔记文案。
 
-直接输出文案内容，不要加标题和前缀。`
+❗❗❗ 最重要的规则：
+禁止使用任何 Markdown 格式！包括但不限于：
+- 禁止 **加粗**
+- 禁止 - 横线列表
+- 禁止 1. 2. 3. 编号列表
+- 禁止 # 标题
+- 禁止 > 引用
+这是直接发布到小红书的纯文本，Markdown 符号会原样显示，非常突兀。
+
+✅ 正确的排版方式（小红书范本）：
+用 emoji 做段落分隔和标记，比如 🏆 ✨ 💡 📍 🔥 👰 📸 💰 ⭐ 🎯
+用换行分段，每段 1-3 句话
+用「」代替引号
+用 ①②③ 或 A. B. C. 做编号（如果确实需要编号的话）
+
+📝 文案结构：
+第一行：标题（不用 # 号，直接写标题文字，简洁有力）
+空一行后开始正文
+
+开头（1-2句）：自然引出话题，像朋友聊天一样
+比如「帮几十对新人办过婚礼后，来盘一盘佛罗伦萨的摄影师」
+比如「去年在托斯卡纳办了8场婚礼，踩坑和经验都有」
+
+主体：用梯队/分级结构组织推荐
+🏆 第一梯队｜顶级推荐
+写 2-3 个最推荐的，每个 1-2 句话
+
+✨ 第二梯队｜高性价比
+写 2-3 个优质选择
+
+💡 第三梯队｜小众备选
+写 1-2 个冷门但有意思的
+
+结尾：引导互动
+「你心仪哪个？有具体日期可以帮你匹配最佳场地/摄影师～」
+
+其他要求：
+语气像一个见多识广的婚礼策划师在跟朋友聊天，专业但不端着
+自然提及「欧婚纪」和「europewedding.cn」，不要硬广
+400-800 字
+适当加 emoji 但不要每句都加
+
+直接输出文案内容，不要加「以下是文案」之类的前缀。`
 
       const copyRes = await fetch('/api/agent/chat', {
         method: 'POST',
@@ -382,19 +553,23 @@ ${postContext}
         setCopyText(copyData.reply)
       }
 
-      // 2. 生成评论
+      // 2. 生成评论（小红书原生风格，禁止 Markdown）
       const commentPrompt = `你是「欧婚纪」的小红书运营，欧婚纪主打「自由设计你的婚礼」，专注目的地婚礼定制。
 
 现在有一条小红书帖子：
 ${postContext}
 
-请以欧婚纪的身份生成一条评论区回复，要求：
-1. 先共情/回应对方的需求
-2. 分享 2-3 条干货建议
-3. 适当提及「欧婚纪」但不要硬广
-4. 结尾引导互动
-5. 语气像闺蜜/朋友
-6. 控制在 200 字以内
+请以欧婚纪的身份生成一条评论区回复。
+
+❗ 禁止使用任何 Markdown 格式（**加粗**、- 列表、1. 编号等），这是纯文本评论。
+
+要求：
+先回应对方的需求，表示「这个目的地我们很熟」
+用简短的梯队/排名方式给建议（如「XX属于第一梯队，XX性价比更高」）
+适当提及「欧婚纪」但不要硬广
+结尾引导互动，如「有具体日期可以帮你匹配～」
+语气像资深策划师在跟朋友聊天，亲切专业
+控制在 200 字以内
 
 直接输出回复内容。`
 
@@ -414,6 +589,21 @@ ${postContext}
       const pool = isIcelandPost ? IMAGE_POOL_ICELAND : IMAGE_POOL_ITALY
       const autoImages = pool.slice(0, 6).map(img => img.src)
       setSelectedSrc(autoImages)
+
+      // 4. 保存到服务端
+      try {
+        await fetch(`/api/xhs-mcp/posts/${post.id}/ai-content`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            copywriting: copyData.reply || '',
+            comment: commentData.reply || '',
+            selectedImages: autoImages,
+          }),
+        })
+      } catch (saveErr) {
+        console.error('保存 AI 内容失败:', saveErr)
+      }
     } catch (e) {
       console.error('AI 生成失败:', e)
       alert('⚠️ AI 生成失败，请稍后重试')
@@ -423,7 +613,7 @@ ${postContext}
       setTypingComment('')
     }
   }
-
+  
   /* 打字动画函数 */
   const typeText = (text: string, setter: (v: string) => void): Promise<void> => {
     return new Promise(resolve => {
@@ -649,6 +839,133 @@ ${postContext}
             )}
             {generating ? '✨ AI 正在生成文案和评论...' : '🤖 AI 一键生成文案 + 评论'}
           </button>
+
+          {/* ── 梯队图编辑入口 ── */}
+          {copyText && (
+            <>
+              <button
+                onClick={() => navigate(`/xhs-tier-editor/${post.id}`)}
+                style={{
+                  width: '100%', padding: '14px 0', marginTop: 12,
+                  borderRadius: 12, border: '2px dashed #667eea',
+                  background: '#f8f9ff',
+                  color: '#667eea',
+                  fontSize: 14, fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+              >
+                📊 编辑梯队排行榜图
+              </button>
+              
+              {/* 一键生成梯队排名图按钮 */}
+              <button
+                onClick={async () => {
+                  if (!copyText) return
+                  
+                  // 1. 从后端获取商家数据
+                  const res = await fetch(`/api/xhs-mcp/posts/${post.id}/ai-content`)
+                  const data = await res.json()
+                  const merchants = data.success && data.data?.merchants ? data.data.merchants : []
+                  
+                  if (merchants.length === 0) {
+                    alert('未找到商家数据，请先生成 AI 文案')
+                    return
+                  }
+                  
+                  // 2. 创建隐藏的梯队预览 DOM
+                  const tierDiv = document.createElement('div')
+                  tierDiv.style.cssText = 'position:fixed;left:-9999px;top:0;width:700px;background:#f5f5f5;padding:40px;font-family:sans-serif'
+                  
+                  // 3. 渲染梯队内容
+                  let html = '<h2 style="text-align:center;margin-bottom:30px;color:#333">📊 梯队排行榜</h2>'
+                  const tiers: any[][] = [[], [], [], []] // S级, 第一, 第二, 第三
+                  for (const m of merchants) {
+                    const tierIdx = (m.tier - 1) >= 0 ? (m.tier - 1) : 0
+                    tiers[tierIdx].push(m)
+                  }
+                  
+                  const tierColors = ['#e74c3c', '#e67e22', '#f1c40f', '#27ae60']
+                  const tierNames = ['S 级', '第一梯队', '第二梯队', '第三梯队']
+                  
+                  for (let i = 0; i < 4; i++) {
+                    if (tiers[i].length === 0) continue
+                    html += `<div style="margin-bottom:20px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg, ${tierColors[i]}22 0%, #fff 100%);padding:16px">
+                      <div style="font-size:18px;font-weight:bold;color:${tierColors[i]};margin-bottom:12px">${tierNames[i]}</div>
+                      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+                        ${tiers[i].map((m, idx) => `
+                          <div style="display:flex;align-items:center;gap:12px;background:#fff;padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06)">
+                            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg, ${tierColors[i]}, ${tierColors[i]}dd);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900">${idx + 1}</div>
+                            ${m.image ? `<img src="${m.image}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid ${tierColors[i]}" />` : ''}
+                            <div style="flex:1;font-size:14px;font-weight:600;color:#1a1a1a">${m.nameCn || m.nameEn}</div>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>`
+                  }
+                  
+                  tierDiv.innerHTML = html
+                  document.body.appendChild(tierDiv)
+                  
+                  // 4. 等待图片加载后截图
+                  await new Promise(resolve => setTimeout(resolve, 500))
+                  
+                  try {
+                    const canvas = await html2canvas(tierDiv, {
+                      scale: 2,
+                      useCORS: true,
+                      allowTaint: true,
+                      backgroundColor: '#f5f5f5',
+                    })
+                    
+                    // 5. 转换为 Blob 并上传
+                    const blob = await new Promise<Blob>((resolve) => {
+                      canvas.toBlob((b) => resolve(b!), 'image/png')
+                    })
+                    
+                    const formData = new FormData()
+                    formData.append('image', blob, `tier-list-${post.title || 'ranking'}.png`)
+                    
+                    const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
+                    if (!uploadRes.ok) throw new Error('上传失败')
+                    
+                    const uploadData = await uploadRes.json()
+                    const imageUrl = uploadData.data?.url || uploadData.url || uploadData.path
+                    
+                    // 6. 保存到 selectedSrc 第一张
+                    setSelectedSrc(prev => [imageUrl, ...prev])
+                    
+                    alert(`✅ 梯队排名图已生成并插入第一张配图！`)
+                  } catch (err) {
+                    console.error('截图或上传失败:', err)
+                    alert('❌ 生成失败，请重试')
+                  } finally {
+                    document.body.removeChild(tierDiv)
+                  }
+                }}
+                style={{
+                  width: '100%', padding: '14px 0', marginTop: 8,
+                  borderRadius: 12, border: 'none',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: '#fff',
+                  fontSize: 14, fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.4)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)'
+                }}
+              >
+                🖼️ 一键生成梯队排名图（插入第一张）
+              </button>
+            </>
+          )}
         </div>
 
         {/* ── 精选配图 ── */}
@@ -689,7 +1006,7 @@ ${postContext}
                 {selectedSrc.map((src, i) => (
                   <div
                     key={src}
-                    onClick={() => toggleImage(src)}
+                    onClick={() => setZoomImage(src)}
                     style={{
                       aspectRatio: '1', borderRadius: 10, overflow: 'hidden',
                       border: i === 0 ? '2px solid #ff2442' : '2px solid #e8e8e8',
@@ -910,6 +1227,21 @@ ${postContext}
             >
               {publishing ? '发布中...' : selectedSrc.length === 0 ? '请先选择配图' : !copyText ? '请先编辑文案' : `📤 发布帖子（${selectedSrc.length} 张图）`}
             </button>
+            {publishedUrl && (
+              <a
+                href={publishedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'block', marginTop: 8, padding: '8px 12px',
+                  background: '#f0fff0', borderRadius: 8, border: '1px solid #bbf7d0',
+                  fontSize: 12, color: '#16a34a', textDecoration: 'none',
+                  wordBreak: 'break-all',
+                }}
+              >
+                🔗 查看已发布帖子：{publishedUrl.slice(0, 60)}...
+              </a>
+            )}
           </div>
 
           {/* 发送评论 */}
@@ -986,6 +1318,43 @@ ${postContext}
           5. 启动 MCP 服务后可一键发布帖子和发送评论
         </div>
       </div>
+
+      {/* 图片放大预览层 */}
+      {zoomImage && (
+        <div
+          onClick={() => setZoomImage(null)}
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.9)', zIndex: 10004,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'zoom-out',
+          }}
+        >
+          <img
+            src={zoomImage}
+            alt="放大查看"
+            style={{
+              maxWidth: '90vw', maxHeight: '90vh',
+              objectFit: 'contain', borderRadius: 8,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+            }}
+          />
+          <div style={{
+            position: 'absolute', top: 20, right: 20,
+            width: 40, height: 40, borderRadius: '50%',
+            background: 'rgba(255,255,255,0.2)', color: '#fff',
+            fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', transition: 'background 0.2s',
+          }}
+          onClick={(e) => {
+            e.stopPropagation()
+            setZoomImage(null)
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+          >×</div>
+        </div>
+      )}
     </div>
   )
 }

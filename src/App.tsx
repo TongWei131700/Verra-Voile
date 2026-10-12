@@ -30,6 +30,8 @@ import TravelPhoto from './pages/TravelPhoto'
 import TravelPhotoDetail from './pages/TravelPhotoDetail'
 import XhsResearch from './pages/XhsResearch'
 import XhsPostDetail from './pages/XhsPostDetail'
+import XhsTierEditor from './pages/XhsTierEditor'
+import TraceView from './pages/TraceView'
 
 const scrollCache: Record<string, number> = {}
 
@@ -291,10 +293,12 @@ export default function App() {
         <Route path="/travel-photo/:slug" element={<TravelPhotoDetail />} />
         <Route path="/xhs-research" element={<XhsResearch />} />
         <Route path="/xhs-post/:id" element={<XhsPostDetail />} />
+        <Route path="/xhs-tier-editor/:id" element={<XhsTierEditor />} />
+        <Route path="/trace" element={<TraceView />} />
       </Routes>
       {/* 公共精简头部：仅在业务模块页面显示（首页/订单/管理页除外） */}
-      {!['/', '/order', '/consult', '/admin', '/upload', '/login', '/register', '/agent-chat', '/xhs-research'].includes(pathname) && !pathname.startsWith('/xhs-post/') && <AppHeader />}
-      {pathname !== '/order' && pathname !== '/consult' && pathname !== '/agent-chat' && pathname !== '/xhs-research' && !pathname.startsWith('/xhs-post/') && <Footer />}
+      {!['/', '/order', '/consult', '/admin', '/upload', '/login', '/register', '/agent-chat', '/xhs-research'].includes(pathname) && !pathname.startsWith('/xhs-post/') && !pathname.startsWith('/xhs-tier-editor/') && <AppHeader />}
+      {pathname !== '/order' && pathname !== '/consult' && pathname !== '/agent-chat' && pathname !== '/xhs-research' && !pathname.startsWith('/xhs-post/') && !pathname.startsWith('/xhs-tier-editor/') && <Footer />}
     </>
   )
 }

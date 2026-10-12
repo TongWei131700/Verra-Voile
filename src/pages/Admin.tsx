@@ -168,6 +168,12 @@ export default function Admin() {
   const [analyticsEvents, setAnalyticsEvents] = useState<any[]>([])
   const [analyticsTimeline, setAnalyticsTimeline] = useState<any[]>([])
 
+  // 访客链路追踪状态
+  const [sessionSearchId, setSessionSearchId] = useState('')
+  const [sessionDetail, setSessionDetail] = useState<any>(null)
+  const [sessionLoading, setSessionLoading] = useState(false)
+  const [sessionError, setSessionError] = useState('')
+
   const moreRef = useRef<HTMLDivElement>(null)
 
   const handleAdminLogin = async (e: React.FormEvent) => {
@@ -481,6 +487,23 @@ export default function Admin() {
     if (tab === 'analytics' && authed) fetchAnalytics()
   }, [tab, authed])
 
+  // 从 URL 参数中读取 trace 参数，自动查询访客链路
+  useEffect(() => {
+    if (!authed) return
+    const params = new URLSearchParams(window.location.search)
+    const traceSid = params.get('trace')
+    if (traceSid) {
+      // 切换到 analytics tab
+      setTab('analytics')
+      // 设置搜索框并自动查询
+      setSessionSearchId(traceSid)
+      // 等待 tab 切换后再查询
+      setTimeout(() => fetchSessionTrace(traceSid), 300)
+      // 清除 URL 参数（避免刷新时重复查询）
+      window.history.replaceState({}, '', '/admin')
+    }
+  }, [authed])
+
   // AI 对话管理函数
   const fetchAgentSessions = async () => {
     try {
@@ -521,6 +544,36 @@ export default function Admin() {
     } catch (e) {
       console.error('获取埋点数据失败:', e)
     }
+  }
+
+  // 访客链路查询
+  const fetchSessionTrace = async (sid?: string) => {
+    const targetSid = sid || sessionSearchId.trim()
+    if (!targetSid) return
+    setSessionLoading(true)
+    setSessionError('')
+    setSessionDetail(null)
+    try {
+      const res = await fetch(`${API_BASE}/api/analytics/session/${encodeURIComponent(targetSid)}`)
+      const data = await res.json()
+      if (data.success && data.data.pageViewCount > 0) {
+        setSessionDetail(data.data)
+      } else if (data.success) {
+        setSessionError('该 Session 无访问记录')
+      } else {
+        setSessionError(data.error || '查询失败')
+      }
+    } catch {
+      setSessionError('网络异常')
+    } finally {
+      setSessionLoading(false)
+    }
+  }
+
+  // 从 timeline 中点击 sessionId 直接查询
+  const handleTraceFromTimeline = (sid: string) => {
+    setSessionSearchId(sid)
+    fetchSessionTrace(sid)
   }
 
   // 数据库版本控制函数
@@ -1639,6 +1692,136 @@ export default function Admin() {
       {/* 数据分析 */}
       {tab === 'analytics' && (
         <div className="dashboard-content">
+          {/* 访客链路追踪 */}
+          <div className="dash-section">
+            <h3>🔍 访客链路追踪</h3>
+            <p style={{ color: '#666', fontSize: 14, marginBottom: 16 }}>输入 Session ID 查看该访客的完整访问路径</p>
+            <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+              <input
+                type="text"
+                placeholder="输入 Session ID，如 sid_1728712345_abc123"
+                value={sessionSearchId}
+                onChange={e => setSessionSearchId(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && fetchSessionTrace()}
+                style={{ flex: 1, padding: '10px 14px', border: '1px solid #ddd', borderRadius: 8, fontSize: 14, fontFamily: 'monospace' }}
+              />
+              <button
+                className="dashboard-refresh"
+                onClick={() => fetchSessionTrace()}
+                disabled={sessionLoading || !sessionSearchId.trim()}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                {sessionLoading ? '查询中...' : '🔍 查询'}
+              </button>
+            </div>
+
+            {sessionError && (
+              <div style={{ background: '#fff3f3', border: '1px solid #ffcdd2', borderRadius: 8, padding: '12px 16px', color: '#c62828', fontSize: 14, marginBottom: 16 }}>
+                {sessionError}
+              </div>
+            )}
+
+            {sessionDetail && (
+              <div style={{ border: '1px solid #e8e4df', borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
+                {/* 摘要信息 */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 1, background: '#e8e4df' }}>
+                  <div style={{ background: '#fff', padding: '14px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: '#2a2723' }}>{sessionDetail.pageViewCount}</div>
+                    <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>浏览页面</div>
+                  </div>
+                  <div style={{ background: '#fff', padding: '14px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: '#2a2723' }}>{sessionDetail.totalEvents}</div>
+                    <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>总事件数</div>
+                  </div>
+                  <div style={{ background: '#fff', padding: '14px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: '#2a2723' }}>
+                      {sessionDetail.durationSeconds >= 60
+                        ? `${Math.floor(sessionDetail.durationSeconds / 60)}分${sessionDetail.durationSeconds % 60}秒`
+                        : `${sessionDetail.durationSeconds}秒`}
+                    </div>
+                    <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>会话时长</div>
+                  </div>
+                  <div style={{ background: '#fff', padding: '14px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#2a2723', wordBreak: 'break-all' }}>{sessionDetail.firstPage}</div>
+                    <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>入口页</div>
+                  </div>
+                  <div style={{ background: '#fff', padding: '14px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#2a2723', wordBreak: 'break-all' }}>{sessionDetail.lastPage}</div>
+                    <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>最后页面</div>
+                  </div>
+                </div>
+
+                {/* 访问路径可视化 */}
+                <div style={{ padding: '16px 20px', background: '#faf9f7' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#555', marginBottom: 12 }}>访问路径</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
+                    {sessionDetail.pathSequence.map((path: string, idx: number) => (
+                      <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{
+                          background: idx === 0 ? '#2a2723' : '#f0ece8',
+                          color: idx === 0 ? '#fff' : '#555',
+                          padding: '4px 10px',
+                          borderRadius: 12,
+                          fontSize: 12,
+                          fontFamily: 'monospace',
+                          maxWidth: 200,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }} title={path}>
+                          {path === '/' ? '首页' : path}
+                        </span>
+                        {idx < sessionDetail.pathSequence.length - 1 && (
+                          <span style={{ color: '#bbb', fontSize: 14 }}>→</span>
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 详细事件列表 */}
+                <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                    <thead>
+                      <tr style={{ borderBottom: '2px solid #e8e4df', position: 'sticky', top: 0, background: '#fff' }}>
+                        <th style={{ textAlign: 'left', padding: '8px 12px' }}>时间</th>
+                        <th style={{ textAlign: 'left', padding: '8px 12px' }}>事件</th>
+                        <th style={{ textAlign: 'left', padding: '8px 12px' }}>页面</th>
+                        <th style={{ textAlign: 'left', padding: '8px 12px' }}>来源</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sessionDetail.events.map((ev: any) => (
+                        <tr key={ev.id} style={{ borderBottom: '1px solid #f0ece8' }}>
+                          <td style={{ padding: '6px 12px', whiteSpace: 'nowrap', color: '#888' }}>
+                            {new Date(ev.created_at).toLocaleString('zh-CN')}
+                          </td>
+                          <td style={{ padding: '6px 12px', fontFamily: 'monospace' }}>
+                            <span style={{
+                              background: ev.event_type === 'page_view' ? '#e8f5e9' : '#fff3e0',
+                              color: ev.event_type === 'page_view' ? '#2e7d32' : '#e65100',
+                              padding: '2px 8px',
+                              borderRadius: 8,
+                              fontSize: 11,
+                            }}>
+                              {ev.event_type}
+                            </span>
+                          </td>
+                          <td style={{ padding: '6px 12px', fontFamily: 'monospace', fontSize: 11, maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {ev.page_path}
+                          </td>
+                          <td style={{ padding: '6px 12px', color: '#888', fontSize: 11 }}>
+                            {ev.referrer || '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="dash-section">
             <h3>📊 埋点数据概览</h3>
 
@@ -1756,6 +1939,7 @@ export default function Admin() {
                             <th style={{ textAlign: 'left', padding: '6px 10px' }}>时间</th>
                             <th style={{ textAlign: 'left', padding: '6px 10px' }}>事件</th>
                             <th style={{ textAlign: 'left', padding: '6px 10px' }}>页面</th>
+                            <th style={{ textAlign: 'left', padding: '6px 10px' }}>Session</th>
                             <th style={{ textAlign: 'left', padding: '6px 10px' }}>用户</th>
                           </tr>
                         </thead>
@@ -1765,6 +1949,13 @@ export default function Admin() {
                               <td style={{ padding: '6px 10px', whiteSpace: 'nowrap', color: '#888' }}>{new Date(ev.created_at).toLocaleString('zh-CN')}</td>
                               <td style={{ padding: '6px 10px', fontFamily: 'monospace' }}>{ev.event_type}</td>
                               <td style={{ padding: '6px 10px', fontFamily: 'monospace', fontSize: 11, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.page_path}</td>
+                              <td style={{ padding: '6px 10px', fontFamily: 'monospace', fontSize: 10 }}>
+                                <span
+                                  style={{ cursor: 'pointer', color: '#1565c0', borderBottom: '1px dashed #1565c0' }}
+                                  title={`追踪会话 ${ev.session_id}`}
+                                  onClick={() => handleTraceFromTimeline(ev.session_id)}
+                                >{ev.session_id?.substring(0, 16)}...</span>
+                              </td>
                               <td style={{ padding: '6px 10px', color: '#888', fontSize: 11 }}>{ev.user_token}</td>
                             </tr>
                           ))}

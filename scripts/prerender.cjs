@@ -320,7 +320,7 @@ async function renderPage(browser, route) {
     if (pageErrors.length) throw new Error(pageErrors.join('; '))
     const snapshot = await page.evaluate(() => ({title:document.title,text:document.querySelector('#root')?.textContent || '',canonical:document.querySelector('link[rel="canonical"]')?.getAttribute('href')}))
     if (route !== '/' && (snapshot.title === '欧婚纪 · 欧洲目的地婚礼全程策划' || snapshot.text.includes('未找到该'))) throw new Error('页面未正确渲染')
-    if (!snapshot.canonical || new URL(snapshot.canonical).pathname !== route) throw new Error('canonical 与路由不一致')
+    if (!snapshot.canonical || decodeURI(new URL(snapshot.canonical).pathname) !== decodeURI(route)) throw new Error('canonical 与路由不一致')
     return await page.content()
   } catch (err) {
     console.error(`\n  ✗ 渲染异常 ${route}: ${err.message}`)
@@ -350,7 +350,7 @@ function saveHtml(route, html) {
 
 // ---------- Sitemap ----------
 function generateSitemap(routes) {
-  const urls = routes.map(r => `  <url><loc>${SITE_URL}${r === '/' ? '' : r}</loc></url>`).join('\n')
+  const urls = routes.map(r => `  <url><loc>${SITE_URL}${r === '/' ? '' : encodeURI(r)}</loc></url>`).join('\n')
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
@@ -486,7 +486,7 @@ async function main() {
   console.log(`  成功: ${successCount}  失败: ${failCount}  总计: ${routes.length}`)
   console.log(`  有实际内容: ${contentCount}`)
   if (failCount || successCount !== routes.length || contentCount !== routes.length) throw new Error('SSG 不完整，禁止部署')
-  fs.writeFileSync(path.join(DIST_DIR, 'ssg-manifest.json'), JSON.stringify({total:routes.length,routes:renderedRoutes},null,2))
+  if (!isSingleMode) fs.writeFileSync(path.join(DIST_DIR, 'ssg-manifest.json'), JSON.stringify({total:routes.length,routes:renderedRoutes},null,2))
 }
 
 main().catch((err) => {

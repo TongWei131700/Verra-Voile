@@ -25,7 +25,8 @@ const apiCache = {}
 async function fetchApi(apiPath) {
   const url = `${API_BASE}/api/products${apiPath}`
   console.log(`  → 获取 ${url}`)
-  const res = await fetch(url)
+  const res = await fetch(url, { signal: AbortSignal.timeout(30000) })
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`)
   const json = await res.json()
   if (!json.success) throw new Error(`API 失败: ${url}`)
   return json.data
@@ -56,10 +57,6 @@ async function prefetchAllData() {
   // AI Agent 聊天页面（无 API 数据，纯 SEO）
   routeMap['/agent-chat'] = []
 
-  // 精准获客 Agent（工具页面，SEO 元数据）
-  routeMap['/xhs-research'] = []
-
-
   // 目的地
   try {
     const venues = await fetchApi('/crawled-venues')
@@ -87,27 +84,27 @@ async function prefetchAllData() {
           const detailData = await fetchApi(`/crawled-venues/${v.slug}`)
           apiCache[detailKey] = { success: true, data: detailData }
         } catch {
-          apiCache[detailKey] = { success: true, data: v }
+          throw new Error(`场地详情获取失败: ${v.slug}`)
         }
       }
     }
     console.log(`  目的地场地: ${items.length}`)
-  } catch (e) { console.error('  获取目的地失败:', e.message) }
+  } catch (e) { throw new Error('获取目的地失败: ' + e.message) }
 
   // 花卉（仅列表页，不预渲染详情页）
   try {
     const florists = await fetchApi('/crawled-florists')
     const items = Array.isArray(florists) ? florists : []
     const [serviceRes, productRes] = await Promise.all([
-      fetch(`${API_BASE}/api/products/crawled-florists?type=service`).then(r => r.json()),
-      fetch(`${API_BASE}/api/products/crawled-florists?type=product`).then(r => r.json()),
+      fetchApi('/crawled-florists?type=service').then(data => ({success:true,data})),
+      fetchApi('/crawled-florists?type=product').then(data => ({success:true,data})),
     ])
     apiCache['/api/products/crawled-florists?type=service'] = serviceRes
     apiCache['/api/products/crawled-florists?type=product'] = productRes
     apiCache['/api/products/crawled-florists'] = { success: true, data: [...(serviceRes.data || []), ...(productRes.data || [])] }
     routeMap['/flowers'] = ['/api/products/crawled-florists?type=service', '/api/products/crawled-florists?type=product']
     console.log(`  花卉: 仅列表页（${items.length} 个商品跳过详情预渲染）`)
-  } catch (e) { console.error('  获取花卉失败:', e.message) }
+  } catch (e) { throw new Error('获取花卉失败: ' + e.message) }
 
   // 礼服（仅列表页，不预渲染详情页）
   try {
@@ -116,9 +113,9 @@ async function prefetchAllData() {
     apiCache['/api/products/crawled-dresses'] = { success: true, data: items }
     routeMap['/dresses'] = ['/api/products/crawled-dresses']
     console.log(`  礼服: 仅列表页（${items.length} 个商品跳过详情预渲染）`)
-  } catch (e) { console.error('  获取礼服失败:', e.message) }
+  } catch (e) { throw new Error('获取礼服失败: ' + e.message) }
 
-  // 摄影师（仅列表页，不预渲染详情页）
+  // 摄影师：列表、国家落地页和全部详情
   try {
     const photographers = await fetchApi('/crawled-photographers')
     const items = Array.isArray(photographers) ? photographers : []
@@ -142,10 +139,16 @@ async function prefetchAllData() {
         routeMap[`/photography/${slug}`] = ['/api/products/crawled-photographers']
       }
     }
-    console.log(`  摄影师: 仅列表页（${items.length} 个详情跳过预渲染），国家落地页: ${phUniqueCountries.filter(c => phCountrySlugMap[c]).length}`)
-  } catch (e) { console.error('  获取摄影师失败:', e.message) }
+    for (const item of items) {
+      if (!item.slug) throw new Error('摄影师缺少 slug')
+      const key = `/api/products/crawled-photographers/${item.slug}`
+      apiCache[key] = { success: true, data: await fetchApi(`/crawled-photographers/${item.slug}`) }
+      routeMap[`/photography/${item.slug}`] = [key]
+    }
+    console.log(`  摄影师详情: ${items.length}`)
+  } catch (e) { throw new Error('获取摄影师失败: ' + e.message) }
 
-  // 婚礼团队（仅列表页，不预渲染详情页）
+  // 婚礼团队：列表、国家落地页和全部详情
   try {
     const teams = await fetchApi('/crawled-wedding-teams')
     const items = Array.isArray(teams) ? teams : []
@@ -168,8 +171,14 @@ async function prefetchAllData() {
         routeMap[`/wedding-team/${slug}`] = ['/api/products/crawled-wedding-teams']
       }
     }
-    console.log(`  婚礼团队: 仅列表页（${items.length} 个详情跳过预渲染），国家落地页: ${wtUniqueCountries.filter(c => wtCountrySlugMap[c]).length}`)
-  } catch (e) { console.error('  获取婚礼团队失败:', e.message) }
+    for (const item of items) {
+      if (!item.slug) throw new Error('婚礼团队缺少 slug')
+      const key = `/api/products/crawled-wedding-teams/${item.slug}`
+      apiCache[key] = { success: true, data: await fetchApi(`/crawled-wedding-teams/${item.slug}`) }
+      routeMap[`/wedding-team/${item.slug}`] = [key]
+    }
+    console.log(`  婚礼团队详情: ${items.length}`)
+  } catch (e) { throw new Error('获取婚礼团队失败: ' + e.message) }
 
   // 酒水（仅列表页，不预渲染详情页）
   try {
@@ -178,7 +187,7 @@ async function prefetchAllData() {
     apiCache['/api/products/wine'] = { success: true, data: wineData }
     routeMap['/wine'] = ['/api/products/wine']
     console.log(`  酒水: 仅列表页（${products.length} 个商品跳过详情预渲染）`)
-  } catch (e) { console.error('  获取酒水失败:', e.message) }
+  } catch (e) { throw new Error('获取酒水失败: ' + e.message) }
 
   // 旅拍景点
   try {
@@ -215,7 +224,7 @@ async function prefetchAllData() {
           const detailData = await fetchApi(`/crawled-travel-attractions/${a.slug}`)
           apiCache[detailKey] = { success: true, data: detailData }
         } catch {
-          apiCache[detailKey] = { success: true, data: a }
+          throw new Error(`旅拍详情获取失败: ${a.slug}`)
         }
         // 预取推荐摄影师（否则 SSG 渲染时该请求未被拦截，摄影师卡片不会出现在 HTML 中）
         try {
@@ -227,7 +236,7 @@ async function prefetchAllData() {
         routeMap[`/travel-photo/${a.slug}`] = [detailKey, photogKey]
       }
     }
-  } catch (e) { console.error('  获取旅拍景点失败:', e.message) }
+  } catch (e) { throw new Error('获取旅拍景点失败: ' + e.message) }
 
   console.log(`\n  API 缓存条目: ${Object.keys(apiCache).length}`)
   return routeMap
@@ -253,6 +262,8 @@ async function renderPage(browser, route) {
   restoreTemplate()
 
   const page = await browser.newPage()
+  const pageErrors = []
+  page.on('pageerror', error => pageErrors.push(error.message))
 
   // 拦截请求：API 请求直接返回缓存数据，图片/字体跳过
   await page.setRequestInterception(true)
@@ -280,6 +291,7 @@ async function renderPage(browser, route) {
       }
     }
 
+    if (url.includes('/api/') && !url.includes('/api/products/')) return req.respond({status:200,contentType:'application/json',body:JSON.stringify({success:true,data:[]})})
     req.continue()
   })
 
@@ -293,7 +305,7 @@ async function renderPage(browser, route) {
       window.dispatchEvent(new PopStateEvent('popstate'))
     }, route)
     // 等待 React 渲染完成 + Helmet DOM 更新
-    await new Promise(r => setTimeout(r, 3000))
+    await page.waitForFunction(() => (document.querySelector('#root')?.textContent || '').trim().length > 100, {timeout:15000})
     
     // 验证 title 是否已更新（排除首页）
     if (route !== '/') {
@@ -305,6 +317,10 @@ async function renderPage(browser, route) {
       }
     }
     
+    if (pageErrors.length) throw new Error(pageErrors.join('; '))
+    const snapshot = await page.evaluate(() => ({title:document.title,text:document.querySelector('#root')?.textContent || '',canonical:document.querySelector('link[rel="canonical"]')?.getAttribute('href')}))
+    if (route !== '/' && (snapshot.title === '欧婚纪 · 欧洲目的地婚礼全程策划' || snapshot.text.includes('未找到该'))) throw new Error('页面未正确渲染')
+    if (!snapshot.canonical || new URL(snapshot.canonical).pathname !== route) throw new Error('canonical 与路由不一致')
     return await page.content()
   } catch (err) {
     console.error(`\n  ✗ 渲染异常 ${route}: ${err.message}`)
@@ -385,6 +401,12 @@ async function main() {
   const routes = Object.keys(routeMap)
   console.log(`\n  共 ${routes.length} 个页面待渲染\n`)
 
+  if (process.argv.includes('--plan')) {
+    fs.writeFileSync(path.join(__dirname, '../ssg-plan.json'), JSON.stringify({api:API_BASE,total:routes.length,routes},null,2))
+    console.log('SSG 页面清单已写入 ssg-plan.json')
+    return
+  }
+
   // 2. 保存模板
   console.log('[2/5] 保存 HTML 模板...')
   saveTemplate()
@@ -399,6 +421,7 @@ async function main() {
   let successCount = 0
   let failCount = 0
   let contentCount = 0
+  const renderedRoutes = []
 
   try {
     browser = await puppeteer.launch({
@@ -427,12 +450,15 @@ async function main() {
         if (hasContent) contentCount++
         console.log(`✓ (${size}KB${hasContent ? '' : ' 空壳'})`)
         successCount++
+        renderedRoutes.push(route)
       } else {
         failCount++
         console.log('✗')
+        break
       }
     }
   } catch (err) {
+    failCount++
     console.error(`\n  浏览器崩溃: ${err.message}`)
   } finally {
     try { await browser.close() } catch {}
@@ -442,7 +468,7 @@ async function main() {
   // 5. 生成 sitemap（单页模式跳过）
   if (!isSingleMode) {
     console.log('\n[5/5] 生成 sitemap.xml...')
-    generateSitemap(routes)
+    generateSitemap(renderedRoutes)
   } else {
     console.log('\n[5/5] 跳过 sitemap 生成（单页模式）')
   }
@@ -459,6 +485,8 @@ async function main() {
   console.log(`\n=== 完成 ===`)
   console.log(`  成功: ${successCount}  失败: ${failCount}  总计: ${routes.length}`)
   console.log(`  有实际内容: ${contentCount}`)
+  if (failCount || successCount !== routes.length || contentCount !== routes.length) throw new Error('SSG 不完整，禁止部署')
+  fs.writeFileSync(path.join(DIST_DIR, 'ssg-manifest.json'), JSON.stringify({total:routes.length,routes:renderedRoutes},null,2))
 }
 
 main().catch((err) => {

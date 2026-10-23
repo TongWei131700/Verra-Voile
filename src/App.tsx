@@ -1,37 +1,46 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { loadSelectedProductsFromServer, getSelectedProducts } from './utils/selectedProducts'
 import { trackPageView } from './utils/analytics'
 import Footer from './components/Footer'
 import AppHeader from './components/common/AppHeader'
-import Home from './pages/Home'
-import Admin from './pages/Admin'
-import Upload from './pages/Upload'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import OrderDetail from './pages/OrderDetail'
-import Consult from './pages/Consult'
-import AgentChat from './pages/AgentChat'
 
-import Destinations from './pages/Destinations'
-import DestinationsDetail from './pages/DestinationsDetail'
-import WeddingTeam from './pages/WeddingTeam'
-import WeddingTeamDetail from './pages/WeddingTeamDetail'
-import Flowers from './pages/Flowers'
-import FlowersDetail from './pages/FlowersDetail'
-import Dresses from './pages/Dresses'
-import DressesDetail from './pages/DressesDetail'
-import Photography from './pages/Photography'
-import PhotographyDetail from './pages/PhotographyDetail'
-import Wine from './pages/Wine'
-import WineDetail from './pages/WineDetail'
-import FlowerProductDetail from './pages/FlowerProductDetail'
-import TravelPhoto from './pages/TravelPhoto'
-import TravelPhotoDetail from './pages/TravelPhotoDetail'
-import XhsResearch from './pages/XhsResearch'
-import XhsPostDetail from './pages/XhsPostDetail'
-import XhsTierEditor from './pages/XhsTierEditor'
-import TraceView from './pages/TraceView'
+// ── 路由级代码分割：按需加载页面组件 ──
+// 首页保持同步加载（首屏），其余页面全部 lazy import
+const Home = lazy(() => import('./pages/Home'))
+const Admin = lazy(() => import('./pages/Admin'))
+const Upload = lazy(() => import('./pages/Upload'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+const OrderDetail = lazy(() => import('./pages/OrderDetail'))
+const Consult = lazy(() => import('./pages/Consult'))
+const AgentChat = lazy(() => import('./pages/AgentChat'))
+const Destinations = lazy(() => import('./pages/Destinations'))
+const DestinationsDetail = lazy(() => import('./pages/DestinationsDetail'))
+const WeddingTeam = lazy(() => import('./pages/WeddingTeam'))
+const WeddingTeamDetail = lazy(() => import('./pages/WeddingTeamDetail'))
+const Flowers = lazy(() => import('./pages/Flowers'))
+const FlowersDetail = lazy(() => import('./pages/FlowersDetail'))
+const Dresses = lazy(() => import('./pages/Dresses'))
+const DressesDetail = lazy(() => import('./pages/DressesDetail'))
+const Photography = lazy(() => import('./pages/Photography'))
+const PhotographyDetail = lazy(() => import('./pages/PhotographyDetail'))
+const Wine = lazy(() => import('./pages/Wine'))
+const WineDetail = lazy(() => import('./pages/WineDetail'))
+const FlowerProductDetail = lazy(() => import('./pages/FlowerProductDetail'))
+const TravelPhoto = lazy(() => import('./pages/TravelPhoto'))
+const TravelPhotoDetail = lazy(() => import('./pages/TravelPhotoDetail'))
+const TraceView = lazy(() => import('./pages/TraceView'))
+
+/** 路由级 Suspense 回退：极简加载态 */
+function PageLoader() {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <div style={{ width: 32, height: 32, border: '2px solid #ddd', borderTopColor: '#8b7355', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    </div>
+  )
+}
 
 const scrollCache: Record<string, number> = {}
 
@@ -180,6 +189,7 @@ export default function App() {
   return (
     <>
       <ScrollRestoration />
+      <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/" element={<Home />} />
         {/* Listing 页面已下线，统一重定向到首页 */}
@@ -291,14 +301,12 @@ export default function App() {
         <Route path="/travel-photo/vatican" element={<TravelPhoto />} />
         <Route path="/travel-photo/monaco" element={<TravelPhoto />} />
         <Route path="/travel-photo/:slug" element={<TravelPhotoDetail />} />
-        <Route path="/xhs-research" element={<XhsResearch />} />
-        <Route path="/xhs-post/:id" element={<XhsPostDetail />} />
-        <Route path="/xhs-tier-editor/:id" element={<XhsTierEditor />} />
         <Route path="/trace" element={<TraceView />} />
       </Routes>
+      </Suspense>
       {/* 公共精简头部：仅在业务模块页面显示（首页/订单/管理页除外） */}
-      {!['/', '/order', '/consult', '/admin', '/upload', '/login', '/register', '/agent-chat', '/xhs-research'].includes(pathname) && !pathname.startsWith('/xhs-post/') && !pathname.startsWith('/xhs-tier-editor/') && <AppHeader />}
-      {pathname !== '/order' && pathname !== '/consult' && pathname !== '/agent-chat' && pathname !== '/xhs-research' && !pathname.startsWith('/xhs-post/') && !pathname.startsWith('/xhs-tier-editor/') && <Footer />}
+      {!['/', '/order', '/consult', '/admin', '/upload', '/login', '/register', '/agent-chat'].includes(pathname) && <AppHeader />}
+      {pathname !== '/order' && pathname !== '/consult' && pathname !== '/agent-chat' && <Footer />}
     </>
   )
 }

@@ -9,7 +9,14 @@ import './styles/index.css'
 const isCapacitor = (window as any).Capacitor !== undefined
 const Router = isCapacitor ? HashRouter : BrowserRouter
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+// SSG HTML contains serialized SEO tags without React ownership. Remove those tags
+// when JavaScript takes over; otherwise SPA navigation leaves stale canonicals behind.
+const root = document.getElementById('root')!
+if (root.childElementCount > 0) {
+  document.head.querySelectorAll('title, link[rel="canonical"], meta[name="description"], meta[name="keywords"], meta[property^="og:"], script[type="application/ld+json"]').forEach(node => node.remove())
+}
+
+ReactDOM.createRoot(root).render(
   <HelmetProvider>
     <Router>
       <App />

@@ -41,6 +41,8 @@ async function newPage(browser, mobile = false) {
       assert.ok((await page.title()).includes('冰岛'))
       await navigate(page, `/${module}/italy`)
       assert.ok((await page.title()).includes('意大利'))
+      assert.equal(await page.$$eval('link[rel="canonical"]', elements => elements.length), 1)
+      assert.equal(await page.$eval('link[rel="canonical"]', element => new URL(element.href).pathname), `/${module}/italy`)
       await page.goBack({ waitUntil: 'domcontentloaded' }); await pause()
       assert.ok((await page.title()).includes('冰岛'))
       check(`${module}: country navigation and browser back`)

@@ -1,5 +1,7 @@
+import catalogCountries from '../data/catalogCountries.json'
+import { useCatalogFilters, matchesCatalogItem } from '../hooks/useCatalogFilters'
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { navFromList } from '../utils/navigateFromList'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
@@ -28,10 +30,6 @@ const HERO_IMG = heroImg
 // 模块级缓存：从详情返回列表页时复用，避免重复请求
 let _cachedProducts: PhotographerItem[] | null = null
 // 筛选/排序缓存：返回列表页时恢复用户之前的筛选状态
-let _cachedSelectedCountries: string[] | null = null
-let _cachedSelectedStyles: string[] | null = null
-let _cachedSearchFilter: string | null = null
-let _cachedSortMode: string | null = null
 let _cachedCountryLimits: Record<string, number> | null = null
 
 // 从数据中提取去重后的选项列表
@@ -58,20 +56,8 @@ const COUNTRY_CN: Record<string, string> = {
 }
 
 // 国家 → URL slug 映射（用于 SEO 落地页）
-const COUNTRY_SLUG_MAP: Record<string, string> = {
-  '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '英国': 'united-kingdom',
-  '德国': 'germany', '希腊': 'greece', '葡萄牙': 'portugal', '奥地利': 'austria',
-  '挪威': 'norway', '冰岛': 'iceland', '爱尔兰': 'ireland', '克罗地亚': 'croatia',
-  '匈牙利': 'hungary', '瑞士': 'switzerland', '比利时': 'belgium', '荷兰': 'netherlands',
-  '瑞典': 'sweden', '丹麦': 'denmark', '芬兰': 'finland', '捷克': 'czech',
-  '波兰': 'poland', '斯洛文尼亚': 'slovenia',
-}
-const SLUG_TO_COUNTRY: Record<string, string> = Object.fromEntries(
-  Object.entries(COUNTRY_SLUG_MAP).map(([k, v]) => [v, k])
-)
+const COUNTRY_SLUG_MAP = catalogCountries['photography']
 
-// URL 国家参数是否已消费（防止从详情页返回时重复读取 URL）
-let _urlCountryUsed = false
 
 // 将 API 返回的 snake_case 数据转为前端 camelCase
 function mapApiItem(row: any): PhotographerItem {
@@ -94,34 +80,20 @@ function mapApiItem(row: any): PhotographerItem {
 
 export default function Photography() {
   const navigate = useNavigate()
-  const location = useLocation()
+  const { selectedCountries, setSelectedCountries, selectedOptions: selectedStyles, setSelectedOptions: setSelectedStyles, searchQuery, setSearchQuery, searchFilter, setSearchFilter, sortMode, setSortMode } = useCatalogFilters('/photography', COUNTRY_SLUG_MAP, 'style')
   const [allProducts, setAllProducts] = useState<PhotographerItem[]>([])
   const [dataLoading, setDataLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
   const [searchSubmitted, setSearchSubmitted] = useState(false)
-  const [searchFilter, setSearchFilter] = useState(() => _cachedSearchFilter ?? '')
   const [searchFocused, setSearchFocused] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const filterBodyRef = useRef<HTMLDivElement>(null)
-  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => {
-    // URL 路径 /photography/france 优先于缓存
-    const pathParts = location.pathname.split('/').filter(Boolean)
-    const urlSlug = pathParts.length > 1 && pathParts[0] === 'photography' ? pathParts[1] : null
-    if (urlSlug && SLUG_TO_COUNTRY[urlSlug] && !_urlCountryUsed) {
-      _urlCountryUsed = true
-      return new Set([SLUG_TO_COUNTRY[urlSlug]])
-    }
-    return new Set(_cachedSelectedCountries ?? [])
-  })
-  const [selectedStyles, setSelectedStyles] = useState<Set<string>>(() => new Set(_cachedSelectedStyles ?? []))
   const [openGroups, setOpenGroups] = useState({ country: true, style: true })
     const [sortOpen, setSortOpen] = useState(false)
   const [expandedFilters, setExpandedFilters] = useState({ country: false, style: false })
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
-  const [sortMode, setSortMode] = useState<string>(() => _cachedSortMode ?? 'default')
   const [bottomSheet, setBottomSheet] = useState<'sort' | 'country' | 'filter' | null>(null)
   const [pendingCountries, setPendingCountries] = useState<Set<string> | null>(null)
   // 分组展示（所有分组一次性展示，每组内按屏幕宽度控制初始显示数量）
@@ -184,23 +156,7 @@ export default function Photography() {
   ]
 
   const filteredList = useMemo(() => {
-    let list = allProducts
-    if (selectedCountries.size > 0) {
-      list = list.filter(p => selectedCountries.has(p.country))
-    }
-    if (selectedStyles.size > 0) {
-      list = list.filter(p => p.photoStyles.some(s => selectedStyles.has(s)))
-    }
-    if (searchFilter) {
-      const q = searchFilter.toLowerCase()
-      list = list.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.nameEn.toLowerCase().includes(q) ||
-        p.country.toLowerCase().includes(q) ||
-        p.countryEn.toLowerCase().includes(q) ||
-        p.photoStyles.some(s => s.toLowerCase().includes(q))
-      )
-    }
+    let list = allProducts.filter(p => matchesCatalogItem(p, p.photoStyles, selectedCountries, selectedStyles, searchFilter))
     if (sortMode === 'price-asc') {
       list = [...list].sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity))
     } else if (sortMode === 'price-desc') {
@@ -219,16 +175,16 @@ export default function Photography() {
     allCountries.forEach(c => {
       if (c.toLowerCase().includes(q)) items.push({ type: 'country', label: c })
     })
-    allStyles.forEach(s => {
+    allStyles.filter(option => allProducts.some(p => (!selectedCountries.size || selectedCountries.has(p.country)) && p.photoStyles.includes(option))).forEach(s => {
       if (s.toLowerCase().includes(q)) items.push({ type: 'style', label: s })
     })
-    allProducts.forEach(p => {
+    allProducts.filter(p => matchesCatalogItem(p, p.photoStyles, selectedCountries, selectedStyles)).forEach(p => {
       if (p.name.toLowerCase().includes(q) || p.nameEn.toLowerCase().includes(q)) {
         items.push({ type: 'photographer', label: p.nameEn, sub: p.country, slug: p.slug })
       }
     })
     return items.slice(0, 10)
-  }, [searchQuery, allCountries, allStyles, allProducts])
+  }, [searchQuery, allCountries, allStyles, allProducts, selectedCountries, selectedStyles])
 
   const bookedList = useMemo(() => allProducts.filter(p => bookedSlugs.has(p.slug)), [allProducts, bookedSlugs])
   const otherList = useMemo(() => filteredList.filter(p => !bookedSlugs.has(p.slug)), [filteredList, bookedSlugs])
@@ -279,26 +235,7 @@ export default function Photography() {
     document.documentElement.scrollTop = 0
   }, [selectedCountries, selectedStyles, searchFilter, sortMode])
 
-  // 筛选/排序状态变化时同步写入模块级缓存
-  useEffect(() => { _cachedSelectedCountries = Array.from(selectedCountries) }, [selectedCountries])
-  useEffect(() => { _cachedSelectedStyles = Array.from(selectedStyles) }, [selectedStyles])
-  useEffect(() => { _cachedSearchFilter = searchFilter }, [searchFilter])
-  useEffect(() => { _cachedSortMode = sortMode }, [sortMode])
 
-  // 筛选变化时同步写入 URL（路径式 /photography/france）
-  const _isInitialMount = useRef(true)
-  useEffect(() => {
-    if (_isInitialMount.current) { _isInitialMount.current = false; return }
-    if (selectedCountries.size === 1) {
-      const country = Array.from(selectedCountries)[0]
-      const slug = COUNTRY_SLUG_MAP[country]
-      if (slug && location.pathname !== `/photography/${slug}`) {
-        navigate(`/photography/${slug}`, { replace: true })
-      }
-    } else if (location.pathname !== '/photography') {
-      navigate('/photography', { replace: true })
-    }
-  }, [selectedCountries]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const totalFilters = selectedCountries.size + selectedStyles.size + (searchFilter ? 1 : 0)
   const bookedCount = allProducts.filter((p: PhotographerItem) => bookedSlugs.has(p.slug)).length
@@ -342,6 +279,7 @@ export default function Photography() {
       setSelectedStyles(prev => { const n = new Set(prev); n.add(item.label); return n })
     } else if (item.type === 'photographer' && item.slug) {
       navFromList('/photography', `/photography/${item.slug}`, navigate)
+      return
     }
     setSearchQuery('')
     setSearchSubmitted(false)
@@ -374,38 +312,13 @@ export default function Photography() {
   }, [])
 
 
-  // 回车确认搜索：匹配筛选条件则加入左侧筛选，否则按文字过滤
+  // 回车应用文本搜索，筛选项仅通过明确点击修改
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && searchQuery.trim()) {
-      const q = searchQuery.trim().toLowerCase()
-      let matched = false
-
-      // 匹配国家
-      allCountries.forEach(c => {
-        if (c.toLowerCase().includes(q)) {
-          setSelectedCountries(prev => { const n = new Set(prev); n.add(c); return n })
-          matched = true
-        }
-      })
-      // 匹配风格
-      allStyles.forEach(s => {
-        if (s.toLowerCase().includes(q)) {
-          setSelectedStyles(prev => { const n = new Set(prev); n.add(s); return n })
-          matched = true
-        }
-      })
-
-      if (matched) {
-        // 匹配到筛选条件 → 加入左侧筛选，清空搜索
-        setSearchQuery('')
-        setSearchFilter('')
-      } else {
-        // 未匹配 → 按文字过滤摄影师名称
-        setSearchFilter(searchQuery.trim())
-      }
-      setSearchSubmitted(false)
-      searchInputRef.current?.blur()
-    }
+    if (e.key !== 'Enter') return
+    e.preventDefault()
+    setSearchFilter(searchQuery)
+    setSearchSubmitted(false)
+    searchInputRef.current?.blur()
   }
 
   return (
@@ -601,10 +514,7 @@ export default function Photography() {
                 setBottomSheet(null)
               }}>
                 查看 {(() => {
-                  let list = allProducts
-                  if (current.size > 0) list = list.filter(p => current.has(p.country))
-                  if (selectedStyles.size > 0) list = list.filter(p => p.photoStyles.some(s => selectedStyles.has(s)))
-                  return list.length
+                  return allProducts.filter(p => matchesCatalogItem(p, p.photoStyles, current, selectedStyles, searchFilter)).length
                 })()} 位摄影师
               </button>
             </div>

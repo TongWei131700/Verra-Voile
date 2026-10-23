@@ -9,5 +9,5 @@ export function navFromList(listPath: string, targetPath: string, navigate: Navi
   const pos = nhIntro ? nhIntro.scrollTop : window.scrollY
   const cache = (window as any).__scrollCache
   if (cache) cache[listPath] = pos
-  navigate(targetPath)
+  navigate(targetPath, { state: { from: window.location.pathname + window.location.search } })
 }

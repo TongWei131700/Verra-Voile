@@ -1,5 +1,7 @@
+import catalogCountries from '../data/catalogCountries.json'
+import { useCatalogFilters, matchesCatalogItem } from '../hooks/useCatalogFilters'
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { navFromList } from '../utils/navigateFromList'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
@@ -12,42 +14,8 @@ const API_BASE = import.meta.env.VITE_API_URL || ''
 
 
 // 国家 → URL slug 映射（用于 SEO 落地页）
-const COUNTRY_SLUG_MAP: Record<string, string> = {
-  '法国': 'france',
-  '意大利': 'italy',
-  '希腊': 'greece',
-  '西班牙': 'spain',
-  '葡萄牙': 'portugal',
-  '奥地利': 'austria',
-  '瑞士': 'switzerland',
-  '德国': 'germany',
-  '荷兰': 'netherlands',
-  '丹麦': 'denmark',
-  '爱尔兰': 'ireland',
-  '瑞典': 'sweden',
-  '比利时': 'belgium',
-  '捷克': 'czech',
-  '克罗地亚': 'croatia',
-  '匈牙利': 'hungary',
-  '波兰': 'poland',
-  '挪威': 'norway',
-  '冰岛': 'iceland',
-  '斯洛文尼亚': 'slovenia',
-  '马耳他': 'malta',
-  '芬兰': 'finland',
-  '爱沙尼亚': 'estonia',
-  '拉脱维亚': 'latvia',
-  '立陶宛': 'lithuania',
-  '列支敦士登': 'liechtenstein',
-  '卢森堡': 'luxembourg',
-  '斯洛伐克': 'slovakia',
-}
-const SLUG_TO_COUNTRY: Record<string, string> = Object.fromEntries(
-  Object.entries(COUNTRY_SLUG_MAP).map(([k, v]) => [v, k])
-)
+const COUNTRY_SLUG_MAP = catalogCountries['destinations']
 
-// URL 国家参数是否已消费（防止从详情页返回时重复读取 URL）
-let _urlCountryUsed = false
 
 // 列表项（与 API 返回字段对应）
 interface VenueItem {
@@ -93,10 +61,6 @@ let _cachedVenues: VenueItem[] | null = null
 let _cachedCountryLimits: Record<string, number> | null = null
 
 // 筛选/排序缓存：返回列表页时恢复用户之前的筛选状态
-let _cachedSelectedCountries: string[] | null = null
-let _cachedSelectedVenueTypes: string[] | null = null
-let _cachedSearchFilter: string | null = null
-let _cachedSortMode: string | null = null
 
 // 从数据中动态提取去重后的选项列表
 function extractUnique<T>(items: VenueItem[], getter: (c: VenueItem) => T | T[]): T[] {
@@ -111,35 +75,20 @@ function extractUnique<T>(items: VenueItem[], getter: (c: VenueItem) => T | T[])
 
 export default function Destinations() {
   const navigate = useNavigate()
-  const location = useLocation()
+  const { selectedCountries, setSelectedCountries, selectedOptions: selectedVenueTypes, setSelectedOptions: setSelectedVenueTypes, searchQuery, setSearchQuery, searchFilter, setSearchFilter, sortMode, setSortMode } = useCatalogFilters('/destinations', COUNTRY_SLUG_MAP, 'type')
   const [allVenues, setAllVenues] = useState<VenueItem[]>([])
   const [dataLoading, setDataLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
   const [searchSubmitted, setSearchSubmitted] = useState(false)
   const [searchFocused, setSearchFocused] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const filterBodyRef = useRef<HTMLDivElement>(null)
-  // URL 国家参数优先（SEO 落地页），否则从缓存恢复
-  const initialCountries = useMemo(() => {
-    const pathParts = location.pathname.split('/').filter(Boolean)
-    const urlSlug = pathParts.length > 1 && pathParts[0] === 'destinations' ? pathParts[1] : null
-    if (urlSlug && SLUG_TO_COUNTRY[urlSlug] && !_urlCountryUsed) {
-      _urlCountryUsed = true
-      return new Set([SLUG_TO_COUNTRY[urlSlug]])
-    }
-    return new Set(_cachedSelectedCountries ?? [])
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => initialCountries)
-  const [selectedVenueTypes, setSelectedVenueTypes] = useState<Set<string>>(() => new Set(_cachedSelectedVenueTypes ?? []))
   const [openGroups, setOpenGroups] = useState({ country: true, venueType: true })
     const [sortOpen, setSortOpen] = useState(false)
   const [expandedFilters, setExpandedFilters] = useState({ country: false, venueType: false })
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
-  const [sortMode, setSortMode] = useState<string>(() => _cachedSortMode ?? 'default')
-  const [searchFilter, setSearchFilter] = useState(() => _cachedSearchFilter ?? '')
   const [bottomSheet, setBottomSheet] = useState<'sort' | 'country' | 'filter' | null>(null)
   const [pendingCountries, setPendingCountries] = useState<Set<string> | null>(null)
 
@@ -192,25 +141,7 @@ export default function Destinations() {
   ]
 
   const filteredList = useMemo(() => {
-    let list = allVenues
-    if (selectedCountries.size > 0) {
-      list = list.filter(c => selectedCountries.has(c.country))
-    }
-    if (selectedVenueTypes.size > 0) {
-      list = list.filter(c => c.venueTypes.some(s => selectedVenueTypes.has(s)))
-    }
-    if (searchFilter) {
-      const q = searchFilter.toLowerCase()
-      list = list.filter(c =>
-        c.name.toLowerCase().includes(q) ||
-        c.nameEn.toLowerCase().includes(q) ||
-        c.country.toLowerCase().includes(q) ||
-        c.countryEn.toLowerCase().includes(q) ||
-        c.city.toLowerCase().includes(q) ||
-        c.venueTypes.some(s => s.toLowerCase().includes(q)) ||
-        c.tagline.toLowerCase().includes(q)
-      )
-    }
+    let list = allVenues.filter(c => matchesCatalogItem(c, c.venueTypes, selectedCountries, selectedVenueTypes, searchFilter))
     if (sortMode === 'price-asc') {
       list = [...list].sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity))
     } else if (sortMode === 'price-desc') {
@@ -229,16 +160,16 @@ export default function Destinations() {
     allCountries.forEach(c => {
       if (c.toLowerCase().includes(q)) items.push({ type: 'country', label: c })
     })
-    allVenueTypes.forEach(s => {
+    allVenueTypes.filter(option => allVenues.some(c => (!selectedCountries.size || selectedCountries.has(c.country)) && c.venueTypes.includes(option))).forEach(s => {
       if (s.toLowerCase().includes(q)) items.push({ type: 'venueType', label: s })
     })
-    allVenues.forEach(c => {
+    allVenues.filter(c => matchesCatalogItem(c, c.venueTypes, selectedCountries, selectedVenueTypes)).forEach(c => {
       if (c.name.toLowerCase().includes(q) || c.nameEn.toLowerCase().includes(q)) {
         items.push({ type: 'venue', label: c.nameEn, sub: c.country, slug: c.slug })
       }
     })
     return items.slice(0, 10)
-  }, [searchQuery, allCountries, allVenueTypes])
+  }, [searchQuery, allCountries, allVenueTypes, allVenues, selectedCountries, selectedVenueTypes])
 
   const bookedList = useMemo(() => allVenues.filter(c => bookedSlugs.has(c.slug)), [allVenues, bookedSlugs])
   const otherList = useMemo(() => filteredList.filter(c => !bookedSlugs.has(c.slug)), [filteredList, bookedSlugs])
@@ -305,26 +236,7 @@ export default function Destinations() {
 
   const totalFilters = selectedCountries.size + selectedVenueTypes.size + (searchFilter ? 1 : 0)
 
-  // 筛选/排序状态变化时同步写入模块级缓存，返回列表页时恢复
-  useEffect(() => { _cachedSelectedCountries = Array.from(selectedCountries) }, [selectedCountries])
-  useEffect(() => { _cachedSelectedVenueTypes = Array.from(selectedVenueTypes) }, [selectedVenueTypes])
-  useEffect(() => { _cachedSearchFilter = searchFilter }, [searchFilter])
-  useEffect(() => { _cachedSortMode = sortMode }, [sortMode])
 
-  // 国家筛选变化时同步写入 URL（路径式 /destinations/france）
-  const _isInitialMount = useRef(true)
-  useEffect(() => {
-    if (_isInitialMount.current) { _isInitialMount.current = false; return }
-    if (selectedCountries.size === 1) {
-      const country = Array.from(selectedCountries)[0]
-      const slug = COUNTRY_SLUG_MAP[country]
-      if (slug && location.pathname !== `/destinations/${slug}`) {
-        navigate(`/destinations/${slug}`, { replace: true })
-      }
-    } else if (location.pathname !== '/destinations') {
-      navigate('/destinations', { replace: true })
-    }
-  }, [selectedCountries]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleCountry = (c: string) => {
     setSelectedCountries(prev => {
@@ -365,6 +277,7 @@ export default function Destinations() {
       setSelectedVenueTypes(prev => { const n = new Set(prev); n.add(item.label); return n })
     } else if (item.type === 'venue' && item.slug) {
       navFromList('/destinations', `/destinations/${item.slug}`, navigate)
+      return
     }
     setSearchQuery('')
     setSearchSubmitted(false)
@@ -400,30 +313,11 @@ export default function Destinations() {
 
   // 回车确认搜索
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && searchQuery.trim()) {
-      const q = searchQuery.trim().toLowerCase()
-      let matched = false
-      allCountries.forEach(c => {
-        if (c.toLowerCase().includes(q)) {
-          setSelectedCountries(prev => { const n = new Set(prev); n.add(c); return n })
-          matched = true
-        }
-      })
-      allVenueTypes.forEach(s => {
-        if (s.toLowerCase().includes(q)) {
-          setSelectedVenueTypes(prev => { const n = new Set(prev); n.add(s); return n })
-          matched = true
-        }
-      })
-      if (matched) {
-        setSearchQuery('')
-        setSearchFilter('')
-      } else {
-        setSearchFilter(searchQuery.trim())
-      }
-      setSearchSubmitted(false)
-      searchInputRef.current?.blur()
-    }
+    if (e.key !== 'Enter') return
+    e.preventDefault()
+    setSearchFilter(searchQuery)
+    setSearchSubmitted(false)
+    searchInputRef.current?.blur()
   }
 
   const formatPrice = (venue: VenueItem) => {
@@ -778,10 +672,7 @@ export default function Destinations() {
                 setBottomSheet(null)
               }}>
                 查看 {(() => {
-                  let list = allVenues
-                  if (current.size > 0) list = list.filter(c => current.has(c.country))
-                  if (selectedVenueTypes.size > 0) list = list.filter(c => c.venueTypes.some(s => selectedVenueTypes.has(s)))
-                  return list.length
+                  return allVenues.filter(c => matchesCatalogItem(c, c.venueTypes, current, selectedVenueTypes, searchFilter)).length
                 })()} 处场地
               </button>
             </div>

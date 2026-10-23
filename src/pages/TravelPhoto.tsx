@@ -1,3 +1,5 @@
+import catalogCountries from '../data/catalogCountries.json'
+import { useCatalogFilters, matchesCatalogItem } from '../hooks/useCatalogFilters'
 import { useMemo, useState, useEffect, useRef, Fragment } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { navFromList } from '../utils/navigateFromList'
@@ -45,22 +47,8 @@ function mapApiItem(row: any): Attraction {
 }
 
 // 国家 → URL slug 映射（31 个欧洲国家）
-const COUNTRY_SLUG_MAP: Record<string, string> = {
-  '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '英国': 'united-kingdom',
-  '德国': 'germany', '希腊': 'greece', '瑞士': 'switzerland', '葡萄牙': 'portugal',
-  '奥地利': 'austria', '挪威': 'norway', '荷兰': 'netherlands', '冰岛': 'iceland',
-  '爱尔兰': 'ireland', '瑞典': 'sweden', '丹麦': 'denmark', '比利时': 'belgium',
-  '匈牙利': 'hungary', '克罗地亚': 'croatia', '芬兰': 'finland', '捷克': 'czech',
-  '波兰': 'poland', '斯洛文尼亚': 'slovenia', '爱沙尼亚': 'estonia', '拉脱维亚': 'latvia',
-  '立陶宛': 'lithuania', '斯洛伐克': 'slovakia', '卢森堡': 'luxembourg', '马耳他': 'malta',
-  '列支敦士登': 'liechtenstein', '梵蒂冈': 'vatican', '摩纳哥': 'monaco',
-}
-const SLUG_TO_COUNTRY: Record<string, string> = Object.fromEntries(
-  Object.entries(COUNTRY_SLUG_MAP).map(([k, v]) => [v, k])
-)
+const COUNTRY_SLUG_MAP = catalogCountries['travel-photo']
 
-// URL 国家参数是否已消费（防止从详情页返回时重复读取 URL）
-let _urlCountryUsed = false
 
 const MAX_VISIBLE_FILTERS = 6
 const INITIAL_PER_COUNTRY_BASE = (() => {
@@ -79,26 +67,13 @@ let _cachedCountryLimits: Record<string, number> | null = null
 export default function TravelPhoto() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { selectedCountries, setSelectedCountries, selectedOptions: selectedTags, setSelectedOptions: setSelectedTags, searchQuery, setSearchQuery, searchFilter, setSearchFilter } = useCatalogFilters('/travel-photo', COUNTRY_SLUG_MAP, 'tag')
   const [allAttractions, setAllAttractions] = useState<Attraction[]>([])
   const [dataLoading, setDataLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [appliedSearchQuery, setAppliedSearchQuery] = useState('')
   const [searchFocused, setSearchFocused] = useState(false)
   const [searchSubmitted, setSearchSubmitted] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
-  // URL 国家参数优先（SEO 落地页），否则从缓存恢复
-  const initialCountries = useMemo(() => {
-    const pathParts = location.pathname.split('/').filter(Boolean)
-    const urlSlug = pathParts.length > 1 && pathParts[0] === 'travel-photo' ? pathParts[1] : null
-    if (urlSlug && SLUG_TO_COUNTRY[urlSlug] && !_urlCountryUsed) {
-      _urlCountryUsed = true
-      return new Set([SLUG_TO_COUNTRY[urlSlug]])
-    }
-    return new Set<string>()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => initialCountries)
-  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set())
   const [openGroups, setOpenGroups] = useState({ country: true, tag: true })
   const [expandedFilters, setExpandedFilters] = useState({ country: false, tag: false })
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
@@ -140,12 +115,12 @@ export default function TravelPhoto() {
     allCountries.forEach(c => {
       if (c.toLowerCase().includes(q)) items.push({ type: 'country', label: c })
     })
-    allAttractions.forEach(a => {
+    allAttractions.filter(a => matchesCatalogItem(a, a.tags, selectedCountries, selectedTags)).forEach(a => {
       if (a.location.toLowerCase().includes(q) || a.locationEn.toLowerCase().includes(q)) {
         items.push({ type: 'location', label: a.location, sub: a.country })
       }
     })
-    allAttractions.forEach(a => {
+    allAttractions.filter(a => matchesCatalogItem(a, a.tags, selectedCountries, selectedTags)).forEach(a => {
       if (a.name.toLowerCase().includes(q) || a.nameEn.toLowerCase().includes(q)) {
         items.push({ type: 'attraction', label: a.name, sub: `${a.country} · ${a.location}`, slug: a.slug })
       }
@@ -153,30 +128,13 @@ export default function TravelPhoto() {
     // 去重
     const seen = new Set<string>()
     return items.filter(i => { const k = `${i.type}-${i.label}`; if (seen.has(k)) return false; seen.add(k); return true })
-  }, [searchQuery, allCountries, allAttractions])
+  }, [searchQuery, allCountries, allAttractions, selectedCountries, selectedTags])
 
   // 筛选逻辑
   const filteredList = useMemo(() => {
-    let list = allAttractions
-    if (selectedCountries.size > 0) {
-      list = list.filter(a => selectedCountries.has(a.country))
-    }
-    if (selectedTags.size > 0) {
-      list = list.filter(a => a.tags.some(t => selectedTags.has(t)))
-    }
-    if (appliedSearchQuery.trim()) {
-      const q = appliedSearchQuery.trim().toLowerCase()
-      list = list.filter(a =>
-        a.name.toLowerCase().includes(q) ||
-        a.nameEn.toLowerCase().includes(q) ||
-        a.country.toLowerCase().includes(q) ||
-        a.countryEn.toLowerCase().includes(q) ||
-        a.location.toLowerCase().includes(q) ||
-        a.locationEn.toLowerCase().includes(q)
-      )
-    }
+    let list = allAttractions.filter(a => matchesCatalogItem(a, a.tags, selectedCountries, selectedTags, searchFilter))
     return list
-  }, [allAttractions, selectedCountries, selectedTags, appliedSearchQuery])
+  }, [allAttractions, selectedCountries, selectedTags, searchFilter])
 
   // 按国家分组
   const groupedByCountry = useMemo(() => {
@@ -214,7 +172,7 @@ export default function TravelPhoto() {
     })
   }
 
-  const totalFilters = selectedCountries.size + selectedTags.size + (appliedSearchQuery.trim() ? 1 : 0)
+  const totalFilters = selectedCountries.size + selectedTags.size + (searchFilter.trim() ? 1 : 0)
 
   const toggleCountry = (c: string) => {
     setSelectedCountries(prev => {
@@ -236,7 +194,7 @@ export default function TravelPhoto() {
     setSelectedCountries(new Set())
     setSelectedTags(new Set())
     setSearchQuery('')
-    setAppliedSearchQuery('')
+    setSearchFilter('')
   }
 
   const toggleGroup = (key: 'country' | 'tag') => {
@@ -251,19 +209,16 @@ export default function TravelPhoto() {
     if (item.type === 'country') {
       setSelectedCountries(prev => { const n = new Set(prev); n.add(item.label); return n })
       setSearchQuery('')
-      setAppliedSearchQuery('')
+      setSearchFilter('')
       setSearchSubmitted(false)
     } else if (item.type === 'location') {
       // 点击城市：用城市名作为搜索词过滤
       setSearchQuery(item.label)
-      setAppliedSearchQuery(item.label)
+      setSearchFilter(item.label)
       setSearchSubmitted(false)
       searchInputRef.current?.blur()
     } else if (item.type === 'attraction' && item.slug) {
       // 点击景点：直接跳转详情页
-      setSearchQuery('')
-      setAppliedSearchQuery('')
-      setSearchSubmitted(false)
       navFromList('/travel-photo', `/travel-photo/${item.slug}`, navigate)
     }
   }
@@ -286,22 +241,8 @@ export default function TravelPhoto() {
     setCountryLimits({})
     _cachedCountryLimits = null
     window.scrollTo(0, 0)
-  }, [selectedCountries, selectedTags, appliedSearchQuery])
+  }, [selectedCountries, selectedTags, searchFilter])
 
-  // 国家筛选变化时同步写入 URL（路径式 /travel-photo/france）
-  const _isInitialMount = useRef(true)
-  useEffect(() => {
-    if (_isInitialMount.current) { _isInitialMount.current = false; return }
-    if (selectedCountries.size === 1) {
-      const country = Array.from(selectedCountries)[0]
-      const slug = COUNTRY_SLUG_MAP[country]
-      if (slug && location.pathname !== `/travel-photo/${slug}`) {
-        navigate(`/travel-photo/${slug}`, { replace: true })
-      }
-    } else if (location.pathname !== '/travel-photo') {
-      navigate('/travel-photo', { replace: true })
-    }
-  }, [selectedCountries]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
@@ -401,11 +342,12 @@ export default function TravelPhoto() {
             placeholder="搜索景点、国家、城市…"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { setSearchFilter(searchQuery); setSearchSubmitted(false); searchInputRef.current?.blur() } }}
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
           />
           {searchQuery && (
-            <button className="cd-search-bar__clear" onClick={() => { setSearchQuery(''); setAppliedSearchQuery(''); setSearchSubmitted(false) }}>✕</button>
+            <button className="cd-search-bar__clear" onClick={() => { setSearchQuery(''); setSearchFilter(''); setSearchSubmitted(false) }}>✕</button>
           )}
         </div>
         {searchFocused && searchQuery.trim() && searchSuggestions.length > 0 && (

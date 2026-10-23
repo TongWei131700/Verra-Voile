@@ -1,3 +1,4 @@
+import catalogCountries from './data/catalogCountries.json'
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { useEffect, lazy, Suspense } from 'react'
 import { loadSelectedProductsFromServer, getSelectedProducts } from './utils/selectedProducts'
@@ -206,13 +207,7 @@ export default function App() {
         <Route path="/agent-chat" element={<AgentChat />} />
 
         <Route path="/destinations" element={<Destinations />} />
-        <Route path="/destinations/france" element={<Destinations />} />
-        <Route path="/destinations/italy" element={<Destinations />} />
-        <Route path="/destinations/greece" element={<Destinations />} />
-        <Route path="/destinations/spain" element={<Destinations />} />
-        <Route path="/destinations/portugal" element={<Destinations />} />
-        <Route path="/destinations/austria" element={<Destinations />} />
-        <Route path="/destinations/switzerland" element={<Destinations />} />
+        {Object.values(catalogCountries['destinations']).map(slug => <Route key={`destinations-${slug}`} path={`/destinations/${slug}`} element={<Destinations />} />)}
         <Route path="/destinations/:slug" element={<DestinationsDetail />} />
         <Route path="/flowers" element={<Flowers />} />
         <Route path="/flowers/product/:slug" element={<FlowerProductDetail />} />
@@ -220,86 +215,15 @@ export default function App() {
         <Route path="/dresses" element={<Dresses />} />
         <Route path="/dresses/:slug" element={<DressesDetail />} />
         <Route path="/photography" element={<Photography />} />
-        <Route path="/photography/france" element={<Photography />} />
-        <Route path="/photography/italy" element={<Photography />} />
-        <Route path="/photography/spain" element={<Photography />} />
-        <Route path="/photography/united-kingdom" element={<Photography />} />
-        <Route path="/photography/germany" element={<Photography />} />
-        <Route path="/photography/greece" element={<Photography />} />
-        <Route path="/photography/portugal" element={<Photography />} />
-        <Route path="/photography/austria" element={<Photography />} />
-        <Route path="/photography/norway" element={<Photography />} />
-        <Route path="/photography/iceland" element={<Photography />} />
-        <Route path="/photography/ireland" element={<Photography />} />
-        <Route path="/photography/croatia" element={<Photography />} />
-        <Route path="/photography/hungary" element={<Photography />} />
-        <Route path="/photography/switzerland" element={<Photography />} />
-        <Route path="/photography/belgium" element={<Photography />} />
-        <Route path="/photography/netherlands" element={<Photography />} />
-        <Route path="/photography/sweden" element={<Photography />} />
-        <Route path="/photography/denmark" element={<Photography />} />
-        <Route path="/photography/finland" element={<Photography />} />
-        <Route path="/photography/czech" element={<Photography />} />
-        <Route path="/photography/poland" element={<Photography />} />
-        <Route path="/photography/slovenia" element={<Photography />} />
+        {Object.values(catalogCountries['photography']).map(slug => <Route key={`photography-${slug}`} path={`/photography/${slug}`} element={<Photography />} />)}
         <Route path="/photography/:slug" element={<PhotographyDetail />} />
         <Route path="/wine" element={<Wine />} />
         <Route path="/wine/:productId" element={<WineDetail />} />
         <Route path="/wedding-team" element={<WeddingTeam />} />
-        <Route path="/wedding-team/france" element={<WeddingTeam />} />
-        <Route path="/wedding-team/italy" element={<WeddingTeam />} />
-        <Route path="/wedding-team/spain" element={<WeddingTeam />} />
-        <Route path="/wedding-team/united-kingdom" element={<WeddingTeam />} />
-        <Route path="/wedding-team/germany" element={<WeddingTeam />} />
-        <Route path="/wedding-team/greece" element={<WeddingTeam />} />
-        <Route path="/wedding-team/portugal" element={<WeddingTeam />} />
-        <Route path="/wedding-team/austria" element={<WeddingTeam />} />
-        <Route path="/wedding-team/norway" element={<WeddingTeam />} />
-        <Route path="/wedding-team/iceland" element={<WeddingTeam />} />
-        <Route path="/wedding-team/croatia" element={<WeddingTeam />} />
-        <Route path="/wedding-team/hungary" element={<WeddingTeam />} />
-        <Route path="/wedding-team/switzerland" element={<WeddingTeam />} />
-        <Route path="/wedding-team/belgium" element={<WeddingTeam />} />
-        <Route path="/wedding-team/netherlands" element={<WeddingTeam />} />
-        <Route path="/wedding-team/sweden" element={<WeddingTeam />} />
-        <Route path="/wedding-team/denmark" element={<WeddingTeam />} />
-        <Route path="/wedding-team/finland" element={<WeddingTeam />} />
-        <Route path="/wedding-team/czech" element={<WeddingTeam />} />
-        <Route path="/wedding-team/poland" element={<WeddingTeam />} />
-        <Route path="/wedding-team/slovenia" element={<WeddingTeam />} />
+        {Object.values(catalogCountries['wedding-team']).map(slug => <Route key={`wedding-team-${slug}`} path={`/wedding-team/${slug}`} element={<WeddingTeam />} />)}
         <Route path="/wedding-team/:slug" element={<WeddingTeamDetail />} />
         <Route path="/travel-photo" element={<TravelPhoto />} />
-        <Route path="/travel-photo/france" element={<TravelPhoto />} />
-        <Route path="/travel-photo/italy" element={<TravelPhoto />} />
-        <Route path="/travel-photo/spain" element={<TravelPhoto />} />
-        <Route path="/travel-photo/united-kingdom" element={<TravelPhoto />} />
-        <Route path="/travel-photo/germany" element={<TravelPhoto />} />
-        <Route path="/travel-photo/greece" element={<TravelPhoto />} />
-        <Route path="/travel-photo/switzerland" element={<TravelPhoto />} />
-        <Route path="/travel-photo/portugal" element={<TravelPhoto />} />
-        <Route path="/travel-photo/austria" element={<TravelPhoto />} />
-        <Route path="/travel-photo/norway" element={<TravelPhoto />} />
-        <Route path="/travel-photo/netherlands" element={<TravelPhoto />} />
-        <Route path="/travel-photo/iceland" element={<TravelPhoto />} />
-        <Route path="/travel-photo/ireland" element={<TravelPhoto />} />
-        <Route path="/travel-photo/sweden" element={<TravelPhoto />} />
-        <Route path="/travel-photo/denmark" element={<TravelPhoto />} />
-        <Route path="/travel-photo/belgium" element={<TravelPhoto />} />
-        <Route path="/travel-photo/hungary" element={<TravelPhoto />} />
-        <Route path="/travel-photo/croatia" element={<TravelPhoto />} />
-        <Route path="/travel-photo/finland" element={<TravelPhoto />} />
-        <Route path="/travel-photo/czech" element={<TravelPhoto />} />
-        <Route path="/travel-photo/poland" element={<TravelPhoto />} />
-        <Route path="/travel-photo/slovenia" element={<TravelPhoto />} />
-        <Route path="/travel-photo/estonia" element={<TravelPhoto />} />
-        <Route path="/travel-photo/latvia" element={<TravelPhoto />} />
-        <Route path="/travel-photo/lithuania" element={<TravelPhoto />} />
-        <Route path="/travel-photo/slovakia" element={<TravelPhoto />} />
-        <Route path="/travel-photo/luxembourg" element={<TravelPhoto />} />
-        <Route path="/travel-photo/malta" element={<TravelPhoto />} />
-        <Route path="/travel-photo/liechtenstein" element={<TravelPhoto />} />
-        <Route path="/travel-photo/vatican" element={<TravelPhoto />} />
-        <Route path="/travel-photo/monaco" element={<TravelPhoto />} />
+        {Object.values(catalogCountries['travel-photo']).map(slug => <Route key={`travel-photo-${slug}`} path={`/travel-photo/${slug}`} element={<TravelPhoto />} />)}
         <Route path="/travel-photo/:slug" element={<TravelPhotoDetail />} />
         <Route path="/trace" element={<TraceView />} />
       </Routes>

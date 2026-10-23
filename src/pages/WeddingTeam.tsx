@@ -1,5 +1,7 @@
+import catalogCountries from '../data/catalogCountries.json'
+import { useCatalogFilters, matchesCatalogItem } from '../hooks/useCatalogFilters'
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { navFromList } from '../utils/navigateFromList'
 import FallbackImage from '../components/common/FallbackImage'
 import BackButton from '../components/common/BackButton'
@@ -53,28 +55,12 @@ const COUNTRY_CN: Record<string, string> = {
 }
 
 // 国家 → URL slug 映射（用于 SEO 落地页）
-const COUNTRY_SLUG_MAP: Record<string, string> = {
-  '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '英国': 'united-kingdom',
-  '德国': 'germany', '希腊': 'greece', '葡萄牙': 'portugal', '奥地利': 'austria',
-  '挪威': 'norway', '冰岛': 'iceland', '克罗地亚': 'croatia', '匈牙利': 'hungary',
-  '瑞士': 'switzerland', '比利时': 'belgium', '荷兰': 'netherlands',
-  '瑞典': 'sweden', '丹麦': 'denmark', '芬兰': 'finland', '捷克': 'czech',
-  '波兰': 'poland', '斯洛文尼亚': 'slovenia',
-}
-const SLUG_TO_COUNTRY: Record<string, string> = Object.fromEntries(
-  Object.entries(COUNTRY_SLUG_MAP).map(([k, v]) => [v, k])
-)
+const COUNTRY_SLUG_MAP = catalogCountries['wedding-team']
 
-// URL 国家参数是否已消费
-let _urlCountryUsed = false
 
 // 模块级缓存：从详情返回列表页时复用，避免重复请求
 let _cachedCompanies: WeddingTeamCompany[] | null = null
 // 筛选/排序缓存：返回列表页时恢复用户之前的筛选状态
-let _cachedSelectedCountries: string[] | null = null
-let _cachedSelectedSpecialties: string[] | null = null
-let _cachedSearchFilter: string | null = null
-let _cachedSortMode: string | null = null
 let _cachedCountryLimits: Record<string, number> | null = null
 
 // 将 API 返回的 snake_case 数据转为前端 camelCase
@@ -127,34 +113,20 @@ function extractUnique<T>(companies: WeddingTeamCompany[], getter: (c: WeddingTe
 
 export default function WeddingTeam() {
   const navigate = useNavigate()
-  const location = useLocation()
+  const { selectedCountries, setSelectedCountries, selectedOptions: selectedSpecialties, setSelectedOptions: setSelectedSpecialties, searchQuery, setSearchQuery, searchFilter, setSearchFilter, sortMode, setSortMode } = useCatalogFilters('/wedding-team', COUNTRY_SLUG_MAP, 'specialty')
   const [allCompanies, setAllCompanies] = useState<WeddingTeamCompany[]>([])
   const [dataLoading, setDataLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
   const [searchSubmitted, setSearchSubmitted] = useState(false)
-  const [searchFilter, setSearchFilter] = useState(() => _cachedSearchFilter ?? '')
   const [searchFocused, setSearchFocused] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const filterBodyRef = useRef<HTMLDivElement>(null)
-  const [selectedCountries, setSelectedCountries] = useState<Set<string>>(() => {
-    // URL 路径 /wedding-team/france 优先于缓存
-    const pathParts = location.pathname.split('/').filter(Boolean)
-    const urlSlug = pathParts.length > 1 && pathParts[0] === 'wedding-team' ? pathParts[1] : null
-    if (urlSlug && SLUG_TO_COUNTRY[urlSlug] && !_urlCountryUsed) {
-      _urlCountryUsed = true
-      return new Set([SLUG_TO_COUNTRY[urlSlug]])
-    }
-    return new Set(_cachedSelectedCountries ?? [])
-  })
-  const [selectedSpecialties, setSelectedSpecialties] = useState<Set<string>>(() => new Set(_cachedSelectedSpecialties ?? []))
   const [openGroups, setOpenGroups] = useState({ country: true, specialty: true })
     const [sortOpen, setSortOpen] = useState(false)
   const [expandedFilters, setExpandedFilters] = useState({ country: false, specialty: false })
   const MAX_VISIBLE_FILTERS = 6
   const [bookedSlugs, setBookedSlugs] = useState<Set<string>>(new Set())
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
-  const [sortMode, setSortMode] = useState<string>(() => _cachedSortMode ?? 'default')
   const [bottomSheet, setBottomSheet] = useState<'sort' | 'country' | 'filter' | null>(null)
   const [pendingCountries, setPendingCountries] = useState<Set<string> | null>(null)
   // 分组展示（所有分组一次性展示，每组内按屏幕宽度控制初始显示数量）
@@ -217,24 +189,7 @@ export default function WeddingTeam() {
   ]
 
   const filteredList = useMemo(() => {
-    let list = allCompanies
-    if (selectedCountries.size > 0) {
-      list = list.filter(c => selectedCountries.has(c.country))
-    }
-    if (selectedSpecialties.size > 0) {
-      list = list.filter(c => c.specialties.some(s => selectedSpecialties.has(s)))
-    }
-    if (searchFilter) {
-      const q = searchFilter.toLowerCase()
-      list = list.filter(c =>
-        c.name.toLowerCase().includes(q) ||
-        c.nameEn.toLowerCase().includes(q) ||
-        c.country.toLowerCase().includes(q) ||
-        c.countryEn.toLowerCase().includes(q) ||
-        c.specialties.some(s => s.toLowerCase().includes(q)) ||
-        c.tagline.toLowerCase().includes(q)
-      )
-    }
+    let list = allCompanies.filter(c => matchesCatalogItem(c, c.specialties, selectedCountries, selectedSpecialties, searchFilter))
     if (sortMode === 'price-asc') {
       list = [...list].sort((a, b) => ((a.price ?? 2000)) - ((b.price ?? 2000)))
     } else if (sortMode === 'price-desc') {
@@ -253,16 +208,16 @@ export default function WeddingTeam() {
     allCountries.forEach(c => {
       if (c.toLowerCase().includes(q)) items.push({ type: 'country', label: c })
     })
-    allSpecialties.forEach(s => {
+    allSpecialties.filter(option => allCompanies.some(c => (!selectedCountries.size || selectedCountries.has(c.country)) && c.specialties.includes(option))).forEach(s => {
       if (s.toLowerCase().includes(q)) items.push({ type: 'specialty', label: s })
     })
-    allCompanies.forEach(c => {
+    allCompanies.filter(c => matchesCatalogItem(c, c.specialties, selectedCountries, selectedSpecialties)).forEach(c => {
       if (c.name.toLowerCase().includes(q) || c.nameEn.toLowerCase().includes(q)) {
         items.push({ type: 'company', label: c.nameEn, sub: c.country, slug: c.slug })
       }
     })
     return items.slice(0, 10)
-  }, [searchQuery, allCountries, allSpecialties])
+  }, [searchQuery, allCountries, allSpecialties, allCompanies, selectedCountries, selectedSpecialties])
 
   const bookedList = useMemo(() => allCompanies.filter(c => bookedSlugs.has(c.slug)), [allCompanies, bookedSlugs])
   const otherList = useMemo(() => filteredList.filter(c => !bookedSlugs.has(c.slug)), [filteredList, bookedSlugs])
@@ -313,26 +268,7 @@ export default function WeddingTeam() {
     document.documentElement.scrollTop = 0
   }, [selectedCountries, selectedSpecialties, searchFilter, sortMode])
 
-  // 筛选/排序状态变化时同步写入模块级缓存
-  useEffect(() => { _cachedSelectedCountries = Array.from(selectedCountries) }, [selectedCountries])
-  useEffect(() => { _cachedSelectedSpecialties = Array.from(selectedSpecialties) }, [selectedSpecialties])
-  useEffect(() => { _cachedSearchFilter = searchFilter }, [searchFilter])
-  useEffect(() => { _cachedSortMode = sortMode }, [sortMode])
 
-  // 筛选变化时同步写入 URL（路径式 /wedding-team/france）
-  const _isInitialMount = useRef(true)
-  useEffect(() => {
-    if (_isInitialMount.current) { _isInitialMount.current = false; return }
-    if (selectedCountries.size === 1) {
-      const country = Array.from(selectedCountries)[0]
-      const slug = COUNTRY_SLUG_MAP[country]
-      if (slug && location.pathname !== `/wedding-team/${slug}`) {
-        navigate(`/wedding-team/${slug}`, { replace: true })
-      }
-    } else if (location.pathname !== '/wedding-team') {
-      navigate('/wedding-team', { replace: true })
-    }
-  }, [selectedCountries]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const totalFilters = selectedCountries.size + selectedSpecialties.size + (searchFilter ? 1 : 0)
 
@@ -375,6 +311,7 @@ export default function WeddingTeam() {
       setSelectedSpecialties(prev => { const n = new Set(prev); n.add(item.label); return n })
     } else if (item.type === 'company' && item.slug) {
       navFromList('/wedding-team', `/wedding-team/${item.slug}`, navigate)
+      return
     }
     setSearchQuery('')
     setSearchSubmitted(false)
@@ -409,30 +346,11 @@ export default function WeddingTeam() {
 
   // 回车确认搜索
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && searchQuery.trim()) {
-      const q = searchQuery.trim().toLowerCase()
-      let matched = false
-      allCountries.forEach(c => {
-        if (c.toLowerCase().includes(q)) {
-          setSelectedCountries(prev => { const n = new Set(prev); n.add(c); return n })
-          matched = true
-        }
-      })
-      allSpecialties.forEach(s => {
-        if (s.toLowerCase().includes(q)) {
-          setSelectedSpecialties(prev => { const n = new Set(prev); n.add(s); return n })
-          matched = true
-        }
-      })
-      if (matched) {
-        setSearchQuery('')
-        setSearchFilter('')
-      } else {
-        setSearchFilter(searchQuery.trim())
-      }
-      setSearchSubmitted(false)
-      searchInputRef.current?.blur()
-    }
+    if (e.key !== 'Enter') return
+    e.preventDefault()
+    setSearchFilter(searchQuery)
+    setSearchSubmitted(false)
+    searchInputRef.current?.blur()
   }
 
   return (
@@ -662,10 +580,7 @@ export default function WeddingTeam() {
                 setBottomSheet(null)
               }}>
                 查看 {(() => {
-                  let list = allCompanies
-                  if (current.size > 0) list = list.filter(c => current.has(c.country))
-                  if (selectedSpecialties.size > 0) list = list.filter(c => c.specialties.some(s => selectedSpecialties.has(s)))
-                  return list.length
+                  return allCompanies.filter(c => matchesCatalogItem(c, c.specialties, current, selectedSpecialties, searchFilter)).length
                 })()} 家策划公司
               </button>
             </div>

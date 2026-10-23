@@ -9,7 +9,8 @@
     "build:seo": "vite build && node scripts/prerender.cjs",
     "build:home": "vite build && node scripts/prerender.cjs --only /",
     "build:app": "vite build --mode app",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:country-pages": "node scripts/test-country-pages.cjs"
   },
   "keywords": [],
   "author": "",

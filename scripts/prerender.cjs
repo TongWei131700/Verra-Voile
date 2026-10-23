@@ -12,8 +12,14 @@ const http = require('http')
 const fs = require('fs')
 const path = require('path')
 const puppeteer = require('puppeteer')
+const catalogCountries = require('../src/data/catalogCountries.json')
+function countryRoute(module, item) {
+  const map = catalogCountries[module]
+  const country = item.country_cn || item.country
+  return map[country] || Object.values(map).find(slug => slug === String(item.country_en || item.country || '').toLowerCase().replace(/ /g, '-'))
+}
 
-const DIST_DIR = path.resolve(__dirname, '..', 'dist')
+const DIST_DIR = path.resolve(process.env.SSG_DIST_DIR || path.join(__dirname, '..', 'dist'))
 const API_BASE = process.env.VITE_API_URL || 'https://europewedding.cn'
 const SITE_URL = 'https://europewedding.cn'
 const PORT = 9876
@@ -38,6 +44,10 @@ function startStaticServer() {
   const serve = sirv(DIST_DIR, { single: true, etag: true })
   return new Promise((resolve) => {
     const server = http.createServer((req, res) => {
+      if ((req.headers.accept || '').includes('text/html')) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8')
+        return res.end(fs.readFileSync(TEMPLATE_PATH))
+      }
       serve(req, res, { next: () => { res.statusCode = 404; res.end('Not found') } })
     })
     server.listen(PORT, () => {
@@ -65,10 +75,10 @@ async function prefetchAllData() {
     // 列表页
     routeMap['/destinations'] = ['/api/products/crawled-venues']
     // 国家落地页（SEO）
-    const countrySlugMap = { '法国': 'france', '意大利': 'italy', '希腊': 'greece', '西班牙': 'spain', '葡萄牙': 'portugal' }
+    const countrySlugMap = catalogCountries.destinations
     const uniqueCountries = [...new Set(items.map(v => v.country_cn || v.country).filter(Boolean))]
     for (const country of uniqueCountries) {
-      const slug = countrySlugMap[country]
+      const slug = countryRoute('destinations', items.find(v => (v.country_cn || v.country) === country))
       if (slug) {
         routeMap[`/destinations/${slug}`] = ['/api/products/crawled-venues']
       }
@@ -123,18 +133,10 @@ async function prefetchAllData() {
     // 列表页
     routeMap['/photography'] = ['/api/products/crawled-photographers']
     // 国家落地页（SEO）
-    const phCountrySlugMap = {
-      'France': 'france', 'Italy': 'italy', 'Spain': 'spain', 'United Kingdom': 'united-kingdom',
-      'Germany': 'germany', 'Greece': 'greece', 'Portugal': 'portugal', 'Austria': 'austria',
-      'Norway': 'norway', 'Iceland': 'iceland', 'Ireland': 'ireland', 'Croatia': 'croatia',
-      'Hungary': 'hungary',
-      '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '德国': 'germany',
-      '希腊': 'greece', '葡萄牙': 'portugal', '奥地利': 'austria', '挪威': 'norway',
-      '冰岛': 'iceland', '爱尔兰': 'ireland', '克罗地亚': 'croatia', '匈牙利': 'hungary',
-    }
+    const phCountrySlugMap = catalogCountries.photography
     const phUniqueCountries = [...new Set(items.map(p => p.country).filter(Boolean))]
     for (const country of phUniqueCountries) {
-      const slug = phCountrySlugMap[country]
+      const slug = countryRoute('photography', items.find(v => v.country === country))
       if (slug) {
         routeMap[`/photography/${slug}`] = ['/api/products/crawled-photographers']
       }
@@ -156,17 +158,10 @@ async function prefetchAllData() {
     // 列表页
     routeMap['/wedding-team'] = ['/api/products/crawled-wedding-teams']
     // 国家落地页（SEO）
-    const wtCountrySlugMap = {
-      'France': 'france', 'Italy': 'italy', 'Spain': 'spain', 'United Kingdom': 'united-kingdom',
-      'Germany': 'germany', 'Greece': 'greece', 'Portugal': 'portugal', 'Austria': 'austria',
-      'Norway': 'norway', 'Iceland': 'iceland', 'Croatia': 'croatia', 'Hungary': 'hungary',
-      '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '德国': 'germany',
-      '希腊': 'greece', '葡萄牙': 'portugal', '奥地利': 'austria', '挪威': 'norway',
-      '冰岛': 'iceland', '克罗地亚': 'croatia', '匈牙利': 'hungary',
-    }
+    const wtCountrySlugMap = catalogCountries['wedding-team']
     const wtUniqueCountries = [...new Set(items.map(t => t.country).filter(Boolean))]
     for (const country of wtUniqueCountries) {
-      const slug = wtCountrySlugMap[country]
+      const slug = countryRoute('wedding-team', items.find(v => v.country === country))
       if (slug) {
         routeMap[`/wedding-team/${slug}`] = ['/api/products/crawled-wedding-teams']
       }
@@ -197,19 +192,10 @@ async function prefetchAllData() {
     // 列表页
     routeMap['/travel-photo'] = ['/api/products/crawled-travel-attractions']
     // 国家落地页（SEO）
-    const tpCountrySlugMap = {
-      '法国': 'france', '意大利': 'italy', '西班牙': 'spain', '英国': 'united-kingdom',
-      '德国': 'germany', '希腊': 'greece', '瑞士': 'switzerland', '葡萄牙': 'portugal',
-      '奥地利': 'austria', '挪威': 'norway', '荷兰': 'netherlands', '冰岛': 'iceland',
-      '爱尔兰': 'ireland', '瑞典': 'sweden', '丹麦': 'denmark', '比利时': 'belgium',
-      '匈牙利': 'hungary', '克罗地亚': 'croatia', '芬兰': 'finland', '捷克': 'czech',
-      '波兰': 'poland', '斯洛文尼亚': 'slovenia', '爱沙尼亚': 'estonia', '拉脱维亚': 'latvia',
-      '立陶宛': 'lithuania', '斯洛伐克': 'slovakia', '卢森堡': 'luxembourg', '马耳他': 'malta',
-      '列支敦士登': 'liechtenstein', '梵蒂冈': 'vatican', '摩纳哥': 'monaco',
-    }
+    const tpCountrySlugMap = catalogCountries['travel-photo']
     const tpUniqueCountries = [...new Set(items.map(a => a.country).filter(Boolean))]
     for (const country of tpUniqueCountries) {
-      const slug = tpCountrySlugMap[country]
+      const slug = countryRoute('travel-photo', items.find(v => v.country === country))
       if (slug) {
         routeMap[`/travel-photo/${slug}`] = ['/api/products/crawled-travel-attractions']
       }
@@ -258,8 +244,7 @@ function restoreTemplate() {
 
 // ---------- 渲染页面 ----------
 async function renderPage(browser, route) {
-  // 恢复干净的模板再渲染
-  restoreTemplate()
+  // HTML requests always receive the immutable Vite template, including concurrent pages.
 
   const page = await browser.newPage()
   const pageErrors = []
@@ -429,33 +414,28 @@ async function main() {
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
     })
 
-    for (let i = 0; i < routes.length; i++) {
-      const route = routes[i]
-      process.stdout.write(`  [${i + 1}/${routes.length}] ${route} `)
-
-      // 每 80 个页面重启浏览器防内存泄漏
-      if (i > 0 && i % 80 === 0) {
-        process.stdout.write('\n  (重启浏览器...) ')
-        try { await browser.close() } catch {}
-        browser = await puppeteer.launch({
-          headless: true,
-          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
-        })
+    const concurrency = Math.max(1, Math.min(4, Number(process.env.SSG_CONCURRENCY) || 3))
+    for (let start = 0; start < routes.length && !failCount; start += 80) {
+      if (start > 0) {
+        await browser.close()
+        browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'] })
       }
-
-      const html = await renderPage(browser, route)
-      if (html) {
-        const { size } = saveHtml(route, html)
-        const hasContent = parseFloat(size) > 2
-        if (hasContent) contentCount++
-        console.log(`✓ (${size}KB${hasContent ? '' : ' 空壳'})`)
-        successCount++
-        renderedRoutes.push(route)
-      } else {
-        failCount++
-        console.log('✗')
-        break
-      }
+      let cursor = start
+      const end = Math.min(start + 80, routes.length)
+      await Promise.all(Array.from({ length: concurrency }, async () => {
+        while (cursor < end && !failCount) {
+          const index = cursor++
+          const route = routes[index]
+          const html = await renderPage(browser, route)
+          if (!html) { failCount++; console.log(`  [${index + 1}/${routes.length}] ${route} ✗`); return }
+          const { size } = saveHtml(route, html)
+          const hasContent = parseFloat(size) > 2
+          if (hasContent) contentCount++
+          successCount++
+          renderedRoutes.push(route)
+          console.log(`  [${index + 1}/${routes.length}] ${route} ✓ (${size}KB${hasContent ? '' : ' 空壳'})`)
+        }
+      }))
     }
   } catch (err) {
     failCount++
@@ -464,6 +444,8 @@ async function main() {
     try { await browser.close() } catch {}
     server.close()
   }
+
+  renderedRoutes.sort((a, b) => routes.indexOf(a) - routes.indexOf(b))
 
   // 5. 生成 sitemap（单页模式跳过）
   if (!isSingleMode) {

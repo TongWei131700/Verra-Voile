@@ -6,9 +6,13 @@ const navigate = async (page, path) => {
   await page.evaluate(path => { history.pushState({}, '', path); dispatchEvent(new PopStateEvent('popstate')) }, path)
   await pause()
 }
-const cards = page => page.$$eval('.cd-card', elements => elements.length)
+const cards = async page => {
+  await page.waitForFunction(() => !document.querySelector('.cd-card--skeleton, .tp-skel-card, .wt-skeleton-overlay'))
+  return page.$$eval('.cd-card', elements => elements.length)
+}
 const input = '.cd-search-bar input'
 const search = async (page, value) => {
+  await page.waitForFunction(() => !!document.querySelector('.cd-search-bar input') && !document.querySelector('.cd-card--skeleton, .tp-skel-card, .wt-skeleton-overlay'))
   await page.focus(input)
   await page.$eval(input, element => element.select())
   await page.keyboard.press('Backspace')
@@ -43,7 +47,7 @@ async function newPage(browser, mobile = false) {
       assert.ok((await page.title()).includes('意大利'))
       assert.equal(await page.$$eval('link[rel="canonical"]', elements => elements.length), 1)
       assert.equal(await page.$eval('link[rel="canonical"]', element => new URL(element.href).pathname), `/${module}/italy`)
-      await page.goBack({ waitUntil: 'domcontentloaded' }); await pause()
+      await page.goBack({ waitUntil: 'networkidle2' }); await pause()
       assert.ok((await page.title()).includes('冰岛'))
       check(`${module}: country navigation and browser back`)
       await search(page, 'zzzz_no_result_123')
@@ -123,7 +127,7 @@ async function newPage(browser, mobile = false) {
     const source = new URL(page.url()).pathname + new URL(page.url()).search
     await page.click('.cd-card'); await pause()
     assert.ok(!new URL(page.url()).pathname.endsWith('/iceland'))
-    await page.goBack({waitUntil:'domcontentloaded'}); await pause()
+    await page.goBack({waitUntil:'networkidle2'}); await pause()
     assert.equal(new URL(page.url()).pathname + new URL(page.url()).search, source)
     assert.equal(await page.$eval(input, element => element.value), '冰岛')
     assert.ok(await cards(page) > 0)

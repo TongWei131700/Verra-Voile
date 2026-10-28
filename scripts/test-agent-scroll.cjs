@@ -35,7 +35,12 @@ const assert = require('node:assert/strict');
             window.__agentEvent({ type: 'token', requestId: previousId, content: '不应混入的旧摄影师回复' });
             window.__agentEvent({ type: 'done', requestId: previousId });
         });
-        await new Promise(r => setTimeout(r, 100));
+        await new Promise(r => setTimeout(r, 350));
+        const partial = await p.$$eval('.agent-asst-reply .agent-thinking-step__text', nodes => nodes.at(-1)?.textContent || '');
+        assert.ok(partial.length > 0 && !partial.includes('查询花卉商品中'), 'thinking must type progressively');
+        await new Promise(r => setTimeout(r, 250));
+        const nextPartial = await p.$$eval('.agent-asst-reply .agent-thinking-step__text', nodes => nodes.at(-1)?.textContent || '');
+        assert.ok(nextPartial.length > partial.length, 'thinking playback stalled');
         const pending = await p.evaluate(() => {
             const question = [...document.querySelectorAll('.agent-msg--user')].at(-1);
             const container = document.querySelector('.agent-messages');

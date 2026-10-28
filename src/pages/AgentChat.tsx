@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useLayoutEffect, Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { io, Socket } from 'socket.io-client'
 import Seo from '../components/Seo'
+import ThinkingTypewriter from '../components/ThinkingTypewriter'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 import { trackEvent } from '../utils/analytics'
@@ -984,12 +985,7 @@ export default function AgentChat() {
                   pointerEvents: showAsst ? 'auto' : 'none',
                   padding: showAsst ? undefined : 0,
                 }}>
-                {activeThinking.map((label, i) => (
-                  <div className="agent-thinking-step" key={i}>
-                    {i === 0 && <img src="/agent-thinking.gif" className="agent-thinking-step__icon" alt="" />}
-                    <span className="agent-thinking-step__text">{label}</span>
-                  </div>
-                ))}
+                {showAsst && <ThinkingTypewriter key={requestIdRef.current} labels={activeThinking} />}
                 <div className="agent-thinking-dots"><span /><span /><span /></div>
               </div>
             )}

@@ -12,15 +12,41 @@ const assert = require('node:assert/strict');
         await p.goto((process.env.BASE_URL || 'http://localhost:5173') + '/agent-chat', { waitUntil: 'networkidle0' });
         await p.waitForFunction(() => typeof window.__agentEvent === 'function');
         for (let turn = 1; turn <= 2; turn++) {
-            await p.type('textarea', '测试第' + turn + '轮');
+            await p.type('textarea', turn === 2 ? '花朵' : '测试第' + turn + '轮');
             await p.keyboard.press('Enter');
             await p.waitForFunction(n => window.__sent?.filter(x => x[0] === 'chat').length === n, {}, turn);
-            await p.evaluate(turn => { window.__agentEvent({ type: 'thinking', label: '很长的思考步骤'.repeat(25) }); window.__agentEvent({ type: 'token', content: ('第' + turn + '轮结果\n\n').repeat(100) }); window.__agentEvent({ type: 'done' }); window.__agentEvent({ type: 'done' }); }, turn);
+            await p.evaluate(turn => {
+                const label = turn === 2 ? '好的，让我为你看看有哪些婚礼花束可以选择～' : '正在查找婚礼场地';
+                for (let i = 0; i < 3; i++) window.__agentEvent({ type: 'thinking', label });
+            }, turn);
+            await new Promise(r => setTimeout(r, 450));
+            const thinking = await p.evaluate(() => {
+                const line = document.querySelector('.agent-status-line');
+                const icon = line?.querySelector('.agent-status-line__icon');
+                const text = line?.querySelector('.agent-status-line__text');
+                const i = icon?.getBoundingClientRect(), t = text?.getBoundingClientRect();
+                return { lines: document.querySelectorAll('.agent-status-line').length,
+                    dots: document.querySelectorAll('.agent-thinking-dots').length,
+                    fixedIcon: !!i && !!t && t.left > i.right && Math.abs(t.top - i.top) < 2 };
+            });
+            assert.equal(thinking.dots, 0);
+            assert.equal(thinking.lines, 1, 'duplicate tool announcements printed multiple times');
+            assert.ok(thinking.fixedIcon, 'status icon is not aligned beside the text');
+            await p.evaluate(turn => { window.__agentEvent({ type: 'token', content: ('第' + turn + '轮结果\n\n').repeat(100) }); window.__agentEvent({ type: 'done' }); window.__agentEvent({ type: 'done' }); }, turn);
             await p.waitForFunction(n => JSON.parse(sessionStorage.getItem('agent_chat_turns') || '[]').length === n, {}, turn);
+            await p.waitForSelector('.agent-reveal-skip');
+            const initialBlocks = await p.$$eval('.agent-reveal-block', nodes => nodes.length);
+            await new Promise(r => setTimeout(r, 260));
+            const laterBlocks = await p.$$eval('.agent-reveal-block', nodes => nodes.length);
+            assert.ok(laterBlocks > initialBlocks, 'reply did not reveal in stages');
+            await p.click('.agent-reveal-skip');
+            await p.waitForFunction(() => !document.querySelector('.agent-reveal-skip'));
+
             await p.evaluate(() => { const el = document.querySelector('.agent-messages'); el.scrollTop = 100; el.dispatchEvent(new Event('scroll')); });
             await new Promise(r => setTimeout(r, 800));
             const result = await p.evaluate(() => ({ top: document.querySelector('.agent-messages').scrollTop, turns: JSON.parse(sessionStorage.getItem('agent_chat_turns')).length }));
             assert.equal(result.turns, turn);
+            assert.equal(await p.evaluate(n => JSON.parse(sessionStorage.getItem('agent_chat_turns'))[n - 1].thinkingLabels.length, turn), 1, 'duplicate labels persisted');
             assert.ok(result.top <= 110, 'scroll forced to bottom ' + result.top);
         }
         await p.type('textarea', '花朵');
@@ -36,10 +62,10 @@ const assert = require('node:assert/strict');
             window.__agentEvent({ type: 'done', requestId: previousId });
         });
         await new Promise(r => setTimeout(r, 350));
-        const partial = await p.$$eval('.agent-asst-reply .agent-thinking-step__text', nodes => nodes.at(-1)?.textContent || '');
+        const partial = await p.$$eval('.agent-status-line__text', nodes => nodes.at(-1)?.textContent || '');
         assert.ok(partial.length > 0 && !partial.includes('查询花卉商品中'), 'thinking must type progressively');
         await new Promise(r => setTimeout(r, 250));
-        const nextPartial = await p.$$eval('.agent-asst-reply .agent-thinking-step__text', nodes => nodes.at(-1)?.textContent || '');
+        const nextPartial = await p.$$eval('.agent-status-line__text', nodes => nodes.at(-1)?.textContent || '');
         assert.ok(nextPartial.length > partial.length, 'thinking playback stalled');
         const pending = await p.evaluate(() => {
             const question = [...document.querySelectorAll('.agent-msg--user')].at(-1);
@@ -69,6 +95,12 @@ const assert = require('node:assert/strict');
         assert.equal(final.turns[2].text, '新花朵推荐：[TABLE_1]');
         assert.equal(final.turns[2].userMessageId, final.ids[2]);
         assert.ok(!final.text.includes('不应混入'));
+        await p.waitForFunction(() => !document.querySelector('.agent-reveal-skip'));
+        const processes = await p.$$eval('.agent-process', nodes => nodes.filter(n => !n.classList.contains('agent-process--active')).map(n => ({ open: n.open, text: n.querySelector('summary').textContent })));
+        assert.ok(processes.length >= 3 && processes.every(n => !n.open && n.text.includes('已完成')), 'completed process should be collapsed');
+        assert.equal(await p.$$eval('.agent-status-line', nodes => nodes.length), 0, 'active status remains after done');
+        await p.evaluate(() => [...document.querySelectorAll('.agent-process')].at(-1).querySelector('summary').click());
+        assert.ok(await p.$$eval('.agent-process', nodes => nodes.at(-1).open), 'cannot expand process history');
         await p.reload({ waitUntil: 'networkidle0' });
         assert.equal(await p.$$eval('.agent-msg--user', nodes => nodes.length), 3);
         assert.ok((await p.$eval('.agent-messages', el => el.textContent)).includes('新花朵推荐'));

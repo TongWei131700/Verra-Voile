@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { io, Socket } from 'socket.io-client'
 import Seo from '../components/Seo'
 import ThinkingTypewriter from '../components/ThinkingTypewriter'
+import ProgressiveReply from '../components/ProgressiveReply'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 import { trackEvent } from '../utils/analytics'
@@ -29,6 +30,7 @@ interface Message {
 
 interface TurnData {
   userMessageId?: string
+  status?: 'done' | 'error'
   thinkingLabels: string[]
   text: string
   tableData: Map<number, string>
@@ -45,6 +47,7 @@ export default function AgentChat() {
       return s ? JSON.parse(s) : []
     } catch { return [] }
   })
+  const [revealingId, setRevealingId] = useState<string | null>(null)
   const [showAsst, setShowAsst] = useState(false)   // 助手气泡是否可见
   const [feedbackIdx, setFeedbackIdx] = useState<number | null>(null) // 当前打开反馈输入的回复索引
   const [feedbackText, setFeedbackText] = useState('')
@@ -76,9 +79,9 @@ export default function AgentChat() {
 
   // turns 持久化：Map 不能直接 JSON，需序列化
   const serializeTurns = (turns: TurnData[]) =>
-    turns.map(t => ({ userMessageId: t.userMessageId, thinkingLabels: t.thinkingLabels, text: t.text, tableData: Array.from(t.tableData.entries()), planSummary: t.planSummary }))
+    turns.map(t => ({ userMessageId: t.userMessageId, status: t.status, thinkingLabels: t.thinkingLabels, text: t.text, tableData: Array.from(t.tableData.entries()), planSummary: t.planSummary }))
   const deserializeTurns = (raw: any[]): TurnData[] =>
-    raw.map(t => ({ userMessageId: t.userMessageId, thinkingLabels: t.thinkingLabels || [], text: t.text || '', tableData: new Map(t.tableData || []), planSummary: t.planSummary }))
+    raw.map(t => ({ userMessageId: t.userMessageId, status: t.status, thinkingLabels: t.thinkingLabels || [], text: t.text || '', tableData: new Map(t.tableData || []), planSummary: t.planSummary }))
   const saveTurns = () => {
     try { sessionStorage.setItem('agent_chat_turns', JSON.stringify(serializeTurns(turnsRef.current))) } catch {}
   }
@@ -157,10 +160,18 @@ export default function AgentChat() {
       if (finishedRef.current || !loadingRef.current || !requestIdRef.current) return
       if (ev.requestId && ev.requestId !== requestIdRef.current) return
       switch (ev.type) {
-        case 'thinking':
-          thinkingLabelsRef.current.push(ev.label || '查询中...')
-          setActiveThinking([...thinkingLabelsRef.current])
+        case 'thinking': {
+          const label = (ev.label || '查询中...').trim()
+          const normalized = label.replace(/\s+/g, ' ')
+          const previous = thinkingLabelsRef.current[thinkingLabelsRef.current.length - 1]?.replace(/\s+/g, ' ')
+          // One model response may announce several tools with the same text.
+          // Keep executing the tools, but only print this announcement once.
+          if (normalized !== previous) {
+            thinkingLabelsRef.current.push(label)
+            setActiveThinking([...thinkingLabelsRef.current])
+          }
           break
+        }
         case 'token':
           fullReplyRef.current += ev.content || ''
           break
@@ -175,7 +186,7 @@ export default function AgentChat() {
           break
         case 'error':
           fullReplyRef.current += ev.content || '服务异常，请稍后重试'
-          finishReply()
+          finishReply('error')
           break
       }
     }
@@ -183,12 +194,14 @@ export default function AgentChat() {
     return () => { socket.off('agent_event', onEvent) }
   }, [])
 
-  const finishReply = () => {
+  const finishReply = (status: 'done' | 'error' = 'done') => {
     if (finishedRef.current) return
     finishedRef.current = true
+    setRevealingId(status === 'done' ? requestIdRef.current : null)
     loadingRef.current = false
     turnsRef.current = [...turnsRef.current.filter(turn => turn.userMessageId !== requestIdRef.current), {
       userMessageId: requestIdRef.current || undefined,
+      status,
       thinkingLabels: [...thinkingLabelsRef.current],
       text: fullReplyRef.current,
       tableData: new Map(tableDataRef.current),
@@ -206,6 +219,7 @@ export default function AgentChat() {
   }
 
   const resetForNewMsg = () => {
+    setRevealingId(null)
     if (scrollFrameRef.current !== null) cancelAnimationFrame(scrollFrameRef.current)
     scrollFrameRef.current = null
     finishedRef.current = false
@@ -934,21 +948,31 @@ export default function AgentChat() {
             {/* 已完成的回复（该轮次：思考 + 结果） */}
             {turn && (
               <div className="agent-asst-reply" style={{ opacity: 1, pointerEvents: 'auto' }}>
-                {turn.thinkingLabels.length > 0 && (
-                  <div className="agent-thinking-steps-static">
-                    {turn.thinkingLabels.map((label, li) => (
-                      <div key={li} className="agent-thinking-step">
-                        <span className="agent-thinking-step__text">{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div className="agent-thinking-divider" />
+                {turn.thinkingLabels.length > 0 ? (
+                  <details className="agent-process">
+                    <summary>
+                      <span className={`agent-process__result${turn.status === 'error' ? ' agent-process__result--error' : ''}`}>
+                        <span aria-hidden="true">{turn.status === 'error' ? '!' : '✓'}</span>
+                        {turn.status === 'error' ? '暂未完成' : revealingId === msg.id ? '正在整理推荐' : '已完成'}
+                      </span>
+                      <span className="agent-process__toggle">查看处理过程</span>
+                    </summary>
+                    <ol>{turn.thinkingLabels.map((label, i) => <li key={i}>{label}</li>)}</ol>
+                  </details>
+                ) : <div className="agent-process__result">{turn.status === 'error' ? '暂未完成' : revealingId === msg.id ? '正在整理推荐' : '✓ 已完成'}</div>}
                 <div className="agent-asst-reply__content">
+                  <ProgressiveReply
+                    enabled={revealingId === msg.id}
+                    onComplete={() => setRevealingId(current => current === msg.id ? null : current)}
+                    onAdvance={() => {
+                      if (followBottomRef.current && messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight
+                    }}
+                  >
                   {renderContent(turn.text, turn.tableData)}
                   {turn.planSummary && turn.planSummary!.length > 0 &&
                     renderPlanSummary(turn.planSummary!, `turn${idx}`)
                   }
+                  </ProgressiveReply>
                 </div>
                 <div className="agent-reply-feedback">
                   {feedbackSent.has(idx) ? (
@@ -986,7 +1010,6 @@ export default function AgentChat() {
                   padding: showAsst ? undefined : 0,
                 }}>
                 {showAsst && <ThinkingTypewriter key={requestIdRef.current} labels={activeThinking} />}
-                <div className="agent-thinking-dots"><span /><span /><span /></div>
               </div>
             )}
           </Fragment>

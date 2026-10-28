@@ -1,40 +1,36 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-/** Presentation-only playback. Completion is controlled by the parent, not this timer. */
-export default function ThinkingTypewriter({ labels }: { labels: string[] }) {
+function TypedLabel({ label }: { label: string }) {
   const [printed, setPrinted] = useState(0)
-  const progress = useRef(0)
-  const previous = useRef<string[]>([])
-  const lines = labels.map(label => [...label])
-  const total = lines.reduce((sum, line) => sum + line.length, 0)
-
+  const chars = [...label]
   useEffect(() => {
-    // Appended steps keep their place. Replacing a placeholder starts fresh.
-    if (!previous.current.every((label, index) => labels[index] === label)) {
-      progress.current = 0
-      setPrinted(0)
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPrinted([...label].length)
+      return
     }
-    previous.current = [...labels]
-    if (progress.current >= total) return
+    const length = [...label].length
+    let count = 0
     const timer = window.setInterval(() => {
-      progress.current = Math.min(progress.current + 1, total)
-      setPrinted(progress.current)
-      if (progress.current === total) window.clearInterval(timer)
+      count = Math.min(count + 1, length)
+      setPrinted(count)
+      if (count === length) window.clearInterval(timer)
     }, 100)
     return () => window.clearInterval(timer)
-  }, [labels, total])
+  }, [label])
+  return <span className="agent-status-line__text">{chars.slice(0, printed).join('') || '\u00a0'}</span>
+}
 
-  let offset = 0
-  return <>{lines.map((chars, index) => {
-    const count = Math.max(0, Math.min(chars.length, printed - offset))
-    offset += chars.length
-    if (!count) return null
-    return <div className="agent-thinking-step" key={index}>
-      {index === 0 && <img src="/agent-thinking.gif" className="agent-thinking-step__icon" alt="" />}
-      <span className="agent-thinking-step__text">
-        {chars.slice(0, count).join('')}
-        {count < chars.length && <span className="agent-thinking-cursor" aria-hidden="true">|</span>}
-      </span>
+/** One stable status line; earlier tool steps remain available on demand. */
+export default function ThinkingTypewriter({ labels }: { labels: string[] }) {
+  const label = labels[labels.length - 1] || '正在分析你的需求…'
+  return <div className="agent-processing">
+    <div className="agent-status-line" role="status" aria-label={label}>
+      <img className="agent-status-line__icon" src="/agent-thinking.gif" alt="" aria-hidden="true" />
+      <TypedLabel key={label} label={label} />
     </div>
-  })}</>
+    {labels.length > 1 && <details className="agent-process agent-process--active">
+      <summary>查看已处理步骤（{labels.length - 1}）</summary>
+      <ol>{labels.slice(0, -1).map((step, i) => <li key={i}>{step}</li>)}</ol>
+    </details>}
+  </div>
 }

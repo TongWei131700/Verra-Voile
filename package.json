@@ -10,7 +10,8 @@
     "build:home": "vite build && node scripts/prerender.cjs --only /",
     "build:app": "vite build --mode app",
     "preview": "vite preview",
-    "test:country-pages": "node scripts/test-country-pages.cjs"
+    "test:country-pages": "node scripts/test-country-pages.cjs",
+    "test:agent-scroll": "node scripts/test-agent-scroll.cjs"
   },
   "keywords": [],
   "author": "",

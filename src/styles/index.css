@@ -15817,6 +15817,10 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
   overflow-anchor: none;
 }
 
+.agent-messages > * {
+  flex-shrink: 0;
+}
+
 /* 欢迎页 */
 .agent-welcome {
   display: flex;

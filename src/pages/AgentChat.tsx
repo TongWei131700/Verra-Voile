@@ -27,6 +27,7 @@ interface Message {
 }
 
 interface TurnData {
+  userMessageId?: string
   thinkingLabels: string[]
   text: string
   tableData: Map<number, string>
@@ -60,38 +61,31 @@ export default function AgentChat() {
 
   /* ── Refs（高频变化，直接操作 DOM，不触发 re-render） ── */
   const socketRef = useRef<Socket | null>(null)
-  const tkContainerRef = useRef<HTMLDivElement>(null)   // 思考步骤容器
-  const tkIconRef = useRef<HTMLImageElement>(null)       // 唯一图标（左上角）
-  const rpyRawRef = useRef<HTMLDivElement>(null)         // 回复打字区（raw text）
-  const fullReplyRef = useRef('')                        // 累积的完整回复
-  const tkgQueueRef = useRef<string[]>([])               // 待打思考步骤队列
-  const tkgStepsRef = useRef(0)                          // 已打步骤计数
-  const isTkgRef = useRef(false)                         // 正在打思考？
-  const isRpyRef = useRef(false)                         // 正在打回复？
-  const tkgTimerRef = useRef<number | null>(null)
-  const rpyTimerRef = useRef<number | null>(null)
-  const allTkgDoneRef = useRef(false)
-  const rpyStartedRef = useRef(false)
-  const thinkingLabelsRef = useRef<string[]>([])            // 当前轮次的思考标签
-  const tableDataRef = useRef<Map<number, string>>(new Map()) // 后端推送的表格数据 [TABLE_N] → content
-  const planSummaryRef = useRef<PlanItem[] | null>(null)       // 后端推送的方案摘要数据
-  const dotsRef = useRef<HTMLDivElement>(null)             // 跳动点容器
-  const dividerRef = useRef<HTMLDivElement>(null)          // 思考/回复分隔线
-  const isPlaceholderRef = useRef(false)                   // 是否还在打前置占位
+  const fullReplyRef = useRef('')
+  const thinkingLabelsRef = useRef<string[]>([])
+  const tableDataRef = useRef<Map<number, string>>(new Map())
+  const planSummaryRef = useRef<PlanItem[] | null>(null)
+  const [activeThinking, setActiveThinking] = useState<string[]>([])
+  const activeUserRef = useRef<HTMLDivElement>(null)
+  const requestIdRef = useRef<string | null>(null)
+  const finishedRef = useRef(false)
+  const followBottomRef = useRef(true)
+  const scrollFrameRef = useRef<number | null>(null)
   const messagesRef = useRef<HTMLDivElement>(null)          // 消息容器 ref（用于滚动）
 
   // turns 持久化：Map 不能直接 JSON，需序列化
   const serializeTurns = (turns: TurnData[]) =>
-    turns.map(t => ({ thinkingLabels: t.thinkingLabels, text: t.text, tableData: Array.from(t.tableData.entries()), planSummary: t.planSummary }))
+    turns.map(t => ({ userMessageId: t.userMessageId, thinkingLabels: t.thinkingLabels, text: t.text, tableData: Array.from(t.tableData.entries()), planSummary: t.planSummary }))
   const deserializeTurns = (raw: any[]): TurnData[] =>
-    raw.map(t => ({ thinkingLabels: t.thinkingLabels || [], text: t.text || '', tableData: new Map(t.tableData || []), planSummary: t.planSummary }))
+    raw.map(t => ({ userMessageId: t.userMessageId, thinkingLabels: t.thinkingLabels || [], text: t.text || '', tableData: new Map(t.tableData || []), planSummary: t.planSummary }))
   const saveTurns = () => {
     try { sessionStorage.setItem('agent_chat_turns', JSON.stringify(serializeTurns(turnsRef.current))) } catch {}
   }
   const turnsRef = useRef<TurnData[]>((() => {
     try {
       const s = sessionStorage.getItem('agent_chat_turns')
-      return s ? deserializeTurns(JSON.parse(s)) : []
+      const users = messages.filter(message => message.role === 'user')
+      return s ? deserializeTurns(JSON.parse(s)).slice(0, users.length).map((turn, i) => ({ ...turn, userMessageId: turn.userMessageId || users[i].id })) : []
     } catch { return [] }
   })())
 
@@ -105,6 +99,7 @@ export default function AgentChat() {
       ? `${import.meta.env.VITE_API_URL}/agent`
       : (import.meta.env.DEV ? 'http://localhost:3000/agent' : '/agent')
     const connect = () => {
+      if (socketRef.current) { socketRef.current.connect(); return }
       // 获取用户标识：已登录用手机号/邮箱，未登录生成 guest
       const token = localStorage.getItem('token')
       let userToken = token ? (localStorage.getItem('userPhone') || localStorage.getItem('userEmail') || token.substring(0, 16)) : sessionStorage.getItem('agent_guest_id')
@@ -119,7 +114,9 @@ export default function AgentChat() {
       socket.on('connect_error', (err) => {
         console.warn('[Agent] connect_error:', err.message)
       })
-      socket.on('agent_session', (d: { sessionId: string }) => setSessionId(d.sessionId))
+      socket.on('agent_session', (d: { sessionId: string; requestId?: string }) => {
+        if (!d.requestId || d.requestId === requestIdRef.current) setSessionId(d.sessionId)
+      })
     }
     connect()
 
@@ -129,7 +126,6 @@ export default function AgentChat() {
         const socket = socketRef.current
         if (!socket || !socket.connected) {
           console.log('[Agent] 页面恢复可见，socket 已断开，重建连接')
-          socket?.disconnect()
           connect()
         }
       }
@@ -140,7 +136,6 @@ export default function AgentChat() {
     const onPageShow = (e: PageTransitionEvent) => {
       if (e.persisted) {
         console.log('[Agent] bfcache 恢复，重建连接')
-        socketRef.current?.disconnect()
         connect()
       }
     }
@@ -153,219 +148,87 @@ export default function AgentChat() {
     }
   }, [])
 
-  /* ── Socket 事件 ── */
+  /* Keep transient output in React rather than moving React-owned DOM nodes. */
   useEffect(() => {
     const socket = socketRef.current
     if (!socket) return
-
-    const onEvent = (ev: { type: string; label?: string; content?: string; index?: number; items?: PlanItem[] }) => {
+    const onEvent = (ev: { requestId?: string; type: string; label?: string; content?: string; index?: number; items?: PlanItem[] }) => {
+      if (finishedRef.current || !loadingRef.current || !requestIdRef.current) return
+      if (ev.requestId && ev.requestId !== requestIdRef.current) return
       switch (ev.type) {
-        case 'thinking': {
-          const label = ev.label || '思考中...'
-          // 首条真实思考 → 清掉前置占位
-          if (isPlaceholderRef.current) {
-            isPlaceholderRef.current = false
-            if (tkgTimerRef.current) { clearInterval(tkgTimerRef.current); tkgTimerRef.current = null }
-            isTkgRef.current = false
-            tkgQueueRef.current = []
-            tkgStepsRef.current = 0
-            if (tkContainerRef.current) tkContainerRef.current.innerHTML = ''
-            if (tkIconRef.current) { tkIconRef.current.src = '/agent-thinking.gif'; tkIconRef.current.style.display = '' }
-            setShowAsst(true)
-            if (dotsRef.current) dotsRef.current.style.display = ''
-          }
-          // 收集思考标签
-          thinkingLabelsRef.current.push(label)
-          tkgQueueRef.current.push(label)
-          scheduleTkg()
+        case 'thinking':
+          thinkingLabelsRef.current.push(ev.label || '查询中...')
+          setActiveThinking([...thinkingLabelsRef.current])
           break
-        }
-        case 'token': {
-          // 首个 token 到达（无工具调用场景）：清除前置占位思考
-          if (isPlaceholderRef.current) {
-            isPlaceholderRef.current = false
-            if (tkgTimerRef.current) { clearInterval(tkgTimerRef.current); tkgTimerRef.current = null }
-            isTkgRef.current = false
-            tkgQueueRef.current = []
-            tkgStepsRef.current = 0
-            if (tkContainerRef.current) tkContainerRef.current.innerHTML = ''
-            if (tkIconRef.current) tkIconRef.current.style.display = 'none'
-            setShowAsst(true)
-            if (dotsRef.current) dotsRef.current.style.display = ''
-          }
-          fullReplyRef.current += (ev.content || '')
-          if (!rpyStartedRef.current && allTkgDoneRef.current) startReply()
+        case 'token':
+          fullReplyRef.current += ev.content || ''
           break
-        }
-        case 'table_data': {
-          // 后端推送的表格数据，index 对应文本中的 [TABLE_N] 标记
-          if (ev.index != null && ev.content) {
-            tableDataRef.current.set(ev.index, ev.content)
-            console.log(`[Agent] ✅ 收到表格 #${ev.index}, 长度: ${ev.content.length}, 预览:`, ev.content.slice(0, 120))
-          } else {
-            console.warn('[Agent] ⚠️ table_data 事件数据异常:', ev)
-          }
+        case 'table_data':
+          if (ev.index != null && ev.content) tableDataRef.current.set(ev.index, ev.content)
           break
-        }
-        case 'plan_summary': {
-          // 后端推送的方案摘要数据
-          if (ev.items && Array.isArray(ev.items)) {
-            planSummaryRef.current = ev.items
-            console.log('[Agent] 📋 收到方案摘要:', ev.items.length, '项')
-          }
+        case 'plan_summary':
+          if (Array.isArray(ev.items)) planSummaryRef.current = ev.items
           break
-        }
-        case 'done': {
-          allTkgDoneRef.current = true
-          if (rpyStartedRef.current) break
-          if (fullReplyRef.current) startReply()
-          else finishReply()
+        case 'done':
+          finishReply()
           break
-        }
-        case 'error': {
-          loadingRef.current = false  // 出错时也要允许重新发送
-          fullReplyRef.current += (ev.content || '服务异常')
-          allTkgDoneRef.current = true
-          if (!rpyStartedRef.current) startReply()
+        case 'error':
+          fullReplyRef.current += ev.content || '服务异常，请稍后重试'
+          finishReply()
           break
-        }
       }
     }
-
     socket.on('agent_event', onEvent)
     return () => { socket.off('agent_event', onEvent) }
   }, [])
 
-  /* ── 思考步骤调度器 ── */
-  const scheduleTkg = () => {
-    if (isTkgRef.current || tkgQueueRef.current.length === 0) return
-    const text = tkgQueueRef.current.shift()!
-    typeTkgStep(text)
-  }
-
-  useEffect(() => { scheduleTkg() })
-
-  /* ── 逐字打思考步骤（直接 DOM 操作） ── */
-  const typeTkgStep = (text: string) => {
-    isTkgRef.current = true
-    const container = tkContainerRef.current
-    if (!container) { isTkgRef.current = false; return }
-
-    const el = document.createElement('div')
-    el.className = 'agent-thinking-step'
-    // 第一条思考步骤：图标内联在文字旁边
-    if (tkgStepsRef.current === 0 && tkIconRef.current) {
-      el.appendChild(tkIconRef.current)
-      tkIconRef.current.style.display = ''
-    }
-    const textEl = document.createElement('span')
-    textEl.className = 'agent-thinking-step__text'
-    el.appendChild(textEl)
-    container.appendChild(el)
-
-    const cursor = document.createElement('span')
-    cursor.className = 'agent-thinking-cursor'
-    cursor.textContent = '|'
-    textEl.appendChild(cursor)
-
-    const chars = [...text]
-    let idx = 0
-
-    tkgTimerRef.current = window.setInterval(() => {
-      idx++
-      if (idx >= chars.length) {
-        if (tkgTimerRef.current) clearInterval(tkgTimerRef.current)
-        tkgTimerRef.current = null
-        cursor.remove()
-        tkgStepsRef.current++
-        isTkgRef.current = false
-        // 将点点点动画移到当前步骤文字后面（inline）
-        if (dotsRef.current) {
-          textEl.appendChild(dotsRef.current)
-          dotsRef.current.style.display = ''
-        }
-
-        if (tkgQueueRef.current.length > 0) {
-          scheduleTkg()
-        } else if (allTkgDoneRef.current) {
-          if (fullReplyRef.current) startReply()
-          else finishReply()
-        }
-        return
-      }
-      textEl.insertBefore(document.createTextNode(chars[idx - 1]), cursor)
-      // 平滑滚动消息区到底部
-      if (messagesRef.current) {
-        messagesRef.current.scrollTop = messagesRef.current.scrollHeight
-      }
-    }, 100)
-  }
-
-  /* ── 回复直接打印（跳过逐字动画，思考速度不变） ── */
-  const startReply = () => {
-    if (isRpyRef.current || !rpyRawRef.current) return
-    rpyStartedRef.current = true
-    isRpyRef.current = true
-    rpyRawRef.current.style.display = ''
-    rpyRawRef.current.textContent = fullReplyRef.current
-    isRpyRef.current = false
-    finishReply()
-  }
-
   const finishReply = () => {
-    loadingRef.current = false  // 回复完成，允许发送下一条
-    // 保存当前轮次回复（含思考标签 + 表格数据快照）
-    turnsRef.current = [...turnsRef.current, {
+    if (finishedRef.current) return
+    finishedRef.current = true
+    loadingRef.current = false
+    turnsRef.current = [...turnsRef.current.filter(turn => turn.userMessageId !== requestIdRef.current), {
+      userMessageId: requestIdRef.current || undefined,
       thinkingLabels: [...thinkingLabelsRef.current],
       text: fullReplyRef.current,
       tableData: new Map(tableDataRef.current),
       planSummary: planSummaryRef.current || undefined,
     }]
-    saveTurns()  // 持久化到 sessionStorage
-    console.log(`[Agent] ✅ 回复完成，思考标签: ${thinkingLabelsRef.current.length} 个，轮次数: ${turnsRef.current.length}`)
-    // 清掉思考步骤 DOM（已保存到 thinkingLabels，会在已完成轮次中用 React 渲染）
-    if (tkContainerRef.current) tkContainerRef.current.innerHTML = ''
-    if (tkIconRef.current) tkIconRef.current.style.display = 'none'
-    if (dotsRef.current) dotsRef.current.style.display = 'none'
-    if (dividerRef.current) dividerRef.current.style.display = 'none'
-    // 隐藏打字区，统一用 renderContent 渲染（含表格解析）
-    if (rpyRawRef.current) rpyRawRef.current.style.display = 'none'
-    // 隐藏思考区（已完成内容在 turnsRef 中渲染，思考区空了会变空白框）
+    saveTurns()
+    setActiveThinking([])
     setShowAsst(false)
     setMessages(prev => [...prev])
-    // 等 React 渲染完表格/卡片后滚动到底部
-    requestAnimationFrame(() => {
-      if (messagesRef.current) {
+    scrollFrameRef.current = requestAnimationFrame(() => {
+      if (followBottomRef.current && messagesRef.current) {
         messagesRef.current.scrollTop = messagesRef.current.scrollHeight
       }
     })
   }
 
-  /* ── 重置（发新消息时） ── */
   const resetForNewMsg = () => {
-    if (tkgTimerRef.current) clearInterval(tkgTimerRef.current)
-    if (rpyTimerRef.current) clearInterval(rpyTimerRef.current)
-    tkgTimerRef.current = null
-    rpyTimerRef.current = null
-    isTkgRef.current = false
-    isRpyRef.current = false
-    tkgQueueRef.current = []
-    tkgStepsRef.current = 0
-    allTkgDoneRef.current = false
-    rpyStartedRef.current = false
+    if (scrollFrameRef.current !== null) cancelAnimationFrame(scrollFrameRef.current)
+    scrollFrameRef.current = null
+    finishedRef.current = false
+    followBottomRef.current = true
     fullReplyRef.current = ''
     thinkingLabelsRef.current = []
     tableDataRef.current = new Map()
     planSummaryRef.current = null
-    if (tkContainerRef.current) tkContainerRef.current.innerHTML = ''
-    if (tkIconRef.current) { tkIconRef.current.src = '/agent-thinking.gif'; tkIconRef.current.style.display = 'none' }
-    if (rpyRawRef.current) { rpyRawRef.current.textContent = ''; rpyRawRef.current.style.display = 'none' }
-    if (dotsRef.current) dotsRef.current.style.display = 'none'
-    if (dividerRef.current) dividerRef.current.style.display = 'none'
-    isPlaceholderRef.current = false
-    setShowAsst(false)  // 隐藏思考区，等下一轮 thinking/token 事件再显示
-    // 注意：不清空 turnsRef，保留之前轮次的回复
+    setActiveThinking([])
+    setShowAsst(false)
   }
+
+  // Show the latest question once, without scrolling on each thinking update.
+  useLayoutEffect(() => {
+    const container = messagesRef.current
+    const question = activeUserRef.current
+    if (loadingRef.current && container && question) {
+      container.scrollTop += question.getBoundingClientRect().top - container.getBoundingClientRect().top - 16
+    }
+  }, [messages.length])
+
+  useEffect(() => () => {
+    if (scrollFrameRef.current !== null) cancelAnimationFrame(scrollFrameRef.current)
+  }, [])
 
   /* ── 媒体上传处理 ── */
   const handleMediaSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -426,22 +289,20 @@ export default function AgentChat() {
     if (!text || loadingRef.current) return
     trackEvent('ai_chat', { message_length: text.length, has_media: !!overrideMediaId })
     resetForNewMsg()
+    const requestId = crypto.randomUUID()
+    requestIdRef.current = requestId
     setMessages(prev => [...prev, {
-      id: `u${Date.now()}`, role: 'user' as const, content: text, timestamp: Date.now(),
+      id: requestId, role: 'user' as const, content: text, timestamp: Date.now(),
     }])
     if (inputRef.current) inputRef.current.value = ''
     setInputVal('')
     loadingRef.current = true
     const currentMediaId = overrideMediaId || mediaId || undefined
-    // 立即显示助手气泡 + 前置占位思考
     setShowAsst(true)
-    isPlaceholderRef.current = true
-    tkgQueueRef.current = [currentMediaId ? '正在分析你上传的婚礼媒体...' : '正在分析你的需求...', '提取关键信息...']
-    if (dotsRef.current) dotsRef.current.style.display = ''
-    socketRef.current?.emit('chat', { message: text, sessionId: sessionId || undefined, mediaId: currentMediaId })
+    setActiveThinking([currentMediaId ? '正在分析上传的婚礼媒体...' : '正在分析你的需求...'])
+    socketRef.current?.emit('chat', { requestId, message: text, sessionId: sessionId || undefined, mediaId: currentMediaId })
     // 清除媒体状态
     if (currentMediaId) handleMediaRemove()
-    isPlaceholderRef.current = true  // 标记前置占位，等待真实 thinking/token 时清除
   }
 
   const sendMsg = () => {
@@ -461,7 +322,9 @@ export default function AgentChat() {
 
   /* ── 清空对话 ── */
   const clearChat = () => {
+    if (loadingRef.current) socketRef.current?.emit('cancel')
     resetForNewMsg()
+    requestIdRef.current = null
     turnsRef.current = []
     setMessages([])
     setSessionId('')
@@ -1025,7 +888,14 @@ export default function AgentChat() {
         <button className={`agent-clear${messages.length === 0 ? ' agent-clear--hidden' : ''}`} onClick={clearChat}>新对话</button>
       </div>
 
-      <div className="agent-messages" ref={messagesRef}>
+      <div className="agent-messages" ref={messagesRef}
+        onScroll={e => {
+          const el = e.currentTarget
+          followBottomRef.current = el.scrollHeight - el.clientHeight - el.scrollTop < 48
+        }}
+        onWheel={e => { if (e.deltaY < 0) followBottomRef.current = false }}
+        onTouchMove={() => { followBottomRef.current = false }}
+      >
         {messages.length === 0 && !loadingRef.current && (
           <div className="agent-welcome">
             <div className="agent-welcome__icon">💍</div>
@@ -1048,24 +918,24 @@ export default function AgentChat() {
         {/* 对话流：用户消息和 AI 回复交替渲染 */}
         {(() => {
           const userMsgs = messages.filter(m => m.role === 'user')
-          console.log(`[render] 用户消息数: ${userMsgs.length}, turnsRef长度: ${turnsRef.current.length}, showAsst: ${showAsst}`)
+          const byMessage = new Map(turnsRef.current.map((turn, i) => [turn.userMessageId || userMsgs[i]?.id, turn]))
           return userMsgs.map((msg, idx) => {
-            console.log(`[render] msg#${idx} "${msg.content.slice(0, 20)}" → hasReply: ${idx < turnsRef.current.length}, isLast: ${idx === userMsgs.length - 1}`)
+            const turn = byMessage.get(msg.id)
             return (
           <Fragment key={msg.id}>
             {/* 用户消息气泡 */}
-            <div className="agent-msg agent-msg--user">
+            <div className="agent-msg agent-msg--user" ref={idx === userMsgs.length - 1 ? activeUserRef : undefined}>
               <div className="agent-msg__bubble">
                 <div className="agent-msg__content">{msg.content}</div>
                 <span className="agent-msg__time">{new Date(msg.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
             </div>
             {/* 已完成的回复（该轮次：思考 + 结果） */}
-            {idx < turnsRef.current.length && (
+            {turn && (
               <div className="agent-asst-reply" style={{ opacity: 1, pointerEvents: 'auto' }}>
-                {turnsRef.current[idx].thinkingLabels.length > 0 && (
+                {turn.thinkingLabels.length > 0 && (
                   <div className="agent-thinking-steps-static">
-                    {turnsRef.current[idx].thinkingLabels.map((label, li) => (
+                    {turn.thinkingLabels.map((label, li) => (
                       <div key={li} className="agent-thinking-step">
                         <span className="agent-thinking-step__text">{label}</span>
                       </div>
@@ -1074,9 +944,9 @@ export default function AgentChat() {
                 )}
                 <div className="agent-thinking-divider" />
                 <div className="agent-asst-reply__content">
-                  {renderContent(turnsRef.current[idx].text, turnsRef.current[idx].tableData)}
-                  {turnsRef.current[idx].planSummary && turnsRef.current[idx].planSummary!.length > 0 &&
-                    renderPlanSummary(turnsRef.current[idx].planSummary!, `turn${idx}`)
+                  {renderContent(turn.text, turn.tableData)}
+                  {turn.planSummary && turn.planSummary!.length > 0 &&
+                    renderPlanSummary(turn.planSummary!, `turn${idx}`)
                   }
                 </div>
                 <div className="agent-reply-feedback">
@@ -1114,14 +984,13 @@ export default function AgentChat() {
                   pointerEvents: showAsst ? 'auto' : 'none',
                   padding: showAsst ? undefined : 0,
                 }}>
-                <div ref={tkContainerRef}>
-                  <img ref={tkIconRef} src="/agent-thinking.gif" className="agent-thinking-step__icon" alt="" style={{ display: 'none' }} />
-                </div>
-                <div ref={dotsRef} className="agent-thinking-dots" style={{ display: 'none' }}>
-                  <span></span><span></span><span></span>
-                </div>
-                <div ref={dividerRef} className="agent-thinking-divider" style={{ display: 'none' }} />
-                <div ref={rpyRawRef} className="agent-asst-reply__content" style={{ display: 'none' }} />
+                {activeThinking.map((label, i) => (
+                  <div className="agent-thinking-step" key={i}>
+                    {i === 0 && <img src="/agent-thinking.gif" className="agent-thinking-step__icon" alt="" />}
+                    <span className="agent-thinking-step__text">{label}</span>
+                  </div>
+                ))}
+                <div className="agent-thinking-dots"><span /><span /><span /></div>
               </div>
             )}
           </Fragment>

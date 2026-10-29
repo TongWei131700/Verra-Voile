@@ -39,12 +39,15 @@ interface TurnData {
   planSummary?: PlanItem[]
 }
 
-export default function AgentChat({ embedded = false, pageReference = null, onRemoveReference, openRequest, launcherLabel }: {
+export default function AgentChat({ embedded = false, pageReference = null, onRemoveReference, openRequest, launcherLabel, routePath, launcherHidden = false, onHideLauncher }: {
   embedded?: boolean
   pageReference?: AgentReference | null
   onRemoveReference?: () => void
   openRequest?: { id: number; prompt?: string }
   launcherLabel?: string
+  routePath?: string
+  launcherHidden?: boolean
+  onHideLauncher?: () => void
 } = {}) {
   const navigate = useNavigate()
   const [padOpen, setPadOpen] = useState(!embedded)
@@ -116,9 +119,10 @@ export default function AgentChat({ embedded = false, pageReference = null, onRe
   useEffect(() => { if (sessionId) sessionStorage.setItem('agent_session_id', sessionId) }, [sessionId])
   useEffect(() => { sessionStorage.setItem('agent_chat_messages', JSON.stringify(messages)) }, [messages])
 
-  useEffect(() => {
-    if (!embedded) togglePad(true)
-  }, [embedded])
+  useLayoutEffect(() => {
+    setPadOpen(!embedded)
+    setPadExpanded(false)
+  }, [embedded, routePath])
   useEffect(() => {
     if (!openRequest?.id) return
     togglePad(true)
@@ -946,6 +950,7 @@ export default function AgentChat({ embedded = false, pageReference = null, onRe
         <div className="agent-pad__actions">
           <button className={`agent-clear${messages.length === 0 ? ' agent-clear--hidden' : ''}`} onClick={clearChat}>新对话</button>
           <button className="agent-pad__resize" onClick={() => setPadExpanded(v => !v)} aria-label={padExpanded ? '恢复面板大小' : '展开大屏'} title={padExpanded ? '恢复面板大小' : '展开大屏'}>{padExpanded ? '↙' : '↗'}</button>
+          {embedded && <button className="agent-pad__hide" onClick={() => { togglePad(false); onHideLauncher?.() }} title="隐藏助手，可从页面 AI 按钮重新打开">隐藏</button>}
           <button ref={minimizeRef} onClick={() => togglePad(false)} aria-label="收起助手" title="收起助手（Esc）">−</button>
         </div>
       </div>
@@ -1116,7 +1121,10 @@ export default function AgentChat({ embedded = false, pageReference = null, onRe
       </div>
       <div className="agent-pad__disclaimer">AI 为你提供灵感，价格与档期请以实际确认为准</div>
       </section>
-      <button ref={launcherRef} className="agent-pad-launcher" hidden={padOpen} onClick={() => togglePad(true)} aria-expanded={padOpen} aria-controls="wedding-agent-pad"><img src="/agent-thinking.gif" alt="" /><span>{embedded ? launcherLabel || '婚礼灵感助手' : '婚礼灵感助手'}<small>{showAsst ? '正在为你整理灵感…' : '继续你的婚礼计划'}</small></span><span aria-hidden="true">↗</span></button>
+      <div className="agent-floating-entry" hidden={padOpen || (embedded && launcherHidden)}>
+      <button ref={launcherRef} className="agent-pad-launcher" onClick={() => togglePad(true)} aria-expanded={padOpen} aria-controls="wedding-agent-pad"><img src="/agent-thinking.gif" alt="" /><span>{embedded ? launcherLabel || '婚礼灵感助手' : '婚礼灵感助手'}<small>{showAsst ? '正在为你整理灵感…' : '继续你的婚礼计划'}</small></span><span aria-hidden="true">↗</span></button>
+      {embedded && <button className="agent-launcher-dismiss" onClick={onHideLauncher} aria-label="隐藏助手" title="隐藏助手，可从页面 AI 按钮重新打开">×</button>}
+      </div>
     </div>
   )
 }

@@ -29,6 +29,13 @@ export function AgentPageGuide({ module, name, filters = [], detail = false }: {
 
 export default function AgentExperience({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
+  const [launcherHidden, setLauncherHidden] = useState(() => {
+    try { return localStorage.getItem('agent_launcher_hidden') === '1' } catch { return false }
+  })
+  const hideLauncher = () => {
+    setLauncherHidden(true)
+    try { localStorage.setItem('agent_launcher_hidden', '1') } catch {}
+  }
   const [registered, register] = useState<AgentReference | null>(null)
   const [request, setRequest] = useState<{ id: number; prompt?: string }>({ id: 0 })
   const [loaded, setLoaded] = useState(false)
@@ -43,11 +50,11 @@ export default function AgentExperience({ children }: { children: ReactNode }) {
   const candidate = registered?.path === pathname ? registered : fallback
   const signature = JSON.stringify(candidate)
   const reference = removedReference === signature ? null : candidate
-  const open = (prompt?: string) => { setLoaded(true); setRequest(prev => ({ id: prev.id + 1, prompt })) }
+  const open = (prompt?: string) => { setLauncherHidden(false); try { localStorage.removeItem('agent_launcher_hidden') } catch {} setLoaded(true); setRequest(prev => ({ id: prev.id + 1, prompt })) }
   // The single mounted chat survives navigation, including navigation to the full studio.
   return <GuideContext.Provider value={{ reference, register, open }}>
     {children}
-    {!standalone && allowed && !loaded && <button className="agent-catalog-launcher" onClick={() => open()} aria-label="打开婚礼灵感助手"><img src="/agent-thinking.gif" alt="" /><span>{config.action}<small>婚礼灵感助手</small></span><span aria-hidden="true">↗</span></button>}
-    {(loaded || standalone) && <div hidden={!allowed} className="agent-experience-host"><Suspense fallback={<button className="agent-catalog-launcher" disabled>正在打开婚礼灵感助手…</button>}><AgentChat embedded={!standalone} pageReference={reference} onRemoveReference={() => setRemovedReference(signature)} openRequest={request} launcherLabel={config?.action} /></Suspense></div>}
+    {!standalone && allowed && !loaded && !launcherHidden && <div className="agent-floating-entry"><button className="agent-catalog-launcher" onClick={() => open()} aria-label="打开婚礼灵感助手"><img src="/agent-thinking.gif" alt="" /><span>{config.action}<small>婚礼灵感助手</small></span><span aria-hidden="true">↗</span></button><button className="agent-launcher-dismiss" onClick={hideLauncher} aria-label="隐藏助手" title="隐藏助手，可从页面 AI 按钮重新打开">×</button></div>}
+    {(loaded || standalone) && <div hidden={!allowed} className="agent-experience-host"><Suspense fallback={<button className="agent-catalog-launcher" disabled>正在打开婚礼灵感助手…</button>}><AgentChat routePath={pathname} launcherHidden={launcherHidden} onHideLauncher={hideLauncher} embedded={!standalone} pageReference={reference} onRemoveReference={() => setRemovedReference(signature)} openRequest={request} launcherLabel={config?.action} /></Suspense></div>}
   </GuideContext.Provider>
 }

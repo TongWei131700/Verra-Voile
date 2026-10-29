@@ -16708,3 +16708,19 @@ a.agent-card-wide:hover .agent-card-wide__arrow {
  .agent-studio--embedded .agent-pad,.agent-studio--embedded.agent-studio--expanded .agent-pad { inset:0; width:100%; }
  .agent-page-reference { margin:10px 16px 0; padding:10px 12px; }
 }
+
+/* Minimize follows navigation; dismissing the launcher is a separate saved preference. */
+.agent-floating-entry { position:fixed; right:24px; bottom:100px; z-index:100; display:flex; align-items:center; border:1px solid #e8e9dd; border-radius:20px; background:#fffef9; box-shadow:0 6px 30px #35483020; pointer-events:auto; }
+.agent-floating-entry[hidden] { display:none; }
+.agent-floating-entry .agent-catalog-launcher,
+.agent-floating-entry .agent-pad-launcher { position:static; box-shadow:none; border:0; background:transparent; }
+.agent-launcher-dismiss { border:0; border-left:1px solid #e7e9de; background:transparent; color:#89937b; padding:12px 10px; margin-right:4px; cursor:pointer; font-size:18px; border-radius:6px; }
+.agent-launcher-dismiss:hover { background:#edf0e3; color:#526047; }
+.agent-pad__actions .agent-pad__hide { font-size:11px; }
+.agent-studio:not(.agent-studio--embedded) .agent-floating-entry { bottom:30px; right:30px; }
+@media(max-width:768px) {
+ .agent-floating-entry { right:12px; bottom:calc(92px + env(safe-area-inset-bottom)); border-radius:17px; }
+ .agent-studio:not(.agent-studio--embedded) .agent-floating-entry { right:18px; bottom:max(24px,env(safe-area-inset-bottom)); }
+ .agent-pad__actions { gap:2px; }
+ .agent-pad__actions .agent-pad__hide { padding:8px 5px; }
+}

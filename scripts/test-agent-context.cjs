@@ -59,7 +59,27 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:5175';
    await p.screenshot({ path: `/private/tmp/agent-context-${mobile ? 'mobile' : 'desktop'}.png` });
    await p.keyboard.press('Escape');
    await p.waitForFunction(() => document.querySelector('#wedding-agent-pad').hidden);
-   console.log(`${mobile ? 'mobile' : 'desktop'}: filters, SEO, reference removal, collapsed completion, Router persistence, detail CTA and bounds PASS`);
+   await p.click('.agent-pad-launcher');
+   await p.goBack();
+   await p.waitForFunction(() => document.querySelector('#wedding-agent-pad')?.hidden);
+   await p.click('.agent-pad-launcher');
+   assert.ok(await p.$eval('textarea', e => e.value.includes('我正在查看')), 'navigation lost draft');
+   await p.click('.agent-pad__hide');
+   await p.waitForFunction(() => localStorage.getItem('agent_launcher_hidden') === '1');
+   assert.ok(await p.$eval('.agent-floating-entry', e => e.hidden), 'hide left floating entry visible');
+   await p.reload({ waitUntil: 'networkidle0' });
+   assert.equal(await p.$('.agent-floating-entry'), null, 'hidden launcher returned after refresh');
+   await p.click('.agent-page-guide');
+   await p.waitForSelector('#wedding-agent-pad:not([hidden])');
+   assert.equal(await p.evaluate(() => localStorage.getItem('agent_launcher_hidden')), null);
+   await p.click('[aria-label="收起助手"]');
+   await p.click('.agent-launcher-dismiss');
+   await p.waitForFunction(() => localStorage.getItem('agent_launcher_hidden') === '1');
+   await p.reload({ waitUntil: 'networkidle0' });
+   assert.equal(await p.$('.agent-floating-entry'), null);
+   await p.click('.agent-page-guide');
+   await p.waitForSelector('#wedding-agent-pad:not([hidden])');
+   console.log(`${mobile ? 'mobile' : 'desktop'}: automatic navigation collapse, persistent hide, manual restore, filters, SEO, reference removal, collapsed completion, Router persistence, detail CTA and bounds PASS`);
    await p.close();
   }
  } finally { await browser.close(); }

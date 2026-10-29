@@ -1,3 +1,4 @@
+import AgentExperience from './components/AgentExperience'
 import catalogCountries from './data/catalogCountries.json'
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { useEffect, lazy, Suspense } from 'react'
@@ -15,7 +16,6 @@ const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const OrderDetail = lazy(() => import('./pages/OrderDetail'))
 const Consult = lazy(() => import('./pages/Consult'))
-const AgentChat = lazy(() => import('./pages/AgentChat'))
 const Destinations = lazy(() => import('./pages/Destinations'))
 const DestinationsDetail = lazy(() => import('./pages/DestinationsDetail'))
 const WeddingTeam = lazy(() => import('./pages/WeddingTeam'))
@@ -188,7 +188,7 @@ export default function App() {
   }, [pathname])
 
   return (
-    <>
+    <AgentExperience>
       <ScrollRestoration />
       <Suspense fallback={<PageLoader />}>
       <Routes>
@@ -204,7 +204,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/order" element={<OrderDetail />} />
         <Route path="/consult" element={<Consult />} />
-        <Route path="/agent-chat" element={<AgentChat />} />
+        <Route path="/agent-chat" element={null} />
 
         <Route path="/destinations" element={<Destinations />} />
         {Object.values(catalogCountries['destinations']).map(slug => <Route key={`destinations-${slug}`} path={`/destinations/${slug}`} element={<Destinations />} />)}
@@ -231,6 +231,6 @@ export default function App() {
       {/* 公共精简头部：仅在业务模块页面显示（首页/订单/管理页除外） */}
       {!['/', '/order', '/consult', '/admin', '/upload', '/login', '/register', '/agent-chat'].includes(pathname) && <AppHeader />}
       {pathname !== '/order' && pathname !== '/consult' && pathname !== '/agent-chat' && <Footer />}
-    </>
+    </AgentExperience>
   )
 }

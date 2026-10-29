@@ -16678,3 +16678,33 @@ a.agent-card-wide:hover .agent-card-wide__arrow {
  .agent-pad__disclaimer { padding-bottom:max(12px,env(safe-area-inset-bottom)); }
  .agent-pad-launcher { right:18px; bottom:max(24px,env(safe-area-inset-bottom)); }
 }
+
+/* Context-aware assistant on catalog and product pages. */
+.agent-experience-host[hidden] { display:none; }
+.agent-studio--embedded { position:fixed; inset:0; z-index:1100; height:100dvh; background:transparent; pointer-events:none; }
+.agent-studio--embedded .agent-pad { pointer-events:auto; top:22px; bottom:22px; width:min(660px,calc(100vw - 44px)); }
+.agent-studio--embedded.agent-studio--expanded .agent-pad { width:calc(100% - 56px); }
+.agent-studio--embedded .agent-pad-launcher { pointer-events:auto; }
+.agent-catalog-launcher { position:fixed; right:24px; bottom:100px; z-index:100; display:flex; align-items:center; gap:10px; border:1px solid #e8e9dd; border-radius:20px; background:#fffef9; padding:10px 16px 10px 10px; color:#526047; box-shadow:0 6px 30px #35483020; cursor:pointer; text-align:left; font-family:inherit; }
+.agent-catalog-launcher img { width:38px; height:38px; object-fit:contain; border-radius:50%; background:#f2eee4; }
+.agent-catalog-launcher span { font-size:12px; }
+.agent-catalog-launcher small { display:block; font-size:9px; color:#909780; margin-top:5px; }
+.agent-studio--embedded .agent-pad-launcher { bottom:100px; right:24px; }
+.agent-page-guide { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 16px; margin:12px 0; border:1px solid #ffffff90; border-radius:22px; background:#fffdf8ed; color:#59664b; font:inherit; font-size:12px; cursor:pointer; line-height:1.4; }
+.agent-page-guide:hover { background:#eef1e5; color:#34452c; }
+.agent-page-guide--detail { border-color:#dce0d0; background:#f6f7ef; }
+.agent-page-reference { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-shrink:0; margin:12px 20px 0; padding:12px 14px; background:#eff1e7; border:1px solid #e4e8d9; border-radius:12px; color:#647253; }
+.agent-page-reference > div { min-width:0; }
+.agent-page-reference span { display:block; font-size:9px; letter-spacing:1px; margin-bottom:5px; }
+.agent-page-reference strong { display:block; font-size:12px; font-weight:500; overflow-wrap:anywhere; }
+.agent-page-reference small { display:block; font-size:10px; margin-top:5px; overflow-wrap:anywhere; max-height:44px; overflow:auto; }
+.agent-page-reference button { border:0; background:transparent; color:#6a795b; cursor:pointer; font-size:22px; padding:8px; flex-shrink:0; }
+.agent-msg__reference { font-size:10px; opacity:.7; border-bottom:1px solid #ffffff40; padding-bottom:7px; margin-bottom:7px; overflow-wrap:anywhere; }
+@media(max-width:768px) {
+ .agent-catalog-launcher { bottom:calc(92px + env(safe-area-inset-bottom)); right:12px; padding:8px 12px 8px 8px; border-radius:17px; }
+ .agent-catalog-launcher img { width:30px; height:30px; }
+ .agent-studio--embedded .agent-pad-launcher { bottom:calc(92px + env(safe-area-inset-bottom)); right:12px; padding:8px 12px 8px 8px; border-radius:17px; }
+ .agent-studio--embedded .agent-pad-launcher img { width:30px; height:30px; }
+ .agent-studio--embedded .agent-pad,.agent-studio--embedded.agent-studio--expanded .agent-pad { inset:0; width:100%; }
+ .agent-page-reference { margin:10px 16px 0; padding:10px 12px; }
+}

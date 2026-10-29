@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import catalogCountries from '../data/catalogCountries.json'
 import { useCatalogFilters, matchesCatalogItem } from '../hooks/useCatalogFilters'
 import { useMemo, useState, useEffect, useRef, Fragment } from 'react'
@@ -318,6 +319,7 @@ export default function TravelPhoto() {
         <div className="cd-list-hero__content">
           <p className="cd-list-hero__sub">Travel Photography</p>
           <h1 className="cd-list-hero__title">欧洲旅拍</h1>
+          <AgentPageGuide module="travel-photo" filters={[...selectedCountries, ...selectedTags, searchFilter]} />
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
             {dataLoading ? '加载中…' :

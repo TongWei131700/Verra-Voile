@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
@@ -433,6 +434,7 @@ export default function DestinationsDetail() {
               {venue.country}{venue.city ? ` · ${venue.city}` : ''}
             </span>
             <h1 className="wt-hero__name">{venue.name}</h1>
+          <AgentPageGuide module="destinations" detail name={venue.name} />
             <p className="wt-hero__name-en">{venue.nameEn}</p>
             <div className="wt-hero__divider" />
             <p className="wt-hero__tagline">{venue.tagline}</p>

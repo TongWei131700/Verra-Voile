@@ -11,7 +11,9 @@
     "build:app": "vite build --mode app",
     "preview": "vite preview",
     "test:country-pages": "node scripts/test-country-pages.cjs",
-    "test:agent-scroll": "node scripts/test-agent-scroll.cjs"
+    "test:agent-scroll": "node scripts/test-agent-scroll.cjs",
+    "test:agent-context": "node scripts/test-agent-context.cjs",
+    "test:agent-entrypoints": "node scripts/test-agent-entrypoints.cjs"
   },
   "keywords": [],
   "author": "",

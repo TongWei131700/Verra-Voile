@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import catalogCountries from '../data/catalogCountries.json'
 import { useCatalogFilters, matchesCatalogItem } from '../hooks/useCatalogFilters'
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
@@ -394,6 +395,7 @@ export default function WeddingTeam() {
         <div className="cd-list-hero__content">
           <p className="cd-list-hero__sub">Wedding Planner Companies</p>
           <h1 className="cd-list-hero__title">婚礼团队</h1>
+          <AgentPageGuide module="wedding-team" filters={[...selectedCountries, ...selectedSpecialties, searchFilter]} />
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
             {allCompanies.length > 0

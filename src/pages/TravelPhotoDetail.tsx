@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import BackButton from '../components/common/BackButton'
@@ -228,6 +229,7 @@ export default function TravelPhotoDetail() {
           <BackButton />
           <p className="tpd-hero__sub">{detail.locationEn} · {detail.countryEn}</p>
           <h1 className="tpd-hero__title">{detail.name}</h1>
+          <AgentPageGuide module="travel-photo" detail name={detail.name} />
           <p className="tpd-hero__title-en">{detail.nameEn}</p>
           <div className="tpd-hero__divider" />
           <p className="tpd-hero__tagline">{detail.tagline}</p>

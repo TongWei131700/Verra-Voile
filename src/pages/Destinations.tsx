@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import catalogCountries from '../data/catalogCountries.json'
 import { useCatalogFilters, matchesCatalogItem } from '../hooks/useCatalogFilters'
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
@@ -380,6 +381,7 @@ export default function Destinations() {
           <h1 className="cd-list-hero__title">
             {selectedCountries.size === 1 ? `${Array.from(selectedCountries)[0]}目的地婚礼` : '目的地婚礼'}
           </h1>
+          <AgentPageGuide module="destinations" filters={[...selectedCountries, ...selectedVenueTypes, searchFilter]} />
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
             {allVenues.length > 0

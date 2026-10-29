@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
@@ -283,6 +284,7 @@ export default function PhotographyDetail() {
 
       {/* ===== 内容区 ===== */}
       <div className="cd-content">
+        <AgentPageGuide module="photography" detail name={detail.name} />
 
         {/* ===== 2. 摄影师介绍 ===== */}
         <section className="cd-about photo-about" ref={aboutRef}>

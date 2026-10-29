@@ -1,0 +1,66 @@
+// Browser regression: no real model calls. Exercises page-owned references and persistent chat.
+const puppeteer = require('puppeteer');
+const assert = require('node:assert/strict');
+const path = require('node:path');
+const base = process.env.BASE_URL || 'http://127.0.0.1:5175';
+(async () => {
+ const browser = await puppeteer.launch({ headless: true });
+ try {
+  for (const mobile of [false, true]) {
+   const p = await browser.newPage();
+   await p.setViewport({ width: mobile ? 390 : 1440, height: 900, isMobile: mobile, hasTouch: mobile });
+   await p.evaluateOnNewDocument(require('node:fs').readFileSync(path.join(__dirname, 'helpers/mock-agent-websocket.js'), 'utf8'));
+   await p.goto(base + '/photography/iceland?style=纪实&q=婚礼', { waitUntil: 'networkidle0' });
+   assert.equal(await p.$('#wedding-agent-pad'), null, 'chat should load only on request');
+   const originalTitle = await p.title();
+   await p.click('.agent-catalog-launcher');
+   await p.waitForSelector('#wedding-agent-pad:not([hidden])');
+   await p.waitForFunction(() => !!window.__agentEvent);
+   const ref = await p.$eval('.agent-page-reference', el => el.textContent);
+   for (const value of ['冰岛', '纪实', '婚礼']) assert.ok(ref.includes(value), ref);
+   assert.equal(await p.title(), originalTitle, 'embedded chat overwrote page SEO');
+   await p.type('textarea', '帮我挑选');
+   await p.keyboard.press('Enter');
+   await p.waitForFunction(() => window.__sent?.some(x => x[0] === 'chat'));
+   let message = await p.evaluate(() => window.__sent.find(x => x[0] === 'chat')[1].message);
+   assert.ok(message.includes('/photography/iceland') && message.includes('冰岛'));
+   await p.click('[aria-label="收起助手"]');
+   await p.evaluate(() => { window.__agentEvent({ type: 'token', content: '收起期间仍然完成的结果' }); window.__agentEvent({ type: 'done' }); });
+   await p.click('.agent-pad-launcher');
+   await p.waitForFunction(() => document.querySelector('.agent-messages').textContent.includes('收起期间仍然完成'));
+   await p.click('[aria-label="移除页面参考"]');
+   assert.equal(await p.$('.agent-page-reference'), null);
+   await p.type('textarea', '新的问题'); await p.keyboard.press('Enter');
+   await p.waitForFunction(() => window.__sent?.filter(x => x[0] === 'chat').length === 2);
+   message = await p.evaluate(() => window.__sent.filter(x => x[0] === 'chat')[1][1].message);
+   assert.ok(message.includes('本轮未附带页面参考'));
+   assert.ok(!message.includes('/photography/iceland'));
+   await p.evaluate(() => window.__agentEvent({ type: 'done' }));
+   await p.type('textarea', '保留这份输入');
+   await p.click('[aria-label="收起助手"]');
+   // Real Router navigation through the catalog menu, without reloading the document.
+   await p.click('[aria-label="菜单"]');
+   await new Promise(r => setTimeout(r, 400));
+   await p.click('a.app-header__drawer-link[href="/photography"]');
+   await p.waitForSelector('.cd-card');
+   await p.click('.cd-card');
+   await p.waitForSelector('.agent-page-guide--detail');
+   await p.click('.agent-pad-launcher');
+   assert.equal(await p.$eval('textarea', e => e.value), '保留这份输入');
+   assert.equal(await p.evaluate(() => window.__sent.filter(x => x[0] === 'chat').length), 2, 'chat remounted on route change');
+   assert.equal(await p.$$eval('#wedding-agent-pad', nodes => nodes.length), 1);
+   const detailRef = await p.$eval('.agent-page-reference', e => e.textContent);
+   assert.ok(detailRef.includes('当前详情') && !detailRef.includes('纪实'));
+   await p.click('[aria-label="收起助手"]');
+   await p.click('.agent-page-guide--detail');
+   await p.waitForFunction(() => document.querySelector('textarea').value.includes('我正在查看'));
+   assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+   if (mobile) assert.ok(await p.$eval('.agent-pad', e => e.getBoundingClientRect().width <= innerWidth));
+   await p.screenshot({ path: `/private/tmp/agent-context-${mobile ? 'mobile' : 'desktop'}.png` });
+   await p.keyboard.press('Escape');
+   await p.waitForFunction(() => document.querySelector('#wedding-agent-pad').hidden);
+   console.log(`${mobile ? 'mobile' : 'desktop'}: filters, SEO, reference removal, collapsed completion, Router persistence, detail CTA and bounds PASS`);
+   await p.close();
+  }
+ } finally { await browser.close(); }
+})().catch(e => { console.error(e); process.exit(1); });

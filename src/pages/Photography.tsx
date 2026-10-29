@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import catalogCountries from '../data/catalogCountries.json'
 import { useCatalogFilters, matchesCatalogItem } from '../hooks/useCatalogFilters'
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
@@ -362,6 +363,7 @@ export default function Photography() {
         <div className="cd-list-hero__content">
           <p className="cd-list-hero__sub">Wedding Photography</p>
           <h1 className="cd-list-hero__title">摄影</h1>
+          <AgentPageGuide module="photography" filters={[...selectedCountries, ...selectedStyles, searchFilter]} />
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
             {allProducts.length > 0

@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import { useEffect, useMemo, useState, useCallback, Fragment, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
@@ -400,6 +401,7 @@ export default function Wine() {
         <div className="cd-list-hero__content">
           <p className="cd-list-hero__sub">Wine & Dining</p>
           <h1 className="cd-list-hero__title">酒水宴席</h1>
+          <AgentPageGuide module="wine" filters={[...selectedRegions, ...selectedTypes, ...selectedVintages, searchFilter]} />
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
             {products.length > 0

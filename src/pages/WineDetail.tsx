@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
@@ -367,6 +368,7 @@ export default function WineDetail() {
       <div className="fpd-info">
         <div className="fpd-info__scroll">
           <h1 className="fpd-name">{detail.name}</h1>
+          <AgentPageGuide module="wine" detail name={detail.name} />
           <p className="fpd-name-en">{detail.nameEn}</p>
           <div className="fpd-divider" />
 

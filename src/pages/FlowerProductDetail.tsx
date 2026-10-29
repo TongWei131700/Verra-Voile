@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
@@ -346,6 +347,7 @@ export default function FlowerProductDetail() {
       <div className="fpd-info">
         <div className="fpd-info__scroll">
           <h1 className="fpd-name">{product.name_cn}</h1>
+          <AgentPageGuide module="flowers" detail name={product.name_cn} />
           <p className="fpd-name-en">{product.name}</p>
           <div className="fpd-divider" />
       

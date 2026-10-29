@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { navFromList } from '../utils/navigateFromList'
@@ -543,6 +544,7 @@ export default function Flowers() {
         <div className="cd-list-hero__content">
           <p className="cd-list-hero__sub">Wedding Florals</p>
           <h1 className="cd-list-hero__title">花卉</h1>
+          <AgentPageGuide module="flowers" filters={[...selectedCountries, ...selectedSpecialties, searchFilter]} />
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">
             {allCompanies.length > 0

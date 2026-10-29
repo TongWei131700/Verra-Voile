@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import FallbackImage from '../components/common/FallbackImage'
@@ -532,6 +533,7 @@ export default function FlowersDetail() {
               {detail.rating ? ` · ★ ${detail.rating.score}` : ''}
             </span>
             <h1 className="wt-hero__name">{detail.name}</h1>
+          <AgentPageGuide module="flowers" detail name={detail.name} />
             <p className="wt-hero__name-en">{detail.nameEn}</p>
             <div className="wt-hero__divider" />
             <p className="wt-hero__tagline">{detail.tagline}</p>

@@ -1,3 +1,4 @@
+import { AgentPageGuide } from '../components/AgentExperience'
 import { useMemo, useState, useEffect, useCallback, useRef, Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { navFromList } from '../utils/navigateFromList'
@@ -422,6 +423,7 @@ export default function Dresses() {
         <div className="cd-list-hero__content">
           <p className="cd-list-hero__sub">Wedding Dresses</p>
           <h1 className="cd-list-hero__title">礼服</h1>
+          <AgentPageGuide module="dresses" filters={[...selectedSeries, ...selectedStyles, searchFilter]} />
           <div className="cd-list-hero__divider" />
           <p className="cd-list-hero__count">{allProducts.length > 0
               ? (totalFilters > 0 || sortMode !== 'default')

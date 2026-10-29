@@ -39,6 +39,17 @@ interface TurnData {
 
 export default function AgentChat() {
   const navigate = useNavigate()
+  const [padOpen, setPadOpen] = useState(true)
+  const [padExpanded, setPadExpanded] = useState(false)
+  const launcherRef = useRef<HTMLButtonElement>(null)
+  const minimizeRef = useRef<HTMLButtonElement>(null)
+  const togglePad = (open: boolean) => {
+    setPadOpen(open)
+    requestAnimationFrame(() => {
+      if (open) minimizeRef.current?.focus()
+      else launcherRef.current?.focus()
+    })
+  }
 
   /* ── React state（仅低频变化） ── */
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -845,7 +856,19 @@ export default function AgentChat() {
   )
 
   return (
-    <div className="agent-chat-page">
+    <div className={`agent-studio${padOpen ? ' agent-studio--open' : ''}${padExpanded ? ' agent-studio--expanded' : ''}`}>
+      <div className="agent-studio__backdrop">
+        <a className="agent-studio__brand" href="/">EUROPE WEDDING <span>YOUR WEDDING, BEAUTIFULLY PLANNED</span></a>
+        <div className="agent-studio__intro">
+          <span className="agent-studio__eyebrow">A LITTLE INSPIRATION. A BEAUTIFUL BEGINNING.</span>
+          <h1>让梦想中的婚礼，<br /><em>慢慢成为现实。</em></h1>
+          <p>从一份灵感，到一场属于你们的欧洲婚礼。<br />和你的 AI 婚礼助手，一起找到答案。</p>
+          <button onClick={() => togglePad(true)} className="agent-studio__start">开启我的婚礼灵感 <span aria-hidden="true">↗</span></button>
+          <div className="agent-studio__topics"><span>目的地甄选</span><span>风格搭配</span><span>预算规划</span></div>
+        </div>
+        <span className="agent-studio__footnote">MADE FOR YOUR ONCE-IN-A-LIFETIME</span>
+      </div>
+      <section id="wedding-agent-pad" aria-label="婚礼规划助手" hidden={!padOpen} className="agent-chat-page agent-pad" onKeyDown={e => { if (e.key === 'Escape') { e.stopPropagation(); togglePad(false) } }}>
       <Seo
         title="AI欧洲婚礼规划助手 - 智能目的地婚礼策划"
         description="EuropeWedding AI 婚礼规划助手，基于欧洲 12 国 50+ 城市真实婚礼数据，提供场地甄选、摄影师推荐、花卉方案、酒水搭配、礼服选择及预算规划等一站式智能策划服务。"
@@ -898,9 +921,12 @@ export default function AgentChat() {
         ]}
       />
       <div className="agent-header">
-        <button className="agent-back" onClick={() => navigate(-1)}>← 返回</button>
-        <h1 className="agent-title">AI欧洲婚礼规划助手</h1>
-        <button className={`agent-clear${messages.length === 0 ? ' agent-clear--hidden' : ''}`} onClick={clearChat}>新对话</button>
+        <div className="agent-pad__identity"><img src="/agent-thinking.gif" alt="" /><div><h2 className="agent-title">你的婚礼灵感助手</h2><span>EUROPE WEDDING · AI CONCIERGE</span></div></div>
+        <div className="agent-pad__actions">
+          <button className={`agent-clear${messages.length === 0 ? ' agent-clear--hidden' : ''}`} onClick={clearChat}>新对话</button>
+          <button className="agent-pad__resize" onClick={() => setPadExpanded(v => !v)} aria-label={padExpanded ? '恢复面板大小' : '展开大屏'} title={padExpanded ? '恢复面板大小' : '展开大屏'}>{padExpanded ? '↙' : '↗'}</button>
+          <button ref={minimizeRef} onClick={() => togglePad(false)} aria-label="收起助手" title="收起助手（Esc）">−</button>
+        </div>
       </div>
 
       <div className="agent-messages" ref={messagesRef}
@@ -913,9 +939,9 @@ export default function AgentChat() {
       >
         {messages.length === 0 && !loadingRef.current && (
           <div className="agent-welcome">
-            <div className="agent-welcome__icon">💍</div>
-            <h2 className="agent-welcome__title">你好，我是你的婚礼策划助手</h2>
-            <p className="agent-welcome__desc">告诉我你的婚礼梦想，我来帮你实现。<br />比如：「我想在意大利办一场 60 人的婚礼，预算 15 万」</p>
+            <div className="agent-welcome__icon"><img src="/agent-thinking.gif" alt="" /></div><span className="agent-welcome__eyebrow">LET’S PLAN SOMETHING BEAUTIFUL</span>
+            <h2 className="agent-welcome__title">你们的故事，值得一场好婚礼</h2>
+            <p className="agent-welcome__desc">想在哪里说「我愿意」？<br />聊聊目的地、人数或预算，剩下的我们一起想。</p>
             <div className="agent-suggestions">
               {['我想去法国巴黎办婚礼，预算 10 万', '意大利有什么好的场地推荐？', '帮我规划一场 50 人的希腊婚礼', '预算 5 万能去哪里办婚礼？'].map((s, i) => (
                 <button key={i} className="agent-suggestion-btn"
@@ -1061,6 +1087,9 @@ export default function AgentChat() {
           发送
         </button>
       </div>
+      <div className="agent-pad__disclaimer">AI 为你提供灵感，价格与档期请以实际确认为准</div>
+      </section>
+      <button ref={launcherRef} className="agent-pad-launcher" hidden={padOpen} onClick={() => togglePad(true)} aria-expanded={padOpen} aria-controls="wedding-agent-pad"><img src="/agent-thinking.gif" alt="" /><span>婚礼灵感助手<small>{showAsst ? '正在为你整理灵感…' : '继续你的婚礼计划'}</small></span><span aria-hidden="true">↗</span></button>
     </div>
   )
 }

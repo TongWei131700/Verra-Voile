@@ -16617,3 +16617,64 @@ a.agent-card-wide:hover .agent-card-wide__arrow {
 .agent-reveal-skip { display: block; margin: 0 0 12px auto; padding: 3px 0; border: 0; background: transparent; color: #9b8054; font: inherit; font-size: 12px; cursor: pointer; }
 .agent-reveal-skip:hover { text-decoration: underline; }
 @media (prefers-reduced-motion: reduce) { .agent-reveal-block { animation: none; } }
+
+/* Wedding inspiration studio: persistent, collapsible conversation pad. */
+.agent-studio { height:100dvh; overflow:hidden; background:#f1eee7; color:#343d37; position:relative; }
+.agent-studio__backdrop { height:100%; padding:40px 5vw; background:radial-gradient(ellipse at 18% 80%,#dce1d3 0,transparent 48%),radial-gradient(ellipse at 70% 15%,#e7d8c1 0,transparent 55%),#f5f2eb; }
+.agent-studio__brand { color:#39483e; text-decoration:none; letter-spacing:4px; font-size:17px; display:inline-flex; flex-direction:column; gap:9px; }
+.agent-studio__brand span { font-size:8px; letter-spacing:2px; }
+.agent-studio__intro { position:absolute; top:30%; left:5vw; max-width:44%; }
+.agent-studio__eyebrow { font-size:9px; letter-spacing:2px; color:#7b8371; }
+.agent-studio__intro h1 { font-size:clamp(30px,3.5vw,54px); font-weight:400; line-height:1.6; letter-spacing:3px; margin:22px 0; font-family:Georgia,'Songti SC',serif; }
+.agent-studio__intro em { font-style:normal; color:#8b947c; }
+.agent-studio__intro p { font-size:14px; line-height:2; color:#7a8075; }
+.agent-studio__start { margin:20px 0 28px; padding:15px 23px; border:1px solid #7a8975; border-radius:30px; color:#445442; background:transparent; cursor:pointer; font:inherit; font-size:13px; }
+.agent-studio__start span { margin-left:22px; }
+.agent-studio__topics { display:flex; gap:24px; font-size:11px; color:#858a7d; letter-spacing:2px; }
+.agent-studio__footnote { position:absolute; bottom:35px; font-size:9px; letter-spacing:3px; color:#8e9586; }
+.agent-pad.agent-chat-page { position:absolute; right:28px; top:24px; bottom:24px; width:min(720px,53vw); height:auto; padding:0; align-items:stretch; border-radius:26px; border:1px solid #fff; background:#fcfbf8; box-shadow:0 20px 80px #3e443a1c,0 3px 12px #3e443a0a; overflow:hidden; }
+.agent-pad[hidden],.agent-pad-launcher[hidden] { display:none; }
+.agent-studio--expanded .agent-pad { width:calc(100% - 56px); }
+.agent-pad > .agent-header,.agent-pad > .agent-messages,.agent-pad > .agent-input { max-width:none; width:100%; border-radius:0; box-shadow:none; box-sizing:border-box; }
+.agent-pad .agent-header { padding:20px 22px; gap:10px; background:#fcfbf8; justify-content:space-between; }
+.agent-pad__identity { display:flex; gap:10px; align-items:center; min-width:0; }
+.agent-pad__identity > img { width:42px; height:42px; object-fit:contain; border-radius:50%; background:#f1ecdf; }
+.agent-pad .agent-title { margin:0 0 5px; font-size:15px; font-weight:500; color:#414c40; }
+.agent-pad__identity span { font-size:8px; letter-spacing:1.3px; color:#929787; }
+.agent-pad__actions { display:flex; align-items:center; gap:6px; }
+.agent-pad__actions button { cursor:pointer; border:0; background:transparent; color:#7a826f; border-radius:9px; padding:8px; font-size:18px; line-height:1; }
+.agent-pad__actions .agent-clear { font-size:11px; }
+.agent-pad__actions button:hover { background:#edece3; }
+.agent-pad :is(button,a,textarea):focus-visible,.agent-studio :is(button,a):focus-visible { outline:2px solid #8a986d; outline-offset:3px; }
+.agent-pad .agent-messages { background:#fcfbf8; border:0; padding:26px; scrollbar-width:thin; scrollbar-color:#d9d9ce transparent; }
+.agent-pad .agent-welcome { padding:28px 0 16px; gap:15px; }
+.agent-pad .agent-welcome__icon { margin:0; }
+.agent-welcome__icon img { width:68px; height:68px; object-fit:contain; border-radius:22px; background:#f2eee4; }
+.agent-welcome__eyebrow { font-size:8px; letter-spacing:2px; color:#a0957a; }
+.agent-pad .agent-welcome__title { font-family:Georgia,'Songti SC',serif; font-size:24px; font-weight:400; color:#47513f; line-height:1.6; }
+.agent-pad .agent-welcome__desc { font-size:13px; color:#96998c; }
+.agent-pad .agent-suggestions { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; }
+.agent-pad .agent-suggestion-btn { border-radius:13px; text-align:left; background:#f5f4ed; border:1px solid #ebeade; padding:15px; font-size:12px; color:#65705a; }
+.agent-pad .agent-suggestion-btn:hover { border-color:#aab394; background:#eff1e7; }
+.agent-pad .agent-welcome__upload-hint { margin-top:8px; padding:15px; border-style:dashed; background:transparent; }
+.agent-pad .agent-input { margin:0 18px; width:calc(100% - 36px); border:1px solid #e5e5da; border-radius:17px; padding:10px; background:#fff; gap:8px; }
+.agent-pad .agent-input textarea { border:0; border-radius:9px; background:transparent; min-width:0; padding:10px 4px; font-size:13px; }
+.agent-pad .agent-send { border-radius:11px; background:#6f7d5d; font-size:12px; padding:12px 17px; }
+.agent-pad__disclaimer { text-align:center; color:#a8aa9d; font-size:9px; padding:11px 8px 14px; flex-shrink:0; }
+.agent-pad-launcher { position:absolute; bottom:30px; right:30px; display:flex; align-items:center; gap:12px; border:1px solid #f9faf2; background:#fffdf8; border-radius:22px; padding:13px 20px 13px 12px; box-shadow:0 10px 40px #35483020; cursor:pointer; color:#526047; text-align:left; }
+.agent-pad-launcher img { width:42px; height:42px; border-radius:50%; background:#f1eee4; }
+.agent-pad-launcher span { font-size:13px; }
+.agent-pad-launcher small { display:block; font-size:10px; color:#939b88; margin-top:5px; }
+@media(max-width:768px) {
+ .agent-studio__backdrop { padding:30px 25px; }
+ .agent-studio__intro { left:25px; max-width:calc(100% - 50px); top:27%; }
+ .agent-studio__intro h1 { font-size:35px; }
+ .agent-pad.agent-chat-page,.agent-studio--expanded .agent-pad { inset:0; width:100%; border-radius:0; border:0; }
+ .agent-pad .agent-header { padding:16px; padding-top:max(16px,env(safe-area-inset-top)); }
+ .agent-pad .agent-messages { padding:20px 16px; }
+ .agent-pad__resize { display:none; }
+ .agent-pad .agent-welcome__title { font-size:22px; }
+ .agent-pad__identity > img { width:34px; height:34px; }
+ .agent-pad__disclaimer { padding-bottom:max(12px,env(safe-area-inset-bottom)); }
+ .agent-pad-launcher { right:18px; bottom:max(24px,env(safe-area-inset-bottom)); }
+}

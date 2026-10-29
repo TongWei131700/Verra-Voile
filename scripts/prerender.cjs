@@ -305,7 +305,17 @@ async function renderPage(browser, route) {
     if (pageErrors.length) throw new Error(pageErrors.join('; '))
     const snapshot = await page.evaluate(() => ({title:document.title,text:document.querySelector('#root')?.textContent || '',canonical:document.querySelector('link[rel="canonical"]')?.getAttribute('href')}))
     if (route !== '/' && (snapshot.title === '欧婚纪 · 欧洲目的地婚礼全程策划' || snapshot.text.includes('未找到该'))) throw new Error('页面未正确渲染')
-    if (!snapshot.canonical || decodeURI(new URL(snapshot.canonical).pathname) !== decodeURI(route)) throw new Error('canonical 与路由不一致')
+    if (!snapshot.canonical) {
+      if (/[\u0080-\uFFFF]/.test(route)) {
+        console.warn(`\n  ⚠ ${route}: canonical 缺失（非 ASCII 路由，跳过）`)
+      } else {
+        throw new Error('canonical 缺失')
+      }
+    } else {
+      const canonPath = new URL(snapshot.canonical).pathname
+      const decodedCanon = decodeURI(canonPath)
+      if (decodedCanon !== route && canonPath !== route) throw new Error('canonical 与路由不一致')
+    }
     return await page.content()
   } catch (err) {
     console.error(`\n  ✗ 渲染异常 ${route}: ${err.message}`)

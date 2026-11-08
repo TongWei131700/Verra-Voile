@@ -5915,6 +5915,33 @@ footer .copy { margin-top: 16px; opacity: 0.5; font-size: 11px; letter-spacing: 
 }
 
 /* 消息区滚动条 */
+.consult-reply-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 40px;
+}
+
+.consult-reply-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: consult-reply-dot 1.2s ease-in-out infinite;
+}
+
+.consult-reply-dots span:nth-child(2) { animation-delay: 0.15s; }
+.consult-reply-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes consult-reply-dot {
+  0%, 60%, 100% { opacity: 0.4; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consult-reply-dots span { animation: none; }
+}
+
 .consult-messages::-webkit-scrollbar { width: 4px; }
 .consult-messages::-webkit-scrollbar-track { background: transparent; }
 .consult-messages::-webkit-scrollbar-thumb { background: rgba(176,141,87,0.15); border-radius: 2px; }

@@ -29,6 +29,7 @@ export default function Consult() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [chatInput, setChatInput] = useState('')
   const [socketConnected, setSocketConnected] = useState(false)
+  const [generatingReplyId, setGeneratingReplyId] = useState<number | null>(null)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [loggedIn] = useState(() => !!localStorage.getItem('token'))
   const [context, setContext] = useState<ConsultContext | null>(() => {
@@ -59,7 +60,16 @@ export default function Consult() {
       socket.on('connect', () => {
         setSocketConnected(true)
       })
-      socket.on('disconnect', () => setSocketConnected(false))
+      socket.on('disconnect', () => {
+        setSocketConnected(false)
+        setGeneratingReplyId(null)
+      })
+      socket.on('consult_reply_status', ({ id, generating }: { id: number; generating: boolean }) => {
+        setGeneratingReplyId(current => {
+          if (generating) return Math.max(current ?? id, id)
+          return current === id ? null : current
+        })
+      })
 
       socket.on('chat_history', (history: ChatMessage[]) => {
         // 保留本地追加的 system 消息（后端 history 可能还没有它们）
@@ -160,7 +170,7 @@ export default function Consult() {
   useEffect(() => {
     if (isInitialLoad.current) return
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  }, [messages, generatingReplyId])
 
   // WebSocket 连接后推送商品上下文（独立 effect，确保 context 和 socket 都就绪）
   useEffect(() => {
@@ -279,6 +289,15 @@ export default function Consult() {
             </div>
           )
         })}
+        {generatingReplyId !== null && (
+          <div className="order-chat-msg order-chat-msg--admin" role="status" aria-label="正在生成回复">
+            <div className="order-chat-msg__bubble consult-reply-dots" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        )}
         <div ref={chatEndRef} />
       </div>
 

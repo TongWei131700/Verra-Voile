@@ -30,6 +30,7 @@ export default function Consult() {
   const [chatInput, setChatInput] = useState('')
   const [socketConnected, setSocketConnected] = useState(false)
   const [generatingReplyId, setGeneratingReplyId] = useState<number | null>(null)
+  const [replyFailed, setReplyFailed] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [loggedIn] = useState(() => !!localStorage.getItem('token'))
   const [context, setContext] = useState<ConsultContext | null>(() => {
@@ -64,6 +65,7 @@ export default function Consult() {
         setSocketConnected(false)
         setGeneratingReplyId(null)
       })
+      socket.on('consult_reply_failed', () => setReplyFailed(true))
       socket.on('consult_reply_status', ({ id, generating }: { id: number; generating: boolean }) => {
         setGeneratingReplyId(current => {
           if (generating) return Math.max(current ?? id, id)
@@ -170,7 +172,7 @@ export default function Consult() {
   useEffect(() => {
     if (isInitialLoad.current) return
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, generatingReplyId])
+  }, [messages, generatingReplyId, replyFailed])
 
   // WebSocket 连接后推送商品上下文（独立 effect，确保 context 和 socket 都就绪）
   useEffect(() => {
@@ -191,7 +193,7 @@ export default function Consult() {
     // 推送后端（管理员可见 + 持久化）
     socketRef.current.emit('product_context', {
       name: context.name, nameEn: context.nameEn, image: context.image,
-      price: context.price, unit: context.unit, type: context.type,
+      price: context.price, unit: context.unit, type: context.type, slug: context.slug,
     })
   }, [context, socketConnected])
 
@@ -205,6 +207,7 @@ export default function Consult() {
   const handleSendMessage = () => {
     if (!chatInput.trim() || !socketRef.current) return
     const content = chatInput.trim()
+    setReplyFailed(false)
     socketRef.current.emit('send_message', { content })
     setChatInput('')
 
@@ -289,6 +292,11 @@ export default function Consult() {
             </div>
           )
         })}
+        {replyFailed && (
+          <div className="order-chat-msg order-chat-msg--admin" role="status">
+            <div className="order-chat-msg__bubble">AI 暂时无法回复，请稍后重试。</div>
+          </div>
+        )}
         {generatingReplyId !== null && (
           <div className="order-chat-msg order-chat-msg--admin" role="status" aria-label="正在生成回复">
             <div className="order-chat-msg__bubble consult-reply-dots" aria-hidden="true">
